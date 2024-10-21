@@ -6,6 +6,17 @@ export default {
   ],
   theme: {
     extend: {
+      colors: {
+        primary: {
+          DEFAULT: '#1E40AF', // Blue (Primary)
+        },
+        secondary: {
+          DEFAULT: '#10B981', // Green (Secondary)
+        },
+        light: {
+          DEFAULT: '#FFFFFF', // White (Least used)
+        }
+      },
       screens: {
         'tablet': '640px',
         // => @media (min-width: 640px) { ... }
