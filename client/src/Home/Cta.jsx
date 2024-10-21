@@ -8,7 +8,7 @@ const Cta = () => {
           Ready to Get Started?
         </h2>
         <Link to={'/submit'}>
-          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out shadow-lg hover:shadow-xl">
+          <button className="bg-primary hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out shadow-lg hover:shadow-xl">
             Submit Your Work Now!
           </button>
         </Link>

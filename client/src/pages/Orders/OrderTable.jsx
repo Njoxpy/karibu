@@ -60,9 +60,8 @@ function OrderTable() {
           </div>
 
           <p className="mt-2 text-sm text-red-700">
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nemo quasi
-            assumenda numquam deserunt consectetur autem nihil quos debitis
-            dolor culpa.
+            There was a problem with the ednpoint for fetching data into the
+            website try gain later, refresh the page :)
           </p>
         </div>
       </div>

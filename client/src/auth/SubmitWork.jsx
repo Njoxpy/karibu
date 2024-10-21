@@ -37,52 +37,61 @@ function SubmitWork() {
             Submit Your Work
           </h1>
           <form id="workSubmissionForm" onSubmit={handleSubmit}>
-            <label htmlFor="description" className="font-bold">
-              Work Description:
-            </label>
-            <textarea
-              id="description"
-              name="description"
-              required
-              className="border border-gray-400 rounded w-full p-2"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            ></textarea>
+            <div className="p-2">
+              <label
+                htmlFor="description"
+                className="block text-sm font-bold text-gray-700"
+              >
+                {' '}
+                Description{' '}
+              </label>
 
-            <label htmlFor="price" className="font-bold">
-              Price in Tsh:
-            </label>
-            <input
-              type="number"
-              id="price"
-              name="price"
-              required
-              className="border border-gray-400 rounded w-full p-2"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-            />
+              <textarea
+                id="description"
+                className="mt-2 w-full rounded-lg align-top shadow-sm sm:text-sm border border-gray-400"
+                rows="4"
+                placeholder="Enter Description for The Order..."
+              ></textarea>
+            </div>
 
-            <label htmlFor="category" className="font-bold">
-              Category
-            </label>
-            <select
-              className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-            >
-              <option value="books">Books</option>
-              <option value="magazine">Magazine</option>
-              <option value="clothing">Clothing</option>
-              <option value="cards">Cards</option>
-              <option value="banners">Banners</option>
-              <option value="cups">Cups</option>
-              <option value="bags">Bags</option>
-            </select>
+            <div className="p-2">
+              <label htmlFor="price" className="font-bold text-gray-700">
+                Price in Tsh:
+              </label>
+              <input
+                type="number"
+                id="price"
+                name="price"
+                required
+                className="border border-gray-400 rounded w-full p-2"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+              />
+            </div>
+
+            <div className="p-2">
+              <label htmlFor="category" className="font-bold text-gray-700">
+                Category
+              </label>
+              <select
+                className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+              >
+                <option value="books">Books</option>
+                <option value="magazine">Magazine</option>
+                <option value="clothing">Clothing</option>
+                <option value="cards">Cards</option>
+                <option value="banners">Banners</option>
+                <option value="cups">Cups</option>
+                <option value="bags">Bags</option>
+              </select>
+            </div>
 
             <div className="flex justify-center space-x-4 mt-4">
               <button
                 type="submit"
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                className="bg-primary hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
               >
                 Submit Work
               </button>

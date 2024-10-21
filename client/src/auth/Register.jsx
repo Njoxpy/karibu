@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import Footer from '../components/Footer';
 
 const Register = () => {
@@ -35,8 +36,10 @@ const Register = () => {
               </h1>
 
               <p className="mt-4 leading-relaxed text-gray-500">
-                Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                Eligendi nam dolorum aliquam, quibusdam aperiam voluptatum.
+                Savarrah specializes in providing high-quality graphic design
+                services, from logos and business cards to full-scale branding
+                solutions. Submit your order now and receive a personalized
+                design tailored to your needs.
               </p>
 
               <form action="#" className="mt-8 grid grid-cols-6 gap-6">
@@ -122,47 +125,16 @@ const Register = () => {
                   />
                 </div>
 
-                <div className="col-span-6">
-                  <label htmlFor="MarketingAccept" className="flex gap-4">
-                    <input
-                      type="checkbox"
-                      id="MarketingAccept"
-                      name="marketing_accept"
-                      className="size-5 rounded-md border-gray-200 bg-white shadow-sm"
-                    />
-
-                    <span className="text-sm text-gray-700">
-                      I want to receive emails about events, product updates and
-                      company announcements.
-                    </span>
-                  </label>
-                </div>
-
-                <div className="col-span-6">
-                  <p className="text-sm text-gray-500">
-                    By creating an account, you agree to our
-                    <a href="#" className="text-gray-700 underline">
-                      {' '}
-                      terms and conditions{' '}
-                    </a>
-                    and
-                    <a href="#" className="text-gray-700 underline">
-                      privacy policy
-                    </a>
-                    .
-                  </p>
-                </div>
-
                 <div className="col-span-6 sm:flex sm:items-center sm:gap-4">
-                  <button className="inline-block shrink-0 rounded-md border border-blue-600 bg-blue-600 px-12 py-3 text-sm font-medium text-white transition hover:bg-transparent hover:text-blue-600 focus:outline-none focus:ring active:text-blue-500">
+                  <button className="inline-block shrink-0 rounded-md border border-blue-600 bg-primary px-12 py-3 text-sm font-medium text-white transition hover:bg-transparent hover:text-blue-600 focus:outline-none focus:ring active:text-blue-500">
                     Create an account
                   </button>
 
                   <p className="mt-4 text-sm text-gray-500 sm:mt-0">
                     Already have an account?
-                    <a href="#" className="text-gray-700 underline">
+                    <Link className="text-gray-700 underline" to={'/login'}>
                       Log in
-                    </a>
+                    </Link>
                     .
                   </p>
                 </div>

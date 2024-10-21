@@ -1,4 +1,3 @@
-import React from 'react';
 import Footer from '../components/Footer';
 
 const Contact = () => {
@@ -37,6 +36,13 @@ const Contact = () => {
                   >
                     <small className="block">Mail</small>
                     <strong>info@savarrah.com</strong>
+                  </a>
+                  <a
+                    href="tel:+255 623 216 660"
+                    className="text-[#007bff] text-sm ml-4"
+                  >
+                    <small className="block">Tel</small>
+                    <strong>+255 623 216 660</strong>
                   </a>
                 </li>
               </ul>
@@ -126,7 +132,7 @@ const Contact = () => {
               </div>
               <button
                 type="submit"
-                className="w-full py-3 rounded-md text-white bg-[#007bff] hover:bg-[#0056b3] focus:outline-none"
+                className="w-full py-3 rounded-md text-white bg-primary hover:bg-[#0056b3] focus:outline-none"
               >
                 Send Message
               </button>
