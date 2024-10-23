@@ -8,6 +8,7 @@ import {
 // layout
 import RootLayout from './layouts/RootLayout';
 import OrdersLayout from './layouts/OrdersLayout';
+import ReceiptLayout from './layouts/ReceiptLayout';
 
 // errors
 import NotFound from './error/NotFound';
@@ -29,6 +30,7 @@ import Help from './pages/Help';
 
 // details
 import OrderDetails from './pages/Orders/OrderDetails';
+import ReceiptDetails from './pages/receipt/ReceiptDetails';
 
 export default function App() {
   const router = createBrowserRouter(
@@ -42,7 +44,10 @@ export default function App() {
         <Route path="/enterEmail" element={<EnterEmail />} />
         <Route path="/password/new" element={<ForgotPassword />} />
         <Route path="/submit" element={<SubmitWork />} />
-        <Route path="/receipt" element={<Receipt />} />
+        <Route path="/receipts" element={<ReceiptLayout />}>
+          <Route index element={<Receipt />} />
+          <Route path=":id" element={<ReceiptDetails />} />
+        </Route>
         <Route path="/dashboard" element={<UserDashboard />} />
         <Route path="/help" element={<Help />} />
         {/* orders */}
