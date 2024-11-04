@@ -1,6 +1,6 @@
-import { useParams, Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import Footer from '../../components/Footer';
+import { useParams, Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import Footer from "../../../components/Footer";
 
 function OrderDetails() {
   const { id } = useParams();
@@ -13,14 +13,14 @@ function OrderDetails() {
     try {
       const response = await fetch(`http://localhost:3003/orders/${id}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch order details');
+        throw new Error("Failed to fetch order details");
       }
       const data = await response.json();
       setOrder(data);
       setLoading(false);
     } catch (error) {
       console.error(error);
-      setError('Could not fetch order details');
+      setError("Could not fetch order details");
       setLoading(false);
     }
   };
@@ -31,21 +31,21 @@ function OrderDetails() {
 
   const handleClick = async () => {
     const confirmDelete = window.confirm(
-      'Do you really want to delete this order?'
+      "Do you really want to delete this order?"
     );
     if (confirmDelete) {
       try {
         const response = await fetch(`http://localhost:3003/orders/${id}`, {
-          method: 'DELETE',
+          method: "DELETE",
         });
         if (!response.ok) {
-          throw new Error('Failed to delete the order');
+          throw new Error("Failed to delete the order");
         }
-        alert('Order deleted successfully');
+        alert("Order deleted successfully");
         // Optionally, redirect back to the orders page
       } catch (error) {
         console.error(error);
-        alert('Error deleting order');
+        alert("Error deleting order");
       }
     }
   };

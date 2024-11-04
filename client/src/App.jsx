@@ -24,12 +24,12 @@ import ForgotPassword from "./auth/ForgotPassword";
 import EmailSent from "./auth/EmailSent";
 import EnterEmail from "./auth/EnterEmail";
 import UserDashboard from "./pages/UserDashboard";
-import OrdersTable from "./pages/Orders/OrderTable";
+import OrdersTable from "./pages/Printing/Orders/OrderTable";
 import Contact from "./pages/Contact";
 import Help from "./pages/Help";
 
 // details
-import OrderDetails from "./pages/Orders/OrderDetails";
+import OrderDetails from "./pages/Printing/Orders/OrderDetails";
 import ReceiptDetails from "./pages/Printing/receipt/ReceiptDetails";
 
 /* hardware */

@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
-import Footer from '../../components/Footer';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import Footer from "../../../components/Footer";
+import { Link } from "react-router-dom";
 
 function OrderTable() {
-  const URL = 'http://localhost:3003/orders';
+  const URL = "http://localhost:3003/orders";
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(true);
@@ -12,7 +12,7 @@ function OrderTable() {
     fetch(URL)
       .then((response) => {
         if (!response.ok) {
-          throw new Error('response not ok!');
+          throw new Error("response not ok!");
         }
         return response.json();
       })
@@ -54,8 +54,8 @@ function OrderTable() {
             </svg>
 
             <strong className="block font-medium">
-              {' '}
-              Something went wrong{' '}
+              {" "}
+              Something went wrong{" "}
             </strong>
           </div>
 
@@ -151,13 +151,13 @@ function OrderTable() {
             title="See previous orders"
             className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 mr-2"
           >
-            {'<'} Previous
+            {"<"} Previous
           </button>
           <button
             title="See next orders"
             className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700"
           >
-            Next {'>'}
+            Next {">"}
           </button>
         </div>
       </div>
