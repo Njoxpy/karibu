@@ -73,6 +73,14 @@ const ManageStationeryProducts = () => {
             ))}
           </tbody>
         </table>
+        <div className="flex justify-center">
+          <button className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2">
+            Previous
+          </button>
+          <button className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2">
+            Next
+          </button>
+        </div>
         <a
           href="/animal-feeding/admin/upload"
           className="mt-4 inline-block bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300"

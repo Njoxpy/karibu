@@ -100,6 +100,14 @@ const Orders = () => {
           </table>
         )}
       </div>
+      <div className="flex justify-center mb-2">
+        <button className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2">
+          Previous
+        </button>
+        <button className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2">
+          Next
+        </button>
+      </div>
 
       {/* Edit Order Modal */}
       {isEditModalOpen && (
