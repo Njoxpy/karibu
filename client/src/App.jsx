@@ -82,9 +82,11 @@ import PrintingLayout from "./pages/Printing/Layouts/PrintingLayout";
 
 /* stationery */
 // stationey pages
+import SearchItemStationery from "./pages/Stationery/Components/Search";
 import StationeryItemsList from "./pages/Stationery/Pages/StationeryItemsList";
-import StationeryOrders from "./pages/Stationery/Pages/StationeryOrders";
-import AddItems from "./pages/Stationery/Components/AddItems";
+import StationeryOrders from "./pages/Stationery/Pages/Orders";
+import AddItems from "./pages/Stationery/Components/StationeryItemsUpload";
+import OrderSucessStationery from "./pages/Stationery/Components/OrderSucessStationery";
 // stationery details
 import StationeryItemsDetails from "./pages/Stationery/Pages/StationeryItemDetails";
 // stationery layout
@@ -201,7 +203,11 @@ export default function App() {
           <Route index element={<StationeryItemsList />} />
           <Route path=":id" element={<StationeryItemsDetails />} />
           <Route path="orders" element={<StationeryOrders />} />
-          <Route path="add" element={<AddItems />} />
+          <Route path="admin/upload" element={<AddItems />} />
+          <Route path="order/sucess" element={<OrderSucessStationery />} />
+          <Route path="admin/orders" element={<StationeryOrders />} />
+          <Route path="admin/manage" element={<ManageFood />} />
+          <Route path="search" element={<SearchItemStationery />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Route>
