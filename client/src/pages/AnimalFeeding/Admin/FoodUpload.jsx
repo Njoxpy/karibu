@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Footer from "../../../components/Footer";
 
 const FoodUpload = () => {
@@ -81,6 +81,7 @@ const FoodUpload = () => {
             <input
               type="file"
               id="image"
+              value={image}
               onChange={(e) => setImage(e.target.files[0])}
               className="border border-gray-300 rounded w-full p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
               required

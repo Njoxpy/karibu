@@ -61,17 +61,19 @@ import OilLayouts from "./pages/FreshOil/Layouts/OilLayouts";
 // fresh oil error
 import OilDetailsError from "./pages/FreshOil/Error/OilDetailsError";
 
-/*godown */
+/* GODOWN */
 
 // godown pages
-import AddGodown from "./pages/Godown/Components/AddOrder";
-import GodownList from "./pages/Godown/Pages/GodownList";
+import UploadGodownItems from "./pages/Godown/Components/UploadGodownItems";
+import ManageGodownItems from "./pages/Godown/Pages/ManageGodownItems";
+import GodownOrders from "./pages/Godown/Pages/GodownOrders";
+import Godown from "./pages/Godown/Pages/Godown";
 // godown details
-import GodownDetails from "./pages/Godown/Pages/GodownDetails";
+import GodownOrderDetails from "./pages/Godown/Pages/GodownOrderDetails";
 // godown layout
 import GodownLayout from "./pages/Godown/Layouts/GodownLayout";
 // godown error
-import GodownDetailsError from "./pages/Godown/Error/GodownDetailsError";
+import GodownOrderDetailsError from "./pages/Godown/Error/GodownOrderDetailsError";
 
 /*printing */
 // printing pages
@@ -115,6 +117,8 @@ import AdminOrders from "./pages/AnimalFeeding/Admin/AdminOrders";
 // ERROR
 import ErrorPage from "./pages/AnimalFeeding/Error/ErrorPage";
 import ManageStationeryProducts from "./pages/Stationery/Pages/ManageStationeryProducts";
+import InventoryMovement from "./pages/Godown/Pages/InventoryMovement";
+import TestingOrders from "./pages/Printing/Orders/testingOrders";
 
 export default function App() {
   const router = createBrowserRouter(
@@ -162,15 +166,18 @@ export default function App() {
 
         {/* godown */}
         <Route path="/godown" element={<GodownLayout />}>
-          <Route index element={<GodownList />} />
+          <Route index element={<Godown />} />
+          <Route path="orders" element={<GodownOrders />} />
           <Route
-            path=":id"
-            element={<GodownDetails />}
-            errorElement={<GodownDetailsError />}
+            path="orders/:id"
+            element={<GodownOrderDetails />}
+            errorElement={<GodownOrderDetailsError />}
           />
-          <Route path="add" element={<AddGodown />} />
+          <Route path="admin/upload" element={<UploadGodownItems />} />
+          <Route path="admin/manage" element={<ManageGodownItems />} />
+          <Route path="admin/move" element={<InventoryMovement />} />
+          <Route path="testing" element={<TestingOrders />} />
         </Route>
-
         {/* hardware */}
         <Route path="/hardware" element={<HardwareLayout />}>
           <Route index element={<HardwareList />} />

@@ -33,3 +33,7 @@ dist-ssr
 
 # mongoDB
 db.mongodb
+
+# testing
+testingOrders.jsx
+routes.jsx

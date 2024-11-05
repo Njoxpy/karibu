@@ -30,10 +30,10 @@ const RootLayout = () => {
               Home
             </Link>
             <Link
-              to={"/orders"}
+              to={"/godown"}
               className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4"
             >
-              Orders
+              Godown
             </Link>
             <Link
               to={"/stationery"}
