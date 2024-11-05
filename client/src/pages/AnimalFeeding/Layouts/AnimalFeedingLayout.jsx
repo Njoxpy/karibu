@@ -1,4 +1,3 @@
-import React from "react";
 import { Outlet, Link } from "react-router-dom";
 
 function AnimalFeedingLayout() {
@@ -22,7 +21,7 @@ function AnimalFeedingLayout() {
               <li>
                 <Link
                   className="hover:text-green-200 transition-colors duration-200"
-                  to={"order"}
+                  to={"/animal-feeding"}
                 >
                   Order Item
                 </Link>
@@ -41,6 +40,14 @@ function AnimalFeedingLayout() {
                   to={"order/sucess"}
                 >
                   Sucess
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="hover:text-green-200 transition-colors duration-200"
+                  to={"orders"}
+                >
+                  Orders
                 </Link>
               </li>
             </ul>

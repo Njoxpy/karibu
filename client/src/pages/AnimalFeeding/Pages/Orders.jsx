@@ -1,6 +1,6 @@
 // src/pages/Orders.js
 
-import React, { useState } from "react";
+import { useState } from "react";
 import Footer from "../../../components/Footer";
 
 const Orders = () => {
@@ -23,7 +23,7 @@ const Orders = () => {
   return (
     <>
       <div className="p-4">
-        <h1 className="text-2xl font-bold mb-4">Orders List</h1>
+        <h1 className="text-2xl font-bold mb-4 text-center">Orders List</h1>
         {orders.length === 0 ? (
           <p>No orders placed yet.</p>
         ) : (
@@ -52,12 +52,19 @@ const Orders = () => {
                   <td className="border border-gray-300 px-4 py-2">
                     ${order.totalPrice}
                   </td>
-                  <td className="border border-gray-300 px-4 py-2">
+                  <td className="border border-gray-300 px-4 py-2 flex justify-evenly">
                     <button
                       onClick={() => handleRemoveOrder(index)}
-                      className="bg-red-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-red-600"
+                      className="bg-red-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-red-600 mr-2 "
                     >
                       Remove
+                    </button>
+
+                    <button
+                      onClick={() => handleEdit(product.id)}
+                      className="bg-blue-500 text-white py-1 px-2 rounded mr-2 hover:bg-blue-600 transition-all .4s"
+                    >
+                      Edit
                     </button>
                   </td>
                 </tr>

@@ -1,6 +1,7 @@
-// src/pages/ProductDetails.js
+import Animal2 from ".././../../assets/images/animal2.jpg";
 
-import React, { useState } from "react";
+import { useState } from "react";
+import Footer from "../../../components/Footer";
 
 const ProductDetails = () => {
   // Sample product details (Replace with actual data)
@@ -48,33 +49,39 @@ const ProductDetails = () => {
   };
 
   return (
-    <div className="flex flex-col items-center p-4 bg-green-50">
-      <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
-      <img
-        src={product.image}
-        alt={product.name}
-        className="w-1/2 h-64 object-cover mb-4"
-      />
-      <p className="mb-4">{product.description}</p>
-      <p className="font-bold text-green-700">
-        Price: ${product.price.toFixed(2)}
-      </p>
-      <div className="mt-4 flex items-center">
-        <input
-          type="number"
-          min="1"
-          value={quantity}
-          onChange={handleQuantityChange}
-          className="border border-gray-300 rounded px-3 py-1 mr-2 w-20"
+    <>
+      <div className="flex flex-col items-center p-4 bg-green-50">
+        <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
+        <img
+          src={Animal2}
+          alt={product.name}
+          className="w-1/2 h-64 object-cover mb-4"
         />
-        <button
-          onClick={handleAddToCart}
-          className="bg-green-500 text-white py-2 px-4 rounded transition duration-300 hover:bg-green-600"
-        >
-          Add to Cart
-        </button>
+        <p className="mb-4">{product.description}</p>
+        <p className="font-bold text-green-700">
+          Price: ${product.price.toFixed(2)}
+        </p>
+        <p className="">
+          Nutrients:<b> Protein, Vitamin3</b>
+        </p>
+        <div className="mt-4 flex items-center">
+          <input
+            type="number"
+            min="1"
+            value={quantity}
+            onChange={handleQuantityChange}
+            className="border border-gray-300 rounded px-3 py-1 mr-2 w-20"
+          />
+          <button
+            onClick={handleAddToCart}
+            className="bg-green-500 text-white py-2 px-4 rounded transition duration-300 hover:bg-green-600"
+          >
+            Submit
+          </button>
+        </div>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 };
 

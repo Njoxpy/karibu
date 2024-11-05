@@ -1,4 +1,3 @@
-import React from "react";
 import Footer from "../../../components/Footer";
 
 function OrderSuccess() {
@@ -19,9 +18,9 @@ function OrderSuccess() {
           Go to Animal Feeding Page
         </a>
       </div>
-      <div className="bottom-0 w-full fixed">
-        <Footer />
-      </div>
+      {/* <div className="bottom-0 w-full fixed"> */}
+      <Footer />
+      {/* </div> */}
     </>
   );
 }

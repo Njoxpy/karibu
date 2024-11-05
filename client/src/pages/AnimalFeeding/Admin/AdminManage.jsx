@@ -1,11 +1,20 @@
-import Animal1 from "../../../assets/images/animal1.jpg";
 import Animal2 from "../../../assets/images/animal2.jpg";
 import Footer from "../../../components/Footer";
 
 const AdminManage = () => {
   const products = [
-    { id: 1, name: "Dog Food", price: 2_400, image: "/images/dog-food.jpg" },
-    { id: 2, name: "Cat Food", price: 2_233, image: "/images/cat-food.jpg" },
+    {
+      id: 1,
+      name: "Chakula Cha Paka",
+      price: 2_400,
+      image: "/images/dog-food.jpg",
+    },
+    {
+      id: 2,
+      name: "Chakula Cha Mbwa",
+      price: 2_233,
+      image: "/images/cat-food.jpg",
+    },
     { id: 2, name: "Nyau Food", price: 1_500, image: "/images/cat-food.jpg" },
     { id: 2, name: "Kuku Food", price: 7_000, image: "/images/cat-food.jpg" },
     { id: 2, name: "Bata Food", price: 2_300, image: "/images/cat-food.jpg" },
@@ -49,13 +58,13 @@ const AdminManage = () => {
                 <td className="border px-4 py-2">
                   <button
                     onClick={() => handleEdit(product.id)}
-                    className="bg-blue-500 text-white py-1 px-2 rounded mr-2"
+                    className="bg-blue-500 text-white py-1 px-2 rounded mr-2 hover:bg-blue-600 transition duration-300"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleDelete(product.id)}
-                    className="bg-red-500 text-white py-1 px-2 rounded"
+                    className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600 transition duration-300"
                   >
                     Delete
                   </button>
@@ -66,7 +75,7 @@ const AdminManage = () => {
         </table>
         <a
           href="/animal-feeding/admin/upload"
-          className="mt-4 inline-block bg-green-500 text-white py-2 px-4 rounded"
+          className="mt-4 inline-block bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition duration-300"
         >
           Add New Product
         </a>
