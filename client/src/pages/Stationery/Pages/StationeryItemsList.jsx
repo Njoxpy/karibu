@@ -1,10 +1,13 @@
 import Footer from "../../../components/Footer";
+import Search from "../Components/Search";
+import StationeryBody from "./StationeryBody";
 
 const StationeyItemsList = () => {
   return (
     <>
       <div className="p-4">
-        <h4>stationery items list</h4>
+        <Search />
+        <StationeryBody />
       </div>
 
       <Footer />
