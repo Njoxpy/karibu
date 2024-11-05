@@ -91,6 +91,20 @@ import StationeryItemsDetails from "./pages/Stationery/Pages/StationeryItemDetai
 import StationeryLayout from "./pages/Stationery/Layouts/StationeryLayout";
 // stationery error
 
+/*ANIMA FEEDING */
+// LAYOUT ANIMAL FEEDING
+import AnimalFeedingLayout from "./pages/AnimalFeeding/Layouts/AnimalFeedingLayout";
+
+// PAGES
+import AnimalFeeding from "./pages/AnimalFeeding/Pages/AnimalFeeding";
+// import FoodList from "./pages/AnimalFeeding/Admin/FoodList";
+import FoodUpload from "./pages/AnimalFeeding/Admin/FoodUpload";
+import Order from "./pages/AnimalFeeding/Components/OrderForm";
+import OrderSucess from "./pages/AnimalFeeding/Pages/OrderSuccess";
+import ManageFood from "./pages/AnimalFeeding/Admin/AdminManage";
+import ProductDetail from "./pages/AnimalFeeding/Pages/ProductDetails";
+import ErrorPage from "./pages/AnimalFeeding/Error/ErrorPage";
+
 export default function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
@@ -106,6 +120,19 @@ export default function App() {
         <Route path="/help" element={<Help />} />
         <Route path="/contact" element={<Contact />} />
         {/* animal feeding */}
+        <Route path="/animal-feeding" element={<AnimalFeedingLayout />}>
+          <Route index element={<AnimalFeeding />} />
+          <Route
+            path="food/:productId"
+            element={<ProductDetail />}
+            errorElement={<ErrorPage />}
+          />
+          <Route path="order" element={<Order />} />
+          <Route path="order/sucess" element={<OrderSucess />} />
+          {/* <Route path="admin" element={<FoodList />} /> */}
+          <Route path="admin/upload" element={<FoodUpload />} />
+          <Route path="admin/manage" element={<ManageFood />} />
+        </Route>
 
         {/* fresh oil */}
         <Route path="/oil" element={<OilLayouts />}>
