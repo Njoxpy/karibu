@@ -27,22 +27,22 @@ function StationeryBody() {
     },
     {
       id: 4,
-      name: "Cat Food",
-      price: 22.49,
+      name: "Pen",
+      price: 500,
       image: { Animal2 },
       description: "Nutritious cat food.",
     },
     {
       id: 5,
-      name: "Cat Food",
-      price: 22.49,
+      name: "Pencils",
+      price: 200,
       image: { Animal2 },
       description: "Nutritious cat food.",
     },
     {
       id: 6,
-      name: "Cat Food",
-      price: 22.49,
+      name: "Exercise Books",
+      price: 22400,
       image: { Animal2 },
       description: "Nutritious cat food.",
     },
@@ -66,13 +66,13 @@ function StationeryBody() {
               <p className="text-gray-600">{product.description}</p>
               <p className="font-bold text-blue-700">${product.price}</p>
               <a
-                href={`/animal-feeding/food/${product.id}`}
+                href={`/stationery/products/${product.id}`}
                 className="mt-4 inline-block bg-blue-500 text-white py-2 px-4 rounded"
               >
                 Order Now
               </a>
               <a
-                href={`/animal-feeding/product-detail?productId=${product.id}`}
+                href={`/stationery/product-detail?productId=${product.id}`}
                 className="mt-4 inline-block bg-blue-500 text-white py-2 px-4 rounded ml-2"
               >
                 View Details

@@ -2,18 +2,19 @@
 
 import { useState } from "react";
 import Footer from "../../../components/Footer";
+import { Link } from "react-router-dom";
 
 const Orders = () => {
   // Local state for orders
   const [orders, setOrders] = useState([
-    { productName: "Animal Feed A", quantity: 2, totalPrice: 40 },
-    { productName: "Animal Feed B", quantity: 1, totalPrice: 20 },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 60 },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 60 },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 60 },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 60 },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 60 },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 60 },
+    { productName: "Animal Feed A", quantity: 2, totalPrice: 4000, id: 1 },
+    { productName: "Animal Feed B", quantity: 1, totalPrice: 2440, id: 2 },
+    { productName: "Animal Feed C", quantity: 3, totalPrice: 6440, id: 3 },
+    { productName: "Animal Feed C", quantity: 3, totalPrice: 6300, id: 4 },
+    { productName: "Animal Feed C", quantity: 3, totalPrice: 60000, id: 5 },
+    { productName: "Animal Feed C", quantity: 3, totalPrice: 60000, id: 6 },
+    { productName: "Animal Feed C", quantity: 3, totalPrice: 6880, id: 7 },
+    { productName: "Animal Feed C", quantity: 3, totalPrice: 6880, id: 8 },
   ]);
 
   // State for modal visibility and editing order
@@ -72,7 +73,7 @@ const Orders = () => {
                     {order.quantity}
                   </td>
                   <td className="border border-gray-300 px-4 py-2">
-                    ${order.totalPrice}
+                    Tsh {order.totalPrice}
                   </td>
                   <td className="border border-gray-300 px-4 py-2 flex justify-evenly">
                     <button
@@ -86,6 +87,11 @@ const Orders = () => {
                       className="bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-600 transition-all"
                     >
                       Edit
+                    </button>
+                    <button className="bg-blue-500 text-white py-1 px-2 rounded">
+                      <Link to={`/stationery/orders/${order.id}`}>
+                        Order Details
+                      </Link>
                     </button>
                   </td>
                 </tr>
