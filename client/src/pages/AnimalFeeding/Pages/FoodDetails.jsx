@@ -1,6 +1,6 @@
 // src/pages/ProductDetails.js
 
-import React, { useState } from "react";
+import { useState } from "react";
 
 const ProductDetails = () => {
   // Sample product details (Replace with actual data)
