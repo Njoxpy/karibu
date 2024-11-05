@@ -51,7 +51,7 @@ const Orders = () => {
         ) : (
           <table className="min-w-full border border-gray-300">
             <thead>
-              <tr className="bg-green-200">
+              <tr className="bg-blue-200">
                 <th className="border border-gray-300 px-4 py-2">
                   Product Name
                 </th>
@@ -64,7 +64,7 @@ const Orders = () => {
             </thead>
             <tbody>
               {orders.map((order, index) => (
-                <tr key={index} className="hover:bg-green-100">
+                <tr key={index} className="hover:bg-blue-100">
                   <td className="border border-gray-300 px-4 py-2">
                     {order.productName}
                   </td>
