@@ -84,14 +84,18 @@ import PrintingLayout from "./pages/Printing/Layouts/PrintingLayout";
 // stationey pages
 import SearchItemStationery from "./pages/Stationery/Components/Search";
 import StationeryItemsList from "./pages/Stationery/Pages/StationeryItemsList";
+import StationeryBody from "./pages/Stationery/Pages/StationeryBody";
 import StationeryOrders from "./pages/Stationery/Pages/Orders";
 import AddItems from "./pages/Stationery/Components/StationeryItemsUpload";
 import OrderSucessStationery from "./pages/Stationery/Components/OrderSucessStationery";
 // stationery details
+import StationeryOrderDetails from "./pages/Stationery/Pages/StationeryOrderDetails";
 import StationeryItemsDetails from "./pages/Stationery/Pages/StationeryItemDetails";
 // stationery layout
 import StationeryLayout from "./pages/Stationery/Layouts/StationeryLayout";
+import StationeryProductsLayout from "./pages/Stationery/Layouts/StationeryProductsLayout";
 // stationery error
+import StationeryOrderDetailsError from "./pages/Stationery/Error/StationeryOrderDetailsError";
 
 /* ANIMAl FEEDING */
 // LAYOUT ANIMAL FEEDING
@@ -110,6 +114,7 @@ import AdminOrders from "./pages/AnimalFeeding/Admin/AdminOrders";
 
 // ERROR
 import ErrorPage from "./pages/AnimalFeeding/Error/ErrorPage";
+import ManageStationeryProducts from "./pages/Stationery/Pages/ManageStationeryProducts";
 
 export default function App() {
   const router = createBrowserRouter(
@@ -201,12 +206,20 @@ export default function App() {
         {/* stationery */}
         <Route path="/stationery" element={<StationeryLayout />}>
           <Route index element={<StationeryItemsList />} />
-          <Route path=":id" element={<StationeryItemsDetails />} />
+          <Route path="products" element={<StationeryProductsLayout />}>
+            <Route index element={<StationeryBody />} />
+            <Route path=":id" element={<StationeryItemsDetails />} />
+          </Route>
           <Route path="orders" element={<StationeryOrders />} />
+          <Route
+            path="orders/:id"
+            element={<StationeryOrderDetails />}
+            errorElement={<StationeryOrderDetailsError />}
+          />
           <Route path="admin/upload" element={<AddItems />} />
           <Route path="order/sucess" element={<OrderSucessStationery />} />
           <Route path="admin/orders" element={<StationeryOrders />} />
-          <Route path="admin/manage" element={<ManageFood />} />
+          <Route path="admin/manage" element={<ManageStationeryProducts />} />
           <Route path="search" element={<SearchItemStationery />} />
         </Route>
         <Route path="*" element={<NotFound />} />
