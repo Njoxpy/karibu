@@ -104,6 +104,7 @@ import OrderSucess from "./pages/AnimalFeeding/Pages/OrderSuccess";
 import ManageFood from "./pages/AnimalFeeding/Admin/AdminManage";
 import ProductDetail from "./pages/AnimalFeeding/Pages/ProductDetails";
 import ErrorPage from "./pages/AnimalFeeding/Error/ErrorPage";
+import Orders from "./pages/AnimalFeeding/Pages/Orders";
 
 export default function App() {
   const router = createBrowserRouter(
@@ -128,6 +129,7 @@ export default function App() {
             errorElement={<ErrorPage />}
           />
           <Route path="order" element={<Order />} />
+          <Route path="orders" element={<Orders />} />
           <Route path="order/sucess" element={<OrderSucess />} />
           {/* <Route path="admin" element={<FoodList />} /> */}
           <Route path="admin/upload" element={<FoodUpload />} />
