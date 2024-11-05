@@ -1,4 +1,4 @@
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet } from "react-router-dom";
 
 const RootLayout = () => {
   return (
@@ -6,7 +6,7 @@ const RootLayout = () => {
       <nav className="flex items-center justify-between flex-wrap bg-primary p-6">
         <div className="flex items-center flex-shrink-0 text-white mr-6">
           <span className="font-semibold text-xl tracking-tight">
-            <Link to={'/'}>Savarrah</Link>
+            <Link to={"/"}>Savarrah</Link>
           </span>
         </div>
         <div className="block lg:hidden">
@@ -24,19 +24,19 @@ const RootLayout = () => {
         <div className="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
           <div className="text-sm lg:flex-grow">
             <Link
-              to={'/'}
+              to={"/"}
               className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4"
             >
               Home
             </Link>
             <Link
-              to={'/orders'}
+              to={"/orders"}
               className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4"
             >
               Orders
             </Link>
             <Link
-              to={'/contact'}
+              to={"/contact"}
               className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white"
             >
               Contact
@@ -44,17 +44,17 @@ const RootLayout = () => {
           </div>
           <div>
             <Link
-              to={'/login'}
+              to={"/login"}
               className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-blue-500 hover:bg-white mt-4 lg:mt-0 mr-2"
             >
               Login
             </Link>
 
             <Link
-              to={'/submit'}
+              to={"/animal-feeding"}
               className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-blue-500 hover:bg-white mt-4 lg:mt-0"
             >
-              Submit
+              Animal Feeding
             </Link>
           </div>
         </div>
