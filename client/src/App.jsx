@@ -25,7 +25,7 @@ import EmailSent from "./auth/EmailSent";
 import EnterEmail from "./auth/EnterEmail";
 import UserDashboard from "./pages/Printing/Pages/UserDashboard";
 import OrdersTable from "./pages/Printing/Orders/OrderTable";
-import Contact from "./pages/Contact";
+import Contact, { contactAction } from "./pages/Contact";
 
 // details
 import OrderDetails from "./pages/Printing/Orders/OrderDetails";
@@ -130,7 +130,7 @@ export default function App() {
         <Route path="/password/new" element={<ForgotPassword />} />
 
         <Route path="/dashboard" element={<UserDashboard />} />
-        <Route path="/contact" element={<Contact />} />
+        <Route path="/contact" element={<Contact />} action={contactAction} />
         {/* animal feeding */}
         <Route path="/animal-feeding" element={<AnimalFeedingLayout />}>
           <Route index element={<AnimalFeeding />} />
