@@ -1,18 +1,16 @@
-import { useNavigate } from 'react-router-dom';
-import Footer from '../components/Footer';
-import { useState } from 'react';
+import { useNavigate } from "react-router-dom";
+import Footer from "../components/Footer";
+import { useState } from "react";
 
 function EnterEmail() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Here you would typically send the email to your backend
-    console.log('Email submitted:', email);
+    console.log("Email submitted:", email);
 
-    // Navigate to the Email Sent page
-    navigate('/password/new');
+    navigate("/password/new");
   };
 
   return (

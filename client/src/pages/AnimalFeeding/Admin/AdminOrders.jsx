@@ -1,5 +1,3 @@
-// src/pages/Orders.js
-
 import { useState } from "react";
 import Footer from "../../../components/Footer";
 

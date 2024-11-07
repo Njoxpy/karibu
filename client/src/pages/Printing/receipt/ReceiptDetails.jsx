@@ -1,8 +1,9 @@
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
+import Footer from "../../../components/Footer";
 
 function ReceiptDetails() {
   const handleClick = () => {
-    console.log('printing documents');
+    console.log("printing documents");
   };
   return (
     <>
@@ -53,6 +54,8 @@ function ReceiptDetails() {
           </Link>
         </div>
       </div>
+
+      <Footer />
     </>
   );
 }

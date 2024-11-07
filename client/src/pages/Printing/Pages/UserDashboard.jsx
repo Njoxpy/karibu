@@ -1,5 +1,5 @@
-import { Link, useParams } from 'react-router-dom';
-import Footer from '../components/Footer';
+import { Link, useParams } from "react-router-dom";
+import Footer from "../../../components/Footer";
 
 const UserDashboard = () => {
   const { id } = useParams();

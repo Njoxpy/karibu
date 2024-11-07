@@ -1,5 +1,5 @@
-import { Link, useRouteError } from 'react-router-dom';
-import Footer from '../components/Footer';
+import { Link, useRouteError } from "react-router-dom";
+import Footer from "../../../components/Footer";
 
 function OrderDetailsError() {
   const error = useRouteError();
@@ -34,7 +34,7 @@ function OrderDetailsError() {
             <p className="mt-4 text-gray-500">
               We could not find the order you requested for, return to
               <Link
-                to={'/orders'}
+                to={"/orders"}
                 className="font-bold underline text-blue-500"
               >
                 order details page

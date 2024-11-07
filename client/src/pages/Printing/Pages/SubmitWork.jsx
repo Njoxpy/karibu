@@ -1,32 +1,32 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
-import Footer from '../components/Footer';
-import '../styles/submitWork.css';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate for redirection
+import Footer from "../../../components/Footer";
+import "../../../styles/submitWork.css";
 
 function SubmitWork() {
   const navigate = useNavigate(); // Initialize useNavigate
   const [price, setPrice] = useState(0);
-  const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('magazine');
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("magazine");
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     // Process form submission
     const orderData = { description, price, category };
-    console.log('Submitting Order:', orderData);
+    console.log("Submitting Order:", orderData);
 
     // Simulate API call or processing here...
     // Redirect to receipt page after submission
-    navigate('/receipt'); // Change this path to your actual receipt page path
+    navigate("/receipt"); // Change this path to your actual receipt page path
   };
 
   const handleCancel = () => {
     // Optionally reset the form or just navigate back
-    setDescription('');
+    setDescription("");
     setPrice(0);
-    setCategory('magazine');
-    navigate('/'); // Change this path to your desired cancellation behavior
+    setCategory("magazine");
+    navigate("/"); // Change this path to your desired cancellation behavior
   };
 
   return (
@@ -42,8 +42,8 @@ function SubmitWork() {
                 htmlFor="description"
                 className="block text-sm font-bold text-gray-700"
               >
-                {' '}
-                Description{' '}
+                {" "}
+                Description{" "}
               </label>
 
               <textarea

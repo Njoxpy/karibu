@@ -42,6 +42,12 @@ const RootLayout = () => {
               Stationery
             </Link>
             <Link
+              to={"/animal-feeding"}
+              className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4"
+            >
+              Animal Feeding
+            </Link>
+            <Link
               to={"/contact"}
               className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white"
             >

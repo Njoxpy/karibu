@@ -1,11 +1,13 @@
 import { Outlet } from "react-router-dom";
 
-const PrintingLayout = () => {
+function PrintingLayout() {
   return (
-    <div>
-      <Outlet />
-    </div>
+    <>
+      <div>
+        <Outlet />
+      </div>
+    </>
   );
-};
+}
 
 export default PrintingLayout;

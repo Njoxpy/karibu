@@ -5,7 +5,7 @@ const ErrorPage = () => {
         404 - Product Not Found
       </h1>
       <p className="text-xl text-gray-700 mb-4">
-        We're sorry, but the product you are looking for does not exist.
+        We&apos;re sorry, but the product you are looking for does not exist.
       </p>
       <a
         href="/animal-feeding"

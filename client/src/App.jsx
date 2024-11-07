@@ -7,26 +7,25 @@ import {
 
 // layout
 import RootLayout from "./layouts/RootLayout";
-import OrdersLayout from "./layouts/OrdersLayout";
-import ReceiptLayout from "./layouts/ReceiptLayout";
+import OrdersLayout from "./pages/Printing/Layouts/OrdersLayout";
+import ReceiptLayout from "./pages/Printing/Layouts/ReceiptLayout";
 
 // errors
 import NotFound from "./error/NotFound";
-import OrderDetailsError from "./error/OrderDetailsError";
+import OrderDetailsError from "./pages/Printing/Error/OrderDetailsError";
 
 // pages
 import Home from "./Home/Home";
 import Login from "./auth/Login";
 import Register from "./auth/Register";
-import SubmitWork from "./auth/SubmitWork";
-import Receipt from "./pages/Receipt";
+import SubmitWork from "./pages/Printing/Pages/SubmitWork";
+import Receipt from "./pages/Printing/Pages/Receipt";
 import ForgotPassword from "./auth/ForgotPassword";
 import EmailSent from "./auth/EmailSent";
 import EnterEmail from "./auth/EnterEmail";
-import UserDashboard from "./pages/UserDashboard";
+import UserDashboard from "./pages/Printing/Pages/UserDashboard";
 import OrdersTable from "./pages/Printing/Orders/OrderTable";
 import Contact from "./pages/Contact";
-import Help from "./pages/Help";
 
 // details
 import OrderDetails from "./pages/Printing/Orders/OrderDetails";
@@ -118,7 +117,6 @@ import AdminOrders from "./pages/AnimalFeeding/Admin/AdminOrders";
 import ErrorPage from "./pages/AnimalFeeding/Error/ErrorPage";
 import ManageStationeryProducts from "./pages/Stationery/Pages/ManageStationeryProducts";
 import InventoryMovement from "./pages/Godown/Pages/InventoryMovement";
-import TestingOrders from "./pages/Printing/Orders/testingOrders";
 
 export default function App() {
   const router = createBrowserRouter(
@@ -128,11 +126,10 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/emailsend" element={<EmailSent />} />
-        <Route path="/enterEmail" element={<EnterEmail />} />
+        <Route path="/enter-email" element={<EnterEmail />} />
         <Route path="/password/new" element={<ForgotPassword />} />
 
         <Route path="/dashboard" element={<UserDashboard />} />
-        <Route path="/help" element={<Help />} />
         <Route path="/contact" element={<Contact />} />
         {/* animal feeding */}
         <Route path="/animal-feeding" element={<AnimalFeedingLayout />}>
@@ -160,8 +157,6 @@ export default function App() {
             errorElement={<OilDetailsError />}
           />
           <Route path="add" element={<AddOil />} />
-          {/*
-           should the links for admin int the page be into the app.js or it should have its own protetcted routes */}
         </Route>
 
         {/* godown */}
@@ -176,7 +171,6 @@ export default function App() {
           <Route path="admin/upload" element={<UploadGodownItems />} />
           <Route path="admin/manage" element={<ManageGodownItems />} />
           <Route path="admin/move" element={<InventoryMovement />} />
-          <Route path="testing" element={<TestingOrders />} />
         </Route>
         {/* hardware */}
         <Route path="/hardware" element={<HardwareLayout />}>

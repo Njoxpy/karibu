@@ -2,6 +2,7 @@ import Footer from "../../../components/Footer";
 import SearchGodownItem from "../Components/SearchGownItem";
 import InventoryTable from "./InventoryTable";
 import OrdersTestings from "./OrderTesting";
+import TestingPagination from "./TestingPagination";
 
 const Godown = () => {
   return (
