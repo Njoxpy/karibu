@@ -1,4 +1,5 @@
-import Footer from '../components/Footer';
+import Footer from "../components/Footer";
+import { Form, redirect } from "react-router-dom";
 
 const Contact = () => {
   return (
@@ -53,7 +54,7 @@ const Contact = () => {
 
               <ul className="flex mt-4 space-x-4">
                 <li className="bg-[#e6e6e6cf] h-10 w-10 rounded-full flex items-center justify-center shrink-0">
-                  <a href="javascript:void(0)">
+                  <a href="http://facebook.com/">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="20px"
@@ -66,7 +67,7 @@ const Contact = () => {
                   </a>
                 </li>
                 <li className="bg-[#e6e6e6cf] h-10 w-10 rounded-full flex items-center justify-center shrink-0">
-                  <a href="javascript:void(0)">
+                  <a href="http://x.com/">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="20px"
@@ -79,7 +80,7 @@ const Contact = () => {
                   </a>
                 </li>
                 <li className="bg-[#e6e6e6cf] h-10 w-10 rounded-full flex items-center justify-center shrink-0">
-                  <a href="javascript:void(0)">
+                  <a href="http://instagram.com/">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="20px"
@@ -96,7 +97,7 @@ const Contact = () => {
           </div>
 
           <div>
-            <form className="space-y-6">
+            <Form className="space-y-6" method="post" action="/contact">
               <div>
                 <label className="block text-gray-800 text-base font-bold">
                   Your Name
@@ -105,6 +106,7 @@ const Contact = () => {
                   type="text"
                   className="mt-2 block w-full border border-gray-300 rounded-md shadow-sm focus:border-[#007bff] focus:ring focus:ring-[#007bff]/50"
                   placeholder="Enter Your Name"
+                  name="name"
                   required
                 />
               </div>
@@ -116,6 +118,7 @@ const Contact = () => {
                   type="email"
                   className="mt-2 block w-full border border-gray-300 rounded-md shadow-sm focus:border-[#007bff] focus:ring focus:ring-[#007bff]/50"
                   placeholder="Enter Your Email"
+                  name="email"
                   required
                 />
               </div>
@@ -127,6 +130,7 @@ const Contact = () => {
                   className="mt-2 block w-full border border-gray-300 rounded-md shadow-sm focus:border-[#007bff] focus:ring focus:ring-[#007bff]/50"
                   rows="5"
                   placeholder="Type your message here"
+                  name="message"
                   required
                 ></textarea>
               </div>
@@ -136,7 +140,7 @@ const Contact = () => {
               >
                 Send Message
               </button>
-            </form>
+            </Form>
           </div>
         </div>
       </div>
@@ -147,3 +151,22 @@ const Contact = () => {
 };
 
 export default Contact;
+
+export const contactAction = async ({ request }) => {
+  console.log(request);
+
+  const data = await request.formData();
+
+  const submission = {
+    name: data.get("name"),
+    email: data.get("email"),
+    message: data.get("message"),
+  };
+
+  if (submission.message.length < 10) {
+    return { error: "message must be over 10 characters long" };
+  }
+
+  console.log(submission);
+  return redirect("/");
+};

@@ -1,5 +1,7 @@
 import Animal2 from "../../../assets/images/animal2.jpg";
+import Filter from "../../../components/Filter";
 import Footer from "../../../components/Footer";
+import ConfirmDelete from "./ConfirmDelete";
 
 const ManageGodownItems = () => {
   const products = [
@@ -15,9 +17,9 @@ const ManageGodownItems = () => {
       price: 2_233,
       image: "/images/cat-food.jpg",
     },
-    { id: 2, name: "Nyau Food", price: 1_500, image: "/images/cat-food.jpg" },
-    { id: 2, name: "Kuku Food", price: 7_000, image: "/images/cat-food.jpg" },
-    { id: 2, name: "Bata Food", price: 2_300, image: "/images/cat-food.jpg" },
+    { id: 3, name: "Nyau Food", price: 1_500, image: "/images/cat-food.jpg" },
+    { id: 4, name: "Kuku Food", price: 7_000, image: "/images/cat-food.jpg" },
+    { id: 5, name: "Bata Food", price: 2_300, image: "/images/cat-food.jpg" },
   ];
 
   const handleEdit = (id) => {
@@ -34,6 +36,7 @@ const ManageGodownItems = () => {
         <h1 className="text-2xl font-bold mb-6 text-center">
           Manage Animal Products
         </h1>
+        <Filter />
         <table className="min-w-full bg-white border">
           <thead className="text-center">
             <tr className="text-center">
@@ -89,6 +92,7 @@ const ManageGodownItems = () => {
         </a>
       </div>
       <Footer />
+      {/* <ConfirmDelete /> */}
     </>
   );
 };

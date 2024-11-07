@@ -18,7 +18,7 @@ function Services() {
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
           {/* Service 1: Printing */}
-          <div className="service-item bg-blue-50 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <div className="service-item bg-blue-50 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer">
             <img
               src={printingImage}
               alt="Printing"
@@ -35,7 +35,7 @@ function Services() {
           </div>
 
           {/* Service 2: Fresh Oil */}
-          <div className="service-item bg-blue-50 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <div className="service-item bg-blue-50 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer">
             <img
               src={oilImage}
               alt="Fresh Oil"
@@ -52,7 +52,7 @@ function Services() {
           </div>
 
           {/* Service 3: Hardware */}
-          <div className="service-item bg-blue-50 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <div className="service-item bg-blue-50 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer">
             <img
               src={hardImage}
               alt="Hardware"
@@ -69,7 +69,7 @@ function Services() {
           </div>
 
           {/* Service 4: Animal Feeding */}
-          <div className="service-item bg-blue-50 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <div className="service-item bg-blue-50 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer">
             <img
               src={animal2Image}
               alt="Animal Feeding"
@@ -86,7 +86,7 @@ function Services() {
           </div>
 
           {/* Service 5: Godown */}
-          <div className="service-item bg-blue-50 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <div className="service-item bg-blue-50 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer">
             <img
               src={godownImage}
               alt="Godown"
@@ -101,7 +101,7 @@ function Services() {
           </div>
 
           {/* Service 6: Stationery */}
-          <div className="service-item bg-blue-50 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <div className="service-item bg-blue-50 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer">
             <img
               src={stationeryImage}
               alt="Stationery"
