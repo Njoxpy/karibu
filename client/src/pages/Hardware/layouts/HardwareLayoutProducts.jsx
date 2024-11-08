@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 
-function HardwareLayout() {
+function HardwareLayoutProducts() {
   return (
     <>
       <Outlet />
@@ -8,4 +8,4 @@ function HardwareLayout() {
   );
 }
 
-export default HardwareLayout;
+export default HardwareLayoutProducts;
