@@ -34,13 +34,17 @@ import ReceiptDetails from "./pages/Printing/receipt/ReceiptDetails";
 /* hardware */
 
 // hardware pages
-import HardwareList from "./pages/Hardware/pages/HardwareList";
-import AddHardware from "./pages/Hardware/pages/AddHardware";
+import Hardware from "./pages/Hardware/pages/Hardware";
 import HardWareDetails from "./pages/Hardware/pages/HardWareDetails";
+import HardwareItemsUpload from "./pages/Hardware/Components/HardwareItemsUpload";
+import OrderSucessHardware from "./pages/Hardware/Components/OrderSuccessHardware";
+import ManageHardwareProducts from "./pages/Hardware/pages/ManageHardwareProducts";
+import HardwareOrders from "./pages/Hardware/pages/HardwareOrders";
+import Hardwares from "./pages/Hardware/pages/Hardwares";
 
 // harwdware layout
-import HardwareLayout from "./pages/Hardware/layouts/HardwareLayout";
-import HardwaresLayout from "./pages/Hardware/layouts/HardwaresLayout";
+import HardwareLayoutProducts from "./pages/Hardware/layouts/HardwareLayoutProducts";
+import HardwareLayout from "./pages/Hardware/layouts/HardwareLayoutProducts";
 
 // hardware error
 import HardwareDetailsError from "./pages/Hardware/Error/HardwareDetailsError";
@@ -48,17 +52,22 @@ import HardwareDetailsError from "./pages/Hardware/Error/HardwareDetailsError";
 /* fresh oil */
 
 // fresh oil pages
-import AddOil from "./pages/FreshOil/Components/AddOil";
-import OilList from "./pages/FreshOil/Pages/OilList";
+import OilList from "./pages/FreshOil/Pages/Oil";
+import UploadFreshOil from "./pages/FreshOil/Components/UploadFreshOil";
+import ManagFreshOil from "./pages/FreshOil/Pages/ManageFreshOil";
+import Oils from "./pages/FreshOil/Pages/Oils";
+import FreshOilOrders from "./pages/FreshOil/Pages/FreshOilOrders";
 
 // fresh oil details
 import OilDetails from "./pages/FreshOil/Pages/OilDetails";
+import FreshOilOrdersDetails from "./pages/FreshOil/Pages/FreshOilOrdersDetails";
 
 // fresh oil layout
 import OilLayouts from "./pages/FreshOil/Layouts/OilLayouts";
+import OilLayoutProduct from "./pages/FreshOil/Layouts/OilLayoutProducts";
 
 // fresh oil error
-import OilDetailsError from "./pages/FreshOil/Error/OilDetailsError";
+import FreshOilOrderDetailsError from "./pages/FreshOil/Error/FreshOilOrderDetailsError";
 
 /* GODOWN */
 
@@ -76,6 +85,10 @@ import GodownOrderDetailsError from "./pages/Godown/Error/GodownOrderDetailsErro
 
 /*printing */
 // printing pages
+import OrderSucessPrinting from "./pages/Printing/Components/OrdersSucessPrinting";
+import ManagePrintingOrders from "./pages/Printing/Orders/ManagePrinitingOrders";
+import HomePrinting from "./pages/Printing/Pages/HomePrinting";
+import PrintingOrders from "./pages/Printing/Pages/PrintingOrders";
 // printing details
 // printing layout
 import PrintingLayout from "./pages/Printing/Layouts/PrintingLayout";
@@ -131,6 +144,7 @@ export default function App() {
 
         <Route path="/dashboard" element={<UserDashboard />} />
         <Route path="/contact" element={<Contact />} action={contactAction} />
+
         {/* animal feeding */}
         <Route path="/animal-feeding" element={<AnimalFeedingLayout />}>
           <Route index element={<AnimalFeeding />} />
@@ -151,12 +165,18 @@ export default function App() {
         {/* fresh oil */}
         <Route path="/oil" element={<OilLayouts />}>
           <Route index element={<OilList />} />
+          <Route path="products" element={<OilLayoutProduct />}>
+            <Route index element={<Oils />} />
+            <Route path=":id" element={<OilDetails />} />
+          </Route>
+          <Route path="orders" element={<FreshOilOrders />} />
           <Route
-            path=":id"
-            element={<OilDetails />}
-            errorElement={<OilDetailsError />}
+            path="orders/:id"
+            element={<FreshOilOrdersDetails />}
+            errorElement={<FreshOilOrderDetailsError />}
           />
-          <Route path="add" element={<AddOil />} />
+          <Route path="admin/upload" element={<UploadFreshOil />} />
+          <Route path="admin/manage" element={<ManagFreshOil />} />
         </Route>
 
         {/* godown */}
@@ -172,24 +192,31 @@ export default function App() {
           <Route path="admin/manage" element={<ManageGodownItems />} />
           <Route path="admin/move" element={<InventoryMovement />} />
         </Route>
+
         {/* hardware */}
         <Route path="/hardware" element={<HardwareLayout />}>
-          <Route index element={<HardwareList />} />
-          <Route path="hardwares" element={<HardwaresLayout />}>
-            <Route index element={<HardwareList />} />
-            <Route
-              path=":id"
-              element={<HardWareDetails />}
-              errorElement={<HardwareDetailsError />}
-            />
+          <Route index element={<Hardware />} />
+          <Route path="products" element={<HardwareLayoutProducts />}>
+            <Route index element={<Hardwares />} />
+            <Route path=":id" element={<HardWareDetails />} />
           </Route>
-          <Route path="add" element={<AddHardware />} />
+          <Route path="orders" element={<HardwareOrders />} />
+          <Route
+            path="orders/:id"
+            element={<HardWareDetails />}
+            errorElement={<HardwareDetailsError />}
+          />
+          <Route path="admin/upload" element={<HardwareItemsUpload />} />
+          <Route path="order/sucess" element={<OrderSucessHardware />} />
+          <Route path="admin/orders" element={<HardwareOrders />} />
+          <Route path="admin/manage" element={<ManageHardwareProducts />} />
         </Route>
 
         {/* landing page */}
 
         {/* printing */}
         <Route path="/printing" element={<PrintingLayout />}>
+          <Route index element={<HomePrinting />} />
           <Route path="submit" element={<SubmitWork />} />
           <Route path="receipts" element={<ReceiptLayout />}>
             <Route index element={<Receipt />} />
@@ -203,7 +230,11 @@ export default function App() {
               errorElement={<OrderDetailsError />}
             />
           </Route>
+          <Route path="order/sucess" element={<OrderSucessPrinting />} />
+          <Route path="admin/orders" element={<PrintingOrders />} />
+          <Route path="admin/manage" element={<ManagePrintingOrders />} />
         </Route>
+
         {/* stationery */}
         <Route path="/stationery" element={<StationeryLayout />}>
           <Route index element={<StationeryItemsList />} />
