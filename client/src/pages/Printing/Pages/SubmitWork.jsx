@@ -7,6 +7,8 @@ function SubmitWork() {
   const navigate = useNavigate(); // Initialize useNavigate
   const [price, setPrice] = useState(0);
   const [description, setDescription] = useState("");
+  const [quantity, setQuantity] = useState(0);
+  const [contact, setContact] = useState(0);
   const [category, setCategory] = useState("magazine");
 
   const handleSubmit = (e) => {
@@ -66,6 +68,36 @@ function SubmitWork() {
                 className="border border-gray-400 rounded w-full p-2"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
+              />
+            </div>
+
+            <div className="p-2">
+              <label htmlFor="price" className="font-bold text-gray-700">
+                Quantity
+              </label>
+              <input
+                type="number"
+                id="price"
+                name="price"
+                required
+                className="border border-gray-400 rounded w-full p-2"
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
+              />
+            </div>
+
+            <div className="p-2">
+              <label htmlFor="price" className="font-bold text-gray-700">
+                Contact
+              </label>
+              <input
+                type="number"
+                id="contact"
+                name="contact"
+                required
+                className="border border-gray-400 rounded w-full p-2"
+                value={contact}
+                onChange={(e) => setContact(e.target.value)}
               />
             </div>
 

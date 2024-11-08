@@ -3,8 +3,9 @@ import Footer from "../../../components/Footer";
 const Receipt = () => {
   return (
     <>
-      <section className="receipt">
+      <section className="receipt p-4">
         {/* <fetch the list of receipt generated */}
+        <h3>Fetch the list of recipts</h3>
       </section>
 
       <Footer />
