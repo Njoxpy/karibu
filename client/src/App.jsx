@@ -74,12 +74,14 @@ import FreshOilOrderDetailsError from "./pages/FreshOil/Error/FreshOilOrderDetai
 // godown pages
 import UploadGodownItems from "./pages/Godown/Components/UploadGodownItems";
 import ManageGodownItems from "./pages/Godown/Pages/ManageGodownItems";
+import GodownProductDetails from "./pages/Godown/Pages/GodownProductDetails";
 import GodownOrders from "./pages/Godown/Pages/GodownOrders";
 import Godown from "./pages/Godown/Pages/Godown";
 // godown details
 import GodownOrderDetails from "./pages/Godown/Pages/GodownOrderDetails";
 // godown layout
 import GodownLayout from "./pages/Godown/Layouts/GodownLayout";
+import GodownLayoutProduct from "./pages/Godown/Layouts/GodownLayoutProduct";
 // godown error
 import GodownOrderDetailsError from "./pages/Godown/Error/GodownOrderDetailsError";
 
@@ -130,6 +132,7 @@ import AdminOrders from "./pages/AnimalFeeding/Admin/AdminOrders";
 import ErrorPage from "./pages/AnimalFeeding/Error/ErrorPage";
 import ManageStationeryProducts from "./pages/Stationery/Pages/ManageStationeryProducts";
 import InventoryMovement from "./pages/Godown/Pages/InventoryMovement";
+import InventoryTable from "./pages/Godown/Pages/InventoryTable";
 
 export default function App() {
   const router = createBrowserRouter(
@@ -182,6 +185,10 @@ export default function App() {
         {/* godown */}
         <Route path="/godown" element={<GodownLayout />}>
           <Route index element={<Godown />} />
+          <Route path="products" element={<GodownLayoutProduct />}>
+            <Route index element={<InventoryTable />} />
+            <Route path=":id" element={<GodownProductDetails />} />
+          </Route>
           <Route path="orders" element={<GodownOrders />} />
           <Route
             path="orders/:id"

@@ -1,5 +1,3 @@
-import Male from "../assets/images/male.jpg";
-
 const AboutUs = () => {
   return (
     <div className="bg-white py-16">
