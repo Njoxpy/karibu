@@ -131,6 +131,21 @@ const GodownOrders = () => {
                 min="1"
               />
             </div>
+            <div className="mb-4">
+              <label className="block text-gray-600">Total Price:</label>
+              <input
+                type="number"
+                value={editOrder.quantity}
+                onChange={(e) =>
+                  setEditOrder((prev) => ({
+                    ...prev,
+                    quantity: e.target.valueAsNumber,
+                  }))
+                }
+                className="w-full p-2 border rounded mt-1"
+                min="1"
+              />
+            </div>
             <div className="flex justify-end space-x-4">
               <button
                 onClick={() => setIsEditModalOpen(false)}
