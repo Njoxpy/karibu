@@ -18,9 +18,6 @@ const UploadGodownItems = () => {
         <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
           Upload New Animal Product
         </h1>
-        <h1 className="text-center text-lg font-medium">
-          Upload New Animal Product
-        </h1>
         <form
           onSubmit={handleSubmit}
           className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md"
@@ -52,7 +49,7 @@ const UploadGodownItems = () => {
           </div>
           <div className="mb-4">
             <label className="block mb-2 text-gray-700" htmlFor="price">
-              Price ($)
+              Price (Tsh)
             </label>
             <input
               type="number"
@@ -84,6 +81,7 @@ const UploadGodownItems = () => {
               type="file"
               id="image"
               value={image}
+              accept="image*"
               onChange={(e) => setImage(e.target.files[0])}
               className="border border-gray-300 rounded w-full p-3 focus:outline-none focus:ring-2 focus:ring-gray-500"
               required
