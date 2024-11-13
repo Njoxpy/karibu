@@ -1,21 +1,22 @@
 // import pages
-import Footer from "../components/Footer";
-import Features from "./Features";
 import Hello from "./Hello";
-import HowWorks from "./HowWorks";
 import Contact from "../pages/Contact";
 import Services from "./Services";
 import About from "./AboutUs";
 import { Divider } from "../components/Divider";
+import Testimonials from "./Testimonials";
 
 const Home = () => {
   return (
     <>
       <Hello />
-      <Features />
+      <Divider />
+      <About />
       <Divider />
       <Services />
-      <About />
+      <Divider />
+      <Testimonials />
+      <Divider />
       <Contact />
     </>
   );

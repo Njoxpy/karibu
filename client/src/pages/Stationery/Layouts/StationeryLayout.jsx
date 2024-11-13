@@ -17,6 +17,14 @@ const StationeryLayout = () => {
                 <li>
                   <Link
                     className="hover:text-green-200 transition-colors duration-200"
+                    to="/stationery"
+                  >
+                    Home
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className="hover:text-green-200 transition-colors duration-200"
                     to="/stationery/admin/upload"
                   >
                     Stationery Upload
@@ -33,26 +41,11 @@ const StationeryLayout = () => {
                 <li>
                   <Link
                     className="hover:text-green-200 transition-colors duration-200"
-                    to="/stationery/search"
-                  >
-                    Search
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="hover:text-green-200 transition-colors duration-200"
                     to="/stationery/orders"
                   >
                     Orders
                   </Link>
                 </li>
-                <div className="hidden md:block">
-                  <input
-                    type="text"
-                    placeholder="Search..."
-                    className="px-3 py-1 rounded bg-white text-gray-800 focus:outline-none"
-                  />
-                </div>
               </ul>
             </nav>
           </header>

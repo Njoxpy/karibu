@@ -1,13 +1,13 @@
 import { Outlet, Link } from "react-router-dom";
 
-function PrintingLayout() {
+function HardwareLayout() {
   return (
     <>
       <div className="bg-blue-600 text-white shadow-md">
         <header className="container mx-auto flex justify-between items-center p-4">
           {/* Logo/Title */}
           <h2 className="text-2xl font-semibold">
-            <Link to="/printing">Savarrah Printing</Link>
+            <Link to="/hardware">Savarrah Hardware</Link>
           </h2>
 
           {/* Navigation Links */}
@@ -16,7 +16,7 @@ function PrintingLayout() {
               <li>
                 <Link
                   className="hover:text-green-200 transition-colors duration-200"
-                  to="/printing"
+                  to="/hardware"
                 >
                   Home
                 </Link>
@@ -24,7 +24,7 @@ function PrintingLayout() {
               <li>
                 <Link
                   className="hover:text-blue-200 transition-colors duration-200"
-                  to="/printing/submit"
+                  to="/hardware/products"
                 >
                   Place Order
                 </Link>
@@ -33,18 +33,9 @@ function PrintingLayout() {
               <li>
                 <Link
                   className="hover:text-blue-200 transition-colors duration-200"
-                  to="/printing/orders"
+                  to="/hardware/orders"
                 >
                   Order History
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  className="hover:text-blue-200 transition-colors duration-200"
-                  to="/animal-feeding/orders"
-                >
-                  Orders
                 </Link>
               </li>
             </ul>
@@ -56,4 +47,4 @@ function PrintingLayout() {
   );
 }
 
-export default PrintingLayout;
+export default HardwareLayout;

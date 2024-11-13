@@ -15,9 +15,9 @@ const ManageStationeryProducts = () => {
       price: 2_233,
       image: "/images/cat-food.jpg",
     },
-    { id: 2, name: "Nyau Food", price: 1_500, image: "/images/cat-food.jpg" },
-    { id: 2, name: "Kuku Food", price: 7_000, image: "/images/cat-food.jpg" },
-    { id: 2, name: "Bata Food", price: 2_300, image: "/images/cat-food.jpg" },
+    { id: 3, name: "Nyau Food", price: 1_500, image: "/images/cat-food.jpg" },
+    { id: 4, name: "Kuku Food", price: 7_000, image: "/images/cat-food.jpg" },
+    { id: 5, name: "Bata Food", price: 2_300, image: "/images/cat-food.jpg" },
   ];
 
   const handleEdit = (id) => {

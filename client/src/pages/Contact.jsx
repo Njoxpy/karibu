@@ -4,13 +4,13 @@ import { Form, redirect } from "react-router-dom";
 const Contact = () => {
   return (
     <>
-      <div className="mt-6">
+      <div className="px-6 pt-14 lg:px-8 bg-gray-100">
         <div className="grid sm:grid-cols-2 items-start gap-14 p-8 mx-auto max-w-4xl bg-white shadow-[0_2px_10px_-3px_rgba(6,81,237,0.3)] rounded-md font-[sans-serif]">
           <div>
-            <h1 className="text-gray-800 text-3xl font-extrabold">
+            <h1 className="text-blue-800 text-3xl font-extrabold">
               Get in Touch with Savarrah
             </h1>
-            <p className="text-sm text-gray-500 mt-4">
+            <p className="text-sm text-gray-600 mt-4">
               Have a project idea or need assistance with your brand? Reach out
               to us at Savarrah—we’d love to hear about your vision and provide
               the support you need.
@@ -99,7 +99,7 @@ const Contact = () => {
           <div>
             <Form className="space-y-6" method="post" action="/contact">
               <div>
-                <label className="block text-gray-800 text-base font-bold">
+                <label className="block text-gray-700 text-base font-bold">
                   Your Name
                 </label>
                 <input
@@ -111,7 +111,7 @@ const Contact = () => {
                 />
               </div>
               <div>
-                <label className="block text-gray-800 text-base font-bold">
+                <label className="block text-gray-700 text-base font-bold">
                   Your Email
                 </label>
                 <input
@@ -123,7 +123,7 @@ const Contact = () => {
                 />
               </div>
               <div>
-                <label className="block text-gray-800 text-base font-bold">
+                <label className="block text-gray-700 text-base font-bold">
                   Your Message
                 </label>
                 <textarea
@@ -142,6 +142,18 @@ const Contact = () => {
               </button>
             </Form>
           </div>
+        </div>
+        <div className="m-8 px-6 pt-14 lg:px-8">
+          <p className="text-xl font-semibold text-blue-600 text-center">
+            Visit Us
+          </p>
+          <iframe
+            className="mt-4 rounded-md shadow-md w-full"
+            height="350"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d387190.27991763746!2d-74.25986633119252!3d40.69767006608675!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25a23462b8f99%3A0x739c9fa30a90a71a!2s1234%20Savarrah%20St%2C%20Suite%20100%2C%20City%2C%20Country!5e0!3m2!1sen!2sus!4v1632699391343!5m2!1sen!2sus"
+            allowFullScreen=""
+            loading="lazy"
+          ></iframe>
         </div>
       </div>
 
