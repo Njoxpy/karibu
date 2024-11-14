@@ -1,5 +1,4 @@
 import Footer from "../../../components/Footer";
-import Search from "../Components/FoodSearch";
 import FoodsBody from "./FoodsBody";
 
 const AnimalFeeding = () => {
@@ -9,8 +8,6 @@ const AnimalFeeding = () => {
         <h1 className="text-2xl font-bold mb-6 text-center">
           Animal Feeding Products
         </h1>
-
-        <Search />
         <FoodsBody />
       </div>
       <Footer />

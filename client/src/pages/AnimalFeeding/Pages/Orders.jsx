@@ -2,18 +2,19 @@
 
 import { useState } from "react";
 import Footer from "../../../components/Footer";
+import { Link } from "react-router-dom";
 
 const Orders = () => {
   // Local state for orders
   const [orders, setOrders] = useState([
-    { productName: "Animal Feed A", quantity: 2, totalPrice: 40 },
-    { productName: "Animal Feed B", quantity: 1, totalPrice: 20 },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 60 },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 60 },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 60 },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 60 },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 60 },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 60 },
+    { id: 1, productName: "Animal Feed A", quantity: 2, totalPrice: 40 },
+    { id: 2, productName: "Animal Feed B", quantity: 1, totalPrice: 20 },
+    { id: 3, productName: "Animal Feed C", quantity: 3, totalPrice: 60 },
+    { id: 4, productName: "Animal Feed C", quantity: 3, totalPrice: 60 },
+    { id: 5, productName: "Animal Feed C", quantity: 3, totalPrice: 60 },
+    { id: 6, productName: "Animal Feed C", quantity: 3, totalPrice: 60 },
+    { id: 7, productName: "Animal Feed C", quantity: 3, totalPrice: 60 },
+    { id: 8, productName: "Animal Feed C", quantity: 3, totalPrice: 60 },
   ]);
 
   // State for modal visibility and editing order
@@ -87,12 +88,25 @@ const Orders = () => {
                     >
                       Edit
                     </button>
+                    <button className="bg-blue-500 text-white py-1 px-2 rounded">
+                      <Link to={`/animal-feeding/orders/${order.id}`}>
+                        Order Details
+                      </Link>
+                    </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         )}
+      </div>
+      <div className="flex justify-center mb-2">
+        <button className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2">
+          Previous
+        </button>
+        <button className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2">
+          Next
+        </button>
       </div>
 
       {/* Edit Order Modal */}

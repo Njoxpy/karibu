@@ -125,6 +125,7 @@ import ManageFood from "./pages/AnimalFeeding/Admin/AdminManage";
 import ProductDetail from "./pages/AnimalFeeding/Pages/ProductDetails";
 import Orders from "./pages/AnimalFeeding/Pages/Orders";
 import AdminOrders from "./pages/AnimalFeeding/Admin/AdminOrders";
+import OrderDetailsAnimal from "./pages/AnimalFeeding/Components/OrderDetails";
 
 // ERROR
 import ErrorPage from "./pages/AnimalFeeding/Error/ErrorPage";
@@ -156,6 +157,7 @@ export default function App() {
           />
           <Route path="order" element={<Order />} />
           <Route path="orders" element={<Orders />} />
+          <Route path="orders/:id" element={<OrderDetailsAnimal />} />
           <Route path="order/sucess" element={<OrderSucess />} />
           <Route path="admin/orders" element={<AdminOrders />} />
           <Route path="admin/upload" element={<FoodUpload />} />
