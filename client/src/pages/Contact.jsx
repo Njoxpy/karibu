@@ -150,7 +150,7 @@ const Contact = () => {
           <iframe
             className="mt-4 rounded-md shadow-md w-full"
             height="350"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d387190.27991763746!2d-74.25986633119252!3d40.69767006608675!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25a23462b8f99%3A0x739c9fa30a90a71a!2s1234%20Savarrah%20St%2C%20Suite%20100%2C%20City%2C%20Country!5e0!3m2!1sen!2sus!4v1632699391343!5m2!1sen!2sus"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126135.17325900163!2d33.45245035!3d-8.905215799999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1900a01e711399cd%3A0x4012f53f751f23a5!2sMbeya!5e0!3m2!1sen!2stz!4v1731783752039!5m2!1sen!2stz"
             allowFullScreen=""
             loading="lazy"
           ></iframe>
