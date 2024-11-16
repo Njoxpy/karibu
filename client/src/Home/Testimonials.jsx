@@ -69,10 +69,7 @@ const Testimonials = () => {
               </div>
 
               <p className="mt-4 text-gray-700 italic">
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Culpa
-                sit rerum incidunt, a consequuntur recusandae ab saepe illo est
-                quia obcaecati neque quibusdam eius accusamus error officiis
-                atque voluptates magnam!
+              Savarrah has completely transformed how we manage our operations. From day one, the team provided exceptional support, helping us understand and implement the system seamlessly. The platform’s intuitive design and efficient tools have allowed us to reduce time spent on repetitive tasks and focus more on growing our business. 
               </p>
             </blockquote>
 
@@ -129,16 +126,13 @@ const Testimonials = () => {
                   </div>
 
                   <p className="mt-0.5 text-lg font-semibold text-blue-800">
-                    Paul Starr
+                    Rose T
                   </p>
                 </div>
               </div>
 
               <p className="mt-4 text-gray-700 italic">
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Culpa
-                sit rerum incidunt, a consequuntur recusandae ab saepe illo est
-                quia obcaecati neque quibusdam eius accusamus error officiis
-                atque voluptates magnam!
+              The Savarrah Animal Feeding service has been a complete game-changer for our farm operations. Before we started using it, keeping track of feed inventory and managing orders was chaotic and time-consuming. Now, the process is incredibly streamlined—workers can place orders quickly, and we can monitor everything in real time. 
               </p>
             </blockquote>
 
@@ -195,16 +189,13 @@ const Testimonials = () => {
                   </div>
 
                   <p className="mt-0.5 text-lg font-semibold text-blue-800">
-                    Paul Starr
+                    Aisha M
                   </p>
                 </div>
               </div>
 
               <p className="mt-4 text-gray-700 italic">
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Culpa
-                sit rerum incidunt, a consequuntur recusandae ab saepe illo est
-                quia obcaecati neque quibusdam eius accusamus error officiis
-                atque voluptates magnam!
+              The Stationery and Godown features on the Savarrah platform are exactly what our team needed to simplify operations. As an admin, I can quickly upload new products, make updates, and track orders without worrying about errors or delays. Our workers also appreciate how easy it is to place orders and view the status of their requests. 
               </p>
             </blockquote>
           </div>
