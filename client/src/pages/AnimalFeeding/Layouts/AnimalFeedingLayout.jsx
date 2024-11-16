@@ -48,14 +48,6 @@ function AnimalFeedingLayout() {
               <li>
                 <Link
                   className="hover:text-green-200 transition-colors duration-200"
-                  to="/animal-feeding/search"
-                >
-                  Search
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="hover:text-green-200 transition-colors duration-200"
                   to="/animal-feeding/orders"
                 >
                   Orders
