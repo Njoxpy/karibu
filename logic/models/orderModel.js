@@ -16,6 +16,10 @@ const orderSchema = new Schema(
       enum: ['pending', 'in progress', 'completed'],
       required:true
     },
+    orderId:{
+      type: Number,
+      unique: true,
+    },
     // userId
     userId:{
       type: Number,

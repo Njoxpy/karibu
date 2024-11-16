@@ -17,10 +17,11 @@ const products = [
     description: "High-quality dog food, rich in nutrients."
   },
 ];
+
+const Product = require("../models/productModel")
+
 router.get("/", (req, res) => {
   res.json({message: "hello from animal feeding page"});
-  console.log(req.query);
-  
 });
 
 // GET: Get all products
@@ -33,9 +34,20 @@ router.get("/products/:id", (req, res) => {
   res.json({message: "GET product by an id."});
 });
 
-// POST: Add new product
+// POST: Upload new product
 router.post("/products/bulk-upload", (req, res) => {
   res.json({message: "add new products, POST new product"})
+})
+
+// add new product
+router.post("/products", async (req, res) => {
+  const {name, description, quantity, userId, price} = req.body
+  try {
+    const product = await Product.create({name, description, quantity, userId, price})
+    res.status(200).json(product)
+  } catch (error) {
+    res.status(400).json(error.message)
+  }
 })
 
 // PATCH: Update product details
