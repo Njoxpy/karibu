@@ -1,5 +1,3 @@
-// src/pages/Orders.js
-
 import { useState } from "react";
 import Footer from "../../../components/Footer";
 import { Link } from "react-router-dom";
@@ -10,21 +8,35 @@ const Orders = () => {
     { id: 1, productName: "Animal Feed A", quantity: 2, totalPrice: 40 },
     { id: 2, productName: "Animal Feed B", quantity: 1, totalPrice: 20 },
     { id: 3, productName: "Animal Feed C", quantity: 3, totalPrice: 60 },
-    { id: 4, productName: "Animal Feed C", quantity: 3, totalPrice: 60 },
-    { id: 5, productName: "Animal Feed C", quantity: 3, totalPrice: 60 },
-    { id: 6, productName: "Animal Feed C", quantity: 3, totalPrice: 60 },
-    { id: 7, productName: "Animal Feed C", quantity: 3, totalPrice: 60 },
-    { id: 8, productName: "Animal Feed C", quantity: 3, totalPrice: 60 },
+    { id: 4, productName: "Animal Feed D", quantity: 1, totalPrice: 20 },
+    { id: 5, productName: "Animal Feed E", quantity: 2, totalPrice: 40 },
+    { id: 6, productName: "Animal Feed F", quantity: 3, totalPrice: 60 },
+    { id: 7, productName: "Animal Feed G", quantity: 4, totalPrice: 80 },
+    { id: 8, productName: "Animal Feed H", quantity: 5, totalPrice: 100 },
+    // Add more items for pagination example
   ]);
 
-  // State for modal visibility and editing order
+  const itemsPerPage = 3; // Number of orders per page
+  const totalPages = Math.ceil(orders.length / itemsPerPage);
+  
+  const [currentPage, setCurrentPage] = useState(1);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editOrder, setEditOrder] = useState({ index: null, quantity: 0 });
+  const [isRemoveConfirmationOpen, setIsRemoveConfirmationOpen] = useState(false);
+  const [orderToRemove, setOrderToRemove] = useState(null);
+
+  // Function to handle pagination
+  const paginateOrders = () => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return orders.slice(startIndex, endIndex);
+  };
 
   // Function to remove an order
-  const handleRemoveOrder = (index) => {
-    const newOrders = orders.filter((_, i) => i !== index);
+  const handleRemoveOrder = () => {
+    const newOrders = orders.filter((_, i) => i !== orderToRemove);
     setOrders(newOrders);
+    setIsRemoveConfirmationOpen(false);
   };
 
   // Function to open the edit modal
@@ -64,7 +76,7 @@ const Orders = () => {
               </tr>
             </thead>
             <tbody>
-              {orders.map((order, index) => (
+              {paginateOrders().map((order, index) => (
                 <tr key={index} className="hover:bg-green-100">
                   <td className="border border-gray-300 px-4 py-2">
                     {order.productName}
@@ -77,7 +89,10 @@ const Orders = () => {
                   </td>
                   <td className="border border-gray-300 px-4 py-2 flex justify-evenly">
                     <button
-                      onClick={() => handleRemoveOrder(index)}
+                      onClick={() => {
+                        setOrderToRemove(index);
+                        setIsRemoveConfirmationOpen(true);
+                      }}
                       className="bg-red-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-red-600 mr-2"
                     >
                       Remove
@@ -100,11 +115,19 @@ const Orders = () => {
           </table>
         )}
       </div>
+
+      {/* Pagination Controls */}
       <div className="flex justify-center mb-2">
-        <button className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2">
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2"
+        >
           Previous
         </button>
-        <button className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2">
+        <button
+          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+          className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600"
+        >
           Next
         </button>
       </div>
@@ -143,6 +166,32 @@ const Orders = () => {
                 className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded"
               >
                 Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Remove Confirmation Modal */}
+      {isRemoveConfirmationOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded p-6 shadow-lg w-full max-w-md mx-auto">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">
+              Confirm Removal
+            </h2>
+            <p>Are you sure you want to remove this order?</p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={() => setIsRemoveConfirmationOpen(false)}
+                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-4 py-2 rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleRemoveOrder}
+                className="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded"
+              >
+                Remove
               </button>
             </div>
           </div>
