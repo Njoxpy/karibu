@@ -24,6 +24,8 @@ const Orders = () => {
   const [editOrder, setEditOrder] = useState({ index: null, quantity: 0 });
   const [isRemoveConfirmationOpen, setIsRemoveConfirmationOpen] = useState(false);
   const [orderToRemove, setOrderToRemove] = useState(null);
+  const [isOrderDetailsModalOpen, setIsOrderDetailsModalOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
   // Function to handle pagination
   const paginateOrders = () => {
@@ -55,6 +57,12 @@ const Orders = () => {
     setIsEditModalOpen(false);
   };
 
+  // Function to open the order details modal
+  const openOrderDetailsModal = (order) => {
+    setSelectedOrder(order);
+    setIsOrderDetailsModalOpen(true);
+  };
+
   return (
     <>
       <div className="p-4">
@@ -65,48 +73,39 @@ const Orders = () => {
           <table className="min-w-full border border-gray-300">
             <thead>
               <tr className="bg-green-200">
-                <th className="border border-gray-300 px-4 py-2">
-                  Product Name
-                </th>
-                <th className="border border-gray-300 px-4 py-2">Quantity</th>
-                <th className="border border-gray-300 px-4 py-2">
-                  Total Price
-                </th>
-                <th className="border border-gray-300 px-4 py-2">Actions</th>
+                <th className="border border-gray-300 px-4 py-2 text-left">Product Name</th>
+                <th className="border border-gray-300 px-4 py-2 text-left">Quantity</th>
+                <th className="border border-gray-300 px-4 py-2 text-left">Total Price</th>
+                <th className="border border-gray-300 px-4 py-2 text-left">Actions</th>
               </tr>
             </thead>
             <tbody>
               {paginateOrders().map((order, index) => (
                 <tr key={index} className="hover:bg-green-100">
-                  <td className="border border-gray-300 px-4 py-2">
-                    {order.productName}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {order.quantity}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    ${order.totalPrice}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2 flex justify-evenly">
+                  <td className="border border-gray-300 px-4 py-2">{order.productName}</td>
+                  <td className="border border-gray-300 px-4 py-2">{order.quantity}</td>
+                  <td className="border border-gray-300 px-4 py-2">${order.totalPrice}</td>
+                  <td className="border border-gray-300 px-4 py-2 flex flex-col sm:flex-row sm:space-x-2">
                     <button
                       onClick={() => {
                         setOrderToRemove(index);
                         setIsRemoveConfirmationOpen(true);
                       }}
-                      className="bg-red-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-red-600 mr-2"
+                      className="bg-red-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-red-600 mb-2 sm:mb-0"
                     >
                       Remove
                     </button>
                     <button
                       onClick={() => openEditModal(index)}
-                      className="bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-600 transition-all"
+                      className="bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-600 transition-all mb-2 sm:mb-0"
                     >
                       Edit
                     </button>
-                    <button className="bg-blue-500 text-white py-1 px-2 rounded">
-                      <Link to={`/animal-feeding/orders/${order.id}`}>
-                        Order Details
-                      </Link>
+                    <button
+                      onClick={() => openOrderDetailsModal(order)}
+                      className="bg-blue-500 text-white py-1 px-2 rounded"
+                    >
+                      Order Details
                     </button>
                   </td>
                 </tr>
@@ -136,9 +135,7 @@ const Orders = () => {
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded p-6 shadow-lg w-full max-w-md mx-auto">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">
-              Edit Order Quantity
-            </h2>
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">Edit Order Quantity</h2>
             <div className="mb-4">
               <label className="block text-gray-600">Quantity:</label>
               <input
@@ -192,6 +189,28 @@ const Orders = () => {
                 className="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded"
               >
                 Remove
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Order Details Modal */}
+      {isOrderDetailsModalOpen && selectedOrder && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded p-6 shadow-lg w-full max-w-md mx-auto">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">
+              Order Details
+            </h2>
+            <p><strong>Product Name:</strong> {selectedOrder.productName}</p>
+            <p><strong>Quantity:</strong> {selectedOrder.quantity}</p>
+            <p><strong>Total Price:</strong> ${selectedOrder.totalPrice}</p>
+            <div className="flex justify-end space-x-4 mt-4">
+              <button
+                onClick={() => setIsOrderDetailsModalOpen(false)}
+                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-4 py-2 rounded"
+              >
+                Close
               </button>
             </div>
           </div>
