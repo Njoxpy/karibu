@@ -1,33 +1,34 @@
-// Fields: description, price, status, userId, createdAt.
-// Represents the design requests submitted by users.
 const mongoose = require("mongoose")
 const Schema = mongoose.Schema
 const orderSchema = new Schema(
   {
-    description:{
-      type: String,
-      required: true,
-    },
-    price: {
+    totalPrice: {
       type: Number,
-      required: true,
+      required: [true, "Product tital price is required"]
     },
     status: {
       enum: ['pending', 'in progress', 'completed'],
-      required:true
     },
-    orderId:{
+    orderId: {
       type: Number,
-      unique: true,
     },
     // userId
-    userId:{
+    userId: {
       type: Number,
-      required: true,
-      ref: 'User'
+      ref: 'User',
+      required: [true, "User Id is required"]
+    },
+    productName: {
+      type: String,
+      ref: "Product",
+      required: [true, "Product name is required"],
+    },
+    quantity: {
+      type: Number,
+      required: [true, "Product quantity is required"]
     }
   },
-  {timestamps: true}
+  { timestamps: true }
 )
 
 module.exports = mongoose.model("Order", orderSchema)
