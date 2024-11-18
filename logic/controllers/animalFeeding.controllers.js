@@ -7,6 +7,9 @@ const Order = require("../models/orderModel")
 const getAllProducts = async (req, res) => {
     try {
         const product = await Product.find()
+        if (product.length === 0) {
+            return res.json({ message: "there are no orders now" })
+        }
         res.status(200).json(product)
     } catch (error) {
         res.status(500).json({ error: "Failed to fetch products", detaials: error.message })
@@ -73,6 +76,9 @@ const getProductById = async (req, res) => {
 const getAllOrders = async (req, res) => {
     try {
         const orders = await Order.find()
+        if (orders.length === 0) {
+            return res.json({ message: "there are no orders now" })
+        }
         res.status(200).json(orders)
     } catch (error) {
         res.status(500).json({ message: "Failed to fetch product orders", details: error.message })
@@ -106,6 +112,43 @@ const getOrderById = async (req, res) => {
     }
 };
 
+// update product
+const updateProduct = async (req, res) => {
+    const { id } = req.params
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).json({ message: "Product not found." })
+    }
+
+    const product = await Product.findOneAndUpdate({ _id: id }, {
+        ...req.body
+    })
+
+    if (!product) {
+        res.status(404).json({ message: "not found" })
+    }
+    res.json(200).json(product)
+}
+
+// delete product by id
+const deleteProductById = async (req, res) => {
+    const { id } = req.params
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).json({ message: "Product not found." })
+    }
+
+    try {
+        const deletedProduct = await Product.findByIdAndDelete(id)
+        if (!deleteProductById) {
+            res.status(404).json({ message: "Product not found" })
+        }
+        res.status(200).json({ message: `product deleted sucessfully: ${deletedProduct}` })
+    } catch (error) {
+        res.status(404).json({ message: "failed to fetch product" })
+    }
+}
+
 
 // get order by id
 module.exports = {
@@ -114,5 +157,7 @@ module.exports = {
     createOrder,
     getAllOrders,
     getProductById,
-    getOrderById
+    getOrderById,
+    updateProduct,
+    deleteProductById
 }

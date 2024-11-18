@@ -13,10 +13,12 @@ const productSchema = new Schema(
         },
         quantity: {
             type: Number,
-            required: [true, "Product quantity is required"]
+            required: [true, "Product quantity is required"],
+            min: 0
         }, price: {
             type: Number,
-            required: [true, "Product price is required"]
+            required: [true, "Product price is required"],
+            min: 0
         },
         userId: {
             type: Number,

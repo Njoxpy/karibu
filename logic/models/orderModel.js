@@ -4,10 +4,11 @@ const orderSchema = new Schema(
   {
     totalPrice: {
       type: Number,
-      required: [true, "Product tital price is required"]
+      required: [true, "Product tital price is required"],
+      min: 0
     },
     status: {
-      enum: ['pending', 'in progress', 'completed'],
+      enum: ['pending', 'in progress', 'completed']
     },
     orderId: {
       type: Number,
@@ -25,7 +26,8 @@ const orderSchema = new Schema(
     },
     quantity: {
       type: Number,
-      required: [true, "Product quantity is required"]
+      required: [true, "Product quantity is required"],
+      min: 0
     }
   },
   { timestamps: true }
