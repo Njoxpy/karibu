@@ -114,21 +114,33 @@ const getOrderById = async (req, res) => {
 
 // update product
 const updateProduct = async (req, res) => {
-    const { id } = req.params
+    try {
+        const { id } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({ message: "Product not found." })
+        // Validate ObjectId
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(404).json({ message: "Product not found." });
+        }
+
+        // Update the product
+        const product = await Product.findOneAndUpdate(
+            { _id: id },
+            { ...req.body },
+            { new: true } // To return the updated document
+        );
+
+        // Handle case where product does not exist
+        if (!product) {
+            return res.status(404).json({ message: "Product not found." });
+        }
+
+        // Return the updated product
+        res.status(200).json(product);
+    } catch (error) {
+        // Handle unexpected errors
+        res.status(500).json({ message: "Server error", error: error.message });
     }
-
-    const product = await Product.findOneAndUpdate({ _id: id }, {
-        ...req.body
-    })
-
-    if (!product) {
-        res.status(404).json({ message: "not found" })
-    }
-    res.json(200).json(product)
-}
+};
 
 // delete product by id
 const deleteProductById = async (req, res) => {
