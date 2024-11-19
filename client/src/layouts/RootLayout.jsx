@@ -1,16 +1,41 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
+import { useState } from "react";
 
 const RootLayout = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const menuItems = [
+    { name: "Home", path: "/" },
+    { name: "Godown", path: "/godown" },
+    { name: "Stationery", path: "/stationery" },
+    { name: "Animal Feeding", path: "/animal-feeding" },
+    { name: "Hardware", path: "/hardware" },
+    { name: "Printing", path: "/printing" },
+    { name: "FreshOil", path: "/freshOil" },
+    { name: "Contact", path: "/contact" },
+  ];
+
   return (
     <>
       <nav className="flex items-center justify-between flex-wrap bg-primary p-6">
+        {/* Logo */}
         <div className="flex items-center flex-shrink-0 text-white mr-6">
           <span className="font-semibold text-xl tracking-tight">
-            <Link to={"/"}>Savarrah</Link>
+            <Link to="/">Savarrah</Link>
           </span>
         </div>
+
+        {/* Hamburger Menu for Mobile */}
         <div className="block lg:hidden">
-          <button className="flex items-center px-3 py-2 border rounded text-teal-200 border-teal-400 hover:text-white hover:border-white">
+          <button
+            onClick={toggleMenu}
+            className="flex items-center px-3 py-2 border rounded text-teal-200 border-teal-400 hover:text-white hover:border-white"
+            aria-label="Toggle navigation"
+          >
             <svg
               className="fill-current h-3 w-3"
               viewBox="0 0 20 20"
@@ -21,67 +46,38 @@ const RootLayout = () => {
             </svg>
           </button>
         </div>
-        <div className="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
+
+        {/* Menu Links */}
+        <div
+          className={`w-full ${isMenuOpen ? "block" : "hidden"
+            } lg:flex lg:items-center lg:w-auto`}
+        >
           <div className="text-sm lg:flex-grow">
-            <Link
-              to={"/"}
-              className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4"
-            >
-              Home
-            </Link>
-            <Link
-              to={"/godown"}
-              className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4"
-            >
-              Godown
-            </Link>
-            <Link
-              to={"/stationery"}
-              className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4"
-            >
-              Stationery
-            </Link>
-            <Link
-              to={"/animal-feeding"}
-              className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4"
-            >
-              Animal Feeding
-            </Link>
-            <Link
-              to={"/hardware"}
-              className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4"
-            >
-              Hardware
-            </Link>
-            <Link
-              to={"/printing"}
-              className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4"
-            >
-              Printing
-            </Link>
-            <Link
-              to={"/freshOil"}
-              className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4"
-            >
-              FreshOil
-            </Link>
-            <Link
-              to={"/contact"}
-              className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white"
-            >
-              Contact
-            </Link>
+            {menuItems.map((item) => (
+              <NavLink
+                key={item.name}
+                to={item.path}
+                className={({ isActive }) =>
+                  isActive
+                    ? "block mt-4 lg:inline-block lg:mt-0 text-white mr-4"
+                    : "block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4"
+                }
+              >
+                {item.name}
+              </NavLink>
+            ))}
           </div>
+
+          {/* Login and Signup Buttons */}
           <div>
             <Link
-              to={"/login"}
+              to="/login"
               className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-blue-500 hover:bg-white mt-4 lg:mt-0 mr-2"
             >
               Login
             </Link>
-
             <Link
-              to={"/register"}
+              to="/register"
               className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-blue-500 hover:bg-white mt-4 lg:mt-0"
             >
               Signup
@@ -89,15 +85,11 @@ const RootLayout = () => {
           </div>
         </div>
       </nav>
+
+      {/* Nested Routes */}
       <Outlet />
     </>
   );
 };
 
 export default RootLayout;
-
-/**
- * what should be the safe margin for the website and where to use the safe margin for the website into the page
- * what should be the bg for the root layout of the page but not that teh brand colors for the website are white and blue
- * what should be the hover state of the navlinks into teh root layout of the website?
- */
