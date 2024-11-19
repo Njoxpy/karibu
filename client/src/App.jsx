@@ -13,6 +13,7 @@ import ReceiptLayout from "./pages/Printing/Layouts/ReceiptLayout";
 // errors
 import NotFound from "./error/NotFound";
 import OrderDetailsError from "./pages/Printing/Error/OrderDetailsError";
+debugger
 
 // pages
 import Home from "./Home/Home";
@@ -132,6 +133,10 @@ import ErrorPage from "./pages/AnimalFeeding/Error/ErrorPage";
 import ManageStationeryProducts from "./pages/Stationery/Pages/ManageStationeryProducts";
 import InventoryMovement from "./pages/Godown/Pages/InventoryMovement";
 import InventoryTable from "./pages/Godown/Pages/InventoryTable";
+import Cart from "./components/Cart";
+import FoodsBody from "./pages/AnimalFeeding/Pages/FoodsBody";
+import AnimalFeedingProductsLayout from "./pages/AnimalFeeding/Layouts/AnimalFeedingProductsLayout"
+import BulkUpload from "./pages/AnimalFeeding/Components/BulkUpload";
 
 export default function App() {
   const router = createBrowserRouter(
@@ -150,22 +155,29 @@ export default function App() {
         {/* animal feeding */}
         <Route path="/animal-feeding" element={<AnimalFeedingLayout />}>
           <Route index element={<AnimalFeeding />} />
-          <Route
-            path="food/:productId"
-            element={<ProductDetail />}
-            errorElement={<ErrorPage />}
-          />
+
+          <Route path="products" element={<AnimalFeedingProductsLayout />}>
+            <Route index element={<FoodsBody />} />
+            <Route
+              path=":productId"
+              element={<ProductDetail />}
+              errorElement={<ErrorPage />}
+            />
+          </Route>
+          <Route path="cart" element={<Cart />} />
           <Route path="order" element={<Order />} />
           <Route path="orders" element={<Orders />} />
           <Route path="orders/:id" element={<OrderDetailsAnimal />} />
           <Route path="order/sucess" element={<OrderSucess />} />
+          <Route path="admin/bulk-upload" element={<BulkUpload />} />
+          <Route path="admin/upload" element={<FoodUpload />} />
           <Route path="admin/orders" element={<AdminOrders />} />
           <Route path="admin/upload" element={<FoodUpload />} />
           <Route path="admin/manage" element={<ManageFood />} />
         </Route>
 
         {/* fresh oil */}
-        <Route path="/oil" element={<OilLayouts />}>
+        <Route path="/freshOil" element={<OilLayouts />}>
           <Route index element={<OilList />} />
           <Route path="products" element={<OilLayoutProduct />}>
             <Route index element={<Oils />} />

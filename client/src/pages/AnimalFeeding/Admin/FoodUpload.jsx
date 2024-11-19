@@ -6,11 +6,46 @@ const FoodUpload = () => {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
-  const [image, setImage] = useState(null);
+  const [userId, setUserId] = useState(0);
+
+  // const [image, setImage] = useState(null);
+
+  const URL = "http://localhost:4000/api/v1/animal-feeding/products"
 
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle upload logic here
+
+    fetch(URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        productName,
+        description,
+        quantity,
+        userId,
+        price
+      })
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to create product");
+        }
+        return response.json()
+      })
+      .then((data) => {
+        console.log("product create sucesfully")
+        setProductName("")
+        setDescription("")
+        setQuantity("")
+        setUserId("")
+        setPrice("")
+      })
+      .catch((error) => {
+        console.log(error.message)
+      })
   };
 
   return (
@@ -49,6 +84,19 @@ const FoodUpload = () => {
             ></textarea>
           </div>
           <div className="mb-4">
+            <label className="block mb-2 text-gray-700" htmlFor="description">
+              User Id
+            </label>
+            <input
+              id="userId"
+              type="number"
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
+              className="border border-gray-300 rounded w-full p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+              required
+            />
+          </div>
+          <div className="mb-4">
             <label className="block mb-2 text-gray-700" htmlFor="price">
               Price ($)
             </label>
@@ -74,7 +122,7 @@ const FoodUpload = () => {
               required
             />
           </div>
-          <div className="mb-4">
+          {/* <div className="mb-4">
             <label className="block mb-2 text-gray-700" htmlFor="image">
               Product Image
             </label>
@@ -86,7 +134,7 @@ const FoodUpload = () => {
               className="border border-gray-300 rounded w-full p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
               required
             />
-          </div>
+          </div> */}
           <button
             type="submit"
             className="bg-green-500 text-white py-3 px-6 rounded hover:bg-green-600 transition duration-200"

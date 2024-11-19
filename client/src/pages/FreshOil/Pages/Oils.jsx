@@ -83,16 +83,16 @@ function Oils() {
               <div className="p-4">
                 <h2 className="font-semibold text-lg">{product.name}</h2>
                 <p className="text-gray-600">{product.description}</p>
-                <p className="font-bold text-blue-700">${product.price}</p>
+                <p className="font-bold text-yellow-700">${product.price}</p>
                 <a
-                  href={`/oil/products/${product.id}`}
-                  className="mt-4 inline-block bg-blue-500 text-white py-2 px-4 rounded"
+                  href={`/freshOil/products/${product.id}`}
+                  className="mt-4 inline-block bg-yellow-500 text-white py-2 px-4 rounded"
                 >
                   Order Now
                 </a>
                 <a
-                  href={`/oil/product-detail?productId=${product.id}`}
-                  className="mt-4 inline-block bg-blue-500 text-white py-2 px-4 rounded ml-2"
+                  href={`/freshOil/product-detail?productId=${product.id}`}
+                  className="mt-4 inline-block bg-yellow-500 text-white py-2 px-4 rounded ml-2"
                 >
                   View Details
                 </a>
@@ -101,10 +101,10 @@ function Oils() {
           ))}
       </div>
       <div className="flex justify-center m-2">
-        <button className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2">
+        <button className="bg-yellow-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-yellow-600 mr-2">
           Previous
         </button>
-        <button className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2">
+        <button className="bg-yellow-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-yellow-600 mr-2">
           Next
         </button>
       </div>

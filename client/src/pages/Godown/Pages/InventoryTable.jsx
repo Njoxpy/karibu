@@ -151,7 +151,7 @@ const InventoryTable = () => {
           </tbody>
         </table>
       </div>
-      <div className="flex justify-center mb-2">
+      <div className="flex justify-center m-2">
         <button className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2">
           Previous
         </button>

@@ -48,6 +48,24 @@ const RootLayout = () => {
               Animal Feeding
             </Link>
             <Link
+              to={"/hardware"}
+              className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4"
+            >
+              Hardware
+            </Link>
+            <Link
+              to={"/printing"}
+              className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4"
+            >
+              Printing
+            </Link>
+            <Link
+              to={"/freshOil"}
+              className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4"
+            >
+              FreshOil
+            </Link>
+            <Link
               to={"/contact"}
               className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white"
             >

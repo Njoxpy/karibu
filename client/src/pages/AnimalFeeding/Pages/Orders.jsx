@@ -18,7 +18,7 @@ const Orders = () => {
 
   const itemsPerPage = 3; // Number of orders per page
   const totalPages = Math.ceil(orders.length / itemsPerPage);
-  
+
   const [currentPage, setCurrentPage] = useState(1);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editOrder, setEditOrder] = useState({ index: null, quantity: 0 });

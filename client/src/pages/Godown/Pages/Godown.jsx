@@ -1,6 +1,5 @@
 import Footer from "../../../components/Footer";
 import InventoryTable from "./InventoryTable";
-import OrdersTestings from "./OrderTesting";
 
 const Godown = () => {
   return (
@@ -11,7 +10,6 @@ const Godown = () => {
         </h1>
         <InventoryTable />
 
-        <OrdersTestings />
       </div>
       <Footer />
     </>

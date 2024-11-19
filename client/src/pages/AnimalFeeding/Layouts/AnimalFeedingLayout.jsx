@@ -40,6 +40,14 @@ function AnimalFeedingLayout() {
               <li>
                 <Link
                   className="hover:text-green-200 transition-colors duration-200"
+                  to="/animal-feeding/admin/bulk-upload"
+                >
+                  Bulk Upload
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="hover:text-green-200 transition-colors duration-200"
                   to="/animal-feeding"
                 >
                   Order Item
@@ -51,6 +59,14 @@ function AnimalFeedingLayout() {
                   to="/animal-feeding/orders"
                 >
                   Orders
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="hover:text-green-200 transition-colors duration-200"
+                  to="/animal-feeding/cart"
+                >
+                  Cart
                 </Link>
               </li>
             </ul>

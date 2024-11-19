@@ -10,7 +10,7 @@ function FoodsBody() {
     {
       id: 1,
       name: "Premium Dog Food",
-      price: 25.99,
+      price: 25_000,
       image: { Animal1 },
       description: "High-quality dog food with essential nutrients.",
       category: "Dog Food",
@@ -22,7 +22,7 @@ function FoodsBody() {
     {
       id: 2,
       name: "Gourmet Cat Food",
-      price: 22.49,
+      price: 224_900,
       image: { Animal2 },
       description: "Nutritious cat food made with real fish.",
       category: "Cat Food",
@@ -34,7 +34,7 @@ function FoodsBody() {
     {
       id: 3,
       name: "Organic Rabbit Pellets",
-      price: 18.99,
+      price: 1_899_000,
       image: { Animal2 },
       description: "Organic pellets formulated for rabbits.",
       category: "Rabbit Food",
@@ -46,7 +46,7 @@ function FoodsBody() {
     {
       id: 4,
       name: "Bird Seed Mix",
-      price: 12.99,
+      price: 1_299_990,
       image: { Animal1 },
       description: "Seed mix for a variety of pet birds.",
       category: "Bird Food",
@@ -58,7 +58,7 @@ function FoodsBody() {
     {
       id: 5,
       name: "Horse Feed Pellets",
-      price: 35.99,
+      price: 359_900,
       image: { Animal1 },
       description: "Nutrient-rich pellets for active horses.",
       category: "Horse Food",
@@ -70,7 +70,7 @@ function FoodsBody() {
     {
       id: 6,
       name: "Fish Flakes",
-      price: 10.49,
+      price: 149_000,
       image: { Animal2 },
       description: "Flake food for freshwater aquarium fish.",
       category: "Fish Food",
@@ -82,7 +82,7 @@ function FoodsBody() {
     {
       id: 7,
       name: "Fish Flakes",
-      price: 10.49,
+      price: 10_490,
       image: { Animal2 },
       description: "Flake food for freshwater aquarium fish.",
       category: "Fish Food",
@@ -106,7 +106,7 @@ function FoodsBody() {
     {
       id: 9,
       name: "Fish Flakes",
-      price: 10.49,
+      price: 104_900,
       image: { Animal2 },
       description: "Flake food for freshwater aquarium fish.",
       category: "Fish Food",
@@ -118,7 +118,7 @@ function FoodsBody() {
     {
       id: 10,
       name: "Fish Flakes",
-      price: 10.49,
+      price: 104_900,
       image: { Animal2 },
       description: "Flake food for freshwater aquarium fish.",
       category: "Fish Food",
@@ -130,7 +130,7 @@ function FoodsBody() {
     {
       id: 11,
       name: "Fish Flakes",
-      price: 10.49,
+      price: 104_900,
       image: { Animal2 },
       description: "Flake food for freshwater aquarium fish.",
       category: "Fish Food",
@@ -142,7 +142,7 @@ function FoodsBody() {
     {
       id: 12,
       name: "Fish Flakes",
-      price: 10.49,
+      price: 104_900,
       image: { Animal2 },
       description: "Flake food for freshwater aquarium fish.",
       category: "Fish Food",
@@ -205,9 +205,9 @@ function FoodsBody() {
                 <div className="p-4">
                   <h2 className="font-semibold text-lg">{product.name}</h2>
                   <p className="text-gray-600">{product.description}</p>
-                  <p className="font-bold text-green-700">${product.price}</p>
+                  <p className="font-bold text-green-700">Tsh {product.price}</p>
                   <a
-                    href={`/animal-feeding/food/${product.id}`}
+                    href={`/animal-feeding/products/${product.id}`}
                     className="mt-4 inline-block bg-green-500 text-white py-2 px-4 rounded"
                   >
                     Order Now

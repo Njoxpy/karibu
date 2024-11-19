@@ -138,8 +138,6 @@ function SubmitWork() {
           </form>
         </section>
       </div>
-
-      <Footer />
     </>
   );
 }

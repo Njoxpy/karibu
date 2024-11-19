@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Footer from "../../../components/Footer";
 
 function BulkUpload() {
   const [file, setFile] = useState(null);
@@ -38,6 +39,7 @@ function BulkUpload() {
   };
 
   return (
+    <>
     <div className="p-6 bg-gray-50 min-h-screen">
       <h2 className="text-2xl font-semibold text-green-600 mb-4">Bulk Upload Products</h2>
       <p className="text-gray-600 mb-6">Upload your product data in CSV or Excel format. Download the <a href="#" className="text-green-500 underline">template file</a>.</p>
@@ -117,6 +119,8 @@ function BulkUpload() {
         </div>
       )}
     </div>
+    <Footer />
+    </>
   );
 }
 
