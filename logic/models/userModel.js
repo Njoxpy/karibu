@@ -1,9 +1,3 @@
-// Fields: username, password, email, createdAt.
-// Represents user accounts for registration and authentication.
-
-/**
- * mongodb by self is
- */
 const mongoose = require("mongoose")
 
 const Schema = mongoose.Schema
@@ -25,6 +19,6 @@ const userSchema = new Schema(
       unique: true,
     }
   },
-{timestamps: true})
+  { timestamps: true })
 
 module.exports = mongoose.model("User", userSchema)

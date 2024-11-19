@@ -8,7 +8,9 @@ const orderSchema = new Schema(
       min: 0
     },
     status: {
-      enum: ['pending', 'in progress', 'completed']
+      enum: ["pending", "in progress", "completed"],
+      type: String,
+      required: true
     },
     orderId: {
       type: Number,
@@ -27,13 +29,18 @@ const orderSchema = new Schema(
     quantity: {
       type: Number,
       required: [true, "Product quantity is required"],
-      min: 0
+      min: 1
+    },
+    category: {
+      type: String,
+      enum: ["Animal Feeding", "Fresh Oil", "Stationery", "Godown", "Printing", "Hardware"],
+      required: true
     }
   },
   { timestamps: true }
 )
 
-module.exports = mongoose.model("Order", orderSchema)
-
+const Order = mongoose.model("Order", orderSchema)
+module.exports = Order;
 
 // how to interact between one blog model and another blog model

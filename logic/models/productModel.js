@@ -20,6 +20,11 @@ const productSchema = new Schema(
             required: [true, "Product price is required"],
             min: 0
         },
+        category: {
+            type: String,
+            enum: ["animal-feeding", "fresh-oil", "godown", "hardware", "printing", "stationery",],
+            required: true
+        },
         userId: {
             type: Number,
             required: [true, "User Id is required"],
@@ -30,4 +35,5 @@ const productSchema = new Schema(
     { timestamps: true }
 )
 
-module.exports = mongoose.model("Products", productSchema)
+const Product = mongoose.model("Product", productSchema)
+module.exports = Product

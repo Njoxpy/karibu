@@ -6,13 +6,13 @@ const Order = require("../models/orderModel")
 // get all products
 const getAllProducts = async (req, res) => {
     try {
-        const product = await Product.find()
+        const product = await Product.find({ category: "animal-feeding" })
         if (product.length === 0) {
             return res.json({ message: "there are no orders now" })
         }
         res.status(200).json(product)
     } catch (error) {
-        res.status(500).json({ error: "Failed to fetch products", detaials: error.message })
+        res.status(500).json({ error: "Failed to fetch products", details: error.message })
     }
 }
 
@@ -161,6 +161,24 @@ const deleteProductById = async (req, res) => {
     }
 }
 
+const deleteOrderById = async (req, res) => {
+    const { id } = req.params
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).json({ message: "Order not found." })
+    }
+
+    try {
+        const deletedProduct = await Product.findByIdAndDelete(id)
+        if (!deleteProductById) {
+            res.status(404).json({ message: "Order not found" })
+        }
+        res.status(200).json({ message: `order deleted sucessfully: ${deletedProduct}` })
+    } catch (error) {
+        res.status(404).json({ message: "failed to fetch order" })
+    }
+}
+
 
 // get order by id
 module.exports = {
@@ -171,5 +189,6 @@ module.exports = {
     getProductById,
     getOrderById,
     updateProduct,
-    deleteProductById
+    deleteProductById,
+    deleteOrderById
 }

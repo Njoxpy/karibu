@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { createProduct, getAllProducts, createOrder, getAllOrders, getProductById, getOrderById, updateProduct, deleteProductById } = require("../controllers/animalFeeding.controllers");
+const { createProduct, getAllProducts, createOrder, getAllOrders, getProductById, getOrderById, updateProduct, deleteProductById, deleteOrderById } = require("../controllers/animalFeeding.controllers");
 
 // GET: Get all products
 router.get("/products", getAllProducts);
@@ -38,8 +38,6 @@ router.get("/orders/:id", getOrderById)
 router.post("/orders", createOrder)
 
 // DELETE: Delete order by an id
-router.delete("/orders/:id", (req, res) => {
-  res.json({ message: "DELETE order by an id" })
-})
+router.delete("/orders/:id", deleteOrderById)
 
 module.exports = router;
