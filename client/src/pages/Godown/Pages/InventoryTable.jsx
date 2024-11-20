@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const InventoryTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  // Sample data for items in the godown (warehouse)
+
   const [inventory, setInventory] = useState([
     {
       id: 1,
@@ -12,6 +12,7 @@ const InventoryTable = () => {
       quantity: 50,
       location: "Aisle 1",
       condition: "New",
+      price: 3400
     },
     {
       id: 2,
@@ -20,14 +21,16 @@ const InventoryTable = () => {
       quantity: 20,
       location: "Aisle 3",
       condition: "New",
+      price: 329900
     },
     {
       id: 3,
-      name: "Plywood Sheets",
+      name: "Iron",
       code: "PWS-3003",
       quantity: 10,
       location: "Aisle 2",
       condition: "Low Stock",
+      price: 54500
     },
     {
       id: 4,
@@ -36,6 +39,7 @@ const InventoryTable = () => {
       quantity: 10,
       location: "Aisle 2",
       condition: "Low Stock",
+      price: 2300
     },
     {
       id: 5,
@@ -44,30 +48,34 @@ const InventoryTable = () => {
       quantity: 20,
       location: "Aisle 3",
       condition: "New",
+      price: 5300
     },
     {
       id: 6,
-      name: "Industrial Paint",
+      name: "Mchele Mama John",
       code: "IP-2002",
       quantity: 20,
       location: "Aisle 3",
       condition: "New",
+      price: 12300
     },
     {
       id: 7,
-      name: "Industrial Paint",
+      name: "Tembo Cement",
       code: "IP-2002",
       quantity: 20,
       location: "Aisle 3",
       condition: "New",
+      price: 235000
     },
     {
       id: 8,
-      name: "Industrial Paint",
+      name: "Cement Dangote",
       code: "IP-2002",
       quantity: 20,
       location: "Aisle 3",
       condition: "New",
+      price: 25000
     },
   ]);
 
@@ -93,9 +101,10 @@ const InventoryTable = () => {
       <div className="overflow-x-auto">
         <table className="min-w-full border border-gray-300">
           <thead>
-            <tr className="bg-gray-200 text-gray-800">
+            <tr className="bg-gray-200 text-gray-800 text-center">
               <th className="px-4 py-2 border">Item Name</th>
               <th className="px-4 py-2 border">Item Code</th>
+              <th className="px-4 py-2 border">Prices</th>
               <th className="px-4 py-2 border">Quantity</th>
               <th className="px-4 py-2 border">Location</th>
               <th className="px-4 py-2 border">Condition</th>
@@ -110,9 +119,10 @@ const InventoryTable = () => {
                   : item.name.toLowerCase().includes(searchTerm);
               })
               .map((item) => (
-                <tr key={item.id} className="hover:bg-gray-100 text-center">
+                <tr key={item.id} className="hover:bg-gray-100 text-left">
                   <td className="px-4 py-2 border">{item.name}</td>
                   <td className="px-4 py-2 border">{item.code}</td>
+                  <td className="px-4 py-2 border">Tsh {item.price}</td>
                   <td
                     className={`px-4 py-2 border ${item.quantity > 20 ? "text-green-600" : "text-orange-500"
                       }`}

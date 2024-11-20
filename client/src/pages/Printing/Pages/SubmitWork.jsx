@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for redirection
-import Footer from "../../../components/Footer";
 import "../../../styles/submitWork.css";
 
 function SubmitWork() {

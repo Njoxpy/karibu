@@ -6,7 +6,7 @@ function Hardware() {
     <>
       <div className="p-4">
         <h1 className="text-2xl font-bold mb-6 text-center">
-          Godown Items Available
+          Hardware Items Available
         </h1>
         <Hardwares />
       </div>

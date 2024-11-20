@@ -18,9 +18,6 @@ const UploadFreshOil = () => {
         <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
           Upload New Animal Product
         </h1>
-        <h1 className="text-center text-lg font-medium">
-          Upload New Animal Product
-        </h1>
         <form
           onSubmit={handleSubmit}
           className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md"
@@ -91,7 +88,7 @@ const UploadFreshOil = () => {
           </div>
           <button
             type="submit"
-            className="bg-gray-500 text-white py-3 px-6 rounded hover:bg-gray-600 transition duration-200"
+            className="bg-yellow-500 text-white py-3 px-6 rounded hover:bg-yellow-600 transition duration-200"
           >
             Upload Product
           </button>

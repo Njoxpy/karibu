@@ -24,6 +24,7 @@ const InventoryMovement = () => {
   const [transferQuantity, setTransferQuantity] = useState(0);
   const [destination, setDestination] = useState("");
   const [origin, setOrigin] = useState("");
+  const [message, setMessage] = useState("")
 
   const handleItemChange = (e) => {
     const item = inventory.find((i) => i.id === parseInt(e.target.value));
@@ -44,7 +45,7 @@ const InventoryMovement = () => {
         setDestination("");
       }
     } else {
-      alert("Please fill in all fields.");
+      setMessage("Please fill in all fields.")
     }
   };
 

@@ -2,11 +2,12 @@ import { useState } from "react";
 import Footer from "../../../components/Footer";
 
 const FoodUpload = () => {
-  const [productName, setProductName] = useState("");
+  const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
   const [userId, setUserId] = useState(0);
+  const [category, setCategory] = useState("animal-feeding")
 
   // const [image, setImage] = useState(null);
 
@@ -22,11 +23,12 @@ const FoodUpload = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        productName,
+        name,
         description,
         quantity,
         userId,
-        price
+        price,
+        category
       })
     })
       .then((response) => {
@@ -36,8 +38,8 @@ const FoodUpload = () => {
         return response.json()
       })
       .then((data) => {
-        console.log("product create sucesfully")
-        setProductName("")
+        console.log("product created sucesfully")
+        setName("")
         setDescription("")
         setQuantity("")
         setUserId("")
@@ -65,8 +67,8 @@ const FoodUpload = () => {
             <input
               type="text"
               id="product-name"
-              value={productName}
-              onChange={(e) => setProductName(e.target.value)}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               className="border border-gray-300 rounded w-full p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
               required
             />
@@ -137,7 +139,7 @@ const FoodUpload = () => {
           </div> */}
           <button
             type="submit"
-            className="bg-green-500 text-white py-3 px-6 rounded hover:bg-green-600 transition duration-200"
+            className="bg-green-600 text-white py-3 px-6 rounded hover:bg-green-700 transition duration-200"
           >
             Upload Product
           </button>

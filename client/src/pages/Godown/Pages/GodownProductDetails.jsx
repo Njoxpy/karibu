@@ -20,7 +20,7 @@ const GodownProductDetails = () => {
         <img
           src={product.image}
           alt={product.name}
-          className="w-1/2 h-64 object-cover mb-4"
+          className="w-1/2 h-64 object-cover mb-4 "
         />
         <p className="mb-4">
           {product.description} and product id is: {id}
