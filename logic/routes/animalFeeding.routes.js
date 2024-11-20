@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { createProduct, getAllProducts, createOrder, getAllOrders, getProductById, getOrderById, updateProduct, deleteProductById, deleteOrderById } = require("../controllers/animalFeeding.controllers");
+const { createProduct, getAllProducts, createOrder, getAllOrders, getProductById, getOrderById, updateProduct, deleteProductById, deleteOrderById, searchProductName } = require("../controllers/animalFeeding.controllers");
 
 // GET: Get all products
 router.get("/products", getAllProducts);
@@ -21,9 +21,7 @@ router.post("/products", createProduct)
 router.patch("/products/:id", updateProduct)
 
 // POST: search for new order
-router.post("/products/search", (req, res) => {
-  res.json({ message: "search for products" })
-})
+router.post("/search", searchProductName)
 
 // DELETE: Delete product
 router.delete("/products/:id", deleteProductById)
