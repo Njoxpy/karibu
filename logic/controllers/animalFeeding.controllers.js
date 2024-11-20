@@ -3,6 +3,7 @@ const mongoose = require("mongoose")
 // models
 const Product = require("../models/productModel")
 const Order = require("../models/orderModel")
+const User = require("../models/userModel")
 // get all products
 const getAllProducts = async (req, res) => {
     try {
@@ -18,13 +19,13 @@ const getAllProducts = async (req, res) => {
 
 // create product
 const createProduct = async (req, res) => {
-    const { name, description, quantity, price, userId } = req.body
+    const { name, description, quantity, price, userId, category } = req.body
 
     if (!name || !quantity || !price || !userId) {
         return res.status(400).json({ message: "all required fields must be provided" })
     }
     try {
-        const product = await Product.create({ name, description, quantity, userId, price })
+        const product = await Product.create({ name, description, quantity, userId, price, category })
         res.status(200).json(product)
     } catch (error) {
         res.status(400).json(error.message)
@@ -33,13 +34,13 @@ const createProduct = async (req, res) => {
 
 // create order
 const createOrder = async (req, res) => {
-    const { totalPrice, orderId, userId, productName, quantity, status } = req.body
+    const { totalPrice, orderId, userId, productName, quantity, status, catego } = req.body
 
     if (!totalPrice || !userId || !productName || !quantity) {
         return res.status(400).json({ message: "all fields are required" })
     }
     try {
-        const order = await Order.create({ totalPrice, orderId, userId, productName, quantity, status })
+        const order = await Order.create({ totalPrice, orderId, userId, productName, quantity, status, category })
         res.status(200).json(order)
     } catch (error) {
         res.status(500).json({ message: "Failed to create order", details: error.message })
@@ -57,7 +58,7 @@ const getProductById = async (req, res) => {
 
     try {
         // Find product by ID
-        const product = await Product.findById(id);
+        const product = await Product.findOne({ _id: id, category: "animal-feeding" });
 
         if (!product) {
             return res.status(404).json({ error: "Product not found" });
@@ -75,7 +76,7 @@ const getProductById = async (req, res) => {
 // get all orders
 const getAllOrders = async (req, res) => {
     try {
-        const orders = await Order.find()
+        const orders = await Order.find({ category: "animal-feeding" })
         if (orders.length === 0) {
             return res.json({ message: "there are no orders now" })
         }
@@ -96,7 +97,7 @@ const getOrderById = async (req, res) => {
 
     try {
         // Find the order by ID
-        const order = await Order.findById(id);
+        const order = await Order.findOne({ _id: id, category: "animal-feeding" });
 
         if (!order) {
             return res.status(404).json({ error: "Order not found" });
@@ -179,6 +180,27 @@ const deleteOrderById = async (req, res) => {
     }
 }
 
+const searchProductName = async (req, res) => {
+    const { productName } = req.query
+
+    if (!productName) {
+        return res.status(400).json({ error: "Product name is required" });
+    }
+
+    try {
+        const products = await Product.find({
+            productName: { $regex: productName, $options: "i" }
+        })
+
+        if (products.length === 0) {
+            return res.status(404).json({ message: "No products found with that name." });
+        }
+        res.status(200).json(products);
+    } catch (error) {
+        res.status(500).json({ error: "Failed to search products", details: error.message }); s
+    }
+}
+
 
 // get order by id
 module.exports = {
@@ -190,5 +212,6 @@ module.exports = {
     getOrderById,
     updateProduct,
     deleteProductById,
-    deleteOrderById
+    deleteOrderById,
+    searchProductName
 }
