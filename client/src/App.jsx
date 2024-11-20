@@ -42,6 +42,7 @@ import OrderSucessHardware from "./pages/Hardware/Components/OrderSuccessHardwar
 import ManageHardwareProducts from "./pages/Hardware/pages/ManageHardwareProducts";
 import HardwareOrders from "./pages/Hardware/pages/HardwareOrders";
 import Hardwares from "./pages/Hardware/pages/Hardwares";
+import HardwareBulkUpload from "./pages/Hardware/Components/BulkUploadHardware"
 
 // harwdware layout
 import HardwareLayoutProducts from "./pages/Hardware/layouts/HardwareProductsLayout";
@@ -104,6 +105,7 @@ import StationeryBody from "./pages/Stationery/Pages/StationeryBody";
 import StationeryOrders from "./pages/Stationery/Pages/Orders";
 import AddItems from "./pages/Stationery/Components/StationeryItemsUpload";
 import OrderSucessStationery from "./pages/Stationery/Components/OrderSucessStationery";
+import BulkUploadStationery from "./pages/Stationery/Pages/BulkUploadStationery"
 // stationery details
 import StationeryOrderDetails from "./pages/Stationery/Pages/StationeryOrderDetails";
 import StationeryItemsDetails from "./pages/Stationery/Pages/StationeryItemDetails";
@@ -227,6 +229,7 @@ export default function App() {
             errorElement={<HardwareDetailsError />}
           />
           <Route path="admin/upload" element={<HardwareItemsUpload />} />
+          <Route path="admin/bulk-upload" element={<HardwareBulkUpload />} />
           <Route path="order/sucess" element={<OrderSucessHardware />} />
           <Route path="admin/orders" element={<HardwareOrders />} />
           <Route path="admin/manage" element={<ManageHardwareProducts />} />
@@ -273,6 +276,7 @@ export default function App() {
             errorElement={<StationeryOrderDetailsError />}
           />
           <Route path="admin/upload" element={<AddItems />} />
+          <Route path="admin/bulk-upload" element={<BulkUploadStationery />} />
           <Route path="order/sucess" element={<OrderSucessStationery />} />
           <Route path="admin/orders" element={<StationeryOrders />} />
           <Route path="admin/manage" element={<ManageStationeryProducts />} />
