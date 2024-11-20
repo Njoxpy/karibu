@@ -162,6 +162,7 @@ const deleteProductById = async (req, res) => {
     }
 }
 
+// delte order by id
 const deleteOrderById = async (req, res) => {
     const { id } = req.params
 
@@ -180,8 +181,9 @@ const deleteOrderById = async (req, res) => {
     }
 }
 
+// search product
 const searchProductName = async (req, res) => {
-    const { productName } = req.query
+    const { productName } = req.query;
 
     if (!productName) {
         return res.status(400).json({ error: "Product name is required" });
@@ -189,15 +191,16 @@ const searchProductName = async (req, res) => {
 
     try {
         const products = await Product.find({
-            productName: { $regex: productName, $options: "i" }
-        })
+            name: { $regex: productName, $options: "i" }
+        });
+
 
         if (products.length === 0) {
             return res.status(404).json({ message: "No products found with that name." });
         }
+
         res.status(200).json(products);
     } catch (error) {
-        res.status(500).json({ error: "Failed to search products", details: error.message }); s
     }
 }
 
