@@ -1,25 +1,84 @@
-// src/pages/Orders.js
-
 import { useState } from "react";
 import Footer from "../../../components/Footer";
 import { Link } from "react-router-dom";
 
+// Helper functions for date filtering
+const getStartOfDay = () => {
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  return now;
+};
+
+const getStartOfWeek = () => {
+  const now = new Date();
+  const dayOfWeek = now.getDay();
+  const diff = now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 0); // Adjust if Sunday
+  now.setDate(diff);
+  now.setHours(0, 0, 0, 0);
+  return now;
+};
+
+const getStartOfMonth = () => {
+  const now = new Date();
+  now.setDate(1);
+  now.setHours(0, 0, 0, 0);
+  return now;
+};
+
 const Orders = () => {
-  // Local state for orders
+  // Example orders with dates
   const [orders, setOrders] = useState([
-    { productName: "Animal Feed A", quantity: 2, totalPrice: 4000, id: 1 },
-    { productName: "Animal Feed B", quantity: 1, totalPrice: 2440, id: 2 },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 6440, id: 3 },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 6300, id: 4 },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 60000, id: 5 },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 60000, id: 6 },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 6880, id: 7 },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 6880, id: 8 },
+    { productName: "Animal Feed A", quantity: 2, totalPrice: 4000, id: 1, date: "2024-11-19" },
+    { productName: "Animal Feed B", quantity: 1, totalPrice: 2440, id: 2, date: "2024-11-18" },
+    { productName: "Animal Feed C", quantity: 3, totalPrice: 6440, id: 3, date: "2024-11-16" },
+    { productName: "Animal Feed C", quantity: 3, totalPrice: 6300, id: 4, date: "2024-11-15" },
+    { productName: "Animal Feed C", quantity: 3, totalPrice: 60000, id: 5, date: "2024-11-13" },
+    { productName: "Animal Feed C", quantity: 3, totalPrice: 60000, id: 6, date: "2024-11-10" },
+    { productName: "Animal Feed C", quantity: 3, totalPrice: 6880, id: 7, date: "2024-11-01" },
+    { productName: "Animal Feed C", quantity: 3, totalPrice: 6880, id: 8, date: "2024-10-25" },
   ]);
+
+  // State for pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const ordersPerPage = 3;
+
+  // State for filtering
+  const [filterBy, setFilterBy] = useState("all"); // "day", "week", "month", or "all"
 
   // State for modal visibility and editing order
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editOrder, setEditOrder] = useState({ index: null, quantity: 0 });
+
+  // Function to filter orders by date
+  const filterOrdersByDate = () => {
+    const now = new Date();
+    let filteredOrders = orders;
+    switch (filterBy) {
+      case "day":
+        const startOfDay = getStartOfDay();
+        filteredOrders = orders.filter((order) => new Date(order.date) >= startOfDay);
+        break;
+      case "week":
+        const startOfWeek = getStartOfWeek();
+        filteredOrders = orders.filter((order) => new Date(order.date) >= startOfWeek);
+        break;
+      case "month":
+        const startOfMonth = getStartOfMonth();
+        filteredOrders = orders.filter((order) => new Date(order.date) >= startOfMonth);
+        break;
+      default:
+        break;
+    }
+    return filteredOrders;
+  };
+
+  // Paginate filtered orders
+  const filteredOrders = filterOrdersByDate();
+  const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
+  const currentOrders = filteredOrders.slice(
+    (currentPage - 1) * ordersPerPage,
+    currentPage * ordersPerPage
+  );
 
   // Function to remove an order
   const handleRemoveOrder = (index) => {
@@ -47,34 +106,39 @@ const Orders = () => {
     <>
       <div className="p-4">
         <h1 className="text-2xl font-bold mb-4 text-center">Orders List</h1>
-        {orders.length === 0 ? (
-          <p>No orders placed yet.</p>
+
+        {/* Filter Dropdown */}
+        <div className="mb-4 flex justify-center">
+          <select
+            value={filterBy}
+            onChange={(e) => setFilterBy(e.target.value)}
+            className="p-2 border rounded"
+          >
+            <option value="all">All Orders</option>
+            <option value="day">Today</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+          </select>
+        </div>
+
+        {filteredOrders.length === 0 ? (
+          <p>No orders found for the selected filter.</p>
         ) : (
           <table className="min-w-full border border-gray-300">
             <thead>
               <tr className="bg-blue-200">
-                <th className="border border-gray-300 px-4 py-2">
-                  Product Name
-                </th>
+                <th className="border border-gray-300 px-4 py-2">Product Name</th>
                 <th className="border border-gray-300 px-4 py-2">Quantity</th>
-                <th className="border border-gray-300 px-4 py-2">
-                  Total Price
-                </th>
+                <th className="border border-gray-300 px-4 py-2">Total Price</th>
                 <th className="border border-gray-300 px-4 py-2">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {orders.map((order, index) => (
+              {currentOrders.map((order, index) => (
                 <tr key={index} className="hover:bg-blue-100">
-                  <td className="border border-gray-300 px-4 py-2">
-                    {order.productName}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {order.quantity}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    Tsh {order.totalPrice}
-                  </td>
+                  <td className="border border-gray-300 px-4 py-2">{order.productName}</td>
+                  <td className="border border-gray-300 px-4 py-2">{order.quantity}</td>
+                  <td className="border border-gray-300 px-4 py-2">Tsh {order.totalPrice}</td>
                   <td className="border border-gray-300 px-4 py-2 flex justify-evenly">
                     <button
                       onClick={() => handleRemoveOrder(index)}
@@ -100,11 +164,22 @@ const Orders = () => {
           </table>
         )}
       </div>
+
+      {/* Pagination Controls */}
       <div className="flex justify-center mb-2">
-        <button className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2">
+        <button
+          onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))}
+          className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2"
+        >
           Previous
         </button>
-        <button className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2">
+        <span className="mt-4 inline-block text-lg">
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          onClick={() => setCurrentPage(Math.min(currentPage + 1, totalPages))}
+          className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 ml-2"
+        >
           Next
         </button>
       </div>
@@ -113,9 +188,7 @@ const Orders = () => {
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded p-6 shadow-lg w-full max-w-md mx-auto">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">
-              Edit Order Quantity
-            </h2>
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">Edit Order Quantity</h2>
             <div className="mb-4">
               <label className="block text-gray-600">Quantity:</label>
               <input

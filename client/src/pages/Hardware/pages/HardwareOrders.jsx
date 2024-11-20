@@ -1,5 +1,3 @@
-// src/pages/Orders.js
-
 import { useState } from "react";
 import Footer from "../../../components/Footer";
 import { Link } from "react-router-dom";
@@ -16,6 +14,10 @@ const HardwareOrders = () => {
     { productName: "Animal Feed C", quantity: 3, totalPrice: 6880, id: 7 },
     { productName: "Animal Feed C", quantity: 3, totalPrice: 6880, id: 8 },
   ]);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const ordersPerPage = 5;
 
   // State for modal visibility and editing order
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -43,6 +45,23 @@ const HardwareOrders = () => {
     setIsEditModalOpen(false);
   };
 
+  // Calculate the index range for current page
+  const indexOfLastOrder = currentPage * ordersPerPage;
+  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
+  const currentOrders = orders.slice(indexOfFirstOrder, indexOfLastOrder);
+
+  // Function to handle page change
+  const handlePageChange = (direction) => {
+    setCurrentPage((prevPage) => {
+      if (direction === "next" && (currentPage * ordersPerPage) < orders.length) {
+        return prevPage + 1;
+      } else if (direction === "prev" && currentPage > 1) {
+        return prevPage - 1;
+      }
+      return prevPage;
+    });
+  };
+
   return (
     <>
       <div className="p-4">
@@ -64,7 +83,7 @@ const HardwareOrders = () => {
               </tr>
             </thead>
             <tbody>
-              {orders.map((order, index) => (
+              {currentOrders.map((order, index) => (
                 <tr key={index} className="hover:bg-blue-100">
                   <td className="border border-gray-300 px-4 py-2">
                     {order.productName}
@@ -100,11 +119,21 @@ const HardwareOrders = () => {
           </table>
         )}
       </div>
+
+      {/* Pagination Controls */}
       <div className="flex justify-center mb-2">
-        <button className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2">
+        <button
+          onClick={() => handlePageChange("prev")}
+          className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2"
+          disabled={currentPage === 1}
+        >
           Previous
         </button>
-        <button className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2">
+        <button
+          onClick={() => handlePageChange("next")}
+          className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2"
+          disabled={currentPage * ordersPerPage >= orders.length}
+        >
           Next
         </button>
       </div>

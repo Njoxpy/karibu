@@ -1,5 +1,3 @@
-// src/pages/Orders.js
-
 import { useState } from "react";
 import Footer from "../../../components/Footer";
 import { Link } from "react-router-dom";
@@ -7,19 +5,28 @@ import { Link } from "react-router-dom";
 const FreshOilOrders = () => {
   // Local state for orders
   const [orders, setOrders] = useState([
-    { productName: "Animal Feed A", quantity: 2, totalPrice: 4000, id: 1 },
-    { productName: "Animal Feed B", quantity: 1, totalPrice: 2440, id: 2 },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 6440, id: 3 },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 6300, id: 4 },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 60000, id: 5 },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 60000, id: 6 },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 6880, id: 7 },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 6880, id: 8 },
+    { productName: "Olive Oil", quantity: 2, totalPrice: 4000, id: 1 },
+    { productName: "Coconut Oil", quantity: 1, totalPrice: 2440, id: 2 },
+    { productName: "Avocado Oil", quantity: 3, totalPrice: 6440, id: 3 },
+    { productName: "Sunflower Oil", quantity: 3, totalPrice: 6300, id: 4 },
+    { productName: "Peanut Oil", quantity: 3, totalPrice: 60000, id: 5 },
+    { productName: "Sesame Oil", quantity: 3, totalPrice: 60000, id: 6 },
+    { productName: "Pumpkin Oil", quantity: 3, totalPrice: 6880, id: 7 },
+    { productName: "Soybean Oil", quantity: 3, totalPrice: 6880, id: 8 },
   ]);
 
   // State for modal visibility and editing order
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editOrder, setEditOrder] = useState({ index: null, quantity: 0 });
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 3;
+
+  // Filter orders based on the current page
+  const indexOfLastOrder = currentPage * itemsPerPage;
+  const indexOfFirstOrder = indexOfLastOrder - itemsPerPage;
+  const currentOrders = orders.slice(indexOfFirstOrder, indexOfLastOrder);
 
   // Function to remove an order
   const handleRemoveOrder = (index) => {
@@ -37,10 +44,22 @@ const FreshOilOrders = () => {
   const handleSaveEdit = () => {
     const updatedOrders = [...orders];
     updatedOrders[editOrder.index].quantity = editOrder.quantity;
-    updatedOrders[editOrder.index].totalPrice =
-      updatedOrders[editOrder.index].quantity * 20; // Assuming $20 per item
+    updatedOrders[editOrder.index].totalPrice = editOrder.quantity * 20; // Assuming $20 per item
     setOrders(updatedOrders);
     setIsEditModalOpen(false);
+  };
+
+  // Handle page changes for pagination
+  const handleNextPage = () => {
+    if (currentPage < Math.ceil(orders.length / itemsPerPage)) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
   };
 
   return (
@@ -53,28 +72,18 @@ const FreshOilOrders = () => {
           <table className="min-w-full border border-gray-300">
             <thead>
               <tr className="bg-blue-200">
-                <th className="border border-gray-300 px-4 py-2">
-                  Product Name
-                </th>
+                <th className="border border-gray-300 px-4 py-2">Product Name</th>
                 <th className="border border-gray-300 px-4 py-2">Quantity</th>
-                <th className="border border-gray-300 px-4 py-2">
-                  Total Price
-                </th>
+                <th className="border border-gray-300 px-4 py-2">Total Price</th>
                 <th className="border border-gray-300 px-4 py-2">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {orders.map((order, index) => (
-                <tr key={index} className="hover:bg-blue-100">
-                  <td className="border border-gray-300 px-4 py-2">
-                    {order.productName}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {order.quantity}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    Tsh {order.totalPrice}
-                  </td>
+              {currentOrders.map((order, index) => (
+                <tr key={order.id} className="hover:bg-blue-100">
+                  <td className="border border-gray-300 px-4 py-2">{order.productName}</td>
+                  <td className="border border-gray-300 px-4 py-2">{order.quantity}</td>
+                  <td className="border border-gray-300 px-4 py-2">Tsh {order.totalPrice}</td>
                   <td className="border border-gray-300 px-4 py-2 flex justify-evenly">
                     <button
                       onClick={() => handleRemoveOrder(index)}
@@ -100,11 +109,19 @@ const FreshOilOrders = () => {
           </table>
         )}
       </div>
+
+      {/* Pagination Controls */}
       <div className="flex justify-center mb-2">
-        <button className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2">
+        <button
+          onClick={handlePreviousPage}
+          className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2"
+        >
           Previous
         </button>
-        <button className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2">
+        <button
+          onClick={handleNextPage}
+          className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2"
+        >
           Next
         </button>
       </div>
@@ -113,9 +130,7 @@ const FreshOilOrders = () => {
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded p-6 shadow-lg w-full max-w-md mx-auto">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">
-              Edit Order Quantity
-            </h2>
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">Edit Order Quantity</h2>
             <div className="mb-4">
               <label className="block text-gray-600">Quantity:</label>
               <input

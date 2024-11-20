@@ -1,150 +1,96 @@
+import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+
+// Mock function to fetch product details by ID
+const fetchProductDetails = (id) => {
+  const products = [
+    { id: 1, name: "Construction Cement Bag", price: 3400 },
+    { id: 2, name: "Industrial Paint", price: 329900 },
+    // More products
+  ];
+  return products.find((product) => product.id === parseInt(id));
+};
+
 const OrderForm = () => {
+  const { id } = useParams(); // Get the product ID from the URL
+
+  // State for product details
+  const [product, setProduct] = useState(null);
+  const [quantity, setQuantity] = useState(1);
+  const [totalPrice, setTotalPrice] = useState(0);
+
+  useEffect(() => {
+    // Fetch the product details based on the ID
+    const productDetails = fetchProductDetails(id);
+    if (productDetails) {
+      setProduct(productDetails);
+      setTotalPrice(productDetails.price * quantity); // Initialize total price
+    }
+  }, [id, quantity]); // Re-run when the id or quantity changes
+
+  const handleQuantityChange = (e) => {
+    const qty = e.target.value;
+    setQuantity(qty);
+    setTotalPrice(qty * product.price); // Update total price
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Handle the order submission (e.g., send to backend)
+    alert("Order placed!");
+  };
+
+  // Show a loading message if the product is not found yet
+  if (!product) {
+    return <div>Loading product details...</div>;
+  }
+
   return (
-    <>
-      <div className="bg-gray-100 p-8 rounded-md max-w-lg mx-auto">
-        <h2 className="text-2xl font-bold mb-4 text-center">
-          Place Your Order
-        </h2>
+    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded shadow-md">
+      <h1 className="text-2xl font-bold mb-4 text-center">Place Your Order</h1>
 
-        <form>
-          <h1 className="font-bold mb-4 text-gray-600 text-center">Product Name</h1>
-          <div className="mb-4">
-            <label
-              htmlFor="name"
-              className="block text-gray-700 font-semibold mb-2"
-            >
-              Customer  Full Name
-            </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-gray-500"
-              placeholder="Enter your full name"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="description" className="block text-gray-700 font-semibold mb-2">
-              Description
-            </label>
-            <div className="mt-2">
-              <textarea
-                id="description"
-                name="description"
-                rows={4}
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                defaultValue={''}
-                required
-              />
-            </div>
-          </div>
-          <div className="mb-4">
-            <label
-              htmlFor="phone"
-              className="block text-gray-700 font-semibold mb-2"
-            >
-              Customer  Phone Number
-            </label>
-            <input
-              type="tel"
-              id="phone"
-              name="phone"
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-gray-500"
-              placeholder="Enter your phone number"
-              required
-            />
-          </div>
-
-          <div className="mb-4">
-            <label
-              htmlFor="product"
-              className="block text-gray-700 font-semibold mb-2"
-            >
-              Product
-            </label>
-            <select
-              id="product"
-              name="product"
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-gray-500"
-              required
-            >
-              <option value="" disabled selected>
-                Select product
-              </option>
-              <option value="dog-food">Dog Food</option>
-              <option value="cat-food">Cat Food</option>
-              <option value="rabbit-food">Rabbit Pellets</option>
-              <option value="bird-seed">Bird Seed</option>
-              <option value="horse-feed">Horse Feed</option>
-              <option value="fish-flakes">Fish Flakes</option>
-            </select>
-          </div>
-
-          <div className="mb-4">
-            <label
-              htmlFor="quantity"
-              className="block text-gray-700 font-semibold mb-2"
-            >
-              Quantity
-            </label>
-            <input
-              type="number"
-              id="quantity"
-              name="quantity"
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-gray-500"
-              placeholder="Enter quantity"
-              required
-              min="1"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label
-              htmlFor="address"
-              className="block text-gray-700 font-semibold mb-2"
-            >
-              Delivery Address
-            </label>
-            <textarea
-              id="address"
-              name="address"
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-gray-500"
-              placeholder="Enter your delivery address"
-              rows="3"
-              required
-            ></textarea>
-          </div>
-
-          <div className="mb-4">
-            <label
-              htmlFor="preferredDate"
-              className="block text-gray-700 font-semibold mb-2"
-            >
-              Preferred Delivery Date
-            </label>
-            <input
-              type="date"
-              id="preferredDate"
-              name="preferredDate"
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-gray-500"
-              required
-            />
-          </div>
-
-
-          <div className="flex justify-between">
-            <p className="text-gray-600 font-bold">Total Price: 4000</p>
-            <button
-              type="submit"
-              className="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-6 rounded-md transition duration-200"
-            >
-              Submit Order
-            </button>
-          </div>
-        </form>
+      {/* Display the selected product details */}
+      <div>
+        <h2 className="text-xl font-semibold">Product: {product.name}</h2>
+        <p className="text-lg">Price: Tsh {product.price}</p>
       </div>
-    </>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Quantity Input */}
+        <div>
+          <label className="block text-gray-700">Quantity</label>
+          <input
+            type="number"
+            value={quantity}
+            onChange={handleQuantityChange}
+            min="1"
+            className="w-full p-2 border rounded"
+            required
+          />
+        </div>
+
+        {/* Total Price (auto-calculated) */}
+        <div>
+          <label className="block text-gray-700">Total Price</label>
+          <input
+            type="number"
+            value={totalPrice}
+            readOnly
+            className="w-full p-2 border rounded bg-gray-100"
+          />
+        </div>
+
+        {/* Submit Button */}
+        <div className="text-center">
+          <button
+            type="submit"
+            className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+          >
+            Place Order
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
 
