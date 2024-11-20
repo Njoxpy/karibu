@@ -31,7 +31,7 @@ function AnimalFeedingLayout() {
             <ul className="flex space-x-6">
               <li>
                 <Link
-                  className="hover:text-green-200 transition-colors duration-200"
+                  className="hover:text-gray-200 transition-colors duration-200"
                   to="/godown/admin/upload"
                 >
                   Food Upload
@@ -39,7 +39,7 @@ function AnimalFeedingLayout() {
               </li>
               <li>
                 <Link
-                  className="hover:text-green-200 transition-colors duration-200"
+                  className="hover:text-gray-200 transition-colors duration-200"
                   to="/godown/admin/bulk-upload"
                 >
                   Bulk Upload
@@ -47,7 +47,7 @@ function AnimalFeedingLayout() {
               </li>
               <li>
                 <Link
-                  className="hover:text-green-200 transition-colors duration-200"
+                  className="hover:text-gray-200 transition-colors duration-200"
                   to="/godown"
                 >
                   Order Item
@@ -55,7 +55,7 @@ function AnimalFeedingLayout() {
               </li>
               <li>
                 <Link
-                  className="hover:text-green-200 transition-colors duration-200"
+                  className="hover:text-gray-200 transition-colors duration-200"
                   to="/godown/orders"
                 >
                   Orders
@@ -63,7 +63,7 @@ function AnimalFeedingLayout() {
               </li>
               <li>
                 <Link
-                  className="hover:text-green-200 transition-colors duration-200"
+                  className="hover:text-gray-200 transition-colors duration-200"
                   to="/godown/admin/move"
                 >
                   Move
@@ -75,11 +75,11 @@ function AnimalFeedingLayout() {
 
         {/* Mobile Navigation Links */}
         {isMenuOpen && (
-          <nav className="lg:hidden bg-green-700 p-4 space-y-4">
+          <nav className="lg:hidden bg-gray-700 p-4 space-y-4">
             <ul className="flex flex-col space-y-4">
               <li>
                 <Link
-                  className="hover:text-green-200 transition-colors duration-200"
+                  className="hover:text-gray-200 transition-colors duration-200"
                   to="/godown/admin/upload"
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -88,7 +88,16 @@ function AnimalFeedingLayout() {
               </li>
               <li>
                 <Link
-                  className="hover:text-green-200 transition-colors duration-200"
+                  className="hover:text-gray-200 transition-colors duration-200"
+                  to="/godown/admin/bulk-upload"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Bulk Upload
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="hover:text-gray-200 transition-colors duration-200"
                   to="/godown"
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -97,7 +106,7 @@ function AnimalFeedingLayout() {
               </li>
               <li>
                 <Link
-                  className="hover:text-green-200 transition-colors duration-200"
+                  className="hover:text-gray-200 transition-colors duration-200"
                   to="/godown/search"
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -106,7 +115,7 @@ function AnimalFeedingLayout() {
               </li>
               <li>
                 <Link
-                  className="hover:text-green-200 transition-colors duration-200"
+                  className="hover:text-gray-200 transition-colors duration-200"
                   to="/godown/orders"
                   onClick={() => setIsMenuOpen(false)}
                 >

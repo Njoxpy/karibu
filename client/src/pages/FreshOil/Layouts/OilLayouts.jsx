@@ -11,7 +11,7 @@ function OilLayouts() {
         <header className="container mx-auto flex justify-between items-center p-4">
           {/* Logo/Title */}
           <h2 className="text-2xl font-semibold">
-            <Link to="/animal-feeding">Savarrah Fresh Oil</Link>
+            <Link to="/freshOil">Savarrah Fresh Oil</Link>
           </h2>
 
           {/* Mobile Menu Button */}
@@ -31,42 +31,30 @@ function OilLayouts() {
             <ul className="flex space-x-6">
               <li>
                 <Link
-                  className="hover:text-yellow-500 transition-colors duration-200"
-                  to="/animal-feeding/admin/upload"
+                  to="/freshOil/admin/upload"
                 >
                   Food Upload
                 </Link>
               </li>
               <li>
                 <Link
-                  className="hover:text-yellow-500 transition-colors duration-200"
-                  to="/animal-feeding/admin/bulk-upload"
+                  to="/freshOil/admin/bulk-upload"
                 >
                   Bulk Upload
                 </Link>
               </li>
               <li>
                 <Link
-                  className="hover:text-yellow-500 transition-colors duration-200"
-                  to="/animal-feeding"
+                  to="/freshOil"
                 >
                   Order Item
                 </Link>
               </li>
               <li>
                 <Link
-                  className="hover:text-yellow-500 transition-colors duration-200"
-                  to="/animal-feeding/orders"
+                  to="/freshOil/orders"
                 >
                   Orders
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="hover:text-yellow-500 transition-colors duration-200"
-                  to="/animal-feeding/cart"
-                >
-                  Cart
                 </Link>
               </li>
             </ul>
@@ -79,8 +67,7 @@ function OilLayouts() {
             <ul className="flex flex-col space-y-4">
               <li>
                 <Link
-                  className="hover:text-yellow-500 transition-colors duration-200"
-                  to="/animal-feeding/admin/upload"
+                  to="/freshOil/admin/upload"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Food Upload
@@ -88,8 +75,7 @@ function OilLayouts() {
               </li>
               <li>
                 <Link
-                  className="hover:text-yellow-500 transition-colors duration-200"
-                  to="/animal-feeding"
+                  to="/freshOil"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Order Item
@@ -97,8 +83,7 @@ function OilLayouts() {
               </li>
               <li>
                 <Link
-                  className="hover:text-yellow-500 transition-colors duration-200"
-                  to="/animal-feeding/search"
+                  to="/freshOil/search"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Search
@@ -106,8 +91,7 @@ function OilLayouts() {
               </li>
               <li>
                 <Link
-                  className="hover:text-yellow-500 transition-colors duration-200"
-                  to="/animal-feeding/orders"
+                  to="/freshOil/orders"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Orders

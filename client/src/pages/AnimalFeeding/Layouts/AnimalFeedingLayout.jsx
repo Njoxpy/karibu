@@ -61,14 +61,6 @@ function AnimalFeedingLayout() {
                   Orders
                 </Link>
               </li>
-              <li>
-                <Link
-                  className="hover:text-green-200 transition-colors duration-200"
-                  to="/animal-feeding/cart"
-                >
-                  Cart
-                </Link>
-              </li>
             </ul>
           </nav>
         </header>
@@ -89,19 +81,19 @@ function AnimalFeedingLayout() {
               <li>
                 <Link
                   className="hover:text-green-200 transition-colors duration-200"
-                  to="/animal-feeding"
+                  to="/animal-feeding/admin/bulk-upload"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Order Item
+                  Bulk Upload
                 </Link>
               </li>
               <li>
                 <Link
                   className="hover:text-green-200 transition-colors duration-200"
-                  to="/animal-feeding/search"
+                  to="/animal-feeding"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Search
+                  Order Item
                 </Link>
               </li>
               <li>
