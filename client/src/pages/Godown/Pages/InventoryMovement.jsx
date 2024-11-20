@@ -117,7 +117,7 @@ const InventoryMovement = () => {
           {/* Confirm Transfer Button */}
           <button
             onClick={handleTransfer}
-            className="w-full p-2 bg-green-600 text-white font-semibold rounded hover:bg-green-700 transition"
+            className="w-full p-2 bg-gray-600 text-white font-semibold rounded hover:bg-gray-700 transition"
           >
             Confirm Transfer
           </button>

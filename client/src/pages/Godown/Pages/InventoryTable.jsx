@@ -114,19 +114,17 @@ const InventoryTable = () => {
                   <td className="px-4 py-2 border">{item.name}</td>
                   <td className="px-4 py-2 border">{item.code}</td>
                   <td
-                    className={`px-4 py-2 border ${
-                      item.quantity > 20 ? "text-green-600" : "text-orange-500"
-                    }`}
+                    className={`px-4 py-2 border ${item.quantity > 20 ? "text-green-600" : "text-orange-500"
+                      }`}
                   >
                     {item.quantity}
                   </td>
                   <td className="px-4 py-2 border">{item.location}</td>
                   <td
-                    className={`px-4 py-2 border ${
-                      item.condition === "Low Stock"
-                        ? "text-red-500"
-                        : "text-green-600"
-                    }`}
+                    className={`px-4 py-2 border ${item.condition === "Low Stock"
+                      ? "text-red-500"
+                      : "text-green-600"
+                      }`}
                   >
                     {item.condition}
                   </td>

@@ -7,52 +7,38 @@ const OrderForm = () => {
         </h2>
 
         <form>
+          <h1 className="font-bold mb-4 text-gray-600 text-center">Product Name</h1>
           <div className="mb-4">
             <label
               htmlFor="name"
               className="block text-gray-700 font-semibold mb-2"
             >
-              Full Name
+              Customer  Full Name
             </label>
             <input
               type="text"
               id="name"
               name="name"
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-green-500"
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-gray-500"
               placeholder="Enter your full name"
               required
             />
           </div>
 
-          <div className="mb-4">
-            <label
-              htmlFor="email"
-              className="block text-gray-700 font-semibold mb-2"
-            >
-              Email Address
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-green-500"
-              placeholder="Enter your email"
-              required
-            />
-          </div>
+
 
           <div className="mb-4">
             <label
               htmlFor="phone"
               className="block text-gray-700 font-semibold mb-2"
             >
-              Phone Number
+              Customer  Phone Number
             </label>
             <input
               type="tel"
               id="phone"
               name="phone"
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-green-500"
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-gray-500"
               placeholder="Enter your phone number"
               required
             />
@@ -68,7 +54,7 @@ const OrderForm = () => {
             <select
               id="product"
               name="product"
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-green-500"
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-gray-500"
               required
             >
               <option value="" disabled selected>
@@ -94,7 +80,7 @@ const OrderForm = () => {
               type="number"
               id="quantity"
               name="quantity"
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-green-500"
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-gray-500"
               placeholder="Enter quantity"
               required
               min="1"
@@ -111,7 +97,7 @@ const OrderForm = () => {
             <textarea
               id="address"
               name="address"
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-green-500"
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-gray-500"
               placeholder="Enter your delivery address"
               rows="3"
               required
@@ -129,15 +115,17 @@ const OrderForm = () => {
               type="date"
               id="preferredDate"
               name="preferredDate"
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-green-500"
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-gray-500"
               required
             />
           </div>
 
-          <div className="text-center">
+
+          <div className="flex justify-between">
+            <p className="text-gray-600 font-bold">Total Price: 4000</p>
             <button
               type="submit"
-              className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-md transition duration-200"
+              className="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-6 rounded-md transition duration-200"
             >
               Submit Order
             </button>

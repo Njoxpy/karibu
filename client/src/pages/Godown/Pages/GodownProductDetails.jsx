@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import Footer from "../../../components/Footer";
+import OrderForm from "../../AnimalFeeding/Pages/OrderForm";
 
 const GodownProductDetails = () => {
   const { id } = useParams();
@@ -38,6 +39,7 @@ const GodownProductDetails = () => {
           </button>
         </div>
       </div>
+      <OrderForm />
 
       <Footer />
     </>

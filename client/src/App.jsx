@@ -137,6 +137,7 @@ import Cart from "./components/Cart";
 import FoodsBody from "./pages/AnimalFeeding/Pages/FoodsBody";
 import AnimalFeedingProductsLayout from "./pages/AnimalFeeding/Layouts/AnimalFeedingProductsLayout"
 import BulkUpload from "./pages/AnimalFeeding/Components/BulkUpload";
+import BulkUploadGodown from "./pages/Godown/Components/BulkUploadGodown";
 
 export default function App() {
   const router = createBrowserRouter(
@@ -207,6 +208,7 @@ export default function App() {
             errorElement={<GodownOrderDetailsError />}
           />
           <Route path="admin/upload" element={<UploadGodownItems />} />
+          <Route path="admin/bulk-upload" element={<BulkUploadGodown />} />
           <Route path="admin/manage" element={<ManageGodownItems />} />
           <Route path="admin/move" element={<InventoryMovement />} />
         </Route>
