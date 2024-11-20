@@ -35,3 +35,9 @@ dist-ssr
 db.mongodb
 
 # testing
+
+
+# json
+product.json
+me.md
+curl.md
