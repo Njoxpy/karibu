@@ -1,7 +1,9 @@
 const express = require("express");
+const multer = require("multer");
 const router = express.Router();
 
 const { createProduct, getAllProducts, createOrder, getAllOrders, getProductById, getOrderById, updateProduct, deleteProductById, deleteOrderById, searchProductName } = require("../controllers/animalFeeding.controllers");
+const validateProductFields = require("../middleware/validateProductFields")
 
 // GET: Get all products
 router.get("/products", getAllProducts);
@@ -15,7 +17,7 @@ router.post("/products/bulk-upload", (req, res) => {
 })
 
 // add new product
-router.post("/products", createProduct)
+router.post("/products", validateProductFields, createProduct)
 
 // PATCH: Update product details
 router.patch("/products/:id", updateProduct)

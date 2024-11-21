@@ -29,6 +29,9 @@ const productSchema = new Schema(
             type: Number,
             required: [true, "User Id is required"],
             ref: 'User'
+        },
+        image: {
+            type: String
         }
 
     },

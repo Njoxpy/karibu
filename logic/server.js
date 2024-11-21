@@ -29,7 +29,7 @@ app.use((req, res, next) => {
 app.use("/api/v1/animal-feeding", animalFeedingRoutes)
 app.use("/api/v1/fresh-oil", freshOilRoutes)
 app.use("/api/v1/godown", godownRoutes)
-app.use("/api/v1/user", userRoutes)
+app.use("/api/v1/users", userRoutes)
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {

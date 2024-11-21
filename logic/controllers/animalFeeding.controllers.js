@@ -9,7 +9,7 @@ const getAllProducts = async (req, res) => {
     try {
         const product = await Product.find({ category: "animal-feeding" })
         if (product.length === 0) {
-            return res.json({ message: "there are no orders now" })
+            return res.json({ message: "there are no products now" })
         }
         res.status(200).json(product)
     } catch (error) {
@@ -21,11 +21,9 @@ const getAllProducts = async (req, res) => {
 const createProduct = async (req, res) => {
     const { name, description, quantity, price, userId, category } = req.body
 
-    if (!name || !quantity || !price || !userId) {
-        return res.status(400).json({ message: "all required fields must be provided" })
-    }
+
     try {
-        const product = await Product.create({ name, description, quantity, userId, price, category })
+        const product = await Product.create({ name, description, quantity, userId, price, category: "animal-feeding" })
         res.status(200).json(product)
     } catch (error) {
         res.status(400).json(error.message)
@@ -36,8 +34,18 @@ const createProduct = async (req, res) => {
 const createOrder = async (req, res) => {
     const { totalPrice, orderId, userId, productName, quantity, status, catego } = req.body
 
-    if (!totalPrice || !userId || !productName || !quantity) {
+    if (totalPrice == null || !userId || !productName || quantity == null) {
         return res.status(400).json({ message: "all fields are required" })
+    }
+
+    // validate price
+    if (typeof totalPrice !== "number" || totalPrice < 0) {
+        return res.status(400).json("Price must be a positive number")
+    }
+
+    // validate qouantity
+    if (typeof quantity !== "number" || quantity < 0) {
+        return res.status(400).json("Quantity must be a none negative number")
     }
     try {
         const order = await Order.create({ totalPrice, orderId, userId, productName, quantity, status, category })
