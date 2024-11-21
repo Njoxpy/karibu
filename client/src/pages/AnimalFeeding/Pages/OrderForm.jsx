@@ -95,3 +95,8 @@ const OrderForm = () => {
 };
 
 export default OrderForm;
+
+
+/*
+into this section teher should a way for price and the total price for the orders
+ */

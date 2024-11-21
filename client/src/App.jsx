@@ -13,7 +13,6 @@ import ReceiptLayout from "./pages/Printing/Layouts/ReceiptLayout";
 // errors
 import NotFound from "./error/NotFound";
 import OrderDetailsError from "./pages/Printing/Error/OrderDetailsError";
-debugger
 
 // pages
 import Home from "./Home/Home";
@@ -154,7 +153,6 @@ export default function App() {
 
         <Route path="/dashboard" element={<UserDashboard />} />
         <Route path="/contact" element={<Contact />} action={contactAction} />
-
         {/* animal feeding */}
         <Route path="/animal-feeding" element={<AnimalFeedingLayout />}>
           <Route index element={<AnimalFeeding />} />

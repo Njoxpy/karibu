@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 const InventoryTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3; // Number of items per page
+  const itemsPerPage = 6; // Number of items per page
 
   const [inventory, setInventory] = useState([
     {
@@ -151,8 +151,8 @@ const InventoryTable = () => {
                 <td className="px-4 py-2 border">{item.location}</td>
                 <td
                   className={`px-4 py-2 border ${item.condition === "Low Stock"
-                      ? "text-red-500"
-                      : "text-green-600"
+                    ? "text-red-500"
+                    : "text-green-600"
                     }`}
                 >
                   {item.condition}

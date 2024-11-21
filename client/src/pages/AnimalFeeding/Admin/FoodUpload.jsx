@@ -7,7 +7,6 @@ const FoodUpload = () => {
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
   const [userId, setUserId] = useState(0);
-  const [category, setCategory] = useState("animal-feeding")
 
   // const [image, setImage] = useState(null);
 
@@ -27,8 +26,7 @@ const FoodUpload = () => {
         description,
         quantity,
         userId,
-        price,
-        category
+        price
       })
     })
       .then((response) => {

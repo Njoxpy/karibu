@@ -4,8 +4,9 @@
 The Savarrah API provides endpoints to manage users, orders, and receipts for a graphic design service platform. This API allows users to register, log in, submit design requests, and retrieve order information.
 
 ## Base URL
+
 ```
-https://api.savarrah.com/v1
+http://localhost:4000/api/v1/
 ```
 
 ## Authentication

@@ -77,6 +77,7 @@ function ProductDetails() {
               </div>
             </div>
 
+
             {/* Add to Cart Section */}
             <div className="flex gap-4 items-center mb-6">
               <input
