@@ -7,45 +7,52 @@ const FoodUpload = () => {
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
   const [userId, setUserId] = useState(0);
+  const [image, setImage] = useState(null);
+  const [error, setError] = useState(null);
 
-  // const [image, setImage] = useState(null);
-
-  const URL = "http://localhost:4000/api/v1/animal-feeding/products"
+  const URL = "http://localhost:4000/api/v1/animal-feeding/products";
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle upload logic here
+
+    // Image check (if not uploaded, send null or empty string)
+    if (!image) {
+      setError("Please upload an image.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("description", description);
+    formData.append("quantity", quantity);
+    formData.append("userId", userId);
+    formData.append("price", price);
+    formData.append("image", image);
 
     fetch(URL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name,
-        description,
-        quantity,
-        userId,
-        price
-      })
+      body: formData,
     })
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to create product");
         }
-        return response.json()
+        return response.json();
       })
       .then((data) => {
-        console.log("product created sucesfully")
-        setName("")
-        setDescription("")
-        setQuantity("")
-        setUserId("")
-        setPrice("")
+        console.log("Product created successfully", data);
+        setName("");
+        setDescription("");
+        setQuantity("");
+        setUserId(0);
+        setPrice("");
+        setImage(null);
+        setError(null); // Clear any errors
       })
       .catch((error) => {
-        console.log(error.message)
-      })
+        console.log(error.message);
+        setError(error.message);
+      });
   };
 
   return (
@@ -58,6 +65,8 @@ const FoodUpload = () => {
           onSubmit={handleSubmit}
           className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md"
         >
+          {error && <p className="text-red-600 mb-4">{error}</p>}
+
           <div className="mb-4">
             <label className="block mb-2 text-gray-700" htmlFor="product-name">
               Product Name
@@ -71,6 +80,7 @@ const FoodUpload = () => {
               required
             />
           </div>
+
           <div className="mb-4">
             <label className="block mb-2 text-gray-700" htmlFor="description">
               Description
@@ -83,8 +93,9 @@ const FoodUpload = () => {
               required
             ></textarea>
           </div>
+
           <div className="mb-4">
-            <label className="block mb-2 text-gray-700" htmlFor="description">
+            <label className="block mb-2 text-gray-700" htmlFor="userId">
               User Id
             </label>
             <input
@@ -96,6 +107,7 @@ const FoodUpload = () => {
               required
             />
           </div>
+
           <div className="mb-4">
             <label className="block mb-2 text-gray-700" htmlFor="price">
               Price ($)
@@ -109,6 +121,7 @@ const FoodUpload = () => {
               required
             />
           </div>
+
           <div className="mb-4">
             <label className="block mb-2 text-gray-700" htmlFor="quantity">
               Quantity
@@ -122,19 +135,21 @@ const FoodUpload = () => {
               required
             />
           </div>
-          {/* <div className="mb-4">
+
+          {/* Image Upload */}
+          <div className="mb-4">
             <label className="block mb-2 text-gray-700" htmlFor="image">
               Product Image
             </label>
             <input
               type="file"
               id="image"
-              value={image}
               onChange={(e) => setImage(e.target.files[0])}
               className="border border-gray-300 rounded w-full p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
               required
             />
-          </div> */}
+          </div>
+
           <button
             type="submit"
             className="bg-green-600 text-white py-3 px-6 rounded hover:bg-green-700 transition duration-200"
