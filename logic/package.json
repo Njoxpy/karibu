@@ -4,7 +4,7 @@
   "description": "backend architecture for savarrah website",
   "main": "index.js",
   "scripts": {
-    "server": "nodemon app.js"
+    "server": "nodemon server.js"
   },
   "keywords": [],
   "author": "NjoxPy",
