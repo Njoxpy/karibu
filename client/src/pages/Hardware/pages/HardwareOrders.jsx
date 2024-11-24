@@ -68,7 +68,7 @@ const HardwareOrders = () => {
       <div className="p-4">
         <h1 className="text-2xl font-bold mb-4 text-center">Orders List</h1>
         {orders.length === 0 ? (
-          <NoOrders />
+          <p>No orders for now</p>
         ) : (
           <table className="min-w-full border border-gray-300">
             <thead>
