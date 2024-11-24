@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^2.2.0",
-    "@heroicons/react": "^2.1.5",
+    "@heroicons/react": "^2.2.0",
     "@tailwindcss/forms": "^0.5.9",
     "axios": "^1.7.7",
     "html2canvas": "^1.4.1",
