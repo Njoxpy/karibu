@@ -1,18 +1,19 @@
 import { useState } from "react";
 import Footer from "../../../components/Footer";
 import { Link } from "react-router-dom";
+import NoOrders from "../../../components/Noorders";
 
 const Orders = () => {
   // Local state for orders
   const [orders, setOrders] = useState([
-    { id: 1, productName: "Animal Feed A", quantity: 2, totalPrice: 40 },
-    { id: 2, productName: "Animal Feed B", quantity: 1, totalPrice: 20 },
-    { id: 3, productName: "Animal Feed C", quantity: 3, totalPrice: 60 },
-    { id: 4, productName: "Animal Feed D", quantity: 1, totalPrice: 20 },
-    { id: 5, productName: "Animal Feed E", quantity: 2, totalPrice: 40 },
-    { id: 6, productName: "Animal Feed F", quantity: 3, totalPrice: 60 },
-    { id: 7, productName: "Animal Feed G", quantity: 4, totalPrice: 80 },
-    { id: 8, productName: "Animal Feed H", quantity: 5, totalPrice: 100 },
+    { id: 1, productName: "Animal Feed A", quantity: 2, totalPrice: 4000 },
+    { id: 2, productName: "Animal Feed B", quantity: 1, totalPrice: 20000 },
+    { id: 3, productName: "Animal Feed C", quantity: 3, totalPrice: 6000 },
+    { id: 4, productName: "Animal Feed D", quantity: 1, totalPrice: 20000 },
+    { id: 5, productName: "Animal Feed E", quantity: 2, totalPrice: 4000 },
+    { id: 6, productName: "Animal Feed F", quantity: 3, totalPrice: 60000 },
+    { id: 7, productName: "Animal Feed G", quantity: 4, totalPrice: 8000 },
+    { id: 8, productName: "Animal Feed H", quantity: 5, totalPrice: 10000 },
     // Add more items for pagination example
   ]);
 
@@ -68,7 +69,7 @@ const Orders = () => {
       <div className="p-4">
         <h1 className="text-2xl font-bold mb-4 text-center">Orders List</h1>
         {orders.length === 0 ? (
-          <p>No orders placed yet.</p>
+          <NoOrders />
         ) : (
           <table className="min-w-full border border-gray-300">
             <thead>
@@ -84,7 +85,7 @@ const Orders = () => {
                 <tr key={index} className="hover:bg-green-100">
                   <td className="border border-gray-300 px-4 py-2">{order.productName}</td>
                   <td className="border border-gray-300 px-4 py-2">{order.quantity}</td>
-                  <td className="border border-gray-300 px-4 py-2">${order.totalPrice}</td>
+                  <td className="border border-gray-300 px-4 py-2">Tsh {order.totalPrice}</td>
                   <td className="border border-gray-300 px-4 py-2 flex flex-col sm:flex-row sm:space-x-2">
                     <button
                       onClick={() => {
