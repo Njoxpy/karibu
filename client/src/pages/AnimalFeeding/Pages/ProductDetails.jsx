@@ -1,103 +1,144 @@
-import React from "react";
-import Footer from "../../../components/Footer";
-import { Link } from "react-router-dom";
-import Animal from "../../../assets/images/animal1.jpg"
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import Footer from '../../../components/Footer';
 
-function ProductDetails() {
-  const product = {
-    name: "Product A",
-    price: "Tsh 999 900",
-    description: "A brief description of the product's features.",
-    category: "Animal Food",
-    subcategory: "Dry Food",
-    imageUrl: { Animal },
-    specifications: {
-      weight: "2 kg",
-      dimensions: "12x6x4 cm",
-      ingredients: "Wheat, Corn",
-    },
+// Simulated product database
+const productDatabase = [
+  { id: 1, name: "Office Printer", price: 150, category: "office-equipment" },
+  { id: 2, name: "Gaming Laptop", price: 1200, category: "electronics" },
+  { id: 3, name: "Wireless Mouse", price: 25, category: "accessories" },
+];
+
+const ProductDetails = () => {
+  // Get the productId from the URL params
+  const { productId } = useParams();
+
+  // State to manage product data and user input
+  const [product, setProduct] = useState(null);
+  const [quantity, setQuantity] = useState(1);
+  const [totalPrice, setTotalPrice] = useState(0);
+
+  useEffect(() => {
+    // Fetch the product by ID (this could be an API call in a real app)
+    const foundProduct = productDatabase.find((p) => p.id === parseInt(productId));
+    if (foundProduct) {
+      setProduct(foundProduct);
+      setTotalPrice(foundProduct.price * quantity); // Initialize total price
+    }
+  }, [productId, quantity]); // Recalculate total price when productId or quantity changes
+
+  const handleQuantityChange = (e) => {
+    const newQuantity = parseInt(e.target.value);
+    setQuantity(newQuantity);
+    if (product) {
+      setTotalPrice(product.price * newQuantity);
+    }
   };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const orderData = {
+      totalPrice,
+      status: "pending",
+      orderId: Date.now(), // Generate a unique order ID
+      userId: 4, // Example user ID
+      productName: product ? product.name : "Unknown Product",
+      quantity,
+      category: product ? product.category : "Unknown Category",
+    };
+    console.log("Order submitted:", orderData);
+    // Handle further logic like calling an API to submit the order
+  };
+
+  if (!product) {
+    return <div>Product not found.</div>;
+  }
 
   return (
     <>
-      <div className="p-6 bg-gray-50 min-h-screen">
-        {/* Breadcrumbs */}
-        <nav className="text-gray-600 mb-6">
-          <span className="text-green-600 hover:underline cursor-pointer">Home</span> &gt;
-          <span className="text-green-600 hover:underline cursor-pointer">Animal Feeding</span> &gt; {product.name}
-        </nav>
+      <div className="max-w-md mx-auto bg-white p-8 rounded-xl shadow-lg">
+        <h2 className="text-2xl font-semibold mb-6 text-center">{product.name}</h2>
 
-        {/* Product Details */}
-        <div className="flex gap-12">
-          {/* Product Image */}
-          <div className="w-1/2">
-            <img
-              src={Animal}
-              alt={product.name}
-              className="w-full h-96 object-cover rounded-lg shadow-lg"
-              loading="lazy"
+        <form onSubmit={handleSubmit}>
+          {/* Product Name */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Product Name</label>
+            <input
+              type="text"
+              value={product.name}
+              readOnly
+              className="w-full p-2 border border-gray-300 rounded-md mt-1"
             />
           </div>
 
-          {/* Product Info */}
-          <div className="w-1/2">
-            <h1 className="text-3xl font-semibold text-green-600 mb-4">{product.name}</h1>
-            <p className="text-xl text-gray-800 mb-4">{product.price}</p>
-            <p className="text-gray-700 mb-6">{product.description}</p>
-            <p className="text-gray-600 mb-4">
-              <strong>Category:</strong> {product.category}  {product.subcategory}
-            </p>
-
-            {/* Specifications Table */}
-            <div className="bg-white shadow-md rounded-lg p-4 mb-6">
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">Specifications</h3>
-              <table className="table-auto w-full text-left">
-                <tbody>
-                  {Object.entries(product.specifications).map(([key, value]) => (
-                    <tr key={key}>
-                      <td className="px-4 py-2 font-medium text-gray-600">{key}</td>
-                      <td className="px-4 py-2">{value}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <div>
-              <label htmlFor="comment" className="block text-sm font-medium leading-6 text-gray-900">
-                Add your comment
-              </label>
-              <div className="mt-2">
-                <textarea
-                  id="comment"
-                  name="comment"
-                  rows={4}
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  defaultValue={''}
-                />
-              </div>
-            </div>
-
-
-            {/* Add to Cart Section */}
-            <div className="flex gap-4 items-center mb-6">
-              <input
-                type="number"
-                min="1"
-                defaultValue="1"
-                className="border border-gray-300 rounded-md p-2 w-16"
-              />
-              <button className="bg-green-600 text-white py-2 px-6 rounded-lg hover:bg-green-700">
-                Add to Cart
-              </button>
-
-            </div>
-            <p className="bg-green-600 text-white py-2 px-6 rounded-lg hover:bg-green-700 cursor-pointer"><Link to={"/animal-feeding/cart"}>view cart</Link></p>
+          {/* Product Category */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Category</label>
+            <input
+              type="text"
+              value={product.category}
+              readOnly
+              className="w-full p-2 border border-gray-300 rounded-md mt-1"
+            />
           </div>
-        </div>
+
+          {/* Quantity Input */}
+          <div className="mb-4">
+            <label htmlFor="quantity" className="block text-sm font-medium text-gray-700">Quantity</label>
+            <input
+              type="number"
+              id="quantity"
+              value={quantity}
+              onChange={handleQuantityChange}
+              className="w-full p-2 border border-gray-300 rounded-md mt-1"
+              min="1"
+            />
+          </div>
+
+          {/* Price */}
+          <div className="mb-4">
+            <label htmlFor="price" className="block text-sm font-medium text-gray-700">Price per Item</label>
+            <input
+              type="text"
+              id="price"
+              value={`$${product.price}`}
+              readOnly
+              className="w-full p-2 border border-gray-300 rounded-md mt-1"
+            />
+          </div>
+
+          {/* Total Price */}
+          <div className="mb-4">
+            <label htmlFor="totalPrice" className="block text-sm font-medium text-gray-700">Total Price</label>
+            <input
+              type="text"
+              id="totalPrice"
+              value={`$${totalPrice}`}
+              readOnly
+              className="w-full p-2 border border-gray-300 rounded-md mt-1"
+            />
+          </div>
+
+          {/* Terms and Conditions Checkbox */}
+          <div className="mb-6">
+            <label className="inline-flex items-center">
+              <input type="checkbox" className="form-checkbox h-4 w-4 text-green-600" />
+              <span className="ml-2 text-sm text-gray-600">I agree to the terms and conditions</span>
+            </label>
+          </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            className="w-full bg-green-600 text-white p-2 rounded-md hover:bg-green-700"
+          >
+            Complete Order
+          </button>
+        </form>
       </div>
       <Footer />
     </>
   );
-}
+};
 
 export default ProductDetails;
