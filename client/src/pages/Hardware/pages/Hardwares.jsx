@@ -66,6 +66,7 @@ function Hardwares() {
               <img
                 src={product.image}
                 alt={product.name}
+                loading="lazy"
                 className="w-full h-48 object-cover"
               />
               <div className="p-4">
