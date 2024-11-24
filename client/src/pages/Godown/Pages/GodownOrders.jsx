@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Footer from "../../../components/Footer";
 import { Link } from "react-router-dom";
-import NoOrders from "../../../components/Noorders";
 
 const GodownOrders = () => {
   const [orders, setOrders] = useState([
@@ -37,7 +36,7 @@ const GodownOrders = () => {
       <div className="p-4">
         <h1 className="text-2xl font-bold mb-4 text-center">Orders List</h1>
         {orders.length === 0 ? (
-          <NoOrders />
+          <p>no orders</p>
         ) : (
           <table className="min-w-full border border-gray-300">
             <thead>
