@@ -139,6 +139,7 @@ import FoodsBody from "./pages/AnimalFeeding/Pages/FoodsBody";
 import AnimalFeedingProductsLayout from "./pages/AnimalFeeding/Layouts/AnimalFeedingProductsLayout"
 import BulkUpload from "./pages/AnimalFeeding/Components/BulkUpload";
 import BulkUploadGodown from "./pages/Godown/Components/BulkUploadGodown";
+import BulkUploadFreshOil from "./pages/FreshOil/Pages/BulkUploadFreshOil";
 
 export default function App() {
   const router = createBrowserRouter(
@@ -191,6 +192,7 @@ export default function App() {
             errorElement={<FreshOilOrderDetailsError />}
           />
           <Route path="admin/upload" element={<UploadFreshOil />} />
+          <Route path="admin/bulk-upload" element={<BulkUploadFreshOil />} />
           <Route path="admin/manage" element={<ManagFreshOil />} />
         </Route>
 
