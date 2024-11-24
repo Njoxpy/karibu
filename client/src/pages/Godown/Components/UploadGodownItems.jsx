@@ -6,7 +6,7 @@ const UploadGodownItems = () => {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();

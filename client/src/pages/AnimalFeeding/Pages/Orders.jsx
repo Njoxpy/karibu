@@ -16,7 +16,7 @@ const Orders = () => {
     // Add more items for pagination example
   ]);
 
-  const itemsPerPage = 3; // Number of orders per page
+  const itemsPerPage = 6; // Number of orders per page
   const totalPages = Math.ceil(orders.length / itemsPerPage);
 
   const [currentPage, setCurrentPage] = useState(1);

@@ -1,11 +1,11 @@
-import Animal1 from ".././../../assets/images/animal1.jpg";
-import Animal2 from ".././../../assets/images/animal2.jpg";
+import Animal1 from ".././../../assets/images/pen.jpg";
+import Animal2 from ".././../../assets/images/booklet.jpg";
 import { useState } from "react";
 
 function StationeryBody() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const productsPerPage = 3;
+  const productsPerPage = 6;
 
   const products = [
     // Sample data for products
@@ -98,8 +98,8 @@ function StationeryBody() {
                 <div className="p-4">
                   <h2 className="font-semibold text-lg">{product.name}</h2>
                   <p className="text-gray-600">{product.description}</p>
-                  <p className="font-bold text-blue-700">${product.price}</p>
-                  <div className="flex justify-between">
+                  <p className="font-bold text-blue-700">Tsh {product.price}</p>
+                  <div className="">
                     <a
                       href={`/stationery/products/${product.id}`}
                       className="mt-4 inline-block bg-blue-500 text-white py-2 px-4 rounded"

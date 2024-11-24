@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Footer from "../../../components/Footer";
 import { Link } from "react-router-dom";
+import NoOrders from "../../../components/Noorders";
 
 const GodownOrders = () => {
   const [orders, setOrders] = useState([
@@ -16,7 +17,7 @@ const GodownOrders = () => {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 4;
+  const itemsPerPage = 6;
 
   const totalPages = Math.ceil(orders.length / itemsPerPage);
 
@@ -36,7 +37,7 @@ const GodownOrders = () => {
       <div className="p-4">
         <h1 className="text-2xl font-bold mb-4 text-center">Orders List</h1>
         {orders.length === 0 ? (
-          <p>No orders placed yet.</p>
+          <NoOrders />
         ) : (
           <table className="min-w-full border border-gray-300">
             <thead>

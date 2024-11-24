@@ -21,7 +21,7 @@ const FreshOilOrders = () => {
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3;
+  const itemsPerPage = 6;
 
   // Filter orders based on the current page
   const indexOfLastOrder = currentPage * itemsPerPage;

@@ -1,20 +1,20 @@
 import { useState } from "react";
 import FreshOil1 from ".././../../assets/images/freshOil1.webp";
-import FreshOil2 from ".././../../assets/images/freshOil2.jpg";
+import FreshOil2 from ".././../../assets/images/avocado.png";
 
 function Oils() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1); // Current page number
-  const itemsPerPage = 3; // Items per page for pagination
+  const itemsPerPage = 6; // Items per page for pagination
 
   const products = [
     // Sample data for fresh oils
-    { id: 1, name: "Olive Oil", price: 25.99, image: FreshOil1, description: "Cold-pressed extra virgin olive oil." },
-    { id: 2, name: "Coconut Oil", price: 22.49, image: FreshOil2, description: "Organic, virgin coconut oil." },
-    { id: 3, name: "Avocado Oil", price: 30.99, image: FreshOil2, description: "High-quality avocado oil, perfect for cooking." },
-    { id: 4, name: "Sunflower Oil", price: 15.99, image: FreshOil2, description: "Refined sunflower oil for everyday use." },
-    { id: 5, name: "Peanut Oil", price: 18.49, image: FreshOil2, description: "Pure peanut oil with a high smoke point." },
-    { id: 6, name: "Sesame Oil", price: 22.99, image: FreshOil2, description: "Cold-pressed sesame oil with rich flavor." },
+    { id: 1, name: "Olive Oil", price: 25000, image: FreshOil1, description: "Cold-pressed extra virgin olive oil." },
+    { id: 2, name: "Coconut Oil", price: 2200, image: FreshOil2, description: "Organic, virgin coconut oil." },
+    { id: 3, name: "Avocado Oil", price: 30000, image: FreshOil2, description: "High-quality avocado oil, perfect for cooking." },
+    { id: 4, name: "Sunflower Oil", price: 15500, image: FreshOil2, description: "Refined sunflower oil for everyday use." },
+    { id: 5, name: "Peanut Oil", price: 18400, image: FreshOil2, description: "Pure peanut oil with a high smoke point." },
+    { id: 6, name: "Sesame Oil", price: 2200, image: FreshOil2, description: "Cold-pressed sesame oil with rich flavor." },
   ];
 
   // Filter products based on search term
@@ -67,7 +67,7 @@ function Oils() {
             <div className="p-4">
               <h2 className="font-semibold text-lg">{product.name}</h2>
               <p className="text-gray-600">{product.description}</p>
-              <p className="font-bold text-yellow-700">${product.price}</p>
+              <p className="font-bold text-yellow-700">Tsh {product.price}</p>
               <a
                 href={`/freshOil/products/${product.id}`}
                 className="mt-4 inline-block bg-yellow-500 text-white py-2 px-4 rounded"

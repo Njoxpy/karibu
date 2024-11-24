@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Footer from "../../../components/Footer";
 import { Link } from "react-router-dom";
+import NoOrders from "../../../components/Noorders";
 
 const HardwareOrders = () => {
   // Local state for orders
@@ -67,7 +68,7 @@ const HardwareOrders = () => {
       <div className="p-4">
         <h1 className="text-2xl font-bold mb-4 text-center">Orders List</h1>
         {orders.length === 0 ? (
-          <p>No orders placed yet.</p>
+          <NoOrders />
         ) : (
           <table className="min-w-full border border-gray-300">
             <thead>
