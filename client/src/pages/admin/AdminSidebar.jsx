@@ -32,7 +32,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-const AdminSidebar = () => {
+const AdminDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
@@ -194,4 +194,4 @@ const AdminSidebar = () => {
 }
 
 
-export default AdminSidebar;
+export default AdminDashboard;

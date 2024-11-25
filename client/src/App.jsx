@@ -148,12 +148,27 @@ import OrderItemHardware from "./pages/Hardware/pages/OrderItemHardware";
 import AdminDashboard from "./pages/admin/AdminSidebar";
 import NavbarAdmin from "./pages/admin/NavbarAdmin";
 import AnimalFeedingOrderDetailsError from "./pages/AnimalFeeding/Error/AnimalFeedingOrderDetailsError";
+// admin
+import AdminDashboardD from "./pages/admin/AdminDashboard"
+import DashboardHome from "./pages/admin/DashboardHome";
+import ProductsPage from "./pages/admin/ProductsPage";
+import OrdersPage from "./pages/admin/OrdersPage";
+import UsersPage from "./pages/admin/UsersPage";
+import ReportsPage from "./pages/admin/ReportsPage";
+import SettingsPage from "./pages/admin/SettingsPage";
 
 export default function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route>
-        {/* <Route path="dashboard" element={<AdminDashboard />} /> */}
+        <Route path="admin" element={<AdminDashboardD />}>
+          <Route index element={<DashboardHome />} /> {/* Default admin dashboard home */}
+          <Route path="products" element={<ProductsPage />} />
+          <Route path="orders" element={<OrdersPage />} />
+          <Route path="users" element={<UsersPage />} />
+          <Route path="reports" element={<ReportsPage />} />
+          <Route path="settings" element={<SettingsPage />} />
+        </Route>
         <Route path="/" element={<RootLayout />}>
           <Route index element={<Home />} />
           <Route path="/login" element={<Login />} />
