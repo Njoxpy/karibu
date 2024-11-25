@@ -13,20 +13,17 @@ import {
   UsersIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline'
+import { Link } from "react-router-dom"
 
 const navigation = [
-  { name: 'Dashboard', href: '#', icon: HomeIcon, current: true },
-  { name: 'Products', href: '#', icon: UsersIcon, current: false },
-  { name: 'Orders', href: '#', icon: FolderIcon, current: false },
-  { name: 'Users', href: '#', icon: CalendarIcon, current: false },
-  { name: 'Reports', href: '#', icon: DocumentDuplicateIcon, current: false },
-  { name: 'Settings', href: '#', icon: ChartPieIcon, current: false },
+  { name: 'Dashboard', href: '/admin', icon: HomeIcon, current: true },
+  { name: 'Products', href: '/admin/products', icon: UsersIcon, current: false },
+  { name: 'Orders', href: '/admin/orders', icon: FolderIcon, current: false },
+  { name: 'Users', href: '/admin/users', icon: CalendarIcon, current: false },
+  { name: 'Reports', href: '/admin/reports', icon: DocumentDuplicateIcon, current: false },
+  { name: 'Settings', href: '/admin/settings', icon: ChartPieIcon, current: false },
 ]
-const teams = [
-  { id: 1, name: 'Heroicons', href: '#', initial: 'H', current: false },
-  { id: 2, name: 'Tailwind Labs', href: '#', initial: 'T', current: false },
-  { id: 3, name: 'Workcation', href: '#', initial: 'W', current: false },
-]
+
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -80,8 +77,8 @@ const AdminDashboard = () => {
                       <ul role="list" className="-mx-2 space-y-1">
                         {navigation.map((item) => (
                           <li key={item.name}>
-                            <a
-                              href={item.href}
+                            <Link
+                              to={item.href}
                               className={classNames(
                                 item.current
                                   ? 'bg-gray-50 text-indigo-600'
@@ -97,7 +94,7 @@ const AdminDashboard = () => {
                                 )}
                               />
                               {item.name}
-                            </a>
+                            </Link>
                           </li>
                         ))}
                       </ul>
