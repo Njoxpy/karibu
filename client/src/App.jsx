@@ -149,7 +149,7 @@ import AdminDashboard from "./pages/admin/AdminSidebar";
 import NavbarAdmin from "./pages/admin/NavbarAdmin";
 import AnimalFeedingOrderDetailsError from "./pages/AnimalFeeding/Error/AnimalFeedingOrderDetailsError";
 // admin
-import AdminDashboardD from "./pages/admin/AdminDashboard"
+import AdminDashboardD from "./pages/admin/AdminnDashboard"
 import DashboardHome from "./pages/admin/DashboardHome";
 import ProductsPage from "./pages/admin/ProductsPage";
 import OrdersPage from "./pages/admin/OrdersPage";
