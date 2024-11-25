@@ -48,7 +48,7 @@ function HardwareLayout() {
               <li>
                 <Link
                   className="hover:text-blue-200 transition-colors duration-200"
-                  to="/hardware"
+                  to="/hardware/order-item"
                 >
                   Order Item
                 </Link>
@@ -90,7 +90,7 @@ function HardwareLayout() {
               <li>
                 <Link
                   className="hover:text-blue-200 transition-colors duration-200"
-                  to="/hardware"
+                  to="/hardware/order-item"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Order Item

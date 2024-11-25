@@ -34,7 +34,7 @@ function AnimalFeedingLayout() {
                   className="hover:text-gray-200 transition-colors duration-200"
                   to="/godown/admin/upload"
                 >
-                  Food Upload
+                  Item Upload
                 </Link>
               </li>
               <li>
@@ -48,7 +48,7 @@ function AnimalFeedingLayout() {
               <li>
                 <Link
                   className="hover:text-gray-200 transition-colors duration-200"
-                  to="/godown"
+                  to="/godown/order-item"
                 >
                   Order Item
                 </Link>
@@ -83,7 +83,7 @@ function AnimalFeedingLayout() {
                   to="/godown/admin/upload"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Food Upload
+                  Item Upload
                 </Link>
               </li>
               <li>
@@ -98,7 +98,7 @@ function AnimalFeedingLayout() {
               <li>
                 <Link
                   className="hover:text-gray-200 transition-colors duration-200"
-                  to="/godown"
+                  to="/godown/order-item"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Order Item

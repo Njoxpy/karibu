@@ -9,16 +9,16 @@ const InventoryTable = () => {
   const [inventory, setInventory] = useState([
     {
       id: 1,
-      name: "Construction Cement Bag",
+      name: "Mifuko ya cement",
       code: "CCB-1001",
       quantity: 50,
       location: "Aisle 1",
       condition: "New",
-      price: 3400,
+      price: 50000,
     },
     {
       id: 2,
-      name: "Industrial Paint",
+      name: "Mafuta ya kupikia",
       code: "IP-2002",
       quantity: 20,
       location: "Aisle 3",
@@ -27,7 +27,7 @@ const InventoryTable = () => {
     },
     {
       id: 3,
-      name: "Iron",
+      name: "Sukari Mifuko",
       code: "PWS-3003",
       quantity: 10,
       location: "Aisle 2",
@@ -36,7 +36,7 @@ const InventoryTable = () => {
     },
     {
       id: 4,
-      name: "Plywood Sheets",
+      name: "Unga wa ngano",
       code: "PWS-3003",
       quantity: 10,
       location: "Aisle 2",
@@ -45,7 +45,7 @@ const InventoryTable = () => {
     },
     {
       id: 5,
-      name: "Industrial Paint",
+      name: "Mifuko ya Chumvi",
       code: "IP-2002",
       quantity: 20,
       location: "Aisle 3",

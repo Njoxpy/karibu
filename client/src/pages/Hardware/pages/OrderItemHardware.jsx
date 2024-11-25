@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import Footer from './Footer';
+import Footer from '../../../components/Footer';
 
 const products = [
-    { id: 1, name: "Office Printer", price: 150, category: "office-equipment" },
-    { id: 2, name: "Gaming Laptop", price: 1200, category: "electronics" },
-    { id: 3, name: "Wireless Mouse", price: 25, category: "accessories" },
+    { id: 1, name: "Fagio Za chooni", price: 3000, category: "Fagio kwa ajili ya vyoo." },
+    { id: 2, name: "Moper", price: 10000, category: "Fagio ngumu kwa ajili ya kusafisha maofisi." },
+    { id: 3, name: "Sabuni Za Watoto", price: 2500, category: "Sabuni nzuri kwa ajili ya watoto" },
 ];
 
-const OrderItem = () => {
+const OrderItemHardware = () => {
     const [selectedProduct, setSelectedProduct] = useState(products[0]);
     const [quantity, setQuantity] = useState(1);
     const [totalPrice, setTotalPrice] = useState(selectedProduct.price);
@@ -98,7 +98,7 @@ const OrderItem = () => {
                         <label className="block text-sm font-medium text-gray-700">Price per Item</label>
                         <input
                             type="text"
-                            value={`$${selectedProduct.price}`}
+                            value={`Tsh ${selectedProduct.price}`}
                             readOnly
                             className="w-full p-2 border border-gray-300 rounded-md mt-1"
                         />
@@ -109,24 +109,17 @@ const OrderItem = () => {
                         <label className="block text-sm font-medium text-gray-700">Total Price</label>
                         <input
                             type="text"
-                            value={`$${totalPrice}`}
+                            value={`Tsh ${totalPrice}`}
                             readOnly
                             className="w-full p-2 border border-gray-300 rounded-md mt-1"
                         />
                     </div>
 
-                    {/* Terms and Conditions */}
-                    <div className="mb-6">
-                        <label className="inline-flex items-center">
-                            <input type="checkbox" className="form-checkbox h-4 w-4 text-yellow-600" />
-                            <span className="ml-2 text-sm text-gray-600">I agree to the terms and conditions</span>
-                        </label>
-                    </div>
 
                     {/* Submit Button */}
                     <button
                         type="submit"
-                        className="w-full bg-yellow-600 text-white p-2 rounded-md hover:bg-yellow-700"
+                        className="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700"
                     >
                         Complete Order
                     </button>
@@ -137,4 +130,4 @@ const OrderItem = () => {
     );
 };
 
-export default OrderItem;
+export default OrderItemHardware;

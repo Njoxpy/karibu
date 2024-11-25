@@ -45,7 +45,7 @@ function OilLayouts() {
               </li>
               <li>
                 <Link
-                  to="/freshOil"
+                  to="/freshOil/order-item"
                 >
                   Order Item
                 </Link>
@@ -75,7 +75,7 @@ function OilLayouts() {
               </li>
               <li>
                 <Link
-                  to="/freshOil"
+                  to="/freshOil/order-item"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Order Item

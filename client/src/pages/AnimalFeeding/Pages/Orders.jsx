@@ -204,7 +204,7 @@ const Orders = () => {
             </h2>
             <p><strong>Product Name:</strong> {selectedOrder.productName}</p>
             <p><strong>Quantity:</strong> {selectedOrder.quantity}</p>
-            <p><strong>Total Price:</strong> ${selectedOrder.totalPrice}</p>
+            <p><strong>Total Price:</strong> Tsh {selectedOrder.totalPrice}</p>
             <div className="flex justify-end space-x-4 mt-4">
               <button
                 onClick={() => setIsOrderDetailsModalOpen(false)}

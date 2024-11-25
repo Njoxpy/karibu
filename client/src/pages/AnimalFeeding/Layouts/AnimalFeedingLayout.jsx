@@ -48,7 +48,7 @@ function AnimalFeedingLayout() {
               <li>
                 <Link
                   className="hover:text-green-200 transition-colors duration-200"
-                  to="/animal-feeding"
+                  to="/animal-feeding/order-item"
                 >
                   Order Item
                 </Link>
@@ -90,7 +90,7 @@ function AnimalFeedingLayout() {
               <li>
                 <Link
                   className="hover:text-green-200 transition-colors duration-200"
-                  to="/animal-feeding"
+                  to="/animal-feeding/order-item"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Order Item

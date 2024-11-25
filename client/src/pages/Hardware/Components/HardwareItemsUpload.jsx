@@ -16,7 +16,7 @@ const HardwareItemsUpload = () => {
     <>
       <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-blue-50">
         <h1 className="text-3xl font-bold mb-6 text-center text-blue-800">
-          Upload New Animal Product
+          Hardware Item Upload
         </h1>
         <form
           onSubmit={handleSubmit}

@@ -4,9 +4,9 @@ import Footer from '../../../components/Footer';
 
 // Simulated product database
 const productDatabase = [
-  { id: 1, name: "Office Printer", price: 150, category: "office-equipment" },
-  { id: 2, name: "Gaming Laptop", price: 1200, category: "electronics" },
-  { id: 3, name: "Wireless Mouse", price: 25, category: "accessories" },
+  { id: 1, name: "Gourmet Cat Food", price: 150, category: "office-equipment" },
+  { id: 2, name: "Organic Rabbit Pellets", price: 1200, category: "electronics" },
+  { id: 3, name: "Fish Flakes", price: 25, category: "accessories" },
 ];
 
 const ProductDetails = () => {

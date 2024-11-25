@@ -34,7 +34,7 @@ function StationeryLayout() {
                   className="hover:text-blue-200 transition-colors duration-200"
                   to="/stationery/admin/upload"
                 >
-                  Food Upload
+                  Item Upload
                 </Link>
               </li>
               <li>
@@ -48,7 +48,7 @@ function StationeryLayout() {
               <li>
                 <Link
                   className="hover:text-blue-200 transition-colors duration-200"
-                  to="/stationery"
+                  to="/stationery/order-item"
                 >
                   Order Item
                 </Link>
@@ -75,13 +75,13 @@ function StationeryLayout() {
                   to="/stationery/admin/upload"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Food Upload
+                  Item Upload
                 </Link>
               </li>
               <li>
                 <Link
                   className="hover:text-blue-200 transition-colors duration-200"
-                  to="/stationery"
+                  to="/stationery/order-item"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Order Item

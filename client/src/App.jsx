@@ -140,148 +140,166 @@ import AnimalFeedingProductsLayout from "./pages/AnimalFeeding/Layouts/AnimalFee
 import BulkUpload from "./pages/AnimalFeeding/Components/BulkUpload";
 import BulkUploadGodown from "./pages/Godown/Components/BulkUploadGodown";
 import BulkUploadFreshOil from "./pages/FreshOil/Pages/BulkUploadFreshOil";
+import OrderItem from "./components/OrderItem";
+import OrderItemGodown from "./pages/Godown/Pages/OrderItemGodown";
+import OrderItemStationery from "./pages/Stationery/Pages/OrderItemStationery";
+import OrderItemAnimalFeeding from "./pages/AnimalFeeding/Pages/OrderItemAnimalFeeding";
+import OrderItemHardware from "./pages/Hardware/pages/OrderItemHardware";
+import AdminDashboard from "./pages/admin/adminDashboard";
+import NavbarAdmin from "./pages/admin/NavbarAdmin";
+import AnimalFeedingOrderDetailsError from "./pages/AnimalFeeding/Error/AnimalFeedingOrderDetailsError";
 
 export default function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
-      <Route path="/" element={<RootLayout />}>
-        <Route index element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/emailsend" element={<EmailSent />} />
-        <Route path="/enter-email" element={<EnterEmail />} />
-        <Route path="/password/new" element={<ForgotPassword />} />
+      <Route>
+        <Route path="dashboard" element={<AdminDashboard />} />
+        <Route path="/" element={<RootLayout />}>
+          <Route index element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/emailsend" element={<EmailSent />} />
+          <Route path="/enter-email" element={<EnterEmail />} />
+          <Route path="/password/new" element={<ForgotPassword />} />
 
-        <Route path="/dashboard" element={<UserDashboard />} />
-        <Route path="/contact" element={<Contact />} action={contactAction} />
-        {/* animal feeding */}
-        <Route path="/animal-feeding" element={<AnimalFeedingLayout />}>
-          <Route index element={<AnimalFeeding />} />
+          {/* admin */}
 
-          <Route path="products" element={<AnimalFeedingProductsLayout />}>
-            <Route index element={<FoodsBody />} />
+          <Route path="/dashboard" element={<UserDashboard />} />
+          <Route path="/contact" element={<Contact />} action={contactAction} />
+          {/* animal feeding */}
+          <Route path="/animal-feeding" element={<AnimalFeedingLayout />}>
+            <Route index element={<AnimalFeeding />} />
+
+            <Route path="products" element={<AnimalFeedingProductsLayout />}>
+              <Route index element={<FoodsBody />} />
+              <Route
+                path=":productId"
+                element={<ProductDetail />}
+                errorElement={<ErrorPage />}
+              />
+            </Route>
+            <Route path="cart" element={<Cart />} />
+            <Route path="order-item" element={<OrderItemAnimalFeeding />} />
+            <Route path="order" element={<Order />} />
+            <Route path="orders" element={<Orders />} />
+            <Route path="orders/:id" element={<OrderDetailsAnimal />} errorElement={<AnimalFeedingOrderDetailsError />} />
+            <Route path="order/sucess" element={<OrderSucess />} />
+            <Route path="admin/bulk-upload" element={<BulkUpload />} />
+            <Route path="admin/upload" element={<FoodUpload />} />
+            <Route path="admin/orders" element={<AdminOrders />} />
+            <Route path="admin/upload" element={<FoodUpload />} />
+            <Route path="admin/manage" element={<ManageFood />} />
+          </Route>
+
+          {/* fresh oil */}
+          <Route path="/freshOil" element={<OilLayouts />}>
+            <Route index element={<OilList />} />
+            <Route path="products" element={<OilLayoutProduct />}>
+              <Route index element={<Oils />} />
+              <Route path=":id" element={<OilDetails />} />
+            </Route>
+            <Route path="orders" element={<FreshOilOrders />} />
             <Route
-              path=":productId"
-              element={<ProductDetail />}
-              errorElement={<ErrorPage />}
+              path="orders/:id"
+              element={<FreshOilOrdersDetails />}
+              errorElement={<FreshOilOrderDetailsError />}
             />
+            <Route path="order-item" element={<OrderItem />} />
+            <Route path="admin/upload" element={<UploadFreshOil />} />
+            <Route path="admin/bulk-upload" element={<BulkUploadFreshOil />} />
+            <Route path="admin/manage" element={<ManagFreshOil />} />
           </Route>
-          <Route path="cart" element={<Cart />} />
-          <Route path="order" element={<Order />} />
-          <Route path="orders" element={<Orders />} />
-          <Route path="orders/:id" element={<OrderDetailsAnimal />} />
-          <Route path="order/sucess" element={<OrderSucess />} />
-          <Route path="admin/bulk-upload" element={<BulkUpload />} />
-          <Route path="admin/upload" element={<FoodUpload />} />
-          <Route path="admin/orders" element={<AdminOrders />} />
-          <Route path="admin/upload" element={<FoodUpload />} />
-          <Route path="admin/manage" element={<ManageFood />} />
-        </Route>
 
-        {/* fresh oil */}
-        <Route path="/freshOil" element={<OilLayouts />}>
-          <Route index element={<OilList />} />
-          <Route path="products" element={<OilLayoutProduct />}>
-            <Route index element={<Oils />} />
-            <Route path=":id" element={<OilDetails />} />
-          </Route>
-          <Route path="orders" element={<FreshOilOrders />} />
-          <Route
-            path="orders/:id"
-            element={<FreshOilOrdersDetails />}
-            errorElement={<FreshOilOrderDetailsError />}
-          />
-          <Route path="admin/upload" element={<UploadFreshOil />} />
-          <Route path="admin/bulk-upload" element={<BulkUploadFreshOil />} />
-          <Route path="admin/manage" element={<ManagFreshOil />} />
-        </Route>
-
-        {/* godown */}
-        <Route path="/godown" element={<GodownLayout />}>
-          <Route index element={<Godown />} />
-          <Route path="products" element={<GodownLayoutProduct />}>
-            <Route index element={<InventoryTable />} />
-            <Route path=":id" element={<GodownProductDetails />} />
-          </Route>
-          <Route path="orders" element={<GodownOrders />} />
-          <Route
-            path="orders/:id"
-            element={<GodownOrderDetails />}
-            errorElement={<GodownOrderDetailsError />}
-          />
-          <Route path="admin/upload" element={<UploadGodownItems />} />
-          <Route path="admin/bulk-upload" element={<BulkUploadGodown />} />
-          <Route path="admin/manage" element={<ManageGodownItems />} />
-          <Route path="admin/move" element={<InventoryMovement />} />
-        </Route>
-
-        {/* hardware */}
-        <Route path="/hardware" element={<HardwareLayout />}>
-          <Route index element={<Hardware />} />
-          <Route path="products" element={<HardwareLayoutProducts />}>
-            <Route index element={<Hardwares />} />
-            <Route path=":id" element={<HardWareDetails />} />
-          </Route>
-          <Route path="orders" element={<HardwareOrders />} />
-          <Route
-            path="orders/:id"
-            element={<HardWareDetails />}
-            errorElement={<HardwareDetailsError />}
-          />
-          <Route path="admin/upload" element={<HardwareItemsUpload />} />
-          <Route path="admin/bulk-upload" element={<HardwareBulkUpload />} />
-          <Route path="order/sucess" element={<OrderSucessHardware />} />
-          <Route path="admin/orders" element={<HardwareOrders />} />
-          <Route path="admin/manage" element={<ManageHardwareProducts />} />
-        </Route>
-
-        {/* landing page */}
-
-        {/* printing */}
-        <Route path="/printing" element={<PrintingLayout />}>
-          <Route index element={<HomePrinting />} />
-          <Route path="submit" element={<SubmitWork />} />
-          <Route path="receipts" element={<ReceiptLayout />}>
-            <Route index element={<Receipt />} />
-            <Route path=":id" element={<ReceiptDetails />} />
-          </Route>
-          <Route path="orders" element={<OrdersLayout />}>
-            <Route index element={<OrdersTable />} />
+          {/* godown */}
+          <Route path="/godown" element={<GodownLayout />}>
+            <Route index element={<Godown />} />
+            <Route path="products" element={<GodownLayoutProduct />}>
+              <Route index element={<InventoryTable />} />
+              <Route path=":id" element={<GodownProductDetails />} />
+            </Route>
+            <Route path="orders" element={<GodownOrders />} />
             <Route
-              path=":id"
-              element={<OrderDetails />}
-              errorElement={<OrderDetailsError />}
+              path="orders/:id"
+              element={<GodownOrderDetails />}
+              errorElement={<GodownOrderDetailsError />}
             />
+            <Route path="order-item" element={<OrderItemGodown />} />
+            <Route path="admin/upload" element={<UploadGodownItems />} />
+            <Route path="admin/bulk-upload" element={<BulkUploadGodown />} />
+            <Route path="admin/manage" element={<ManageGodownItems />} />
+            <Route path="admin/move" element={<InventoryMovement />} />
           </Route>
-          <Route path="order/sucess" element={<OrderSucessPrinting />} />
-          <Route path="admin/orders" element={<PrintingOrders />} />
-          <Route path="admin/manage" element={<ManagePrintingOrders />} />
-        </Route>
 
-        {/* stationery */}
-        <Route path="/stationery" element={<StationeryLayout />}>
-          <Route index element={<StationeryItemsList />} />
-          <Route path="products" element={<StationeryProductsLayout />}>
-            <Route index element={<StationeryBody />} />
+          {/* hardware */}
+          <Route path="/hardware" element={<HardwareLayout />}>
+            <Route index element={<Hardware />} />
+            <Route path="products" element={<HardwareLayoutProducts />}>
+              <Route index element={<Hardwares />} />
+              <Route path=":id" element={<HardWareDetails />} />
+            </Route>
+            <Route path="orders" element={<HardwareOrders />} />
             <Route
-              path=":id"
-              element={<StationeryItemsDetails />}
-              errorElement={<StationeryItemsDetails />}
+              path="orders/:id"
+              element={<HardWareDetails />}
+              errorElement={<HardwareDetailsError />}
             />
+            <Route path="order-item" element={<OrderItemHardware />} />
+            <Route path="admin/upload" element={<HardwareItemsUpload />} />
+            <Route path="admin/bulk-upload" element={<HardwareBulkUpload />} />
+            <Route path="order/sucess" element={<OrderSucessHardware />} />
+            <Route path="admin/orders" element={<HardwareOrders />} />
+            <Route path="admin/manage" element={<ManageHardwareProducts />} />
           </Route>
-          <Route path="orders" element={<StationeryOrders />} />
-          <Route
-            path="orders/:id"
-            element={<StationeryOrderDetails />}
-            errorElement={<StationeryOrderDetailsError />}
-          />
-          <Route path="admin/upload" element={<AddItems />} />
-          <Route path="admin/bulk-upload" element={<BulkUploadStationery />} />
-          <Route path="order/sucess" element={<OrderSucessStationery />} />
-          <Route path="admin/orders" element={<StationeryOrders />} />
-          <Route path="admin/manage" element={<ManageStationeryProducts />} />
+
+          {/* landing page */}
+
+          {/* printing */}
+          <Route path="/printing" element={<PrintingLayout />}>
+            <Route index element={<HomePrinting />} />
+            <Route path="submit" element={<SubmitWork />} />
+            <Route path="receipts" element={<ReceiptLayout />}>
+              <Route index element={<Receipt />} />
+              <Route path=":id" element={<ReceiptDetails />} />
+            </Route>
+            <Route path="orders" element={<OrdersLayout />}>
+              <Route index element={<OrdersTable />} />
+              <Route
+                path=":id"
+                element={<OrderDetails />}
+                errorElement={<OrderDetailsError />}
+              />
+            </Route>
+            <Route path="order/sucess" element={<OrderSucessPrinting />} />
+            <Route path="admin/orders" element={<PrintingOrders />} />
+            <Route path="admin/manage" element={<ManagePrintingOrders />} />
+          </Route>
+
+          {/* stationery */}
+          <Route path="/stationery" element={<StationeryLayout />}>
+            <Route index element={<StationeryItemsList />} />
+            <Route path="products" element={<StationeryProductsLayout />}>
+              <Route index element={<StationeryBody />} />
+              <Route
+                path=":id"
+                element={<StationeryItemsDetails />}
+                errorElement={<StationeryItemsDetails />}
+              />
+            </Route>
+            <Route path="orders" element={<StationeryOrders />} />
+            <Route
+              path="orders/:id"
+              element={<StationeryOrderDetails />}
+              errorElement={<StationeryOrderDetailsError />}
+            />
+            <Route path="order-item" element={<OrderItemStationery />} />
+            <Route path="admin/upload" element={<AddItems />} />
+            <Route path="admin/bulk-upload" element={<BulkUploadStationery />} />
+            <Route path="order/sucess" element={<OrderSucessStationery />} />
+            <Route path="admin/orders" element={<StationeryOrders />} />
+            <Route path="admin/manage" element={<ManageStationeryProducts />} />
+          </Route>
+          <Route path="*" element={<NotFound />} />
         </Route>
-        <Route path="*" element={<NotFound />} />
       </Route>
     )
   );
