@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for redirection
+import { jsPDF } from "jspdf"; // Import jsPDF for PDF generation
 import "../../../styles/submitWork.css";
 
 function SubmitWork() {
@@ -13,13 +14,28 @@ function SubmitWork() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Process form submission
-    const orderData = { description, price, category };
-    console.log("Submitting Order:", orderData);
+    // Create PDF after form submission
+    const orderData = { description, price, quantity, contact, category };
 
-    // Simulate API call or processing here...
-    // Redirect to receipt page after submission
-    navigate("/receipt"); // Change this path to your actual receipt page path
+    const doc = new jsPDF();
+
+    // Set the title and some content in the PDF
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(16);
+    doc.text("Order Submission Receipt", 20, 20);
+
+    doc.setFontSize(12);
+    doc.text(`Description: ${description}`, 20, 30);
+    doc.text(`Price: Tsh ${price}`, 20, 40);
+    doc.text(`Quantity: ${quantity}`, 20, 50);
+    doc.text(`Contact: ${contact}`, 20, 60);
+    doc.text(`Category: ${category}`, 20, 70);
+
+    // Add more data or styling as needed
+    doc.save("order_submission.pdf"); // Trigger PDF download
+
+    // Navigate to receipt page and pass order data
+    navigate("/printing/receipts", { state: orderData }); // Pass order data as state
   };
 
   const handleCancel = () => {
@@ -27,7 +43,7 @@ function SubmitWork() {
     setDescription("");
     setPrice(0);
     setCategory("magazine");
-    navigate("/"); // Change this path to your desired cancellation behavior
+    navigate("/printing"); // Change this path to your desired cancellation behavior
   };
 
   return (
@@ -43,15 +59,15 @@ function SubmitWork() {
                 htmlFor="description"
                 className="block text-sm font-bold text-gray-700"
               >
-                {" "}
-                Description{" "}
+                Description
               </label>
-
               <textarea
                 id="description"
                 className="mt-2 w-full rounded-lg align-top shadow-sm sm:text-sm border border-gray-400"
                 rows="4"
                 placeholder="Enter Description for The Order..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
               ></textarea>
             </div>
 
@@ -71,13 +87,13 @@ function SubmitWork() {
             </div>
 
             <div className="p-2">
-              <label htmlFor="price" className="font-bold text-gray-700">
+              <label htmlFor="quantity" className="font-bold text-gray-700">
                 Quantity
               </label>
               <input
                 type="number"
-                id="price"
-                name="price"
+                id="quantity"
+                name="quantity"
                 required
                 className="border border-gray-400 rounded w-full p-2"
                 value={quantity}
@@ -86,7 +102,7 @@ function SubmitWork() {
             </div>
 
             <div className="p-2">
-              <label htmlFor="price" className="font-bold text-gray-700">
+              <label htmlFor="contact" className="font-bold text-gray-700">
                 Contact
               </label>
               <input
