@@ -1,5 +1,4 @@
 // import pages
-import Hello from "./Hello";
 import Contact from "../pages/Contact";
 import Services from "./Services";
 import About from "./AboutUs";
