@@ -17,6 +17,7 @@ const RootLayout = () => {
     { name: "Printing", path: "/printing" },
     { name: "FreshOil", path: "/freshOil" },
     { name: "Contact", path: "/contact" },
+    { name: "Admin", path: "/admin" }
   ];
 
   return (
