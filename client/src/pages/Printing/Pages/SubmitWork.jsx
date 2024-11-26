@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for redirection
 import { jsPDF } from "jspdf"; // Import jsPDF for PDF generation
 import "../../../styles/submitWork.css";
-import logo from "../../../assets/images/logo.jpg"
 
 function SubmitWork() {
   const navigate = useNavigate(); // Initialize useNavigate
@@ -44,7 +43,7 @@ function SubmitWork() {
     const logoUrl = "data:image/png;base64,..."; // Replace with your base64 logo string
     const logoWidth = 40; // Adjust width of logo
     const logoHeight = 40; // Adjust height of logo
-    doc.addImage(logo, "JPG", 160, 10, logoWidth, logoHeight); // Positioning logo on the right
+    doc.addImage(logoUrl, "PNG", 160, 10, logoWidth, logoHeight); // Positioning logo on the right
 
     // Section Title with brand green color
     doc.setTextColor(40, 167, 69); // Brand Green color (rgb)
