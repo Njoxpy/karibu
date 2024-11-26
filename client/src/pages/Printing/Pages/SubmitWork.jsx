@@ -11,31 +11,33 @@ function SubmitWork() {
   const [contact, setContact] = useState(0);
   const [category, setCategory] = useState("magazine");
 
+  // Add useState to store the list of receipts
+  const [receipts, setReceipts] = useState([]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Create PDF after form submission
+    // Create the order data to be saved
     const orderData = { description, price, quantity, contact, category };
 
-    const doc = new jsPDF();
+    // Add the new order to the list of receipts
+    setReceipts((prevReceipts) => [...prevReceipts, orderData]);
 
-    // Set the title and some content in the PDF
+    // Create the PDF for the receipt
+    const doc = new jsPDF();
     doc.setFont("helvetica", "normal");
     doc.setFontSize(16);
     doc.text("Order Submission Receipt", 20, 20);
-
     doc.setFontSize(12);
     doc.text(`Description: ${description}`, 20, 30);
     doc.text(`Price: Tsh ${price}`, 20, 40);
     doc.text(`Quantity: ${quantity}`, 20, 50);
     doc.text(`Contact: ${contact}`, 20, 60);
     doc.text(`Category: ${category}`, 20, 70);
-
-    // Add more data or styling as needed
     doc.save("order_submission.pdf"); // Trigger PDF download
 
-    // Navigate to receipt page and pass order data
-    navigate("/printing/receipts", { state: orderData }); // Pass order data as state
+    // Navigate to receipt page and pass the receipts
+    navigate("/printing/receipts", { state: { receipts } });
   };
 
   const handleCancel = () => {
@@ -43,7 +45,7 @@ function SubmitWork() {
     setDescription("");
     setPrice(0);
     setCategory("magazine");
-    navigate("/printing"); // Change this path to your desired cancellation behavior
+    navigate("/"); // Change this path to your desired cancellation behavior
   };
 
   return (
