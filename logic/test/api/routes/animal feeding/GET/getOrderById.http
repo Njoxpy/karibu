@@ -1,0 +1,1 @@
+DELETE http://localhost:4000/api/v1/animal-feeding/orders/673cd5c1837e3b06d3590f0d HTTP/1.1
