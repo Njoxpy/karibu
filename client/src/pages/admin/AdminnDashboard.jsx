@@ -24,7 +24,7 @@ const AdminDashboard = () => {
 
                 <main className="py-6 px-4 sm:px-6 lg:px-8">
                     <Routes>
-                        <Route path="/" element={<DashboardHome />} />
+                        <Route path="admin" element={<DashboardHome />} />
                         <Route path="products" element={<ProductsPage />} />
                         <Route path="orders" element={<OrdersPage />} />
                         <Route path="users" element={<UsersPage />} />

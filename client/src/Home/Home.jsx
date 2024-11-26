@@ -5,11 +5,12 @@ import Services from "./Services";
 import About from "./AboutUs";
 import { Divider } from "../components/Divider";
 import Testimonials from "./Testimonials";
+import HelloSection from "./SlideShow";
 
 const Home = () => {
   return (
     <>
-      <Hello />
+      <HelloSection />
       <Divider />
       <About />
       <Divider />

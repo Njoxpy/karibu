@@ -19,7 +19,7 @@ const getAllProducts = async (req, res) => {
 
 // create product
 const createProduct = async (req, res) => {
-    const { name, description, quantity, price, userId, category } = req.body
+    const { name, description, quantity, price, userId } = req.body
 
 
     try {
