@@ -13,7 +13,7 @@ const images = [
     { id: 1, src: stationery, alt: "Stationery products on display" },
     { id: 2, src: printing, alt: "Printing services in action" },
     { id: 3, src: godown, alt: "Well-organized warehouse" },
-    { id: 3, src: animalFeeding, alt: "animal feeding" },
+    { id: 4, src: animalFeeding, alt: "animal feeding" },
 ];
 
 const HelloSection = () => {
