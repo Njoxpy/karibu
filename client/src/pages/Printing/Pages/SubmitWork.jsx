@@ -27,7 +27,7 @@ function SubmitWork() {
     const doc = new jsPDF();
 
     // Set the font to Helvetica and normal style
-    doc.setFont("helvetica", "normal");
+    doc.setFont("courier", "normal");
 
     // Title Section with brand blue color
     doc.setFontSize(18);
@@ -40,10 +40,7 @@ function SubmitWork() {
     doc.line(20, 25, 190, 25); // Draw line under the title
 
     // Add the logo on the right side (adjust the x and y positions)
-    const logoUrl = "data:image/png;base64,..."; // Replace with your base64 logo string
-    const logoWidth = 40; // Adjust width of logo
-    const logoHeight = 40; // Adjust height of logo
-    doc.addImage(logoUrl, "PNG", 160, 10, logoWidth, logoHeight); // Positioning logo on the right
+    // Positioning logo on the right
 
     // Section Title with brand green color
     doc.setTextColor(40, 167, 69); // Brand Green color (rgb)
