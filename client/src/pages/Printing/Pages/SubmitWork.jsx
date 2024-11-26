@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for redirection
 import { jsPDF } from "jspdf"; // Import jsPDF for PDF generation
 import "../../../styles/submitWork.css";
+import logo from "../../../assets/images/logo.jpg"
 
 function SubmitWork() {
   const navigate = useNavigate(); // Initialize useNavigate
@@ -25,16 +26,59 @@ function SubmitWork() {
 
     // Create the PDF for the receipt
     const doc = new jsPDF();
+
+    // Set the font to Helvetica and normal style
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(16);
+
+    // Title Section with brand blue color
+    doc.setFontSize(18);
+    doc.setTextColor(0, 123, 255); // Brand Blue color (rgb)
     doc.text("Order Submission Receipt", 20, 20);
+
+    // Add a line for separation
+    doc.setLineWidth(0.5);
+    doc.setDrawColor(0, 123, 255); // Brand Blue color
+    doc.line(20, 25, 190, 25); // Draw line under the title
+
+    // Add the logo on the right side (adjust the x and y positions)
+    const logoUrl = "data:image/png;base64,..."; // Replace with your base64 logo string
+    const logoWidth = 40; // Adjust width of logo
+    const logoHeight = 40; // Adjust height of logo
+    doc.addImage(logo, "JPG", 160, 10, logoWidth, logoHeight); // Positioning logo on the right
+
+    // Section Title with brand green color
+    doc.setTextColor(40, 167, 69); // Brand Green color (rgb)
+    doc.setFontSize(14);
+    doc.text("Order Details", 20, 40);
+
+    // Background color for each section (White background)
+    doc.setFillColor(255, 255, 255); // White background
+    doc.rect(20, 45, 170, 10, "F"); // Draw a filled rectangle for background
+
+    // Reset text color for content (Brand Blue)
+    doc.setTextColor(0, 123, 255); // Brand Blue color
     doc.setFontSize(12);
-    doc.text(`Description: ${description}`, 20, 30);
-    doc.text(`Price: Tsh ${price}`, 20, 40);
-    doc.text(`Quantity: ${quantity}`, 20, 50);
-    doc.text(`Contact: ${contact}`, 20, 60);
-    doc.text(`Category: ${category}`, 20, 70);
-    doc.save("order_submission.pdf"); // Trigger PDF download
+
+    // Add order details with proper spacing
+    doc.text(`Description: ${description}`, 20, 55);
+    doc.text(`Price: Tsh ${price}`, 20, 65);
+    doc.text(`Quantity: ${quantity}`, 20, 75);
+    doc.text(`Contact: ${contact}`, 20, 85);
+    doc.text(`Category: ${category}`, 20, 95);
+
+    // Add another line for separation (Brand Blue)
+    doc.setDrawColor(0, 123, 255); // Brand Blue color
+    doc.line(20, 100, 190, 100); // Draw line for separation
+
+    // Footer with brand green color
+    doc.setFontSize(10);
+    doc.setTextColor(40, 167, 69); // Brand Green color
+    doc.text("Thank you for your order!", 20, 110);
+
+    // Optionally add more space or text (e.g., company info or terms)
+
+    // Save the PDF with a custom name
+    doc.save("order_submission_receipt.pdf"); // Trigger PDF download
 
     // Navigate to receipt page and pass the receipts
     navigate("/printing/receipts", { state: { receipts } });
