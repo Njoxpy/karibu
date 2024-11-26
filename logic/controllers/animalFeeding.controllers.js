@@ -32,7 +32,7 @@ const createProduct = async (req, res) => {
 
 // create order
 const createOrder = async (req, res) => {
-    const { totalPrice, orderId, userId, productName, quantity, status, catego } = req.body
+    const { totalPrice, orderId, userId, productName, quantity, status, category } = req.body
 
     if (totalPrice == null || !userId || !productName || quantity == null) {
         return res.status(400).json({ message: "all fields are required" })
@@ -226,3 +226,5 @@ module.exports = {
     deleteOrderById,
     searchProductName
 }
+
+// create for update order by id
