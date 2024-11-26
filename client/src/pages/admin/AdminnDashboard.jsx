@@ -7,6 +7,7 @@ import UsersPage from "./UsersPage";
 import ReportsPage from "./ReportsPage";
 import SettingsPage from "./SettingsPage";
 import AdminSidebar from "./AdminSidebar"; // Import your existing sidebar
+import NotFound from "../../error/NotFound";
 
 const AdminDashboard = () => {
     return (
@@ -24,12 +25,13 @@ const AdminDashboard = () => {
 
                 <main className="py-6 px-4 sm:px-6 lg:px-8">
                     <Routes>
-                        <Route path="admin" element={<DashboardHome />} />
+                        <Route path="/" element={<DashboardHome />} />
                         <Route path="products" element={<ProductsPage />} />
                         <Route path="orders" element={<OrdersPage />} />
                         <Route path="users" element={<UsersPage />} />
                         <Route path="reports" element={<ReportsPage />} />
                         <Route path="settings" element={<SettingsPage />} />
+                        <Route path="*" element={<NotFound />} />
                     </Routes>
                 </main>
             </div>
