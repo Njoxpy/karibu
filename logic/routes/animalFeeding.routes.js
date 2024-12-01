@@ -15,15 +15,15 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-const { getAllProducts, createOrder, getAllOrders, getProductById, getOrderById, updateProduct, deleteProductById, deleteOrderById, searchProductName, updateOrder } = require("../controllers/animalFeeding.controller");
+const { getAllAnimalFeedingProducts, createAnimalFeedingOrder, getAnimalFeedingAllOrders, getAnimalFeedingProductById, getAnimalFeedingOrderById, updateAnimalFeedingProduct, deleteAnimalFeedingProductById, deleteAnimalFeedingOrderById, searchAnimalFeedingProductName, updateAnimalFeedingOrder } = require("../controllers/animalFeeding.controller");
 const validateProductFields = require("../middleware/validateProductFields");
 const Product = require("../models/productModel");
 
 // GET: Get all products
-router.get("/products", getAllProducts);
+router.get("/products", getAllAnimalFeedingProducts);
 
 // GET: Get product by an id
-router.get("/products/:id", getProductById);
+router.get("/products/:id", getAnimalFeedingProductById);
 
 // POST: Upload new product
 router.post("/products/bulk-upload", (req, res) => {
@@ -45,27 +45,27 @@ router.post("/products/new", validateProductFields, upload.single("image"), asyn
 })
 
 // PATCH: Update product details
-router.patch("/products/:id", updateProduct)
+router.patch("/products/:id", updateAnimalFeedingProduct)
 
 // POST: search for new order
-router.post("/products/search", searchProductName)
+router.post("/products/search", searchAnimalFeedingProductName)
 
 // DELETE: Delete product
-router.delete("/products/:id", deleteProductById)
+router.delete("/products/:id", deleteAnimalFeedingProductById)
 
 // GET: get all orders
-router.get("/orders", getAllOrders)
+router.get("/orders", getAnimalFeedingAllOrders)
 
 // GET: Get single order
-router.get("/orders/:id", getOrderById)
+router.get("/orders/:id", getAnimalFeedingOrderById)
 
 // UPDATE ORDER
-router.patch("/orders/:id", updateOrder)
+router.patch("/orders/:id", updateAnimalFeedingOrder)
 
 // POST: create new order
-router.post("/orders/new", createOrder)
+router.post("/orders/new", createAnimalFeedingOrder)
 
 // DELETE: Delete order by an id
-router.delete("/orders/:id", deleteOrderById)
+router.delete("/orders/:id", deleteAnimalFeedingOrderById)
 
 module.exports = router;
