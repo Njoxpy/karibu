@@ -33,7 +33,7 @@ const orderSchema = new Schema(
     },
     category: {
       type: String,
-      enum: ["Animal Feeding", "Fresh Oil", "Stationery", "Godown", "Printing", "Hardware"],
+      enum: ["animal-feeding", "fresh-0il", "stationery", "godown", "printing", "hardware"],
       required: true
     }
   },

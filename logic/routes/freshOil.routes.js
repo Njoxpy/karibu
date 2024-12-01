@@ -1,5 +1,5 @@
 const express = require("express");
-const { getAllProducts, getAllFreshOilOrders, createFreshOilProduct, createFreshOilOrder } = require("../controllers/freshOilControllers");
+const { getAllProducts, getAllFreshOilOrders, createFreshOilProduct, createFreshOilOrder } = require("../controllers/freshOil.controller");
 const router = express.Router()
 
 router.get("/", (req, res) => {
