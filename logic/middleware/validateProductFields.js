@@ -1,7 +1,7 @@
 const validateProductFields = (req, res, next) => {
-    const { price, quantity, name, userId } = req.body
+    const { price, quantity, name, userId, image } = req.body
 
-    if (!name || quantity == null || price == null || !userId) {
+    if (!name || quantity == null || price == null || !userId || !image) {
         return res.status(400).json({ message: "all required fields must be provided" })
     }
 

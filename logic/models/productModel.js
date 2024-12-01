@@ -23,7 +23,7 @@ const productSchema = new Schema(
         category: {
             type: String,
             enum: ["animal-feeding", "fresh-oil", "godown", "hardware", "printing", "stationery",],
-            required: true
+            required: true,
         },
         userId: {
             type: Number,
@@ -31,7 +31,8 @@ const productSchema = new Schema(
             ref: 'User'
         },
         image: {
-            type: String
+            type: String,
+            required: true
         }
 
     },
