@@ -10,6 +10,7 @@ const freshOilRoutes = require("./routes/freshOil.routes")
 const godownRoutes = require("./routes/godown.routes")
 const userRoutes = require("./routes/user.routes")
 const printingRoutes = require("./routes/printing.routes")
+const connectDB = require('./config/DB')
 
 // express app
 const app = express()
@@ -33,15 +34,9 @@ app.use("/api/v1/godown", godownRoutes)
 app.use("/api/v1/users", userRoutes)
 app.use("/api/v1/printing", printingRoutes)
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
+// connect to DB
+connectDB()
 
-    // listen for requests
-    app.listen(process.env.PORT, () => {
-      console.log(`connected to DB && Listening http://localhost:${process.env.PORT}/`);
-    })
-  }
-  )
-  .catch((err) => {
-    console.error(`failed to conect: ${err}`);
-  })
+app.listen(process.env.PORT, () => {
+  console.log(`Listening http://localhost:${process.env.PORT}/`);
+})
