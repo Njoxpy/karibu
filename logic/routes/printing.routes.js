@@ -1,5 +1,5 @@
 const express = require("express")
-const { createSubmission } = require("../controllers/printing.controllers")
+const { createSubmission } = require("../controllers/printing.controller")
 const validatePrintingSubmission = require("../middleware/validatePrintingSubmission")
 const router = express.Router()
 const pdf = require("html-pdf")
