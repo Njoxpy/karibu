@@ -1,4 +1,3 @@
-// mongoose
 const mongoose = require("mongoose")
 // models
 const Product = require("../models/productModel")
@@ -6,7 +5,7 @@ const Order = require("../models/orderModel")
 const User = require("../models/userModel")
 
 // GET ALL PRODUCTS
-const getAllProducts = async (req, res) => {
+const getAllAnimalFeedingProducts = async (req, res) => {
     try {
         const product = await Product.find({ category: "animal-feeding" }).sort({ createdAt: -1 })
         if (product.length === 0) {
@@ -19,7 +18,7 @@ const getAllProducts = async (req, res) => {
 }
 
 // GET ALL ORDERS
-const getAllOrders = async (req, res) => {
+const getAnimalFeedingAllOrders = async (req, res) => {
     try {
         const orders = await Order.find({ category: "animal-feeding" }).sort({ createdAt: -1 })
         if (orders.length === 0) {
@@ -32,7 +31,7 @@ const getAllOrders = async (req, res) => {
 }
 
 // GET PRODUCT BY ID
-const getProductById = async (req, res) => {
+const getAnimalFeedingProductById = async (req, res) => {
     const { id } = req.params;
 
     // Validate ObjectId
@@ -57,7 +56,7 @@ const getProductById = async (req, res) => {
 };
 
 // GET ORDER BY ID
-const getOrderById = async (req, res) => {
+const getAnimalFeedingOrderById = async (req, res) => {
     const { id } = req.params;
 
     // Validate ObjectId
@@ -84,7 +83,7 @@ const getOrderById = async (req, res) => {
 };
 
 // CREATE ORDER
-const createOrder = async (req, res) => {
+const createAnimalFeedingOrder = async (req, res) => {
     const { totalPrice, orderId, userId, productName, quantity, status, category } = req.body
 
     if (totalPrice == null || !userId || !productName || quantity == null) {
@@ -109,7 +108,7 @@ const createOrder = async (req, res) => {
 }
 
 // UPDATE PRODUCT
-const updateProduct = async (req, res) => {
+const updateAnimalFeedingProduct = async (req, res) => {
     try {
         const { id } = req.params;
 
@@ -138,7 +137,7 @@ const updateProduct = async (req, res) => {
 };
 
 // UPDATE ORDER
-const updateOrder = async (req, res) => {
+const updateAnimalFeedingOrder = async (req, res) => {
     try {
         const { id } = req.params;
 
@@ -167,7 +166,7 @@ const updateOrder = async (req, res) => {
 };
 
 // delete product by id
-const deleteProductById = async (req, res) => {
+const deleteAnimalFeedingProductById = async (req, res) => {
     const { id } = req.params
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -186,7 +185,7 @@ const deleteProductById = async (req, res) => {
 }
 
 // delte order by id
-const deleteOrderById = async (req, res) => {
+const deleteAnimalFeedingOrderById = async (req, res) => {
     const { id } = req.params
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(404).json({ message: "order not found" })
@@ -203,7 +202,7 @@ const deleteOrderById = async (req, res) => {
 }
 
 // search product
-const searchProductName = async (req, res) => {
+const searchAnimalFeedingProductName = async (req, res) => {
     const { productName } = req.query;
 
     if (!productName) {
@@ -225,16 +224,16 @@ const searchProductName = async (req, res) => {
 }
 
 module.exports = {
-    getAllProducts,
-    createOrder,
-    getAllOrders,
-    getProductById,
-    getOrderById,
-    updateProduct,
-    deleteProductById,
-    deleteOrderById,
-    searchProductName,
-    updateOrder
+    getAllAnimalFeedingProducts,
+    createAnimalFeedingOrder,
+    getAnimalFeedingAllOrders,
+    getAnimalFeedingProductById,
+    getAnimalFeedingOrderById,
+    updateAnimalFeedingProduct,
+    deleteAnimalFeedingProductById,
+    deleteAnimalFeedingOrderById,
+    searchAnimalFeedingProductName,
+    updateAnimalFeedingOrder
 }
 
 // create for update order by id
