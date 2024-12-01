@@ -4,10 +4,11 @@ const mongoose = require("mongoose")
 const Product = require("../models/productModel")
 const Order = require("../models/orderModel")
 const User = require("../models/userModel")
-// get all products
+
+// GET ALL PRODUCTS
 const getAllProducts = async (req, res) => {
     try {
-        const product = await Product.find({ category: "animal-feeding" })
+        const product = await Product.find({ category: "animal-feeding" }).sort({ createdAt: -1 })
         if (product.length === 0) {
             return res.json({ message: "there are no products now" })
         }
@@ -17,45 +18,20 @@ const getAllProducts = async (req, res) => {
     }
 }
 
-// create product
-const createProduct = async (req, res) => {
-    const { name, description, quantity, price, userId } = req.body
-
-
+// GET ALL ORDERS
+const getAllOrders = async (req, res) => {
     try {
-        const product = await Product.create({ name, description, quantity, userId, price, category: "animal-feeding" })
-        res.status(200).json(product)
+        const orders = await Order.find({ category: "animal-feeding" }).sort({ createdAt: -1 })
+        if (orders.length === 0) {
+            return res.json({ message: "there are no orders now" })
+        }
+        res.status(200).json(orders)
     } catch (error) {
-        res.status(400).json(error.message)
+        res.status(500).json({ message: "Failed to fetch product orders", details: error.message })
     }
 }
 
-// create order
-const createOrder = async (req, res) => {
-    const { totalPrice, orderId, userId, productName, quantity, status, category } = req.body
-
-    if (totalPrice == null || !userId || !productName || quantity == null) {
-        return res.status(400).json({ message: "all fields are required" })
-    }
-
-    // validate price
-    if (typeof totalPrice !== "number" || totalPrice < 0) {
-        return res.status(400).json("Price must be a positive number")
-    }
-
-    // validate qouantity
-    if (typeof quantity !== "number" || quantity < 0) {
-        return res.status(400).json("Quantity must be a none negative number")
-    }
-    try {
-        const order = await Order.create({ totalPrice, orderId, userId, productName, quantity, status, category })
-        res.status(200).json(order)
-    } catch (error) {
-        res.status(500).json({ message: "Failed to create order", details: error.message })
-    }
-}
-
-// get productById
+// GET PRODUCT BY ID
 const getProductById = async (req, res) => {
     const { id } = req.params;
 
@@ -75,26 +51,12 @@ const getProductById = async (req, res) => {
     } catch (error) {
         res.status(500).json({
             error: "Failed to fetch the product.",
-            details: error.message,
+            error: error.message,
         });
     }
 };
 
-
-// get all orders
-const getAllOrders = async (req, res) => {
-    try {
-        const orders = await Order.find({ category: "animal-feeding" })
-        if (orders.length === 0) {
-            return res.json({ message: "there are no orders now" })
-        }
-        res.status(200).json(orders)
-    } catch (error) {
-        res.status(500).json({ message: "Failed to fetch product orders", details: error.message })
-    }
-}
-
-// get order by ID
+// GET ORDER BY ID
 const getOrderById = async (req, res) => {
     const { id } = req.params;
 
@@ -121,7 +83,32 @@ const getOrderById = async (req, res) => {
     }
 };
 
-// update product
+// CREATE ORDER
+const createOrder = async (req, res) => {
+    const { totalPrice, orderId, userId, productName, quantity, status, category } = req.body
+
+    if (totalPrice == null || !userId || !productName || quantity == null) {
+        return res.status(400).json({ message: "all fields are required" })
+    }
+
+    // validate price
+    if (typeof totalPrice !== "number" || totalPrice < 0) {
+        return res.status(400).json("Price must be a positive number")
+    }
+
+    // validate qouantity
+    if (typeof quantity !== "number" || quantity < 0) {
+        return res.status(400).json("Quantity must be a none negative number")
+    }
+    try {
+        const order = await Order.create({ totalPrice, orderId, userId, productName, quantity, status, category })
+        res.status(200).json(order)
+    } catch (error) {
+        res.status(404).json({ message: "Failed to create order", details: error.message })
+    }
+}
+
+// UPDATE PRODUCT
 const updateProduct = async (req, res) => {
     try {
         const { id } = req.params;
@@ -132,21 +119,49 @@ const updateProduct = async (req, res) => {
         }
 
         // Update the product
-        const product = await Product.findOneAndUpdate(
+        const updatedProduct = await Product.findOneAndUpdate(
             { _id: id },
             { ...req.body },
-            { new: true } // To return the updated document
+            { new: true }
         );
 
         // Handle case where product does not exist
-        if (!product) {
+        if (!updatedProduct) {
             return res.status(404).json({ message: "Product not found." });
         }
 
         // Return the updated product
-        res.status(200).json(product);
+        res.status(200).json({ "updated product": updatedProduct });
     } catch (error) {
-        // Handle unexpected errors
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
+// UPDATE ORDER
+const updateOrder = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Validate ObjectId
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(404).json({ message: "Order not found." });
+        }
+
+        // Update the product
+        const updatedOrder = await Order.findOneAndUpdate(
+            { _id: id },
+            { ...req.body },
+            { new: true }
+        );
+
+        // Handle case where product does not exist
+        if (!updatedOrder) {
+            return res.status(404).json({ message: "Order not found." });
+        }
+
+        // Return the updated product
+        res.status(200).json({ "updated order": updatedOrder });
+    } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
@@ -161,10 +176,10 @@ const deleteProductById = async (req, res) => {
 
     try {
         const deletedProduct = await Product.findByIdAndDelete(id)
-        if (!deleteProductById) {
-            res.status(404).json({ message: "Product not found" })
+        if (!deletedProduct) {
+            return res.status(404).json({ message: "Product not found" })
         }
-        res.status(200).json({ message: `product deleted sucessfully: ${deletedProduct}` })
+        res.status(200).json({ "product deleted sucessfully": deletedProduct })
     } catch (error) {
         res.status(404).json({ message: "failed to fetch product" })
     }
@@ -173,19 +188,17 @@ const deleteProductById = async (req, res) => {
 // delte order by id
 const deleteOrderById = async (req, res) => {
     const { id } = req.params
-
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({ message: "Order not found." })
+        return res.status(404).json({ message: "order not found" })
     }
-
     try {
-        const deletedProduct = await Product.findByIdAndDelete(id)
-        if (!deleteProductById) {
-            res.status(404).json({ message: "Order not found" })
+        const deletedOrder = await Order.findOneAndDelete({ _id: id })
+        if (!deletedOrder) {
+            res.status(404).json({ message: "order not found" })
         }
-        res.status(200).json({ message: `order deleted sucessfully: ${deletedProduct}` })
+        res.status(200).json({ "order deleted sucessfully": deletedOrder })
     } catch (error) {
-        res.status(404).json({ message: "failed to fetch order" })
+        res.status(400).json({ message: "failed to get order", error: error.message })
     }
 }
 
@@ -206,17 +219,13 @@ const searchProductName = async (req, res) => {
         if (products.length === 0) {
             return res.status(404).json({ message: "No products found with that name." });
         }
-
         res.status(200).json(products);
     } catch (error) {
     }
 }
 
-
-// get order by id
 module.exports = {
     getAllProducts,
-    createProduct,
     createOrder,
     getAllOrders,
     getProductById,
@@ -224,7 +233,8 @@ module.exports = {
     updateProduct,
     deleteProductById,
     deleteOrderById,
-    searchProductName
+    searchProductName,
+    updateOrder
 }
 
 // create for update order by id
