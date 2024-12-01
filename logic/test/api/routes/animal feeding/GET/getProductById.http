@@ -1,1 +1,0 @@
-GET http://localhost:4000/api/v1/animal-feeding/products/673dd758d17020f4ea31d5e1 HTTP/1.1
