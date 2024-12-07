@@ -17,6 +17,7 @@ const upload = multer({ storage: storage });
 
 const { getAllAnimalFeedingProducts, createAnimalFeedingOrder, getAnimalFeedingAllOrders, getAnimalFeedingProductById, getAnimalFeedingOrderById, updateAnimalFeedingProduct, deleteAnimalFeedingProductById, deleteAnimalFeedingOrderById, searchAnimalFeedingProductName, updateAnimalFeedingOrder } = require("../controllers/animalFeeding.controller");
 const validateProductFields = require("../middleware/validateProductFields");
+const createOrderMiddleware = require("../middleware/createOrderMiddleware")
 const Product = require("../models/productModel");
 
 // GET: Get all products
@@ -32,17 +33,24 @@ router.post("/products/bulk-upload", (req, res) => {
 
 // add new product
 router.post("/products/new", validateProductFields, upload.single("image"), async (req, res) => {
-  const { name, description, quantity, price, userId, image } = req.body
-  const thumbnail_image = req.file ? req.file.filename : null; // The image file name from Multer
+  const { name, description, quantity, price, userId } = req.body;
+  const thumbnail_image = req.file ? req.file.filename : null; // Get the filename if an image is uploaded
   try {
     const product = await Product.create({
-      name, description, quantity, userId, price, image, category: "animal-feeding", image: `/uploads/${thumbnail_image}`, // Store the image path in the database (relative to the public folder)
-    })
-    res.status(200).json(product)
+      name,
+      description,
+      quantity,
+      userId,
+      price,
+      category: "animal-feeding",
+      image: thumbnail_image ? `/uploads/${thumbnail_image}` : null, // Use the uploaded image path, or null if no image
+    });
+    res.status(200).json(product);
   } catch (error) {
-    res.status(400).json({ message: "failed to add product", error: error.message })
+    res.status(400).json({ message: "Failed to add product", error: error.message });
   }
-})
+});
+
 
 // PATCH: Update product details
 router.patch("/products/:id", updateAnimalFeedingProduct)
@@ -63,7 +71,7 @@ router.get("/orders/:id", getAnimalFeedingOrderById)
 router.patch("/orders/:id", updateAnimalFeedingOrder)
 
 // POST: create new order
-router.post("/orders/new", createAnimalFeedingOrder)
+router.post("/orders/new", createOrderMiddleware, createAnimalFeedingOrder)
 
 // DELETE: Delete order by an id
 router.delete("/orders/:id", deleteAnimalFeedingOrderById)
