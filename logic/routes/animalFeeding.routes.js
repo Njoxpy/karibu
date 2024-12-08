@@ -56,7 +56,7 @@ router.post("/products/new", validateProductFields, upload.single("image"), asyn
 router.patch("/products/:id", updateAnimalFeedingProduct)
 
 // POST: search for new order
-router.post("/products/search", searchAnimalFeedingProductName)
+router.get("/products/search", searchAnimalFeedingProductName)
 
 // DELETE: Delete product
 router.delete("/products/:id", deleteAnimalFeedingProductById)
