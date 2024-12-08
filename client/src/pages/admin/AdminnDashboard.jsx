@@ -1,4 +1,3 @@
-import React from "react";
 import { Routes, Route } from "react-router-dom";
 import DashboardHome from "./DashboardHome";
 import ProductsPage from "./ProductsPage";

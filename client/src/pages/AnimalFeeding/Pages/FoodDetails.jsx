@@ -1,5 +1,3 @@
-import React from "react";
-
 function ProductDetails() {
   const product = {
     name: "Product A",
@@ -48,7 +46,7 @@ function ProductDetails() {
           <p className="text-xl text-gray-800 mb-4">{product.price}</p>
           <p className="text-gray-700 mb-6">{product.description}</p>
           <p className="text-gray-600 mb-4">
-            <strong>Category:</strong> {product.category} > {product.subcategory}
+            <strong>Category:</strong> {product.category} {">"} {product.subcategory}
           </p>
 
           {/* Specifications Table */}

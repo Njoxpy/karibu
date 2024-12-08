@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Footer from "../../../components/Footer";
-import { Link } from "react-router-dom";
 
 const Orders = () => {
   // Local state for orders

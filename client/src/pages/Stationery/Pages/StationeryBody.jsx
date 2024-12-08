@@ -117,7 +117,7 @@ function StationeryBody() {
               </div>
             ))
           ) : (
-            <p className="text-center text-gray-600">No products found for "{searchTerm}"</p>
+            <p className="text-center text-gray-600">No products found for &quot;{searchTerm}&quot;</p>
           )}
         </div>
 

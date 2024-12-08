@@ -1,4 +1,3 @@
-import React from 'react';
 import useFetch from '../../../hooks/useFetch'; // Import the custom hook
 
 const OrdersList = () => {
