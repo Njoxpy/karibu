@@ -1,5 +1,4 @@
 import Footer from "../components/Footer";
-import { Form, redirect } from "react-router-dom";
 
 const Contact = () => {
   return (
@@ -97,7 +96,7 @@ const Contact = () => {
           </div>
 
           <div>
-            <Form className="space-y-6" method="post" action="/contact">
+            <form className="space-y-6" method="post" action="/contact">
               <div>
                 <label className="block text-gray-700 text-base font-bold">
                   Your Name
@@ -140,7 +139,7 @@ const Contact = () => {
               >
                 Send Message
               </button>
-            </Form>
+            </form>
           </div>
         </div>
         <div className="m-8 px-6 pt-14 lg:px-8">
@@ -163,22 +162,3 @@ const Contact = () => {
 };
 
 export default Contact;
-
-export const contactAction = async ({ request }) => {
-  console.log(request);
-
-  const data = await request.formData();
-
-  const submission = {
-    name: data.get("name"),
-    email: data.get("email"),
-    message: data.get("message"),
-  };
-
-  if (submission.message.length < 10) {
-    return { error: "message must be over 10 characters long" };
-  }
-
-  console.log(submission);
-  return redirect("/");
-};
