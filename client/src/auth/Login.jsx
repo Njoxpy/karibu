@@ -1,8 +1,19 @@
+import { useState } from "react";
 import Footer from "../components/Footer";
 
 import { Link } from "react-router-dom";
 
 const Login = () => {
+
+  const [email, setEmail] = useState("")
+  const [password, setpassword] = useState("")
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    console.log(`email: ${email}`);
+    console.log(`password: ${password}`);
+  }
   return (
     <>
       {" "}
@@ -10,14 +21,9 @@ const Login = () => {
         <div className="w-full px-4 py-12 sm:px-6 sm:py-16 lg:w-1/2 lg:px-8 lg:py-24">
           <div className="mx-auto max-w-lg text-center">
             <h1 className="text-2xl font-bold sm:text-3xl">Welcome Again</h1>
-
-            <p className="mt-4 text-gray-500">
-              Submit Your Work into Savarrah Inorder to Record Orders Into The
-              Wesbite
-            </p>
           </div>
 
-          <form action="#" className="mx-auto mb-0 mt-8 max-w-md space-y-4">
+          <form action="#" className="mx-auto mb-0 mt-8 max-w-md space-y-4" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="email" className="sr-only">
                 Email
@@ -26,6 +32,10 @@ const Login = () => {
               <div className="relative">
                 <input
                   type="email"
+                  onChange={(e) => {
+                    setEmail(e.target.value)
+                  }}
+                  value={email}
                   className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
                   placeholder="Enter email"
                 />
@@ -59,6 +69,10 @@ const Login = () => {
                   type="password"
                   className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
                   placeholder="Enter password"
+                  onChange={(e) => {
+                    setpassword(e.target.value)
+                  }}
+                  value={password}
                 />
 
                 <span className="absolute inset-y-0 end-0 grid place-content-center px-4">

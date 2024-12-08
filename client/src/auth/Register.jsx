@@ -1,8 +1,22 @@
 import { Link } from 'react-router-dom';
 import Footer from '../components/Footer';
 import logo from "../assets/images/logo.jpg"
+import { useState } from 'react';
 
 const Register = () => {
+
+  const [email, setEmail] = useState("")
+  const [password, setpassword] = useState("")
+  const [name, setName] = useState("")
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    console.log(`email: ${email}`);
+    console.log(`password: ${password}`);
+    console.log(`name: ${name}`);
+  }
+
   return (
     <>
       <section className="bg-white">
@@ -43,38 +57,7 @@ const Register = () => {
                 design tailored to your needs.
               </p>
 
-              <form action="#" className="mt-8 grid grid-cols-6 gap-6">
-                <div className="col-span-6 sm:col-span-3">
-                  <label
-                    htmlFor="FirstName"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    First Name
-                  </label>
-
-                  <input
-                    type="text"
-                    id="FirstName"
-                    name="first_name"
-                    className="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
-                  />
-                </div>
-
-                <div className="col-span-6 sm:col-span-3">
-                  <label
-                    htmlFor="LastName"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Last Name
-                  </label>
-
-                  <input
-                    type="text"
-                    id="LastName"
-                    name="last_name"
-                    className="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
-                  />
-                </div>
+              <form action="#" className="mt-8 grid grid-cols-6 gap-6" onSubmit={handleSubmit}>
 
                 <div className="col-span-6">
                   <label
@@ -87,9 +70,34 @@ const Register = () => {
 
                   <input
                     type="email"
+                    onChange={(e) => {
+                      setEmail(e.target.value)
+                    }}
+                    value={email}
                     id="Email"
                     name="email"
                     className="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
+                  />
+                </div>
+
+                <div className="col-span-6">
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    {' '}
+                    Name{' '}
+                  </label>
+
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    className="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
+                    onChange={(e) => {
+                      setName(e.target.value)
+                    }}
+                    value={name}
                   />
                 </div>
 
@@ -107,6 +115,10 @@ const Register = () => {
                     id="Password"
                     name="password"
                     className="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm"
+                    onChange={(e) => {
+                      setpassword(e.target.value)
+                    }}
+                    value={password}
                   />
                 </div>
 

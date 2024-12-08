@@ -1,6 +1,7 @@
 const mongoose = require("mongoose")
 const Product = require("../models/productModel")
 const Order = require("../models/orderModel")
+const { OK, NOT_FOUND, SERVER_ERROR } = require("../constants/responseStatusCode")
 
 // get all product
 const getAllProducts = async (req, res) => {
@@ -10,9 +11,9 @@ const getAllProducts = async (req, res) => {
         if (product.length === 0) {
             return res.json({ message: "There are no products for now!" })
         }
-        res.status(200).json(product)
+        res.status(OK).json(product)
     } catch (error) {
-        res.status(500).json({ message: "product not found" })
+        res.status(SERVER_ERROR).json({ message: "product not found" })
     }
 }
 
@@ -27,9 +28,9 @@ const getAllFreshOilOrders = async (req, res) => {
         if (orders.length === 0) {
             return res.json({ message: "there are no orders for now" })
         }
-        res.status(200).json(orders)
+        res.status(OK).json(orders)
     } catch (error) {
-        res.status(500).json({ error: "Failed to fetch products", details: error.message })
+        res.status(SERVER_ERROR).json({ error: "Failed to fetch products", details: error.message })
     }
 }
 
@@ -38,15 +39,15 @@ const createFreshOilProduct = async (req, res) => {
     const { name, description, quantity, price, userId } = req.body
 
     if (!name || !quantity || !price || !userId) {
-        return res.status(400).json({ message: "all required fields must be provided" })
+        return res.status(NOT_FOUND).json({ message: "all required fields must be provided" })
     }
 
     try {
         const product = await Product.create({ name, description, quantity, price, userId })
-        res.status(200).json(product)
+        res.status(OK).json(product)
 
     } catch (error) {
-        res.status(400).json(error.message)
+        res.status(NOT_FOUND).json(error.message)
     }
 }
 
@@ -55,13 +56,13 @@ const createFreshOilOrder = async (req, res) => {
     const { totalPrice, orderId, userId, productName, quantity, status } = req.body
 
     if (!totalPrice || !userId || !productName || !quantity) {
-        return res.status(400).json({ message: "all fields are required" })
+        return res.status(NOT_FOUND).json({ message: "all fields are required" })
     }
     try {
         const order = await Order.create({ totalPrice, orderId, userId, productName, quantity, status })
-        res.status(200).json(order)
+        res.status(OK).json(order)
     } catch (error) {
-        res.status(500).json({ message: "Failed to create order", details: error.message })
+        res.status(SERVER_ERROR).json({ message: "Failed to create order", details: error.message })
     }
 }
 

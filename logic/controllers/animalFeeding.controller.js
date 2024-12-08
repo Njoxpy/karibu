@@ -3,6 +3,7 @@ const mongoose = require("mongoose")
 const Product = require("../models/productModel")
 const Order = require("../models/orderModel")
 const User = require("../models/userModel")
+const { OK, NOT_FOUND, SERVER_ERROR } = require("../constants/responseStatusCode")
 
 // GET ALL PRODUCTS
 const getAllAnimalFeedingProducts = async (req, res) => {
@@ -11,9 +12,9 @@ const getAllAnimalFeedingProducts = async (req, res) => {
         if (product.length === 0) {
             return res.json({ message: "there are no products now" })
         }
-        res.status(200).json(product)
+        res.status(OK).json(product)
     } catch (error) {
-        res.status(500).json({ error: "Failed to fetch products", details: error.message })
+        res.status(SERVER_ERROR).json({ error: "Failed to fetch products", details: error.message })
     }
 }
 
@@ -24,9 +25,9 @@ const getAnimalFeedingAllOrders = async (req, res) => {
         if (orders.length === 0) {
             return res.json({ message: "there are no orders now" })
         }
-        res.status(200).json(orders)
+        res.status(OK).json(orders)
     } catch (error) {
-        res.status(500).json({ message: "Failed to fetch product orders", details: error.message })
+        res.status(SERVER_ERROR).json({ message: "Failed to fetch product orders", details: error.message })
     }
 }
 
@@ -36,7 +37,7 @@ const getAnimalFeedingProductById = async (req, res) => {
 
     // Validate ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ error: "Invalid product ID" });
+        return res.status(NOT_FOUND).json({ error: "Invalid product ID" });
     }
 
     try {
@@ -44,11 +45,11 @@ const getAnimalFeedingProductById = async (req, res) => {
         const product = await Product.findOne({ _id: id, category: "animal-feeding" });
 
         if (!product) {
-            return res.status(404).json({ error: "Product not found" });
+            return res.status(NOT_FOUND).json({ error: "Product not found" });
         }
-        res.status(200).json(product);
+        res.status(OK).json(product);
     } catch (error) {
-        res.status(500).json({
+        res.status(SERVER_ERROR).json({
             error: "Failed to fetch the product.",
             error: error.message,
         });
@@ -61,7 +62,7 @@ const getAnimalFeedingOrderById = async (req, res) => {
 
     // Validate ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ error: "Invalid order ID" });
+        return res.status(NOT_FOUND).json({ error: "Invalid order ID" });
     }
 
     try {
@@ -69,13 +70,13 @@ const getAnimalFeedingOrderById = async (req, res) => {
         const order = await Order.findOne({ _id: id, category: "animal-feeding" });
 
         if (!order) {
-            return res.status(404).json({ error: "Order not found" });
+            return res.status(NOT_FOUND).json({ error: "Order not found" });
         }
 
         // Return the order if found
-        res.status(200).json(order);
+        res.status(OK).json(order);
     } catch (error) {
-        res.status(500).json({
+        res.status(SERVER_ERROR).json({
             error: "Failed to fetch the order.",
             details: error.message,
         });
@@ -87,9 +88,9 @@ const createAnimalFeedingOrder = async (req, res) => {
 
     try {
         const order = await Order.create({ totalPrice, orderId, userId, productName, quantity, status, category })
-        res.status(200).json(order)
+        res.status(OK).json(order)
     } catch (error) {
-        res.status(404).json({ message: "Failed to create order", details: error.message })
+        res.status(NOT_FOUND).json({ message: "Failed to create order", details: error.message })
     }
 }
 
@@ -100,7 +101,7 @@ const updateAnimalFeedingProduct = async (req, res) => {
 
         // Validate ObjectId
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(404).json({ message: "Product not found." });
+            return res.status(NOT_FOUND).json({ message: "Product not found." });
         }
 
         // Update the product
@@ -112,13 +113,13 @@ const updateAnimalFeedingProduct = async (req, res) => {
 
         // Handle case where product does not exist
         if (!updatedProduct) {
-            return res.status(404).json({ message: "Product not found." });
+            return res.status(NOT_FOUND).json({ message: "Product not found." });
         }
 
         // Return the updated product
-        res.status(200).json({ "updated product": updatedProduct });
+        res.status(OK).json({ "updated product": updatedProduct });
     } catch (error) {
-        res.status(500).json({ message: "Server error", error: error.message });
+        res.status(SERVER_ERROR).json({ message: "Server error", error: error.message });
     }
 };
 
@@ -129,7 +130,7 @@ const updateAnimalFeedingOrder = async (req, res) => {
 
         // Validate ObjectId
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(404).json({ message: "Order not found." });
+            return res.status(NOT_FOUND).json({ message: "Order not found." });
         }
 
         // Update the product
@@ -141,13 +142,13 @@ const updateAnimalFeedingOrder = async (req, res) => {
 
         // Handle case where product does not exist
         if (!updatedOrder) {
-            return res.status(404).json({ message: "Order not found." });
+            return res.status(NOT_FOUND).json({ message: "Order not found." });
         }
 
         // Return the updated product
-        res.status(200).json({ "updated order": updatedOrder });
+        res.status(OK).json({ "updated order": updatedOrder });
     } catch (error) {
-        res.status(500).json({ message: "Server error", error: error.message });
+        res.status(SERVER_ERROR).json({ message: "Server error", error: error.message });
     }
 };
 
@@ -156,17 +157,17 @@ const deleteAnimalFeedingProductById = async (req, res) => {
     const { id } = req.params
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({ message: "Product not found." })
+        return res.status(NOT_FOUND).json({ message: "Product not found." })
     }
 
     try {
         const deletedProduct = await Product.findByIdAndDelete(id)
         if (!deletedProduct) {
-            return res.status(404).json({ message: "Product not found" })
+            return res.status(NOT_FOUND).json({ message: "Product not found" })
         }
-        res.status(200).json({ "product deleted sucessfully": deletedProduct })
+        res.status(OK).json({ "product deleted sucessfully": deletedProduct })
     } catch (error) {
-        res.status(404).json({ message: "failed to fetch product" })
+        res.status(NOT_FOUND).json({ message: "failed to fetch product" })
     }
 }
 
@@ -174,16 +175,16 @@ const deleteAnimalFeedingProductById = async (req, res) => {
 const deleteAnimalFeedingOrderById = async (req, res) => {
     const { id } = req.params
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({ message: "order not found" })
+        return res.status(NOT_FOUND).json({ message: "order not found" })
     }
     try {
         const deletedOrder = await Order.findOneAndDelete({ _id: id })
         if (!deletedOrder) {
-            res.status(404).json({ message: "order not found" })
+            res.status(NOT_FOUND).json({ message: "order not found" })
         }
-        res.status(200).json({ "order deleted sucessfully": deletedOrder })
+        res.status(OK).json({ "order deleted sucessfully": deletedOrder })
     } catch (error) {
-        res.status(400).json({ message: "failed to get order", error: error.message })
+        res.status(NOT_FOUND).json({ message: "failed to get order", error: error.message })
     }
 }
 
@@ -191,23 +192,31 @@ const deleteAnimalFeedingOrderById = async (req, res) => {
 const searchAnimalFeedingProductName = async (req, res) => {
     const { productName } = req.query;
 
+    // Check if the product name query parameter is provided
     if (!productName) {
-        return res.status(400).json({ error: "Product name is required" });
+        return res.status(BAD_REQUEST).json({ error: "Product name is required" });
     }
 
     try {
+        // Search for products with a case-insensitive regex match on the name
         const products = await Product.find({
             name: { $regex: productName, $options: "i" }
         });
 
-
+        // If no products are found, return a 'not found' response
         if (products.length === 0) {
-            return res.status(404).json({ message: "No products found with that name." });
+            return res.status(NOT_FOUND).json({ message: "No products found with that name." });
         }
-        res.status(200).json(products);
+
+        // Return the found products with an 'OK' status
+        res.status(OK).json(products);
+
     } catch (error) {
+        // Handle any unexpected errors during the query process
+        console.error('Error searching for products:', error);
+        return res.status(INTERNAL_SERVER_ERROR).json({ message: 'An error occurred while searching for products.' });
     }
-}
+};
 
 module.exports = {
     getAllAnimalFeedingProducts,
