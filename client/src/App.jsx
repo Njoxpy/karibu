@@ -20,12 +20,9 @@ import Login from "./auth/Login";
 import Register from "./auth/Register";
 import SubmitWork from "./pages/Printing/Pages/SubmitWork";
 import Receipt from "./pages/Printing/Pages/Receipt";
-import ForgotPassword from "./auth/ForgotPassword";
-import EmailSent from "./auth/EmailSent";
-import EnterEmail from "./auth/EnterEmail";
 import UserDashboard from "./pages/Printing/Pages/UserDashboard";
 import OrdersTable from "./pages/Printing/Orders/OrderTable";
-import Contact, { contactAction } from "./pages/Contact";
+import Contact from "./pages/Contact";
 
 // details
 import OrderDetails from "./pages/Printing/Orders/OrderDetails";
@@ -145,8 +142,6 @@ import OrderItemGodown from "./pages/Godown/Pages/OrderItemGodown";
 import OrderItemStationery from "./pages/Stationery/Pages/OrderItemStationery";
 import OrderItemAnimalFeeding from "./pages/AnimalFeeding/Pages/OrderItemAnimalFeeding";
 import OrderItemHardware from "./pages/Hardware/pages/OrderItemHardware";
-import AdminDashboard from "./pages/admin/AdminSidebar";
-import NavbarAdmin from "./pages/admin/NavbarAdmin";
 import AnimalFeedingOrderDetailsError from "./pages/AnimalFeeding/Error/AnimalFeedingOrderDetailsError";
 // admin
 import AdminDashboardD from "./pages/admin/AdminnDashboard"
@@ -173,14 +168,11 @@ export default function App() {
           <Route index element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/emailsend" element={<EmailSent />} />
-          <Route path="/enter-email" element={<EnterEmail />} />
-          <Route path="/password/new" element={<ForgotPassword />} />
 
           {/* admin */}
 
           <Route path="/dashboard" element={<UserDashboard />} />
-          <Route path="/contact" element={<Contact />} action={contactAction} />
+          <Route path="/contact" element={<Contact />} />
           {/* animal feeding */}
           <Route path="/animal-feeding" element={<AnimalFeedingLayout />}>
             <Route index element={<AnimalFeeding />} />
