@@ -1,4 +1,6 @@
 import customer from "../assets/images/male1.jpg";
+import customer2 from "../assets/images/female.jpg"
+import Godbless from "../assets/images/jefrey.jpg"
 
 const Testimonials = () => {
   return (
@@ -16,6 +18,7 @@ const Testimonials = () => {
                   alt="customer 1 testimonilas"
                   src={customer}
                   className="size-14 rounded-full object-cover"
+                  loading="lazy"
                 />
 
                 <div>
@@ -77,8 +80,9 @@ const Testimonials = () => {
               <div className="flex items-center gap-4">
                 <img
                   alt="customer 2 testimonilas"
-                  src={customer}
+                  src={customer2}
                   className="size-14 rounded-full object-cover"
+                  loading="lazy"
                 />
 
                 <div>
@@ -140,8 +144,9 @@ const Testimonials = () => {
               <div className="flex items-center gap-4">
                 <img
                   alt="customer 2 testimonilas"
-                  src={customer}
+                  src={Godbless}
                   className="size-14 rounded-full object-cover"
+                  loading="lazy"
                 />
 
                 <div>
