@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import Footer from './Footer';
+import Footer from '../../../components/Footer';
 
 const products = [
     { id: 1, name: "Office Printer", price: 150, category: "office-equipment" },

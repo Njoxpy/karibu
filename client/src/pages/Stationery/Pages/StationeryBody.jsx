@@ -1,5 +1,7 @@
 import Animal1 from ".././../../assets/images/pen.jpg";
 import Animal2 from ".././../../assets/images/booklet.jpg";
+import notebook from "../../../assets/images/notebook.jpg"
+
 import { useState } from "react";
 
 function StationeryBody() {
@@ -8,12 +10,11 @@ function StationeryBody() {
   const productsPerPage = 6;
 
   const products = [
-    // Sample data for products
     {
       id: 1,
       name: "Samsung Notebook",
       price: 25900,
-      image: Animal1,
+      image: notebook,
       description: "High quality notebook for professionals.",
       category: "Notebooks",
     },
@@ -21,7 +22,7 @@ function StationeryBody() {
       id: 2,
       name: "Mirror Pen",
       price: 2200,
-      image: Animal2,
+      image: Animal1,
       description: "A stylish pen with a mirror finish.",
       category: "Pens",
     },
@@ -51,6 +52,14 @@ function StationeryBody() {
     },
     {
       id: 6,
+      name: "Exercise Books",
+      price: 22400,
+      image: Animal2,
+      description: "Exercise books for students and professionals.",
+      category: "Books",
+    },
+    {
+      id: 7,
       name: "Exercise Books",
       price: 22400,
       image: Animal2,
@@ -99,7 +108,7 @@ function StationeryBody() {
                   <h2 className="font-semibold text-lg">{product.name}</h2>
                   <p className="text-gray-600">{product.description}</p>
                   <p className="font-bold text-blue-700">Tsh {product.price}</p>
-                  <div className="">
+                  <div className="flex justify-between">
                     <a
                       href={`/stationery/products/${product.id}`}
                       className="mt-4 inline-block bg-blue-500 text-white py-2 px-4 rounded"

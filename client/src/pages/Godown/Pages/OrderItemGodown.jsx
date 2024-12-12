@@ -115,14 +115,6 @@ const OrderItemGodown = () => {
                         />
                     </div>
 
-                    {/* Terms and Conditions */}
-                    <div className="mb-6">
-                        <label className="inline-flex items-center">
-                            <input type="checkbox" className="form-checkbox h-4 w-4 text-gray-600" />
-                            <span className="ml-2 text-sm text-gray-600">I agree to the terms and conditions</span>
-                        </label>
-                    </div>
-
                     {/* Submit Button */}
                     <button
                         type="submit"

@@ -22,10 +22,13 @@ const ManageStationeryProducts = () => {
 
   const handleEdit = (id) => {
     // Redirect or open edit modal
+    console.log(id);
   };
 
   const handleDelete = (id) => {
     // Handle delete logic
+    console.log(id);
+    
   };
 
   return (
@@ -73,7 +76,7 @@ const ManageStationeryProducts = () => {
             ))}
           </tbody>
         </table>
-        <div className="flex justify-center">
+        <div className="flex justify-center mt-3">
           <button className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2">
             Previous
           </button>

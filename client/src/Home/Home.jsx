@@ -2,7 +2,7 @@
 import Contact from "../pages/Contact";
 import Services from "./Services";
 import About from "./AboutUs";
-import { Divider } from "../components/Divider";
+import Divider from "../components/Divider";
 import Testimonials from "./Testimonials";
 import HelloSection from "./SlideShow";
 

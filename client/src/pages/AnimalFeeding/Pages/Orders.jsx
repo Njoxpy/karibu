@@ -1,19 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Footer from "../../../components/Footer";
 
 const Orders = () => {
   // Local state for orders
-  const [orders, setOrders] = useState([
-    { id: 1, productName: "Animal Feed A", quantity: 2, totalPrice: 4000 },
-    { id: 2, productName: "Animal Feed B", quantity: 1, totalPrice: 20000 },
-    { id: 3, productName: "Animal Feed C", quantity: 3, totalPrice: 6000 },
-    { id: 4, productName: "Animal Feed D", quantity: 1, totalPrice: 20000 },
-    { id: 5, productName: "Animal Feed E", quantity: 2, totalPrice: 4000 },
-    { id: 6, productName: "Animal Feed F", quantity: 3, totalPrice: 60000 },
-    { id: 7, productName: "Animal Feed G", quantity: 4, totalPrice: 8000 },
-    { id: 8, productName: "Animal Feed H", quantity: 5, totalPrice: 10000 },
-    // Add more items for pagination example
-  ]);
+  const [orders, setOrders] = useState([])
+  useEffect(() => {
+    fetch("http://localhost:5000/api/v1/animal-feeding/orders/")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("error");
+      }
+      return response.json()
+    })
+    .then((data) => {
+      setOrders(data)
+    })
+    .catch((error) => {
+      console.log(error.message);
+    },)
+  }, [])
 
   const itemsPerPage = 6; // Number of orders per page
   const totalPages = Math.ceil(orders.length / itemsPerPage);

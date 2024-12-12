@@ -51,7 +51,7 @@ const StationeryItemDetails = () => {
   };
 
   if (!product) {
-    return <div>Product not found.</div>;
+    return <div className='p-4 text-gray-500'>Product not found.</div>;
   }
 
   return (

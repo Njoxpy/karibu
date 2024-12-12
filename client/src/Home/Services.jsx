@@ -7,7 +7,7 @@ import stationeryImage from "../assets/images/stationery1.jpg";
 
 function Services() {
   return (
-    <div className="bg-white px-6 pt-14 lg:px-8">
+    <div className="bg-white px-6 pt-14 lg:px-8" id="services">
       <div className="container mx-auto px-6 text-center">
         <h2 className="text-3xl font-extrabold text-blue-600 mb-6">
           Our Services
@@ -23,7 +23,7 @@ function Services() {
               src={printingImage}
               alt="Printing"
               className="w-full h-48 object-cover rounded-md mb-4"
-              fetchPriority="high"
+              fetchpriority="high"
             />
             <h3 className="text-xl font-semibold text-blue-600 mb-2">
               Printing
@@ -40,7 +40,7 @@ function Services() {
               src={oilImage}
               alt="Fresh Oil"
               className="w-full h-48 object-cover rounded-md mb-4"
-              fetchPriority="high"
+              fetchpriority="high"
             />
             <h3 className="text-xl font-semibold text-blue-600 mb-2">
               Fresh Oil
@@ -57,7 +57,7 @@ function Services() {
               src={hardImage}
               alt="Hardware"
               className="w-full h-48 object-cover rounded-md mb-4"
-              fetchPriority="high"
+              fetchpriority="high"
             />
             <h3 className="text-xl font-semibold text-blue-600 mb-2">
               Hardware
@@ -74,7 +74,7 @@ function Services() {
               src={animal2Image}
               alt="Animal Feeding"
               className="w-full h-48 object-cover rounded-md mb-4"
-              fetchPriority="high"
+              fetchpriority="high"
             />
             <h3 className="text-xl font-semibold text-blue-600 mb-2">
               Animal Feeding
@@ -91,7 +91,7 @@ function Services() {
               src={godownImage}
               alt="Godown"
               className="w-full h-48 object-cover rounded-md mb-4"
-              fetchPriority="high"
+              fetchpriority="high"
             />
             <h3 className="text-xl font-semibold text-blue-600 mb-2">Godown</h3>
             <p className="text-gray-600">
@@ -106,7 +106,7 @@ function Services() {
               src={stationeryImage}
               alt="Stationery"
               className="w-full h-48 object-cover rounded-md mb-4"
-              fetchPriority="high"
+              fetchpriority="high"
             />
             <h3 className="text-xl font-semibold text-blue-600 mb-2">
               Stationery

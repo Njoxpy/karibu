@@ -110,7 +110,7 @@ import StationeryLayout from "./pages/Stationery/Layouts/StationeryLayout";
 import StationeryProductsLayout from "./pages/Stationery/Layouts/StationeryProductsLayout";
 // stationery error
 import StationeryOrderDetailsError from "./pages/Stationery/Error/StationeryOrderDetailsError";
-
+import StationeryItemsError from "./pages/Stationery/Error/StationeryItemsError"
 /* ANIMAl FEEDING */
 // LAYOUT ANIMAL FEEDING
 import AnimalFeedingLayout from "./pages/AnimalFeeding/Layouts/AnimalFeedingLayout";
@@ -118,7 +118,6 @@ import AnimalFeedingLayout from "./pages/AnimalFeeding/Layouts/AnimalFeedingLayo
 // PAGES
 import AnimalFeeding from "./pages/AnimalFeeding/Pages/AnimalFeeding";
 import FoodUpload from "./pages/AnimalFeeding/Admin/FoodUpload";
-import Order from "./pages/AnimalFeeding/Components/OrderForm";
 import OrderSucess from "./pages/AnimalFeeding/Pages/OrderSuccess";
 import ManageFood from "./pages/AnimalFeeding/Admin/AdminManage";
 import ProductDetail from "./pages/AnimalFeeding/Pages/ProductDetails";
@@ -131,13 +130,12 @@ import ErrorPage from "./pages/AnimalFeeding/Error/ErrorPage";
 import ManageStationeryProducts from "./pages/Stationery/Pages/ManageStationeryProducts";
 import InventoryMovement from "./pages/Godown/Pages/InventoryMovement";
 import InventoryTable from "./pages/Godown/Pages/InventoryTable";
-import Cart from "./components/Cart";
 import FoodsBody from "./pages/AnimalFeeding/Pages/FoodsBody";
 import AnimalFeedingProductsLayout from "./pages/AnimalFeeding/Layouts/AnimalFeedingProductsLayout"
 import BulkUpload from "./pages/AnimalFeeding/Components/BulkUpload";
 import BulkUploadGodown from "./pages/Godown/Components/BulkUploadGodown";
 import BulkUploadFreshOil from "./pages/FreshOil/Pages/BulkUploadFreshOil";
-import OrderItem from "./components/OrderItem";
+import OrderItem from "./pages/FreshOil/Components/OrderItem";
 import OrderItemGodown from "./pages/Godown/Pages/OrderItemGodown";
 import OrderItemStationery from "./pages/Stationery/Pages/OrderItemStationery";
 import OrderItemAnimalFeeding from "./pages/AnimalFeeding/Pages/OrderItemAnimalFeeding";
@@ -156,14 +154,6 @@ export default function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route>
-        <Route path="admin" element={<AdminDashboardD />}>
-          <Route index element={<DashboardHome />} /> {/* Default admin dashboard home */}
-          <Route path="products" element={<ProductsPage />} />
-          <Route path="orders" element={<OrdersPage />} />
-          <Route path="users" element={<UsersPage />} />
-          <Route path="reports" element={<ReportsPage />} />
-          <Route path="settings" element={<SettingsPage />} />
-        </Route>
         <Route path="/" element={<RootLayout />}>
           <Route index element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -173,6 +163,7 @@ export default function App() {
 
           <Route path="/dashboard" element={<UserDashboard />} />
           <Route path="/contact" element={<Contact />} />
+
           {/* animal feeding */}
           <Route path="/animal-feeding" element={<AnimalFeedingLayout />}>
             <Route index element={<AnimalFeeding />} />
@@ -185,9 +176,7 @@ export default function App() {
                 errorElement={<ErrorPage />}
               />
             </Route>
-            <Route path="cart" element={<Cart />} />
             <Route path="order-item" element={<OrderItemAnimalFeeding />} />
-            <Route path="order" element={<Order />} />
             <Route path="orders" element={<Orders />} />
             <Route path="orders/:id" element={<OrderDetailsAnimal />} errorElement={<AnimalFeedingOrderDetailsError />} />
             <Route path="order/sucess" element={<OrderSucess />} />
@@ -289,7 +278,7 @@ export default function App() {
               <Route
                 path=":id"
                 element={<StationeryItemsDetails />}
-                errorElement={<StationeryItemsDetails />}
+                errorElement={<StationeryItemsError />}
               />
             </Route>
             <Route path="orders" element={<StationeryOrders />} />
@@ -306,6 +295,14 @@ export default function App() {
             <Route path="admin/manage" element={<ManageStationeryProducts />} />
           </Route>
           <Route path="*" element={<NotFound />} />
+        </Route>
+        <Route path="admin" element={<AdminDashboardD />}>
+          <Route index element={<DashboardHome />} /> {/* Default admin dashboard home */}
+          <Route path="products" element={<ProductsPage />} />
+          <Route path="orders" element={<OrdersPage />} />
+          <Route path="users" element={<UsersPage />} />
+          <Route path="reports" element={<ReportsPage />} />
+          <Route path="settings" element={<SettingsPage />} />
         </Route>
       </Route>
     )

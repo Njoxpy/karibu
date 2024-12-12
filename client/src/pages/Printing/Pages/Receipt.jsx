@@ -29,15 +29,13 @@ const Receipts = () => {
   const [receipts, setReceipts] = useState([
     { description: "Logo Design", price: 5000, quantity: 1, contact: 123456789, category: "graphic design", id: 1, date: "2024-11-19" },
     { description: "Website Design", price: 15000, quantity: 1, contact: 987654321, category: "graphic design", id: 2, date: "2024-11-18" },
-    { description: "USB Drive", price: 2000, quantity: 1, contact: 123456789, category: "electronics", id: 3, date: "2024-11-17" },
-    { description: "Cooling Fan", price: 1500, quantity: 2, contact: 987654321, category: "electronics", id: 4, date: "2024-11-15" },
-    { description: "Laptop Stand", price: 3000, quantity: 1, contact: 789123456, category: "accessory", id: 5, date: "2024-11-14" },
-    { description: "Business Card Design", price: 3000, quantity: 1, contact: 987654321, category: "graphic design", id: 6, date: "2024-11-10" },
+    { description: "Tshirt Kwa Vijana", price: 2000, quantity: 1, contact: 123456789, category: "electronics", id: 3, date: "2024-11-17" },
+    { description: "Cup Cards", price: 1500, quantity: 2, contact: 987654321, category: "electronics", id: 4, date: "2024-11-15" }
   ]);
 
   // State for pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const ordersPerPage = 3;
+  const ordersPerPage = 6;
 
   // State for filtering
   const [filterBy, setFilterBy] = useState("all"); // "day", "week", "month", or "all"

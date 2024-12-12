@@ -22,10 +22,12 @@ const AdminManage = () => {
 
   const handleEdit = (id) => {
     // Redirect or open edit modal
+    console.log(id)
   };
 
   const handleDelete = (id) => {
     // Handle delete logic
+    console.log(id)
   };
 
   return (

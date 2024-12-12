@@ -77,7 +77,7 @@ function SubmitWork() {
     doc.save("order_submission_receipt.pdf"); // Trigger PDF download
 
     // Navigate to receipt page and pass the receipts
-    navigate("/printing/receipts", { state: { receipts } });
+    navigate("/printing/orders", { state: { receipts } });
   };
 
   const handleCancel = () => {
@@ -85,7 +85,7 @@ function SubmitWork() {
     setDescription("");
     setPrice(0);
     setCategory("magazine");
-    navigate("/"); // Change this path to your desired cancellation behavior
+    navigate("/printing"); // Change this path to your desired cancellation behavior
   };
 
   return (

@@ -7,7 +7,7 @@ const Footer = () => {
             <h2 className="text-2xl font-semibold text-green-400">Savarrah</h2>
             <p className="mt-4 max-w-xs text-gray-300">
               Leading provider of quality services and products across
-              industries including Hardware, Fresh Oil, Stationery, and more.
+              industries including Hardware, Fresh Oil, Stationery, Animal feeding and Printing.
             </p>
 
             {/* Social Media Links */}
@@ -43,9 +43,10 @@ const Footer = () => {
                   "Stationery Solutions",
                   "Animal Feed Supplies",
                   "Storage and Logistics",
+                  "Printing",
                 ].map((service) => (
                   <li key={service}>
-                    <a href="#" className="hover:opacity-75">
+                    <a href="#services" className="hover:opacity-75">
                       {service}
                     </a>
                   </li>
@@ -57,7 +58,7 @@ const Footer = () => {
             <div>
               <h3 className="font-medium text-green-400">Company</h3>
               <ul className="mt-6 space-y-4 text-sm text-gray-300">
-                {["About Us", "Meet Our Team", "Careers", "Our Locations"].map(
+                {["About Us", "Meet Our Team", "Careers", "Our Location"].map(
                   (companyInfo) => (
                     <li key={companyInfo}>
                       <a href="#" className="hover:opacity-75">
@@ -75,9 +76,7 @@ const Footer = () => {
               <ul className="mt-6 space-y-4 text-sm text-gray-300">
                 {[
                   "Contact Us",
-                  "FAQs",
                   "Customer Support",
-                  "Shipping & Returns",
                 ].map((link) => (
                   <li key={link}>
                     <a href="#" className="hover:opacity-75">

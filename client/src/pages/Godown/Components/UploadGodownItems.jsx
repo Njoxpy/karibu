@@ -6,7 +6,6 @@ const UploadGodownItems = () => {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
-  const [image, setImage] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -49,7 +48,7 @@ const UploadGodownItems = () => {
           </div>
           <div className="mb-4">
             <label className="block mb-2 text-gray-700" htmlFor="price">
-              Price (Tsh)
+              Price Per Item (Tsh)
             </label>
             <input
               type="number"
@@ -69,20 +68,6 @@ const UploadGodownItems = () => {
               id="quantity"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
-              className="border border-gray-300 rounded w-full p-3 focus:outline-none focus:ring-2 focus:ring-gray-500"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block mb-2 text-gray-700" htmlFor="image">
-              Product Image
-            </label>
-            <input
-              type="file"
-              id="image"
-              value={image}
-              accept="image*"
-              onChange={(e) => setImage(e.target.files[0])}
               className="border border-gray-300 rounded w-full p-3 focus:outline-none focus:ring-2 focus:ring-gray-500"
               required
             />

@@ -1,8 +1,8 @@
 const AboutUs = () => {
   return (
-    <div className="bg-white px-6 pt-14 lg:px-8">
+    <div className="bg-white px-6 pt-14 lg:px-8 font-sans">
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Introduction */}
+
         <div className="text-center mb-12">
           <h2 className="text-4xl font-extrabold text-blue-600">About Us</h2>
           <p className="mt-4 text-lg text-gray-700 max-w-2xl mx-auto">
@@ -12,7 +12,6 @@ const AboutUs = () => {
           </p>
         </div>
 
-        {/* Mission and Vision */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="bg-blue-50 p-6 rounded-lg shadow-lg">
             <h3 className="text-3xl font-extrabold text-blue-600">
@@ -37,7 +36,6 @@ const AboutUs = () => {
           </div>
         </div>
 
-        {/* Optional History */}
         <div className="mt-16">
           <h3 className="text-3xl  text-blue-600 text-center font-extrabold">
             Our Journey

@@ -37,7 +37,7 @@ function ReceiptDetails() {
         {/* Receipt Link */}
         <div className="mt-4">
           <button
-            className="mt-4 w-full p-2 bg-green-600 hover:bg-green-800 text-white transition-all duration-75"
+            className="mt-4 w-full p-2 bg-green-600  hover:bg-green-700 text-white transition-all duration-75"
             onClick={handleClick}
           >
             Print receipt

@@ -5,6 +5,7 @@ function BulkUploadGodown() {
     const [file, setFile] = useState(null);
     const [dataPreview, setDataPreview] = useState([]);
     const [errors, setErrors] = useState([]);
+    const [message, setMessage] = useState("")
 
     const handleFileUpload = (e) => {
         const uploadedFile = e.target.files[0];
@@ -33,7 +34,7 @@ function BulkUploadGodown() {
     const handleConfirmUpload = () => {
         console.log("Uploading data to server...");
         // Simulate successful upload
-        alert("Products uploaded successfully!");
+        console.log("Products uploaded successfully!");
         setFile(null);
         setDataPreview([]);
     };

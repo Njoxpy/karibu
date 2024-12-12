@@ -81,6 +81,15 @@ function StationeryLayout() {
               <li>
                 <Link
                   className="hover:text-blue-200 transition-colors duration-200"
+                  to="/stationery/admin/bulk-upload"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Bulk Upload
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="hover:text-blue-200 transition-colors duration-200"
                   to="/stationery/order-item"
                   onClick={() => setIsMenuOpen(false)}
                 >

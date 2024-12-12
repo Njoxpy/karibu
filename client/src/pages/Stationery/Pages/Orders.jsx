@@ -28,19 +28,16 @@ const getStartOfMonth = () => {
 const Orders = () => {
   // Example orders with dates
   const [orders, setOrders] = useState([
-    { productName: "Animal Feed A", quantity: 2, totalPrice: 4000, id: 1, date: "2024-11-19" },
-    { productName: "Animal Feed B", quantity: 1, totalPrice: 2440, id: 2, date: "2024-11-18" },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 6440, id: 3, date: "2024-11-16" },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 6300, id: 4, date: "2024-11-15" },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 60000, id: 5, date: "2024-11-13" },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 60000, id: 6, date: "2024-11-10" },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 6880, id: 7, date: "2024-11-01" },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 6880, id: 8, date: "2024-10-25" },
+    { productName: "Daftari Kubwa", quantity: 2, totalPrice: 4000, id: 1, date: "2024-11-19" },
+    { productName: "Msomi", quantity: 1, totalPrice: 2440, id: 2, date: "2024-11-18" },
+    { productName: "Conuter Book", quantity: 3, totalPrice: 6440, id: 3, date: "2024-11-16" },
+    { productName: "Notebook", quantity: 3, totalPrice: 6300, id: 4, date: "2024-11-15" },
+    { productName: "Diary", quantity: 3, totalPrice: 60000, id: 5, date: "2024-11-13" }
   ]);
 
   // State for pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const ordersPerPage = 3;
+  const ordersPerPage = 6;
 
   // State for filtering
   const [filterBy, setFilterBy] = useState("all"); // "day", "week", "month", or "all"
@@ -122,7 +119,7 @@ const Orders = () => {
         </div>
 
         {filteredOrders.length === 0 ? (
-          <p>No orders found for the selected filter.</p>
+          <p className="p-4 text-gray-500">No orders found for the selected filter.</p>
         ) : (
           <table className="min-w-full border border-gray-300">
             <thead>
