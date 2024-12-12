@@ -1,126 +1,63 @@
-import { useParams, Link } from "react-router-dom";
-import { useEffect, useState } from "react";
-import Footer from "../../../components/Footer";
 
-function OrderDetails() {
-  const { id } = useParams();
-  const [order, setOrder] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+import Footer from '../../../components/Footer';
+import { Link } from 'react-router-dom';
 
-  // Function to fetch order details
-  const fetchOrderDetails = async () => {
-    try {
-      const response = await fetch(`http://localhost:3003/orders/${id}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch order details");
-      }
-      const data = await response.json();
-      setOrder(data);
-      setLoading(false);
-    } catch (error) {
-      console.error(error);
-      setError("Could not fetch order details");
-      setLoading(false);
-    }
+const OrderDetails = () => {
+  // Order data
+  const order = {
+    orderId: 1,
+    productName: 'Animal Feed A',
+    amountOrdered: 2,
+    totalPrice: 4000
   };
-
-  useEffect(() => {
-    fetchOrderDetails();
-  }, [id]);
-
-  const handleClick = async () => {
-    const confirmDelete = window.confirm(
-      "Do you really want to delete this order?"
-    );
-    if (confirmDelete) {
-      try {
-        const response = await fetch(`http://localhost:3003/orders/${id}`, {
-          method: "DELETE",
-        });
-        if (!response.ok) {
-          throw new Error("Failed to delete the order");
-        }
-        alert("Order deleted successfully");
-        // Optionally, redirect back to the orders page
-      } catch (error) {
-        console.error(error);
-        alert("Error deleting order");
-      }
-    }
-  };
-
-  if (loading) {
-    return <div className="text-yellow-800 p-4">Loading order details...</div>;
-  }
-
-  if (error) {
-    return <div className="text-red-600 p-4 font-bold">Error: {error}</div>;
-  }
 
   return (
     <>
-      <div className="p-6 max-w-2xl mx-auto bg-white rounded-lg shadow-md">
-        <h4 className="text-2xl font-bold text-blue-600 mb-4">Order Details</h4>
-        <div className="mb-4">
-          <p className="font-semibold">Order ID:</p>
-          <p className="text-gray-700">{order.id}</p>
-        </div>
-        <div className="mb-4">
-          <p className="font-semibold">Description:</p>
-          <p className="text-gray-700">{order.description}</p>
-        </div>
-        <div className="mb-4">
-          <p className="font-semibold">Price:</p>
-          <p className="text-gray-700">${order.price}</p>
-        </div>
-        <div className="mb-4">
-          <p className="font-semibold">Status:</p>
-          <p className="text-gray-700">{order.status}</p>
-        </div>
-        <div className="mb-4">
-          <p className="font-semibold">Date Created:</p>
-          <p className="text-gray-700">
-            {new Date(order.createdAt).toLocaleDateString()}
-          </p>
-        </div>
-        <div className="mb-4">
-          <p className="font-semibold">User ID:</p>
-          <p className="text-gray-700">{order.userId}</p>
-        </div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center py-8">
+        <div className="w-full max-w-lg p-4 bg-white rounded-lg shadow-lg">
+          {/* Header */}
+          <h1 className="text-3xl font-semibold text-gray-800 mb-6 text-center">Order Details</h1>
 
-        {/* Receipt Link */}
-        <div className="mt-4">
-          <a
-            href={`http://localhost:3003/receipts/${id}`}
-            className="text-green-600 underline hover:text-green-800"
-          >
-            View or Download Receipt
-          </a>
-        </div>
+          {/* Order Card */}
+          <div className="bg-gray-100 p-6 rounded-lg shadow-md space-y-4">
+            {/* Order ID */}
+            <div className="flex justify-between text-sm font-medium text-gray-600">
+              <span>Order ID:</span>
+              <span className="text-gray-800">#{order.orderId}</span>
+            </div>
 
-        {/* Delete Button */}
-        <button
-          className="mt-4 w-full text-white bg-red-500 p-2 rounded-lg hover:bg-red-600 transition-all duration-75"
-          onClick={handleClick}
-        >
-          Delete Order
-        </button>
+            {/* Product Name */}
+            <div className="flex justify-between text-sm font-medium text-gray-600">
+              <span>Product Name:</span>
+              <span className="text-gray-800">{order.productName}</span>
+            </div>
 
-        {/* Navigation Button */}
-        <div className="mt-4 text-center">
-          <Link
-            to="/orders"
-            className="text-blue-600 underline hover:text-blue-800"
-          >
-            Return to Orders Page
-          </Link>
+            {/* Amount Ordered */}
+            <div className="flex justify-between text-sm font-medium text-gray-600">
+              <span>Amount Ordered:</span>
+              <span className="text-gray-800">{order.amountOrdered}</span>
+            </div>
+
+            {/* Total Price */}
+            <div className="flex justify-between text-sm font-medium text-gray-600">
+              <span>Total Price:</span>
+              <span className="text-gray-800 font-semibold">₦{order.totalPrice}</span>
+            </div>
+          </div>
+
+          {/* Button or Next Step */}
+          <div className="mt-6 flex justify-center">
+            <Link to={"/printing/orders"}>
+              <button className="px-6 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                View More Orders
+              </button>
+            </Link>
+          </div>
         </div>
       </div>
-
       <Footer />
     </>
   );
-}
+};
 
 export default OrderDetails;

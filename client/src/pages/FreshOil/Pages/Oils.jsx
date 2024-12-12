@@ -68,18 +68,21 @@ function Oils() {
               <h2 className="font-semibold text-lg">{product.name}</h2>
               <p className="text-gray-600">{product.description}</p>
               <p className="font-bold text-yellow-700">Tsh {product.price}</p>
-              <a
-                href={`/freshOil/products/${product.id}`}
-                className="mt-4 inline-block bg-yellow-500 text-white py-2 px-4 rounded"
-              >
-                Order Now
-              </a>
-              <a
-                href={`/freshOil/product-detail?productId=${product.id}`}
-                className="mt-4 inline-block bg-yellow-500 text-white py-2 px-4 rounded ml-2"
-              >
-                View Details
-              </a>
+
+              <div className="flex justify-between">
+                <a
+                  href={`/freshOil/products/${product.id}`}
+                  className="mt-4 inline-block bg-yellow-500 text-white py-2 px-4 rounded"
+                >
+                  Order Now
+                </a>
+                <a
+                  href={`/freshOil/product-detail?productId=${product.id}`}
+                  className="mt-4 inline-block bg-yellow-500 text-white py-2 px-4 rounded ml-2"
+                >
+                  View Details
+                </a>
+              </div>
             </div>
           </div>
         ))}

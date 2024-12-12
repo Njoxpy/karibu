@@ -1,62 +1,75 @@
-import { useState } from "react";
+// src/pages/admin/ProductsPage.jsx
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const ProductsPage = () => {
-    // Array of products
+    // Example static products data
     const [products, setProducts] = useState([
-        { id: 1, name: "Product A", price: 20, stock: 50 },
-        { id: 2, name: "Product B", price: 30, stock: 100 },
-        { id: 3, name: "Product C", price: 15, stock: 200 },
-        { id: 4, name: "Product D", price: 25, stock: 75 },
+        {
+            _id: '1',
+            name: 'Product 1',
+            description: 'Description for Product 1',
+            price: '100',
+        },
+        {
+            _id: '2',
+            name: 'Product 2',
+            description: 'Description for Product 2',
+            price: '150',
+        },
     ]);
 
-    // Handle Edit and Delete actions
-    const handleEdit = (id) => {
-        console.log(`Edit product with id: ${id}`);
-        // Logic for editing the product goes here
-    };
-
     const handleDelete = (id) => {
-        const updatedProducts = products.filter((product) => product.id !== id);
-        setProducts(updatedProducts);
-        console.log(`Deleted product with id: ${id}`);
+        // Remove product from state
+        setProducts(products.filter((product) => product._id !== id));
     };
 
     return (
-        <div>
-            <h2 className="text-2xl font-bold text-gray-800">Manage Products</h2>
-
-            <table className="min-w-full mt-4 bg-white shadow rounded-lg">
+        <div className="container mx-auto p-4">
+            <h2 className="text-2xl font-bold mb-4">Products</h2>
+            <Link
+                to="/admin/products/add"
+                className="bg-blue-500 text-white py-2 px-4 rounded mb-4 inline-block"
+            >
+                Add New Product
+            </Link>
+            <table className="min-w-full bg-white">
                 <thead>
-                    <tr className="bg-gray-200">
-                        <th className="px-4 py-2 text-left text-gray-600">Product Name</th>
-                        <th className="px-4 py-2 text-left text-gray-600">Price</th>
-                        <th className="px-4 py-2 text-left text-gray-600">Stock</th>
-                        <th className="px-4 py-2 text-left text-gray-600">Actions</th>
+                    <tr>
+                        <th className="border-b py-2 px-4">Name</th>
+                        <th className="border-b py-2 px-4">Description</th>
+                        <th className="border-b py-2 px-4">Price</th>
+                        <th className="border-b py-2 px-4">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {/* Loop through the products */}
-                    {products.map((product) => (
-                        <tr key={product.id}>
-                            <td className="px-4 py-2">{product.name}</td>
-                            <td className="px-4 py-2">Tsh {product.price}</td>
-                            <td className="px-4 py-2">{product.stock}</td>
-                            <td className="px-4 py-2">
-                                <button
-                                    onClick={() => handleEdit(product.id)}
-                                    className="text-indigo-600 hover:underline mr-4"
-                                >
-                                    Edit
-                                </button>
-                                <button
-                                    onClick={() => handleDelete(product.id)}
-                                    className="text-red-600 hover:underline"
-                                >
-                                    Delete
-                                </button>
-                            </td>
+                    {products.length > 0 ? (
+                        products.map((product) => (
+                            <tr key={product._id}>
+                                <td className="border-b py-2 px-4">{product.name}</td>
+                                <td className="border-b py-2 px-4">{product.description}</td>
+                                <td className="border-b py-2 px-4">{product.price}</td>
+                                <td className="border-b py-2 px-4">
+                                    <Link
+                                        to={`/admin/products/edit/${product._id}`}
+                                        className="bg-yellow-500 text-white py-1 px-2 rounded mr-2"
+                                    >
+                                        Edit
+                                    </Link>
+                                    <button
+                                        onClick={() => handleDelete(product._id)}
+                                        className="bg-red-500 text-white py-1 px-2 rounded"
+                                    >
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="4" className="text-center py-4">No products available.</td>
                         </tr>
-                    ))}
+                    )}
                 </tbody>
             </table>
         </div>

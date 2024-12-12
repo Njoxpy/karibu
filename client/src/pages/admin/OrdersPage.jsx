@@ -1,220 +1,118 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 const OrdersPage = () => {
-    // Local state for orders
-    const [orders, setOrders] = useState([
-        { id: 1, productName: "Animal Feed A", quantity: 2, totalPrice: 4000 },
-        { id: 2, productName: "Animal Feed B", quantity: 1, totalPrice: 20000 },
-        { id: 3, productName: "Animal Feed C", quantity: 3, totalPrice: 6000 },
-        { id: 4, productName: "Animal Feed D", quantity: 1, totalPrice: 20000 },
-        { id: 5, productName: "Animal Feed E", quantity: 2, totalPrice: 4000 },
-        { id: 6, productName: "Animal Feed F", quantity: 3, totalPrice: 60000 },
-        { id: 7, productName: "Animal Feed G", quantity: 4, totalPrice: 8000 },
-        { id: 8, productName: "Animal Feed H", quantity: 5, totalPrice: 10000 },
-        // Add more items for pagination example
-    ]);
+    // Static data (for now)
+    const orders = [
+        { id: "ORD123", customer: "John Doe", status: "Completed", date: "2024-12-01" },
+        { id: "ORD124", customer: "Jane Smith", status: "Pending", date: "2024-12-02" },
+        { id: "ORD125", customer: "Samuel Lee", status: "Shipped", date: "2024-12-03" },
+        { id: "ORD126", customer: "Emily Davis", status: "Cancelled", date: "2024-12-04" },
+        { id: "ORD127", customer: "Michael Johnson", status: "Completed", date: "2024-12-05" },
+        { id: "ORD128", customer: "Sarah Brown", status: "Shipped", date: "2024-12-06" },
+    ];
 
-    const itemsPerPage = 6; // Number of orders per page
-    const totalPages = Math.ceil(orders.length / itemsPerPage);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [page, setPage] = useState(1);
+    const itemsPerPage = 6;
 
-    const [currentPage, setCurrentPage] = useState(1);
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [editOrder, setEditOrder] = useState({ index: null, quantity: 0 });
-    const [isRemoveConfirmationOpen, setIsRemoveConfirmationOpen] = useState(false);
-    const [orderToRemove, setOrderToRemove] = useState(null);
-    const [isOrderDetailsModalOpen, setIsOrderDetailsModalOpen] = useState(false);
-    const [selectedOrder, setSelectedOrder] = useState(null);
+    // Handle search filtering
+    const filteredOrders = orders.filter((order) =>
+        order.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.id.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
-    // Function to handle pagination
-    const paginateOrders = () => {
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        const endIndex = startIndex + itemsPerPage;
-        return orders.slice(startIndex, endIndex);
-    };
+    // Handle pagination logic
+    const paginatedOrders = filteredOrders.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
-    // Function to remove an order
-    const handleRemoveOrder = () => {
-        const newOrders = orders.filter((_, i) => i !== orderToRemove);
-        setOrders(newOrders);
-        setIsRemoveConfirmationOpen(false);
-    };
+    // Pagination Controls
+    const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
 
-    // Function to open the edit modal
-    const openEditModal = (index) => {
-        setEditOrder({ index, quantity: orders[index].quantity });
-        setIsEditModalOpen(true);
-    };
-
-    // Function to confirm and apply order edits
-    const handleSaveEdit = () => {
-        const updatedOrders = [...orders];
-        updatedOrders[editOrder.index].quantity = editOrder.quantity;
-        updatedOrders[editOrder.index].totalPrice =
-            updatedOrders[editOrder.index].quantity * 20; // Assuming $20 per item
-        setOrders(updatedOrders);
-        setIsEditModalOpen(false);
-    };
-
-    // Function to open the order details modal
-    const openOrderDetailsModal = (order) => {
-        setSelectedOrder(order);
-        setIsOrderDetailsModalOpen(true);
+    const handlePagination = (newPage) => {
+        if (newPage >= 1 && newPage <= totalPages) {
+            setPage(newPage);
+        }
     };
 
     return (
-        <>
-            <div className="p-4">
-                <h1 className="text-2xl font-bold mb-4 text-center">Orders List</h1>
-                {orders.length === 0 ? (
-                    <p>no orders</p>
-                ) : (
-                    <table className="min-w-full border border-gray-300">
-                        <thead>
-                            <tr className="bg-green-200">
-                                <th className="border border-gray-300 px-4 py-2 text-left">Product Name</th>
-                                <th className="border border-gray-300 px-4 py-2 text-left">Quantity</th>
-                                <th className="border border-gray-300 px-4 py-2 text-left">Total Price</th>
-                                <th className="border border-gray-300 px-4 py-2 text-left">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {paginateOrders().map((order, index) => (
-                                <tr key={index} className="hover:bg-green-100">
-                                    <td className="border border-gray-300 px-4 py-2">{order.productName}</td>
-                                    <td className="border border-gray-300 px-4 py-2">{order.quantity}</td>
-                                    <td className="border border-gray-300 px-4 py-2">Tsh {order.totalPrice}</td>
-                                    <td className="border border-gray-300 px-4 py-2 flex flex-col sm:flex-row sm:space-x-2">
-                                        <button
-                                            onClick={() => {
-                                                setOrderToRemove(index);
-                                                setIsRemoveConfirmationOpen(true);
-                                            }}
-                                            className="bg-red-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-red-600 mb-2 sm:mb-0"
-                                        >
-                                            Remove
-                                        </button>
-                                        <button
-                                            onClick={() => openEditModal(index)}
-                                            className="bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-600 transition-all mb-2 sm:mb-0"
-                                        >
-                                            Edit
-                                        </button>
-                                        <button
-                                            onClick={() => openOrderDetailsModal(order)}
-                                            className="bg-blue-500 text-white py-1 px-2 rounded"
-                                        >
-                                            Order Details
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                )}
+        <div className="p-5 bg-gray-100">
+            <h1 className="text-3xl font-semibold mb-5">Order Management</h1>
+
+            {/* Search Bar */}
+            <div className="mb-5">
+                <input
+                    type="text"
+                    className="p-2 border rounded w-full"
+                    placeholder="Search by Order ID or Customer"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
             </div>
 
-            {/* Pagination Controls */}
-            <div className="flex justify-center mb-2">
+            {/* Orders Table */}
+            <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+                <table className="min-w-full table-auto">
+                    <thead className="bg-blue-600 text-white">
+                        <tr>
+                            <th className="py-3 px-4">Order ID</th>
+                            <th className="py-3 px-4">Customer</th>
+                            <th className="py-3 px-4">Status</th>
+                            <th className="py-3 px-4">Date</th>
+                            <th className="py-3 px-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {paginatedOrders.map((order) => (
+                            <tr key={order.id} className="border-t">
+                                <td className="py-3 px-4">{order.id}</td>
+                                <td className="py-3 px-4">{order.customer}</td>
+                                <td className="py-3 px-4">
+                                    <span
+                                        className={`px-3 py-1 rounded-full ${order.status === "Completed"
+                                            ? "bg-green-200 text-green-800"
+                                            : order.status === "Pending"
+                                                ? "bg-yellow-200 text-yellow-800"
+                                                : order.status === "Shipped"
+                                                    ? "bg-blue-200 text-blue-800"
+                                                    : "bg-red-200 text-red-800"
+                                            }`}
+                                    >
+                                        {order.status}
+                                    </span>
+                                </td>
+                                <td className="py-3 px-4">{order.date}</td>
+                                <td className="py-3 px-4">
+                                    <Link to={`/admin/orders/${order.id}`} className="text-blue-600 hover:text-blue-800">
+                                        View Details
+                                    </Link>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
+            {/* Pagination */}
+            <div className="mt-5 flex justify-between items-center">
                 <button
-                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                    className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2"
+                    onClick={() => handlePagination(page - 1)}
+                    disabled={page === 1}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg"
                 >
                     Previous
                 </button>
+                <span className="text-lg">
+                    Page {page} of {totalPages}
+                </span>
                 <button
-                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                    className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600"
+                    onClick={() => handlePagination(page + 1)}
+                    disabled={page === totalPages}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg"
                 >
                     Next
                 </button>
             </div>
-
-            {/* Edit Order Modal */}
-            {isEditModalOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded p-6 shadow-lg w-full max-w-md mx-auto">
-                        <h2 className="text-lg font-semibold text-gray-800 mb-4">Edit Order Quantity</h2>
-                        <div className="mb-4">
-                            <label className="block text-gray-600">Quantity:</label>
-                            <input
-                                type="number"
-                                value={editOrder.quantity}
-                                onChange={(e) =>
-                                    setEditOrder((prev) => ({
-                                        ...prev,
-                                        quantity: e.target.valueAsNumber,
-                                    }))
-                                }
-                                className="w-full p-2 border rounded mt-1"
-                                min="1"
-                            />
-                        </div>
-                        <div className="flex justify-end space-x-4">
-                            <button
-                                onClick={() => setIsEditModalOpen(false)}
-                                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-4 py-2 rounded"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handleSaveEdit}
-                                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded"
-                            >
-                                Save
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Remove Confirmation Modal */}
-            {isRemoveConfirmationOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded p-6 shadow-lg w-full max-w-md mx-auto">
-                        <h2 className="text-lg font-semibold text-gray-800 mb-4">
-                            Confirm Removal
-                        </h2>
-                        <p>Are you sure you want to remove this order?</p>
-                        <div className="flex justify-end space-x-4">
-                            <button
-                                onClick={() => setIsRemoveConfirmationOpen(false)}
-                                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-4 py-2 rounded"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handleRemoveOrder}
-                                className="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded"
-                            >
-                                Remove
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Order Details Modal */}
-            {isOrderDetailsModalOpen && selectedOrder && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded p-6 shadow-lg w-full max-w-md mx-auto">
-                        <h2 className="text-lg font-semibold text-gray-800 mb-4">
-                            Order Details
-                        </h2>
-                        <p><strong>Product Name:</strong> {selectedOrder.productName}</p>
-                        <p><strong>Quantity:</strong> {selectedOrder.quantity}</p>
-                        <p><strong>Total Price:</strong> Tsh {selectedOrder.totalPrice}</p>
-                        <div className="flex justify-end space-x-4 mt-4">
-                            <button
-                                onClick={() => setIsOrderDetailsModalOpen(false)}
-                                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-4 py-2 rounded"
-                            >
-                                Close
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-        </>
+        </div>
     );
 };
 

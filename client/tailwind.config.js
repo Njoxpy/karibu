@@ -6,6 +6,7 @@ export default {
   ],
   theme: {
     extend: {
+      display: ['group-hover', 'group-focus'],
       colors: {
         primary: {
           DEFAULT: '#1E40AF', // Blue (Primary)

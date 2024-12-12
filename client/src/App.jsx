@@ -17,7 +17,6 @@ import OrderDetailsError from "./pages/Printing/Error/OrderDetailsError";
 // pages
 import Home from "./Home/Home";
 import Login from "./auth/Login";
-import Register from "./auth/Register";
 import SubmitWork from "./pages/Printing/Pages/SubmitWork";
 import Receipt from "./pages/Printing/Pages/Receipt";
 import UserDashboard from "./pages/Printing/Pages/UserDashboard";
@@ -142,22 +141,33 @@ import OrderItemAnimalFeeding from "./pages/AnimalFeeding/Pages/OrderItemAnimalF
 import OrderItemHardware from "./pages/Hardware/pages/OrderItemHardware";
 import AnimalFeedingOrderDetailsError from "./pages/AnimalFeeding/Error/AnimalFeedingOrderDetailsError";
 // admin
-import AdminDashboardD from "./pages/admin/AdminnDashboard"
+import DashboardLayout from "./pages/admin/DashboardLayout"
 import DashboardHome from "./pages/admin/DashboardHome";
 import ProductsPage from "./pages/admin/ProductsPage";
 import OrdersPage from "./pages/admin/OrdersPage";
 import UsersPage from "./pages/admin/UsersPage";
 import ReportsPage from "./pages/admin/ReportsPage";
 import SettingsPage from "./pages/admin/SettingsPage";
+import AddProduct from "./pages/admin/AddProduct";
+import OrderDetailsPage from "./pages/admin/order/OrderDetailsPage";
 
 export default function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route>
+        <Route path="admin/*" element={<DashboardLayout />}>
+          <Route index element={<DashboardHome />} />
+          <Route path="products" element={<ProductsPage />} />
+          <Route path="products/add" element={<AddProduct />} />
+          <Route path="orders" element={<OrdersPage />} />
+          <Route path="orders/:id" element={<OrderDetailsPage />} />
+          <Route path="users" element={<UsersPage />} />
+          <Route path="reports" element={<ReportsPage />} />
+          <Route path="settings" element={<SettingsPage />} />
+        </Route>
         <Route path="/" element={<RootLayout />}>
           <Route index element={<Home />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
 
           {/* admin */}
 
@@ -247,8 +257,6 @@ export default function App() {
             <Route path="admin/manage" element={<ManageHardwareProducts />} />
           </Route>
 
-          {/* landing page */}
-
           {/* printing */}
           <Route path="/printing" element={<PrintingLayout />}>
             <Route index element={<HomePrinting />} />
@@ -295,14 +303,6 @@ export default function App() {
             <Route path="admin/manage" element={<ManageStationeryProducts />} />
           </Route>
           <Route path="*" element={<NotFound />} />
-        </Route>
-        <Route path="admin" element={<AdminDashboardD />}>
-          <Route index element={<DashboardHome />} /> {/* Default admin dashboard home */}
-          <Route path="products" element={<ProductsPage />} />
-          <Route path="orders" element={<OrdersPage />} />
-          <Route path="users" element={<UsersPage />} />
-          <Route path="reports" element={<ReportsPage />} />
-          <Route path="settings" element={<SettingsPage />} />
         </Route>
       </Route>
     )
