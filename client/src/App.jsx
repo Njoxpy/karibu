@@ -144,12 +144,14 @@ import DashboardLayout from "./pages/admin/DashboardLayout"
 import DashboardHome from "./pages/admin/DashboardHome";
 import ProductsPage from "./pages/admin/ProductsPage";
 import OrdersPage from "./pages/admin/OrdersPage";
-import UsersPage from "./pages/admin/UsersPage";
+import UsersPage from "./pages/admin/pages/UsersPage";
 import ReportsPage from "./pages/admin/ReportsPage";
 import SettingsPage from "./pages/admin/SettingsPage";
-import AddProduct from "./pages/admin/AddProduct";
+import AddProduct from "./pages/admin/components/AddProduct";
 import OrderDetailsPage from "./pages/admin/order/OrderDetailsPage";
 import UserProfile from "./components/UserProfile";
+import Reports from "./pages/admin/Reports"
+import AddUserPage from "./pages/admin/pages/UsersPage";
 
 export default function App() {
   const router = createBrowserRouter(
@@ -162,6 +164,8 @@ export default function App() {
           <Route path="orders" element={<OrdersPage />} />
           <Route path="orders/:id" element={<OrderDetailsPage />} />
           <Route path="users" element={<UsersPage />} />
+          <Route path="users/create" element={<AddUserPage />} />
+          <Route path="report" element={<Reports />} />
           <Route path="reports" element={<ReportsPage />} />
           <Route path="settings" element={<SettingsPage />} />
         </Route>

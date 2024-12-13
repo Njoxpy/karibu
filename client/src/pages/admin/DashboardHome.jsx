@@ -1,4 +1,32 @@
+import { useState } from "react";
+
 const DashboardHome = () => {
+
+    const [orders, setOrders] = useState(
+        [
+            { "orderId": 1222, "customer": "NjoxPy", "status": "Completed", "date": "Dec 11, 2024" },
+            { "orderId": 1223, "customer": "TrixCode", "status": "Pending", "date": "Dec 12, 2024" },
+            { "orderId": 1224, "customer": "SavvyTech", "status": "Processing", "date": "Dec 12, 2024" },
+            { "orderId": 1225, "customer": "TechieHub", "status": "Completed", "date": "Dec 11, 2024" },
+            { "orderId": 1226, "customer": "NjoxPy", "status": "Cancelled", "date": "Dec 10, 2024" },
+            { "orderId": 1227, "customer": "ByteWorks", "status": "Completed", "date": "Dec 11, 2024" },
+            { "orderId": 1228, "customer": "NjoxPy", "status": "Processing", "date": "Dec 12, 2024" },
+            { "orderId": 1229, "customer": "CloudMasters", "status": "Completed", "date": "Dec 11, 2024" },
+            { "orderId": 1230, "customer": "CodeSphere", "status": "Pending", "date": "Dec 13, 2024" },
+            { "orderId": 1231, "customer": "TrixCode", "status": "Completed", "date": "Dec 11, 2024" },
+            { "orderId": 1232, "customer": "SavvyTech", "status": "Processing", "date": "Dec 12, 2024" },
+            { "orderId": 1233, "customer": "NjoxPy", "status": "Completed", "date": "Dec 11, 2024" },
+            { "orderId": 1234, "customer": "TechieHub", "status": "Cancelled", "date": "Dec 10, 2024" },
+            { "orderId": 1235, "customer": "ByteWorks", "status": "Pending", "date": "Dec 12, 2024" },
+            { "orderId": 1236, "customer": "NjoxPy", "status": "Completed", "date": "Dec 11, 2024" },
+            { "orderId": 1237, "customer": "CloudMasters", "status": "Processing", "date": "Dec 13, 2024" },
+            { "orderId": 1238, "customer": "CodeSphere", "status": "Completed", "date": "Dec 12, 2024" },
+            { "orderId": 1239, "customer": "TrixCode", "status": "Pending", "date": "Dec 13, 2024" },
+            { "orderId": 1240, "customer": "SavvyTech", "status": "Completed", "date": "Dec 12, 2024" },
+            { "orderId": 1241, "customer": "NjoxPy", "status": "Cancelled", "date": "Dec 11, 2024" }
+        ]
+
+    )
     return (
         <div className="flex">
             {/* Sidebar */}
@@ -39,12 +67,6 @@ const DashboardHome = () => {
                                 <td className="p-3">John Doe</td>
                                 <td className="p-3 text-green-600">Completed</td>
                                 <td className="p-3">Dec 12, 2024</td>
-                            </tr>
-                            <tr>
-                                <td className="p-3">124</td>
-                                <td className="p-3">Jane Smith</td>
-                                <td className="p-3 text-yellow-500">Pending</td>
-                                <td className="p-3">Dec 11, 2024</td>
                             </tr>
                         </tbody>
                     </table>

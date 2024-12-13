@@ -35,7 +35,7 @@ const DashboardLayout = () => {
             {/* Sidebar */}
             <div className={`bg-blue-500 text-white w-64 ${open ? "block" : "hidden"} md:block`}>
                 <div className="p-4">
-                    <h2 className="text-2xl font-bold">Admin Dashboard</h2>
+                    <h2 className="text-2xl font-bold">Welcome Leon</h2>
                 </div>
                 <ul className="space-y-4">
                     <li>

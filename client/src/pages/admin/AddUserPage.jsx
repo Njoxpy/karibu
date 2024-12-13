@@ -32,25 +32,29 @@ const AddUserPage = () => {
             );
 
             if (response.status === 201) {
-                // Redirect to the users page or show a success message
                 navigate("/admin/users");
             }
         } catch (error) {
             setError("Failed to add user. Please try again.");
         } finally {
             setLoading(false);
+            console.log(error);
         }
     };
 
     return (
-        <div className="p-5">
-            <h2 className="text-2xl font-semibold">Add New User</h2>
-            <form onSubmit={handleSubmit} className="mt-5">
-                {error && <p className="text-red-600">{error}</p>}
+        <div className="max-w-lg mx-auto p-6 bg-white shadow-lg rounded-md">
+            <h2 className="text-2xl font-semibold text-center mb-5 text-gray-800">
+                Add New User
+            </h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+                {error && (
+                    <p className="text-red-600 text-center mb-4">{error}</p>
+                )}
 
                 {/* Name */}
-                <div className="mb-4">
-                    <label htmlFor="name" className="block text-sm font-medium">
+                <div>
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                         Name
                     </label>
                     <input
@@ -59,14 +63,14 @@ const AddUserPage = () => {
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         required
-                        className="w-full p-2 border rounded-md"
+                        className="w-full p-3 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="Enter user's name"
                     />
                 </div>
 
                 {/* Email */}
-                <div className="mb-4">
-                    <label htmlFor="email" className="block text-sm font-medium">
+                <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                         Email
                     </label>
                     <input
@@ -75,14 +79,14 @@ const AddUserPage = () => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        className="w-full p-2 border rounded-md"
+                        className="w-full p-3 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="Enter user's email"
                     />
                 </div>
 
                 {/* Password */}
-                <div className="mb-4">
-                    <label htmlFor="password" className="block text-sm font-medium">
+                <div>
+                    <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                         Password
                     </label>
                     <input
@@ -91,21 +95,21 @@ const AddUserPage = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        className="w-full p-2 border rounded-md"
+                        className="w-full p-3 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="Enter user's password"
                     />
                 </div>
 
                 {/* Role */}
-                <div className="mb-4">
-                    <label htmlFor="role" className="block text-sm font-medium">
+                <div>
+                    <label htmlFor="role" className="block text-sm font-medium text-gray-700">
                         Role
                     </label>
                     <select
                         id="role"
                         value={role}
                         onChange={(e) => setRole(e.target.value)}
-                        className="w-full p-2 border rounded-md"
+                        className="w-full p-3 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                         <option value="user">User</option>
                         <option value="admin">Admin</option>
@@ -113,15 +117,15 @@ const AddUserPage = () => {
                 </div>
 
                 {/* Status */}
-                <div className="mb-4">
-                    <label htmlFor="status" className="block text-sm font-medium">
+                <div>
+                    <label htmlFor="status" className="block text-sm font-medium text-gray-700">
                         Status
                     </label>
                     <select
                         id="status"
                         value={status}
                         onChange={(e) => setStatus(e.target.value)}
-                        className="w-full p-2 border rounded-md"
+                        className="w-full p-3 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                         <option value="active">Active</option>
                         <option value="inactive">Inactive</option>
@@ -132,8 +136,7 @@ const AddUserPage = () => {
                 <button
                     type="submit"
                     disabled={loading}
-                    className={`w-full p-2 bg-blue-500 text-white rounded-md ${loading ? "bg-gray-400" : "hover:bg-blue-600"
-                        }`}
+                    className={`w-full py-3 mt-4 text-white rounded-md ${loading ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"}`}
                 >
                     {loading ? "Adding..." : "Add User"}
                 </button>

@@ -1,5 +1,3 @@
-
-
 const SettingsPage = () => {
     return (
         <div>

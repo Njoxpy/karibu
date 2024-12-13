@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
@@ -19,6 +19,8 @@ const UsersPage = () => {
       .catch((error) => {
         setError("Failed to fetch users");
         setLoading(false);
+        console.log(error);
+
       });
   }, []);
 
@@ -28,11 +30,14 @@ const UsersPage = () => {
       axios
         .delete(`http://localhost:5000/api/v1/users/${userId}`)
         .then((response) => {
+          console.log(response);
+
           alert("User deleted successfully!");
           setUsers(users.filter(user => user.id !== userId)); // Remove deleted user from state
         })
         .catch((error) => {
           alert("Failed to delete user.");
+          console.log(error);
         });
     }
   };
