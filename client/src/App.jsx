@@ -140,18 +140,20 @@ import OrderItemAnimalFeeding from "./pages/AnimalFeeding/Pages/OrderItemAnimalF
 import OrderItemHardware from "./pages/Hardware/pages/OrderItemHardware";
 import AnimalFeedingOrderDetailsError from "./pages/AnimalFeeding/Error/AnimalFeedingOrderDetailsError";
 // admin
-import DashboardLayout from "./pages/admin/DashboardLayout"
-import DashboardHome from "./pages/admin/DashboardHome";
-import ProductsPage from "./pages/admin/ProductsPage";
-import OrdersPage from "./pages/admin/OrdersPage";
+import DashboardLayout from "./pages/admin/layout/DashboardLayout"
+import DashboardHome from "./pages/admin/pages/DashboardHome";
+import ProductsPage from "./pages/admin/pages/ProductsPage";
+import OrdersPage from "./pages/admin/pages/OrdersPage";
 import UsersPage from "./pages/admin/pages/UsersPage";
-import ReportsPage from "./pages/admin/ReportsPage";
-import SettingsPage from "./pages/admin/SettingsPage";
+import ReportsPage from "./pages/admin/pages/ReportsPage";
+import SettingsPage from "./pages/admin/pages/SettingsPage";
 import AddProduct from "./pages/admin/components/AddProduct";
 import OrderDetailsPage from "./pages/admin/order/OrderDetailsPage";
 import UserProfile from "./components/UserProfile";
-import Reports from "./pages/admin/Reports"
+import Reports from "./pages/admin/pages/Reports"
 import AddUserPage from "./pages/admin/pages/UsersPage";
+
+import UserLayout from "./pages/admin/layout/UserLayout";
 
 export default function App() {
   const router = createBrowserRouter(
@@ -314,7 +316,7 @@ export default function App() {
   );
   return (
     <>
-      <RouterProvider router={router}></RouterProvider>
+      <RouterProvider router={router} ></RouterProvider>
     </>
   );
 }

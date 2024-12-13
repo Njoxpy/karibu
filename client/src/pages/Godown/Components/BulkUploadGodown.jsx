@@ -41,7 +41,7 @@ function BulkUploadGodown() {
     return (
         <>
             <div className="p-8 bg-gray-50 min-h-screen">
-                <h2 className="text-2xl font-semibold text-gray-600 mb-4">Bulk Upload Products</h2>
+                <h2 className="text-3xl font-semibold text-gray-700 mb-4">Bulk Upload Products</h2>
                 <p className="text-gray-600 mb-6">Upload your product data in CSV or Excel format.</p>
 
                 {/* Upload Zone */}
@@ -55,7 +55,7 @@ function BulkUploadGodown() {
                     />
                     <label
                         htmlFor="file-input"
-                        className="cursor-pointer text-gray-500 text-lg font-medium py-2 px-4 border border-gray-400 rounded-md hover:bg-gray-100"
+                        className="cursor-pointer text-gray-500 text-lg font-medium py-2 px-4 border border-gray-400 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                         Drag and drop your file here or click to upload
                     </label>
@@ -101,7 +101,7 @@ function BulkUploadGodown() {
                     <div className="flex gap-4">
                         <button
                             onClick={handleConfirmUpload}
-                            className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 disabled:opacity-50"
+                            className="bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700 disabled:opacity-50 transition duration-300"
                             disabled={errors.length > 0}
                         >
                             Confirm Upload
@@ -112,7 +112,7 @@ function BulkUploadGodown() {
                                 setDataPreview([]);
                                 setErrors([]);
                             }}
-                            className="bg-gray-300 text-gray-700 py-2 px-4 rounded hover:bg-gray-400"
+                            className="bg-gray-300 text-gray-700 py-2 px-6 rounded-md hover:bg-gray-400 transition duration-300"
                         >
                             Cancel
                         </button>

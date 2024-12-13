@@ -1,20 +1,20 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
 const OrdersPage = () => {
     // Static data (for now)
     const orders = [
-        { id: "ORD123", customer: "John Doe", status: "Completed", date: "2024-12-01" },
-        { id: "ORD124", customer: "Jane Smith", status: "Pending", date: "2024-12-02" },
-        { id: "ORD125", customer: "Samuel Lee", status: "Shipped", date: "2024-12-03" },
-        { id: "ORD126", customer: "Emily Davis", status: "Cancelled", date: "2024-12-04" },
-        { id: "ORD127", customer: "Michael Johnson", status: "Completed", date: "2024-12-05" },
-        { id: "ORD128", customer: "Sarah Brown", status: "Shipped", date: "2024-12-06" },
+        { id: "ORD123", customer: "Godbless Nyagawa", status: "Completed", date: "2024-12-01" },
+        { id: "ORD124", customer: "Chemakeke Kingunge", status: "Pending", date: "2024-12-02" },
+        { id: "ORD125", customer: "Salum Mwijaku", status: "Completed", date: "2024-12-03" },
+        { id: "ORD126", customer: "William Sande", status: "Cancelled", date: "2024-12-04" },
+        { id: "ORD127", customer: "Nyagawa John", status: "Completed", date: "2024-12-05" },
+        { id: "ORD128", customer: "Sarah Brown", status: "Completed", date: "2024-12-06" },
     ];
 
     const [searchTerm, setSearchTerm] = useState("");
     const [page, setPage] = useState(1);
-    const itemsPerPage = 6;
+    const itemsPerPage = 5;
 
     // Handle search filtering
     const filteredOrders = orders.filter((order) =>
@@ -72,7 +72,7 @@ const OrdersPage = () => {
                                             ? "bg-green-200 text-green-800"
                                             : order.status === "Pending"
                                                 ? "bg-yellow-200 text-yellow-800"
-                                                : order.status === "Shipped"
+                                                : order.status === "Completed"
                                                     ? "bg-blue-200 text-blue-800"
                                                     : "bg-red-200 text-red-800"
                                             }`}

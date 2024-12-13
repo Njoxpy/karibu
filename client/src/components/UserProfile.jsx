@@ -1,5 +1,5 @@
 import Leon from "../assets/images/leon.jpg";
-import Footer from "../components/Footer"
+import Footer from "../components/Footer";
 
 const UserProfile = () => {
     const orders = [
@@ -36,7 +36,7 @@ const UserProfile = () => {
                     {/* Header */}
                     <div className="flex items-center justify-between mb-6">
                         <h1 className="text-2xl font-bold text-blue-600">User Profile</h1>
-                        <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                        <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" aria-label="Logout">
                             Logout
                         </button>
                     </div>
@@ -48,6 +48,7 @@ const UserProfile = () => {
                                 className="w-24 h-24 rounded-full border-2 border-blue-600"
                                 src={Leon}
                                 alt="Profile"
+                                aria-label="User Profile Picture"
                             />
                             <div>
                                 <h2 className="text-xl font-semibold text-gray-800">Leon Thadei Shiyo</h2>

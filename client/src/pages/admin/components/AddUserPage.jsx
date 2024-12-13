@@ -36,6 +36,8 @@ const AddUserPage = () => {
             }
         } catch (error) {
             setError("Failed to add user. Please try again.");
+            console.log(error);
+
         } finally {
             setLoading(false);
             console.log(error);

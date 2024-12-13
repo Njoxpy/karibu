@@ -6,13 +6,37 @@ const ProductsPage = () => {
     // Example static products data
     const [products, setProducts] = useState([
         {
-            _id: '1',
+            _id: 1,
             name: 'Product 1',
             description: 'Description for Product 1',
             price: '100',
         },
         {
-            _id: '2',
+            _id: 2,
+            name: 'Product 2',
+            description: 'Description for Product 2',
+            price: '150',
+        },
+        {
+            _id: 3,
+            name: 'Product 1',
+            description: 'Description for Product 1',
+            price: '100',
+        },
+        {
+            _id: 4,
+            name: 'Product 2',
+            description: 'Description for Product 2',
+            price: '150',
+        },
+        {
+            _id: 5,
+            name: 'Product 1',
+            description: 'Description for Product 1',
+            price: '100',
+        },
+        {
+            _id: 6,
             name: 'Product 2',
             description: 'Description for Product 2',
             price: '150',
@@ -35,20 +59,20 @@ const ProductsPage = () => {
             </Link>
             <table className="min-w-full bg-white">
                 <thead>
-                    <tr>
+                    <tr className='text-center'>
                         <th className="border-b py-2 px-4">Name</th>
                         <th className="border-b py-2 px-4">Description</th>
                         <th className="border-b py-2 px-4">Price</th>
                         <th className="border-b py-2 px-4">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody className='text-center'>
                     {products.length > 0 ? (
                         products.map((product) => (
                             <tr key={product._id}>
                                 <td className="border-b py-2 px-4">{product.name}</td>
                                 <td className="border-b py-2 px-4">{product.description}</td>
-                                <td className="border-b py-2 px-4">{product.price}</td>
+                                <td className="border-b py-2 px-4">Tsh {product.price}</td>
                                 <td className="border-b py-2 px-4">
                                     <Link
                                         to={`/admin/products/edit/${product._id}`}

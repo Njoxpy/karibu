@@ -1,23 +1,39 @@
-// import pages
-import Contact from "../pages/Contact";
-import Services from "./Services";
-import About from "./AboutUs";
+import React, { Suspense } from "react";
 import Divider from "../components/Divider";
-import Testimonials from "./Testimonials";
 import HelloSection from "./SlideShow";
+import Footer from "../components/Footer";
+
+const About = React.lazy(() => import("./AboutUs"));
+const Services = React.lazy(() => import("./Services"));
+const Testimonials = React.lazy(() => import("./Testimonials"));
+const Contact = React.lazy(() => import("../pages/Contact"));
 
 const Home = () => {
   return (
     <>
       <HelloSection />
       <Divider />
-      <About />
+
+      <Suspense fallback={<div>Loading About Section...</div>}>
+        <About />
+      </Suspense>
       <Divider />
-      <Services />
+
+      <Suspense fallback={<div>Loading Services...</div>}>
+        <Services />
+      </Suspense>
       <Divider />
-      <Testimonials />
+
+      <Suspense fallback={<div>Loading Testimonials...</div>}>
+        <Testimonials />
+      </Suspense>
       <Divider />
-      <Contact />
+
+      <Suspense fallback={<div>Loading Contact Form...</div>}>
+        <Contact />
+      </Suspense>
+
+      <Footer />
     </>
   );
 };

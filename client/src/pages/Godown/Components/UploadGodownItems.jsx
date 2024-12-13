@@ -11,18 +11,17 @@ const UploadGodownItems = () => {
     e.preventDefault();
     // Handle upload logic here
   };
+
   return (
     <>
-      <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-50">
-        <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
-          Upload Godown Item
-        </h1>
+      <div className="flex flex-col items-center justify-center min-h-screen p-4">
+        <h1 className="text-3xl font-semibold mb-6 text-center text-white">Upload Godown Item</h1>
         <form
           onSubmit={handleSubmit}
           className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md"
         >
-          <div className="mb-4">
-            <label className="block mb-2 text-gray-700" htmlFor="product-name">
+          <div className="mb-6">
+            <label className="block mb-2 text-gray-700 font-medium" htmlFor="product-name">
               Product Name
             </label>
             <input
@@ -30,24 +29,26 @@ const UploadGodownItems = () => {
               id="product-name"
               value={productName}
               onChange={(e) => setProductName(e.target.value)}
-              className="border border-gray-300 rounded w-full p-3 focus:outline-none focus:ring-2 focus:ring-gray-500"
+              className="border border-gray-300 rounded w-full p-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter product name"
               required
             />
           </div>
-          <div className="mb-4">
-            <label className="block mb-2 text-gray-700" htmlFor="description">
+          <div className="mb-6">
+            <label className="block mb-2 text-gray-700 font-medium" htmlFor="description">
               Description
             </label>
             <textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="border border-gray-300 rounded w-full p-3 h-24 focus:outline-none focus:ring-2 focus:ring-gray-500"
+              className="border border-gray-300 rounded w-full p-4 h-24 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter product description"
               required
             ></textarea>
           </div>
-          <div className="mb-4">
-            <label className="block mb-2 text-gray-700" htmlFor="price">
+          <div className="mb-6">
+            <label className="block mb-2 text-gray-700 font-medium" htmlFor="price">
               Price Per Item (Tsh)
             </label>
             <input
@@ -55,12 +56,13 @@ const UploadGodownItems = () => {
               id="price"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
-              className="border border-gray-300 rounded w-full p-3 focus:outline-none focus:ring-2 focus:ring-gray-500"
+              className="border border-gray-300 rounded w-full p-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter price"
               required
             />
           </div>
-          <div className="mb-4">
-            <label className="block mb-2 text-gray-700" htmlFor="quantity">
+          <div className="mb-6">
+            <label className="block mb-2 text-gray-700 font-medium" htmlFor="quantity">
               Quantity
             </label>
             <input
@@ -68,13 +70,14 @@ const UploadGodownItems = () => {
               id="quantity"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
-              className="border border-gray-300 rounded w-full p-3 focus:outline-none focus:ring-2 focus:ring-gray-500"
+              className="border border-gray-300 rounded w-full p-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter quantity"
               required
             />
           </div>
           <button
             type="submit"
-            className="bg-gray-500 text-white py-3 px-6 rounded hover:bg-gray-600 transition duration-200"
+            className="w-full py-3 px-6 bg-blue-600 text-white text-lg rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
           >
             Upload Product
           </button>

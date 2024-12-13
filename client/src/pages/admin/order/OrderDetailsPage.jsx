@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom"; // For extracting the orderId from the URL
 
 const OrderDetailsPage = () => {
@@ -13,12 +13,11 @@ const OrderDetailsPage = () => {
                 // Replace this with your actual API endpoint or data fetching logic
                 const fetchedOrder = {
                     id: orderId,
-                    customer: "John Doe",
+                    customer: "Leon Tadei",
                     status: "Completed",
                     date: "2024-12-01",
                     items: [
-                        { productName: "Laptop", quantity: 1, price: 999.99 },
-                        { productName: "Mouse", quantity: 1, price: 25.5 },
+                        { productName: "Notebook", quantity: 1, price: 9990 },
                     ],
                 };
 
@@ -92,8 +91,8 @@ const OrderDetailsPage = () => {
                             <tr key={index} className="border-t">
                                 <td className="py-3 px-4">{item.productName}</td>
                                 <td className="py-3 px-4">{item.quantity}</td>
-                                <td className="py-3 px-4">${item.price.toFixed(2)}</td>
-                                <td className="py-3 px-4">${(item.quantity * item.price).toFixed(2)}</td>
+                                <td className="py-3 px-4">Tsh {item.price.toFixed(2)}</td>
+                                <td className="py-3 px-4">Tsh {(item.quantity * item.price).toFixed(2)}</td>
                             </tr>
                         ))}
                     </tbody>
@@ -104,9 +103,9 @@ const OrderDetailsPage = () => {
             <div className="flex justify-between">
                 <button
                     className="px-4 py-2 bg-blue-600 text-white rounded-lg"
-                    onClick={() => alert("Marking order as shipped...")}
+                    onClick={() => alert("Marking order as completed...")}
                 >
-                    Mark as Shipped
+                    Mark as Complete
                 </button>
                 <button
                     className="px-4 py-2 bg-red-600 text-white rounded-lg"
