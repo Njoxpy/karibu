@@ -2,6 +2,7 @@
 require('dotenv').config()
 const express = require("express")
 const cors = require("cors")
+const morgan = require("morgan")
 
 // ROUTES IMPORT
 const animalFeedingRoutes = require("./routes/animalFeeding.routes")
@@ -21,10 +22,7 @@ app.get("/", (req, res) => {
 })
 
 // middleware
-app.use((req, res, next) => {
-  console.log(req.path, req.method)
-  next()
-})
+app.use(morgan("dev"))
 
 // register routes
 app.use("/api/v1/animal-feeding", animalFeedingRoutes)

@@ -1,6 +1,11 @@
 const express = require("express");
 const multer = require("multer")
+const parser = require("csv-parser")
+const fs = require("fs")
 const router = express.Router();
+
+// const results
+const results = []
 
 // Multer setup for image upload
 const storage = multer.diskStorage({
@@ -19,6 +24,8 @@ const { getAllAnimalFeedingProducts, createAnimalFeedingOrder, getAnimalFeedingA
 const validateProductFields = require("../middleware/validateProductFields");
 const createOrderMiddleware = require("../middleware/createOrderMiddleware")
 const Product = require("../models/productModel");
+const validateObjectId = require("../middleware/validateObjectId");
+const { error } = require("console");
 
 // GET: Get all products
 router.get("/products", getAllAnimalFeedingProducts);
@@ -27,9 +34,22 @@ router.get("/products", getAllAnimalFeedingProducts);
 router.get("/products/:id", getAnimalFeedingProductById);
 
 // POST: Upload new product
-router.post("/products/bulk-upload", (req, res) => {
+router.post("/products/bulk-upload", upload.single("file") , async(req, res) => {
+  
+  fs.createReadStream("mauzo.xlsx")
+  .on("data", (data) => {
+    results.push(data)
+  })
+  .on("error", (err) => {
+    console.log(err)
+  })
+  .on("end", () => {
+    console.log(results);
+    console.log("well done!");
+  })
   res.json({ message: "add new products, POST new product" })
 })
+
 
 // add new product
 router.post("/products/new", validateProductFields, upload.single("image"), async (req, res) => {
@@ -53,27 +73,27 @@ router.post("/products/new", validateProductFields, upload.single("image"), asyn
 
 
 // PATCH: Update product details
-router.patch("/products/:id", updateAnimalFeedingProduct)
+router.patch("/products/:id", validateObjectId,updateAnimalFeedingProduct)
 
 // POST: search for new order
 router.get("/products/search", searchAnimalFeedingProductName)
 
 // DELETE: Delete product
-router.delete("/products/:id", deleteAnimalFeedingProductById)
+router.delete("/products/:id", validateObjectId, deleteAnimalFeedingProductById)
 
 // GET: get all orders
 router.get("/orders", getAnimalFeedingAllOrders)
 
 // GET: Get single order
-router.get("/orders/:id", getAnimalFeedingOrderById)
+router.get("/orders/:id",validateObjectId, getAnimalFeedingOrderById)
 
 // UPDATE ORDER
-router.patch("/orders/:id", updateAnimalFeedingOrder)
+router.patch("/orders/:id", validateObjectId, updateAnimalFeedingOrder)
 
 // POST: create new order
 router.post("/orders/new", createOrderMiddleware, createAnimalFeedingOrder)
 
 // DELETE: Delete order by an id
-router.delete("/orders/:id", deleteAnimalFeedingOrderById)
+router.delete("/orders/:id",validateObjectId, deleteAnimalFeedingOrderById)
 
 module.exports = router;

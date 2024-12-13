@@ -1,4 +1,3 @@
-const mongoose = require("mongoose")
 const Product = require("../models/productModel")
 const Order = require("../models/orderModel")
 const { OK, NOT_FOUND, SERVER_ERROR } = require("../constants/responseStatusCode")

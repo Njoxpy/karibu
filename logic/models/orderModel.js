@@ -10,7 +10,8 @@ const orderSchema = new Schema(
     status: {
       enum: ["pending", "in progress", "completed"],
       type: String,
-      required: true
+      required: true,
+      default:"pending"
     },
     orderId: {
       type: Number,
@@ -42,5 +43,3 @@ const orderSchema = new Schema(
 
 const Order = mongoose.model("Order", orderSchema)
 module.exports = Order;
-
-// how to interact between one blog model and another blog model

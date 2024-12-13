@@ -1,3 +1,4 @@
+const { NOT_FOUND, OK } = require("../constants/responseStatusCode");
 const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 
@@ -46,7 +47,20 @@ const signupUser = async (req, res) => {
     }
 };
 
+const getAllUsers = async (req, res) => {
+    try {
+        const users = await User.find()
+        if (users.length === 0) {
+            return res.status(NOT_FOUND).json({ message: "not user found" })
+        }
+        res.status(OK).json(users)
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+}
+
 module.exports = {
     loginUser,
     signupUser,
+    getAllUsers
 };
