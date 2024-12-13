@@ -5,7 +5,6 @@ function BulkUploadGodown() {
     const [file, setFile] = useState(null);
     const [dataPreview, setDataPreview] = useState([]);
     const [errors, setErrors] = useState([]);
-    const [message, setMessage] = useState("")
 
     const handleFileUpload = (e) => {
         const uploadedFile = e.target.files[0];

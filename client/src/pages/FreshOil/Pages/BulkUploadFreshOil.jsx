@@ -42,7 +42,7 @@ function BulkUploadFreshOil() {
         <>
             <div className="p-6 bg-gray-50 min-h-screen">
                 <h2 className="text-2xl font-semibold text-yellow-600 mb-4">Bulk Upload Products</h2>
-                <p className="text-gray-600 mb-6">Upload your product data in CSV or Excel format.</p>
+                <p className="text-gray-600 mb-6">Upload your FreshOil product data in CSV or Excel format.</p>
 
                 {/* Upload Zone */}
                 <div className="border-2 border-dashed border-yellow-400 bg-yellow-50 p-6 rounded-lg flex flex-col items-center justify-center mb-6">

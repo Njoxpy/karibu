@@ -11,7 +11,7 @@ const Contact = () => {
             </h1>
             <p className="text-sm text-gray-600 mt-4">
               Have a project idea or need assistance with your brand? Reach out
-              to us at Savarrah—we’d love to hear about your vision and provide
+              to us at Savarrah we’d love to hear about your vision and provide
               the support you need.
             </p>
 

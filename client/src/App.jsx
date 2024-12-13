@@ -94,7 +94,6 @@ import PrintingLayout from "./pages/Printing/Layouts/PrintingLayout";
 // printing error
 
 /* stationery */
-// stationey pages
 import StationeryItemsList from "./pages/Stationery/Pages/StationeryItemsList";
 import StationeryBody from "./pages/Stationery/Pages/StationeryBody";
 import StationeryOrders from "./pages/Stationery/Pages/Orders";
@@ -150,6 +149,7 @@ import ReportsPage from "./pages/admin/ReportsPage";
 import SettingsPage from "./pages/admin/SettingsPage";
 import AddProduct from "./pages/admin/AddProduct";
 import OrderDetailsPage from "./pages/admin/order/OrderDetailsPage";
+import UserProfile from "./components/UserProfile";
 
 export default function App() {
   const router = createBrowserRouter(
@@ -173,6 +173,7 @@ export default function App() {
 
           <Route path="/dashboard" element={<UserDashboard />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/profile" element={<UserProfile />} />
 
           {/* animal feeding */}
           <Route path="/animal-feeding" element={<AnimalFeedingLayout />}>

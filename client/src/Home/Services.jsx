@@ -23,7 +23,7 @@ function Services() {
               src={printingImage}
               alt="Printing"
               className="w-full h-48 object-cover rounded-md mb-4"
-              fetchpriority="high"
+              fetchPriority="high"
             />
             <h3 className="text-xl font-semibold text-blue-600 mb-2">
               Printing
@@ -40,7 +40,7 @@ function Services() {
               src={oilImage}
               alt="Fresh Oil"
               className="w-full h-48 object-cover rounded-md mb-4"
-              fetchpriority="high"
+              fetchPriority="high"
             />
             <h3 className="text-xl font-semibold text-blue-600 mb-2">
               Fresh Oil
@@ -57,7 +57,7 @@ function Services() {
               src={hardImage}
               alt="Hardware"
               className="w-full h-48 object-cover rounded-md mb-4"
-              fetchpriority="high"
+              fetchPriority="high"
             />
             <h3 className="text-xl font-semibold text-blue-600 mb-2">
               Hardware
@@ -74,7 +74,7 @@ function Services() {
               src={animal2Image}
               alt="Animal Feeding"
               className="w-full h-48 object-cover rounded-md mb-4"
-              fetchpriority="high"
+              fetchPriority="high"
             />
             <h3 className="text-xl font-semibold text-blue-600 mb-2">
               Animal Feeding
@@ -91,7 +91,7 @@ function Services() {
               src={godownImage}
               alt="Godown"
               className="w-full h-48 object-cover rounded-md mb-4"
-              fetchpriority="high"
+              fetchPriority="high"
             />
             <h3 className="text-xl font-semibold text-blue-600 mb-2">Godown</h3>
             <p className="text-gray-600">
@@ -106,7 +106,7 @@ function Services() {
               src={stationeryImage}
               alt="Stationery"
               className="w-full h-48 object-cover rounded-md mb-4"
-              fetchpriority="high"
+              fetchPriority="high"
             />
             <h3 className="text-xl font-semibold text-blue-600 mb-2">
               Stationery

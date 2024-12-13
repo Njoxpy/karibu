@@ -8,7 +8,7 @@ const DashboardHome = () => {
                     {/* Cards for Stats */}
                     <div className="bg-white p-4 rounded-lg shadow">
                         <h3 className="text-lg font-semibold">Total Sales</h3>
-                        <p className="text-3xl font-bold">₦10,000</p>
+                        <p className="text-3xl font-bold">Tsh 1,000,000</p>
                     </div>
                     <div className="bg-white p-4 rounded-lg shadow">
                         <h3 className="text-lg font-semibold">Total Orders</h3>

@@ -48,7 +48,6 @@ const Orders = () => {
 
   // Function to filter orders by date
   const filterOrdersByDate = () => {
-    const now = new Date();
     let filteredOrders = orders;
     switch (filterBy) {
       case "day":

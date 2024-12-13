@@ -119,18 +119,10 @@ const OilDetails = () => {
             />
           </div>
 
-          {/* Terms and Conditions Checkbox */}
-          <div className="mb-6">
-            <label className="inline-flex items-center">
-              <input type="checkbox" className="form-checkbox h-4 w-4 text-yellow-600" />
-              <span className="ml-2 text-sm text-gray-600">I agree to the terms and conditions</span>
-            </label>
-          </div>
-
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-yellow-600 text-white p-2 rounded-md hover:bg-yellow-700"
+            className="w-full bg-yellow-500 text-white p-2 rounded-md hover:bg-yellow-600"
           >
             Complete Order
           </button>

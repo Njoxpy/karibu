@@ -19,7 +19,7 @@ function StationeryOrderDetails() {
             <h3>Order id: {id}</h3>
             <p>product name: {order.productName}</p>
             <p>
-              Amout of {order.productName} ordered: {order.quantity}
+              Amount of {order.productName} ordered: {order.quantity}
             </p>
             <p>Total Price: {order.totalPrice}</p>
           </div>
