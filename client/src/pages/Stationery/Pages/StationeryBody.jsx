@@ -1,8 +1,7 @@
-import Animal1 from ".././../../assets/images/pen.jpg";
-import Animal2 from ".././../../assets/images/booklet.jpg";
-import notebook from "../../../assets/images/notebook.jpg"
-
 import { useState } from "react";
+import Animal1 from "../../../assets/images/pen.jpg";
+import Animal2 from "../../../assets/images/booklet.jpg";
+import notebook from "../../../assets/images/notebook.jpg";
 
 function StationeryBody() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -81,60 +80,67 @@ function StationeryBody() {
   );
 
   return (
-    <>
-      <div>
-        <div className="mb-4 submission">
-          <input
-            type="text"
-            placeholder="Search for stationery items..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)} // Updates the search term state
-            className="border rounded p-2 w-full"
-          />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {currentProducts.length > 0 ? (
-            currentProducts.map((product) => (
-              <div
-                key={product.id}
-                className="border rounded-lg shadow-md overflow-hidden"
-              >
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-4">
-                  <h2 className="font-semibold text-lg">{product.name}</h2>
-                  <p className="text-gray-600">{product.description}</p>
-                  <p className="font-bold text-blue-700">Tsh {product.price}</p>
-                  <div className="flex justify-between">
-                    <a
-                      href={`/stationery/products/${product.id}`}
-                      className="mt-4 inline-block bg-blue-500 text-white py-2 px-4 rounded"
-                    >
-                      Order Now
-                    </a>
-                    <a
-                      href={`/stationery/product-detail?productId=${product.id}`}
-                      className="mt-4 inline-block bg-blue-500 text-white py-2 px-4 rounded ml-2"
-                    >
-                      View Details
-                    </a>
-                  </div>
+    <div>
+      {/* Search Bar */}
+      <div className="mb-4 submission">
+        <input
+          type="text"
+          placeholder="Search for stationery items..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)} // Updates the search term state
+          className="border rounded p-2 w-full"
+        />
+      </div>
+
+      {/* Product Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {currentProducts.length > 0 ? (
+          currentProducts.map((product) => (
+            <div
+              key={product.id}
+              className="border rounded-lg shadow-md overflow-hidden"
+            >
+              <img
+                src={product.image}
+                alt={product.name}
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-4">
+                <h2 className="font-semibold text-lg">{product.name}</h2>
+                <p className="text-gray-600">{product.description}</p>
+                <p className="font-bold text-blue-700">Tsh {product.price}</p>
+                <div className="flex justify-between">
+                  <a
+                    href={`/stationery/products/${product.id}`}
+                    className="mt-4 inline-block bg-blue-500 text-white py-2 px-4 rounded"
+                  >
+                    Order Now
+                  </a>
+                  <a
+                    href={`/stationery/product-detail?productId=${product.id}`}
+                    className="mt-4 inline-block bg-blue-500 text-white py-2 px-4 rounded ml-2"
+                  >
+                    View Details
+                  </a>
                 </div>
               </div>
-            ))
-          ) : (
-            <p className="text-center text-gray-600">No products found for &quot;{searchTerm}&quot;</p>
-          )}
-        </div>
+            </div>
+          ))
+        ) : (
+          <p className="text-center text-gray-600">
+            No products found for &quot;{searchTerm}&quot;
+          </p>
+        )}
+      </div>
 
-        {/* Pagination controls */}
+      {/* Pagination Controls */}
+      {filteredProducts.length > 0 && (
         <div className="flex justify-center m-2">
           <button
             onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))}
-            className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2"
+            disabled={currentPage === 1}
+            className={`bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2 ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+              }`}
           >
             Previous
           </button>
@@ -143,13 +149,15 @@ function StationeryBody() {
           </span>
           <button
             onClick={() => setCurrentPage(Math.min(currentPage + 1, totalPages))}
-            className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 ml-2"
+            disabled={currentPage === totalPages}
+            className={`bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 ml-2 ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
+              }`}
           >
             Next
           </button>
         </div>
-      </div>
-    </>
+      )}
+    </div>
   );
 }
 
