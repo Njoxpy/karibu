@@ -1,6 +1,7 @@
 import { Outlet, Link } from "react-router-dom";
 import { useState } from "react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import logo from "../../../assets/images/logPrinting.png";
 
 function PrintingLayout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -9,10 +10,10 @@ function PrintingLayout() {
     <>
       <div className="bg-blue-600 text-white shadow-md">
         <header className="container mx-auto flex justify-between items-center p-4">
-          {/* Logo/Title */}
-          <h2 className="text-2xl font-semibold">
-            <Link to="/printing">Savarrah Printing</Link>
-          </h2>
+          {/* Logo */}
+          <Link to="/printing" className="flex items-center space-x-2">
+            <img src={logo} alt="Savarrah Logo" className="h-10 w-auto" />
+          </Link>
 
           {/* Mobile Menu Button */}
           <button

@@ -1,5 +1,6 @@
 import { Link, NavLink, Outlet } from "react-router-dom";
 import { useState } from "react";
+import logo from "../assets/images/logoWithName.png"; // Import your logo image
 
 const RootLayout = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -17,7 +18,7 @@ const RootLayout = () => {
     { name: "Printing", path: "/printing" },
     { name: "FreshOil", path: "/freshOil" },
     { name: "Contact", path: "/contact" },
-    { name: "Admin", path: "/admin" }
+    { name: "Admin", path: "/admin" },
   ];
 
   return (
@@ -25,9 +26,13 @@ const RootLayout = () => {
       <nav className="flex items-center justify-between flex-wrap bg-primary p-6">
         {/* Logo */}
         <div className="flex items-center flex-shrink-0 text-white mr-6">
-          <span className="font-semibold text-xl tracking-tight">
-            <Link to="/">Savarrah</Link>
-          </span>
+          <Link to="/">
+            <img
+              src={logo}
+              alt="Savarrah Logo"
+              className="h-10 w-auto" // Adjust height/width as needed
+            />
+          </Link>
         </div>
 
         {/* Hamburger Menu for Mobile */}
@@ -50,8 +55,7 @@ const RootLayout = () => {
 
         {/* Menu Links */}
         <div
-          className={`w-full ${isMenuOpen ? "block" : "hidden"
-            } lg:flex lg:items-center lg:w-auto`}
+          className={`w-full ${isMenuOpen ? "block" : "hidden"} lg:flex lg:items-center lg:w-auto`}
         >
           <div className="text-sm lg:flex-grow">
             {menuItems.map((item) => (
