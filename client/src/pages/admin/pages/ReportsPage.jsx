@@ -2,15 +2,23 @@ import { useState } from "react";
 
 const ReportsPage = () => {
     const [reportType, setReportType] = useState("");
-    const [dateRange, setDateRange] = useState("");
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+    const [generatedReport, setGeneratedReport] = useState("");
 
     const handleGenerateReport = () => {
+        if (!reportType || !startDate || !endDate) {
+            alert("Please select all options to generate the report.");
+            return;
+        }
+
         // Logic to generate the report based on the selected options
-        console.log(`Generating ${reportType} report for ${dateRange}`);
+        const report = `Generating ${reportType} report from ${startDate} to ${endDate}`;
+        setGeneratedReport(report);
     };
 
     return (
-        <div>
+        <div className="container mx-auto p-4">
             <h2 className="text-2xl font-bold text-gray-800">Generate Reports</h2>
 
             <div className="mt-4 space-y-4">
@@ -29,13 +37,24 @@ const ReportsPage = () => {
                     </select>
                 </div>
 
-                {/* Date Range Selector */}
+                {/* Start Date Selector */}
                 <div>
-                    <label className="block text-gray-600">Select Date Range:</label>
+                    <label className="block text-gray-600">Start Date:</label>
                     <input
                         type="date"
-                        value={dateRange}
-                        onChange={(e) => setDateRange(e.target.value)}
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        className="mt-1 p-2 border rounded"
+                    />
+                </div>
+
+                {/* End Date Selector */}
+                <div>
+                    <label className="block text-gray-600">End Date:</label>
+                    <input
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
                         className="mt-1 p-2 border rounded"
                     />
                 </div>
@@ -51,12 +70,13 @@ const ReportsPage = () => {
                 </div>
             </div>
 
-            {/* Placeholder for the generated report */}
-            <div className="mt-6">
-                <h3 className="font-semibold text-gray-800">Generated Report:</h3>
-                {/* Display the generated report here */}
-                <p className="text-gray-600">Report will be displayed here after generation.</p>
-            </div>
+            {/* Display the generated report */}
+            {generatedReport && (
+                <div className="mt-6">
+                    <h3 className="font-semibold text-gray-800">Generated Report:</h3>
+                    <p className="text-gray-600">{generatedReport}</p>
+                </div>
+            )}
         </div>
     );
 };
