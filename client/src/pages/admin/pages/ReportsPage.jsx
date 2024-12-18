@@ -31,9 +31,12 @@ const ReportsPage = () => {
                         className="mt-1 p-2 border rounded"
                     >
                         <option value="">-- Select Report --</option>
-                        <option value="sales">Sales Report</option>
-                        <option value="inventory">Inventory Report</option>
-                        <option value="user-activity">User Activity Report</option>
+                        <option value="sales">Animal Fedding</option>
+                        <option value="inventory">Stationery</option>
+                        <option value="user-activity">User Activity</option>
+                        <option value="user-activity">Godown</option>
+                        <option value="user-activity">Fresh Oil</option>
+                        <option value="user-activity">Hardware</option>
                     </select>
                 </div>
 

@@ -6,7 +6,7 @@ const UsersPage = () => {
     { id: 1, name: "Godbless Nyagawa", email: "godblessnyagawa12@gmail.com", role: "Admin", status: "active" },
     { id: 2, name: "Jane Kimbweta", email: "jane@gmail.com", role: "User", status: "inactive" },
     { id: 3, name: "Alice Makalius", email: "alice@example.com", role: "User", status: "active" },
-    { id: 4, name: "John Samweli", email: "godblessnyagawa12@gmail.com", role: "Admin", status: "active" },
+    { id: 4, name: "John Samweli", email: "johnsamweli@gmail.com", role: "Admin", status: "active" },
     { id: 5, name: "Yuda Mwita", email: "mwitayuda@gmail.com", role: "User", status: "inactive" },
     { id: 6, name: "Karim Gesu", email: "karimugesu@example.com", role: "User", status: "active" },
     { id: 7, name: "Aisha Kibona", email: "aishakibona@gmail.com", role: "Admin", status: "active" },
