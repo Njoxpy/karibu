@@ -10,6 +10,9 @@ const freshOilRoutes = require("./routes/freshOil.routes")
 const godownRoutes = require("./routes/godown.routes")
 const userRoutes = require("./routes/user.routes")
 const printingRoutes = require("./routes/printing.routes")
+const hardwareRoutes = require("./routes/hardware.routes")
+
+// database
 const connectDB = require('./config/DB')
 
 // express app
@@ -30,10 +33,12 @@ app.use("/api/v1/fresh-oil", freshOilRoutes)
 app.use("/api/v1/godown", godownRoutes)
 app.use("/api/v1/users", userRoutes)
 app.use("/api/v1/printing", printingRoutes)
+app.use("/api/v1/hardware", hardwareRoutes)
 
 // connect to DB
 connectDB()
 
+// listen requests
 app.listen(process.env.PORT, () => {
   console.log(`Listening http://localhost:${process.env.PORT}/`);
 })

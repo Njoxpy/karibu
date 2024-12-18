@@ -1,10 +1,11 @@
 const mongoose = require("mongoose")
-const Schema = mongoose.Schema
-const printingSubmission = new Schema(
+
+const printingOrderSchema = new mongoose.Schema(
     {
         description: {
             type: String,
             required: true,
+            maxLength: [500, "description should be short"]
         },
         price: {
             type: Number,
@@ -20,9 +21,11 @@ const printingSubmission = new Schema(
         },
         category: {
             type: String,
-            required: true,
+            enum: ["books", "posters", "banners", "magazine", "bags", "cups", "banners"],
+            required: true
         }
     }
 )
 
-module.exports = mongoose.model("PrintingSubmission", printingSubmission)
+const PrintingOrder = mongoose.model("PrintingOrder", printingOrderSchema)
+module.exports = PrintingOrder

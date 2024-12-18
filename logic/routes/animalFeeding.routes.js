@@ -23,7 +23,11 @@ const upload = multer({ storage: storage });
 const { getAllAnimalFeedingProducts, createAnimalFeedingOrder, getAnimalFeedingAllOrders, getAnimalFeedingProductById, getAnimalFeedingOrderById, updateAnimalFeedingProduct, deleteAnimalFeedingProductById, deleteAnimalFeedingOrderById, searchAnimalFeedingProductName, updateAnimalFeedingOrder } = require("../controllers/animalFeeding.controller");
 const validateProductFields = require("../middleware/validateProductFields");
 const createOrderMiddleware = require("../middleware/createOrderMiddleware")
-const Product = require("../models/productModel");
+
+// model
+const Product = require("../models/animalFeeding/animalFeedingProductModel");
+
+// middleware
 const validateObjectId = require("../middleware/validateObjectId");
 const { error } = require("console");
 
@@ -34,25 +38,25 @@ router.get("/products", getAllAnimalFeedingProducts);
 router.get("/products/:id", getAnimalFeedingProductById);
 
 // POST: Upload new product
-router.post("/products/bulk-upload", upload.single("file") , async(req, res) => {
-  
+router.post("/products/bulk-upload", upload.single("file"), async (req, res) => {
+
   fs.createReadStream("mauzo.xlsx")
-  .on("data", (data) => {
-    results.push(data)
-  })
-  .on("error", (err) => {
-    console.log(err)
-  })
-  .on("end", () => {
-    console.log(results);
-    console.log("well done!");
-  })
+    .on("data", (data) => {
+      results.push(data)
+    })
+    .on("error", (err) => {
+      console.log(err)
+    })
+    .on("end", () => {
+      console.log(results);
+      console.log("well done!");
+    })
   res.json({ message: "add new products, POST new product" })
 })
 
 
 // add new product
-router.post("/products/new", validateProductFields, upload.single("image"), async (req, res) => {
+router.post("/products/", validateProductFields, upload.single("image"), async (req, res) => {
   const { name, description, quantity, price, userId } = req.body;
   const thumbnail_image = req.file ? req.file.filename : null; // Get the filename if an image is uploaded
   try {
@@ -73,7 +77,7 @@ router.post("/products/new", validateProductFields, upload.single("image"), asyn
 
 
 // PATCH: Update product details
-router.patch("/products/:id", validateObjectId,updateAnimalFeedingProduct)
+router.patch("/products/:id", validateObjectId, updateAnimalFeedingProduct)
 
 // POST: search for new order
 router.get("/products/search", searchAnimalFeedingProductName)
@@ -85,15 +89,15 @@ router.delete("/products/:id", validateObjectId, deleteAnimalFeedingProductById)
 router.get("/orders", getAnimalFeedingAllOrders)
 
 // GET: Get single order
-router.get("/orders/:id",validateObjectId, getAnimalFeedingOrderById)
+router.get("/orders/:id", validateObjectId, getAnimalFeedingOrderById)
 
 // UPDATE ORDER
 router.patch("/orders/:id", validateObjectId, updateAnimalFeedingOrder)
 
 // POST: create new order
-router.post("/orders/new", createOrderMiddleware, createAnimalFeedingOrder)
+router.post("/orders", createOrderMiddleware, createAnimalFeedingOrder)
 
 // DELETE: Delete order by an id
-router.delete("/orders/:id",validateObjectId, deleteAnimalFeedingOrderById)
+router.delete("/orders/:id", validateObjectId, deleteAnimalFeedingOrderById)
 
 module.exports = router;

@@ -1,18 +1,25 @@
 const validateProductFields = (req, res, next) => {
-    const { price, quantity, name, userId, image } = req.body
+    const { name, userId } = req.body;
+    const price = Number(req.body.price);
+    const quantity = Number(req.body.quantity);
+    const image = req.file; // Image is in req.file when using multer
 
+    // Check if required fields are provided
     if (!name || quantity == null || price == null || !userId || !image) {
-        return res.status(400).json({ message: "all required fields must be provided" })
+        return res.status(400).json({ message: "All required fields must be provided" });
     }
 
-    if (typeof price !== "number" || price < 0) {
-        return res.status(400).json("Price must be a positive number")
+    // Validate price (must be a positive number)
+    if (isNaN(price) || price < 0) {
+        return res.status(400).json({ message: "Price must be a positive number" });
     }
 
-    if (typeof quantity !== "number" || price < 0) {
-        return res.status(400).json("Quantity must be a none negative number")
+    // Validate quantity (must be a non-negative number)
+    if (isNaN(quantity) || quantity < 0) {
+        return res.status(400).json({ message: "Quantity must be a non-negative number" });
     }
+
     next();
-}
+};
 
 module.exports = validateProductFields;

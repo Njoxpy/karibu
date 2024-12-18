@@ -2,9 +2,9 @@ const mongoose = require("mongoose")
 const Schema = mongoose.Schema
 const orderSchema = new Schema(
   {
-    totalPrice: {
+    price: {
       type: Number,
-      required: [true, "Product tital price is required"],
+      required: [true, "Product price is required"],
       min: 0
     },
     status: {
@@ -16,7 +16,6 @@ const orderSchema = new Schema(
     orderId: {
       type: Number,
     },
-    // userId
     userId: {
       type: Number,
       ref: 'User',
@@ -24,30 +23,17 @@ const orderSchema = new Schema(
     },
     productName: {
       type: String,
-      ref: "Product",
+      ref: "HardwareProduct",
       required: [true, "Product name is required"],
     },
     quantity: {
       type: Number,
       required: [true, "Product quantity is required"],
       min: 1
-    },
-    category: {
-      type: String,
-      enum: ["animal-feeding", "fresh-0il", "stationery", "godown", "printing", "hardware"],
-      required: true
     }
   },
   { timestamps: true }
 )
 
-orderSchema.pre('save', function (next) {
-  if (this.isModified('quantity') || this.isModified('price')) {
-    this.totalPrice = this.quantity * this.price;
-    this.totalAmount = this.totalPrice;
-  }
-  next();
-});
-
-const Order = mongoose.model("Order", orderSchema)
+const Order = mongoose.model("NewOrder", orderSchema)
 module.exports = Order;

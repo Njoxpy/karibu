@@ -23,11 +23,16 @@ const userSchema = new Schema(
       enum: ["employee", "admin"],
       default: "employee",
     },
+    category: {
+      type: String,
+      enum: ["printing", "fresh-oil", "hardware", "animal-feeding", "godown", "stationery"],
+      required: true
+    }
   },
   { timestamps: true }
 );
 
-// Static signup method
+
 userSchema.statics.signup = async function (email, password, role = "employee") {
   if (!email || !password) {
     throw new Error("All fields are required");
@@ -46,6 +51,7 @@ userSchema.statics.signup = async function (email, password, role = "employee") 
     throw new Error("Invalid role");
   }
 
+  // validate industry category
   const exists = await this.findOne({ email });
   if (exists) {
     throw new Error("Email already in use");
