@@ -1,59 +1,49 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const stationeryOrderSchema = new Schema(
+const StationeryOrderSchema = new Schema(
     {
-        orderNumber: {
-            type: String,
-            required: true,
-            unique: true,
-            trim: true
-        },
-        customerId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Customer",
-            required: true
-        },
-        items: [{
-            productId: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "StationeryProduct",
-                required: true
-            },
-            quantity: {
-                type: Number,
-                required: true,
-                min: [1, "Quantity must be at least 1"]
-            },
-            unitPrice: {
-                type: Number,
-                required: true,
-                min: [0, "Unit price must be greater than or equal to 0"]
-            },
-            totalPrice: {
-                type: Number,
-                required: true,
-                min: [0, "Total price must be greater than or equal to 0"]
-            }
-        }],
-        totalAmount: {
+        price: {
             type: Number,
-            required: true,
-            min: [0, "Total amount must be greater than or equal to 0"]
+            required: [true, "Product price is required"],
+            min: 0,
         },
-        orderStatus: {
+        status: {
             type: String,
-            enum: ["pending", "completed", "cancelled"],
-            default: "pending"
+            enum: ["pending", "in progress", "completed"],
+            required: true,
+            default: "pending",
         },
-        orderDate: {
-            type: Date,
-            default: Date.now
+        orderId: {
+            type: String, // Changed to String for better flexibility
+            required: true,
+        },
+        userId: {
+            type: Schema.Types.ObjectId, // Refers to the User model
+            ref: "User",
+        },
+        name: {
+            type: String,
+            ref: "StationeryProduct", // Correctly referencing StationeryProduct
+            required: [true, "Product name is required"],
+        },
+        quantity: {
+            type: Number,
+            required: [true, "Product quantity is required"],
+            min: 1,
+        },
+        totalPrice: {
+            type: Number,
         },
     },
     { timestamps: true }
 );
 
-const StationeryOrder = mongoose.model("StationeryOrder", stationeryOrderSchema);
+// Middleware to calculate total price
+StationeryOrderSchema.pre("save", function (next) {
+    this.totalPrice = this.quantity * this.price;
+    next();
+});
 
+const StationeryOrder = mongoose.model("StationeryOrder", StationeryOrderSchema);
 module.exports = StationeryOrder;
