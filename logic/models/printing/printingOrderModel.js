@@ -1,31 +1,44 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
-const printingOrderSchema = new mongoose.Schema(
+const PrintingOrderSchema = new Schema(
     {
-        description: {
+        orderId: {
             type: String,
-            required: true,
-            maxLength: [500, "description should be short"]
+            required: [true, "Order ID is required"],
         },
-        price: {
-            type: Number,
-            required: true
+        status: {
+            type: String,
+            enum: ["pending", "in progress", "completed"],
+            required: true,
+            default: "pending",
+        },
+        productId: {
+            type: Schema.Types.ObjectId,
+            ref: "PrintingProduct",
+            required: [true, "Product ID is required"],
+        },
+        userId: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+            required: [true, "User ID is required"],
         },
         quantity: {
             type: Number,
-            required: true
+            required: [true, "Quantity is required"],
+            min: 1,
         },
-        contact: {
-            type: String,
-            required: true,
+        totalPrice: {
+            type: Number,
         },
-        category: {
-            type: String,
-            enum: ["books", "posters", "banners", "magazine", "bags", "cups", "banners"],
-            required: true
-        }
-    }
-)
+    },
+    { timestamps: true }
+);
 
-const PrintingOrder = mongoose.model("PrintingOrder", printingOrderSchema)
-module.exports = PrintingOrder
+PrintingOrderSchema.pre("save", function (next) {
+    this.totalPrice = this.quantity * this.productId.price; // assuming price is on PrintingProduct
+    next();
+});
+
+const PrintingOrder = mongoose.model("PrintingOrder", PrintingOrderSchema);
+module.exports = PrintingOrder;

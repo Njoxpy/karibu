@@ -1,40 +1,34 @@
-const mongoose = require("mongoose")
-const Schema = mongoose.Schema
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
-const printingSubmissionSchema = new Schema(
+const PrintingProductSchema = new Schema(
     {
         description: {
             type: String,
-            required: true,
+            required: [true, "Description of the print job is required"],
         },
         price: {
             type: Number,
-            required: true
+            required: [true, "Price is required"],
+            min: 0,
         },
         quantity: {
             type: Number,
-            required: true
+            required: [true, "Quantity is required"],
+            min: 1,
         },
         contact: {
             type: String,
-            required: true,
+            required: [true, "Contact information is required"],
         },
         category: {
             type: String,
-            required: true,
-            enum: ["Books", "Cups", "Posters", "Flyers"]
-        }
-        // status
-    }
-)
+            enum: ["business card", "flyer", "brochure", "poster"],
+            required: [true, "Category is required"],
+        },
+    },
+    { timestamps: true }
+);
 
-printingSubmissionSchema.pre('save', function (next) {
-    if (this.isModified('quantity') || this.isModified('price')) {
-        this.totalPrice = this.quantity * this.price;
-        this.totalAmount = this.totalPrice;
-    }
-    next();
-});
-
-
-module.exports = mongoose.model("PrintingSubmission", printingSubmissionSchema)
+const PrintingProduct = mongoose.model("PrintingProduct", PrintingProductSchema);
+module.exports = PrintingProduct;
