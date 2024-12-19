@@ -35,5 +35,13 @@ const orderSchema = new Schema(
   { timestamps: true }
 )
 
+orderSchema.pre('save', function (next) {
+  if (this.isModified('quantity') || this.isModified('price')) {
+    this.totalPrice = this.quantity * this.price;
+    this.totalAmount = this.totalPrice;
+  }
+  next();
+});
+
 const Order = mongoose.model("NewOrder", orderSchema)
 module.exports = Order;
