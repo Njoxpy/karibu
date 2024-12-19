@@ -1,28 +1,28 @@
 const express = require("express")
-const { createSubmission, getPrintingSubmission, getPrintingOrders, getSinglePrintingSubmission } = require("../controllers/printing.controller")
+
+// controller
+const { createSubmission, getPrintingSubmission, getPrintingOrders, getSinglePrintingSubmission, getSinglePrintingOrder, updatePrintingOrder, deletePrintingOrder } = require("../controllers/printing.controller")
+
 const validatePrintingSubmission = require("../middleware/validatePrintingSubmission")
-const validateObjectId = require("../middleware/validateObjectId")
+
 const router = express.Router()
-const pdf = require("html-pdf")
 
-router.post("/", validatePrintingSubmission, createSubmission)
+// middleware
+const validateObjectId = require("../middleware/validateObjectId")
 
-router.post("/create-pdf", (req, res) => {
-    pdf.create("Njox", {}).toFile('me.pdf', (err) => {
-        if (err) {
-            res.json({ message: err })
-        }
-        return Promise.resolve()
-    })
-})
+// create
+router.post("/orders", createSubmission)
 
-// get all submissions
-router.get("/submissions", getPrintingSubmission)
-
-// get all all orders
+// orders
 router.get("/orders", getPrintingOrders)
 
-// get all single submission
-router.get("/submissions/:id", validateObjectId, getSinglePrintingSubmission)
+// order
+router.get("/orders/:id", getSinglePrintingOrder)
+
+// update
+router.patch("/orders/:id", validateObjectId, updatePrintingOrder)
+
+// delete
+router.delete("/orders/:id", validateObjectId, deletePrintingOrder)
 
 module.exports = router

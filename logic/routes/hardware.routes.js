@@ -3,7 +3,7 @@ const multer = require("multer")
 const router = express.Router()
 
 // controllers
-const { createHardwareOrder, getAllHardwareProducts, getAllHardwareOrders, updateHardwareProduct, updateHardwareOrder, deleteHardwareProduct, deleteHardwareOrder } = require("../controllers/hardware.controller")
+const { createHardwareOrder, getAllHardwareProducts, getAllHardwareOrders, updateHardwareProduct, updateHardwareOrder, deleteHardwareProduct, deleteHardwareOrder, getSingleHardwareProduct, getSingleHardwareOrder } = require("../controllers/hardware.controller")
 
 // middleware
 const validateProductFields = require("../middleware/validateProductFields")
@@ -82,6 +82,12 @@ router.get("/products", getAllHardwareProducts)
 
 // get all orders
 router.get("/orders", getAllHardwareOrders)
+
+// get product
+router.get("/products/:id", validateObjectId, getSingleHardwareProduct)
+
+// get order
+router.get("/orders/:id", validateObjectId, getSingleHardwareOrder)
 
 // update product
 router.patch("/products/:id", validateObjectId, updateHardwareProduct)

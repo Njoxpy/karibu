@@ -2,6 +2,7 @@ const express = require("express")
 const router = express.Router()
 
 const { createGodownProduct, createGodownOrder, getAllGodownProducts, getAllGodownOrders, getAllGodownProductById, getAllGodownOrderById, updateGodownProductById, updateGodownOrderById, deleteGodownProduct, deleteGodownOrder } = require("../controllers/godown.controller")
+
 const validateObjectId = require("../middleware/validateObjectId")
 
 // create product
