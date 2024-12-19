@@ -1,7 +1,29 @@
+// response code
 const { SERVER_ERROR, BAD_REQUEST, CREATED, NOT_FOUND, OK } = require("../constants/responseStatusCode")
+
 // create hardware product
 const HardwareOrder = require("../models/hardware/orderModel")
 const HardwareProduct = require("../models/hardware/productModel")
+
+// create hardware product
+const createHardwareProduct = async (req, res) => {
+
+    const { price, status, orderId, userId, name, quantity } = req.params
+
+    try {
+        const newOrder = await HardwareProduct.create({
+            productId,
+            quantity,
+            price,
+            status,
+            name,
+            customerId
+        })
+        res.status(CREATED).json(newOrder)
+    } catch (error) {
+        res.staus(SERVER_ERROR).json({ message: "Failed to create hardware product" })
+    }
+}
 
 // create hardware order
 const createHardwareOrder = async (req, res) => {
@@ -115,11 +137,11 @@ const updateHardwareOrder = async (req, res) => {
         const updateHardwareOrder = await HardwareOrder.findOneAndUpdate({ _id: id }, { ...req.body }, { new: true })
 
         if (!updateHardwareOrder) {
-            return res.status(NOT_FOUND).json({ message: "Product not found" })
+            return res.status(NOT_FOUND).json({ message: "Order not found" })
         }
         res.status(OK).json({ message: "Update sucessfully", updateHardwareOrder })
     } catch (error) {
-        res.staus(SERVER_ERROR).json({ message: "Failed to update product" })
+        res.staus(SERVER_ERROR).json({ message: "Failed to update order" })
     }
 }
 
@@ -159,6 +181,7 @@ const deleteHardwareOrder = async (req, res) => {
 
 
 module.exports = {
+    createHardwareProduct,
     createHardwareOrder,
     getAllHardwareProducts,
     getAllHardwareOrders,

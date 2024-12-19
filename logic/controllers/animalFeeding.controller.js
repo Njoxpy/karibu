@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 // models
-const Product = require("../models/productModel")
-const Order = require("../models/orderModel")
+const Product = require("../models/animalFeeding/animalFeedingProductModel")
+const Order = require("../models/animalFeeding/animalFeedingOrderModel")
 const User = require("../models/userModel")
 const { OK, NOT_FOUND, SERVER_ERROR } = require("../constants/responseStatusCode")
 

@@ -7,27 +7,12 @@ const createSubmission = async (req, res) => {
     // create new order handling
     const { description, price, quantity, contact, category } = req.body
 
-
     try {
-        const submission = PrintingSubmission.create({ description, price, quantity, contact, category })
+        const submission = await PrintingSubmission.create({ description, price, quantity, contact, category })
 
         res.status(CREATED).json(submission)
     } catch (error) {
         res.status(SERVER_ERROR).json({ message: "Failed to create order", error: error.message })
-    }
-}
-
-// get submission
-const getPrintingSubmission = async (req, res) => {
-    try {
-        const submissions = await PrintingSubmission.find()
-
-        if (submissions.length === 0) {
-            return res.status(NOT_FOUND).json({ message: "There no submissions for now" })
-        }
-        res.status(OK).json(submissions)
-    } catch (error) {
-        res.status(SERVER_ERROR).json({ message: "Failed to get submission", error: error.message })
     }
 }
 
@@ -63,24 +48,61 @@ const getSinglePrintingSubmission = async (req, res) => {
 
 // get order by id
 const getSinglePrintingOrder = async (req, res) => {
+
+    const { id } = req.params;
+
+    try {
+
+        const order = await PrintingOrder.findOne({ _id: id })
+
+        if (!order) {
+            return res.status(404).json({ message: "Not found" })
+        }
+
+        res.status(OK).json(order)
+    } catch (error) {
+        res.status(SERVER_ERROR).json({ message: "Failed to get order", error: error.message })
+    }
+}
+
+// update order
+const updatePrintingOrder = async (req, res) => {
     const { id } = req.params
 
     try {
-        const submission = await PrintingOrder.findOne({ _id: id })
+        const updatedOrder = await PrintingOrder.findOneAndUpdate({ _id: id }, { ...req.body }, { new: true })
 
-        if (!submission) {
-            return res.status(NOT_FOUND).json({ message: "Submission not found" })
+        if (!updatedOrder) {
+            return res.status(404).json({ message: "Order nto found" })
         }
-        res.status(OK).json(submission)
+
+        res.status(OK).json({ message: "Updated sucessfully", updatedOrder })
     } catch (error) {
-        res.status(SERVER_ERROR).json({ message: "Failed to get submission", error: error.message })
+        res.status(SERVER_ERROR).json({ message: "Failed to update order", error: error.message })
+    }
+}
+
+// delete order
+const deletePrintingOrder = async (req, res) => {
+    const { id } = req.params
+
+    try {
+        const deletedOrder = await PrintingOrder.findOneAndDelete({ _id: id })
+
+        if (!deletedOrder) {
+            return res.status(NOT_FOUND).json({ message: "Order not found" })
+        }
+        res.status(OK).json({ message: "Order deleted sucessfully", deletedOrder })
+    } catch (error) {
+        res.status(SERVER_ERROR).json({ message: "Failed to delete order", error: error.message })
     }
 }
 
 module.exports = {
     createSubmission,
-    getPrintingSubmission,
     getPrintingOrders,
     getSinglePrintingSubmission,
-    getSinglePrintingOrder
+    getSinglePrintingOrder,
+    updatePrintingOrder,
+    deletePrintingOrder
 }
