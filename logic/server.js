@@ -6,11 +6,12 @@ const morgan = require("morgan")
 
 // ROUTES IMPORT
 const animalFeedingRoutes = require("./routes/animalFeeding.routes")
-const freshOilRoutes = require("./routes/freshOil.routes")
 const godownRoutes = require("./routes/godown.routes")
 const userRoutes = require("./routes/user.routes")
 const printingRoutes = require("./routes/printing.routes")
 const hardwareRoutes = require("./routes/hardware.routes")
+const freshOilRoutes = require("./routes/freshOil.routes")
+const stationeryRoutes = require("./routes/stationery.routes")
 
 // database
 const connectDB = require('./config/DB')
@@ -31,9 +32,10 @@ app.use(morgan("dev"))
 app.use("/api/v1/animal-feeding", animalFeedingRoutes)
 app.use("/api/v1/fresh-oil", freshOilRoutes)
 app.use("/api/v1/godown", godownRoutes)
-app.use("/api/v1/users", userRoutes)
-app.use("/api/v1/printing", printingRoutes)
 app.use("/api/v1/hardware", hardwareRoutes)
+app.use("/api/v1/printing", printingRoutes)
+app.use("/api/v1/stationery", stationeryRoutes)
+app.use("/api/v1/users", userRoutes)
 
 // connect to DB
 connectDB()
