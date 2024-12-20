@@ -18,6 +18,13 @@ const orderSchema = new Schema(
             required: true,
             min: [1, "Price must be at least 1"]
         },
+        orderId: {
+            type: Schema.Types.ObjectId,
+            required: true,
+            default: () => {
+                return `GODOWN-${Date.now()}`; // FRESHOIL-123456789
+            }
+        },
         status: {
             type: String,
             enum: ["pending", "completed", "canceled"],

@@ -36,7 +36,7 @@ const createStationeryOrder = async (req, res) => {
 
 const getAllStationeryProducts = async (req, res) => {
     try {
-        const products = await StationeryProduct.find()
+        const products = await StationeryProduct.find().sort({ createdAt: -1 })
 
         if (products.length === 0) {
             return res.json({ message: "No products for now" })
@@ -50,7 +50,7 @@ const getAllStationeryProducts = async (req, res) => {
 
 const getAllStationeryOrders = async (req, res) => {
     try {
-        const orders = await StationeryOrder.find()
+        const orders = await StationeryOrder.find().sort({ createdAt: -1 })
 
         if (orders.length === 0) {
             return res.json({ message: "No orders for now" })

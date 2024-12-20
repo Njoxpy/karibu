@@ -1,38 +1,45 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const productSchema = new Schema(
-    {
-        name: {
-            type: String,
-            required: [true, "Product name is required"],
-        },
-        description: {
-            type: String,
-            required: [true, "Product description is required"],
-        },
-        quantity: {
-            type: Number,
-            required: [true, "Product quantity is required"],
-            min: 0,
-        },
-        price: {
-            type: Number,
-            required: [true, "Product price is required"],
-            min: 0,
-        },
-        userId: {
-            type: Schema.Types.ObjectId,
-            required: [true, "User Id is required"],
-            ref: "User",
-        },
-        image: {
-            type: String,
-            default: null,
-        },
+const animalFeedingProductSchema = new Schema({
+    name: {
+        type: String,
+        required: true,
     },
-    { timestamps: true }
-);
+    description: {
+        type: String,
+    },
+    quantity: {
+        type: Number,
+        required: true,
+    },
+    nutrients: {
+        type: String,
+    },
+    image: {
+        type: String,
+        required: true
+    },
+    price: {
+        type: Number,
+        required: true,
+    },
+    userId: {
+        type: Schema.Types.ObjectId,
+        ref: "User"
+    },
+    total: {
+        type: Number,
+        required: true,
+    },
+}, { timestamps: true });
 
-const Product = mongoose.model("AnimalFeedingProduct", productSchema);
-module.exports = Product;
+animalFeedingProductSchema.pre('save', function (next) {
+    if (this.isModified('quantity') || this.isModified('price')) {
+        this.total = this.quantity * this.price;
+    }
+    next();
+});
+
+const AnimalFeedingProduct = mongoose.model('AnimalFeedingProduct', animalFeedingProductSchema);
+module.exports = AnimalFeedingProduct;

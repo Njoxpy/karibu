@@ -15,12 +15,17 @@ const StationeryOrderSchema = new Schema(
             default: "pending",
         },
         orderId: {
-            type: String, // Changed to String for better flexibility
+            type: String,
             required: true,
+            unique: true,
+            default: () => {
+                return `STATIONERY-${Date.now()}`; // Unique order ID generation
+            },
         },
         userId: {
             type: Schema.Types.ObjectId, // Refers to the User model
             ref: "User",
+            required: true, // Making userId required for creating an order
         },
         name: {
             type: String,
@@ -34,6 +39,7 @@ const StationeryOrderSchema = new Schema(
         },
         totalPrice: {
             type: Number,
+            // Remove required flag since it's calculated automatically in the pre-save hook
         },
     },
     { timestamps: true }
@@ -41,7 +47,7 @@ const StationeryOrderSchema = new Schema(
 
 // Middleware to calculate total price
 StationeryOrderSchema.pre("save", function (next) {
-    this.totalPrice = this.quantity * this.price;
+    this.totalPrice = this.quantity * this.price;  // Calculate totalPrice
     next();
 });
 

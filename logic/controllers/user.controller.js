@@ -49,9 +49,9 @@ const signupUser = async (req, res) => {
 
 const getAllUsers = async (req, res) => {
     try {
-        const users = await User.find()
+        const users = await User.find().sort({ createdAt: -1 })
         if (users.length === 0) {
-            return res.status(NOT_FOUND).json({ message: "not user found" })
+            return res.status(NOT_FOUND).json({ message: "No user found" })
         }
         res.status(OK).json(users)
     } catch (error) {

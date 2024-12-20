@@ -59,7 +59,7 @@ const createGodownOrder = async (req, res) => {
 const getAllGodownProducts = async (req, res) => {
 
     try {
-        const products = await GodownProduct.find()
+        const products = await GodownProduct.find().sort({ createdAt: -1 })
 
         if (products.length === 0) {
             return res.json({ message: "not products for now" })
@@ -73,7 +73,7 @@ const getAllGodownProducts = async (req, res) => {
 // get all orders
 const getAllGodownOrders = async (req, res) => {
     try {
-        const orders = await GodownOrder.find()
+        const orders = await GodownOrder.find().sort({ createdAt: -1 })
 
         if (orders.length === 0) {
             return res.json({ message: "There are no orders for now" })

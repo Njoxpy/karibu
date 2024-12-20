@@ -1,33 +1,39 @@
-const mongoose = require("mongoose")
 // models
 const Product = require("../models/animalFeeding/animalFeedingProductModel")
 const Order = require("../models/animalFeeding/animalFeedingOrderModel")
-const User = require("../models/userModel")
-const { OK, NOT_FOUND, SERVER_ERROR } = require("../constants/responseStatusCode")
+
+// status code
+const { OK, NOT_FOUND, SERVER_ERROR, CREATED } = require("../constants/responseStatusCode")
+const { default: mongoose } = require("mongoose")
 
 // GET ALL PRODUCTS
 const getAllAnimalFeedingProducts = async (req, res) => {
     try {
-        const product = await Product.find({ category: "animal-feeding" }).sort({ createdAt: -1 })
-        if (product.length === 0) {
+        const products = await Product.find().sort({ createdAt: -1 })
+
+        if (products.length === 0) {
             return res.json({ message: "there are no products now" })
         }
-        res.status(OK).json(product)
+
+        res.status(OK).json(products)
     } catch (error) {
-        res.status(SERVER_ERROR).json({ error: "Failed to fetch products", details: error.message })
+        res.status(SERVER_ERROR).json({ error: "Failed to fetch products", error: error.message })
     }
 }
 
 // GET ALL ORDERS
 const getAnimalFeedingAllOrders = async (req, res) => {
     try {
-        const orders = await Order.find({ category: "animal-feeding" }).sort({ createdAt: -1 })
+        const orders = await Order.find().sort({ createdAt: -1 })
         if (orders.length === 0) {
-            return res.json({ message: "there are no orders now" })
+            return res.json({ message: "There are no orders now" })
         }
         res.status(OK).json(orders)
     } catch (error) {
-        res.status(SERVER_ERROR).json({ message: "Failed to fetch product orders", details: error.message })
+        res.status(SERVER_ERROR).json({
+            message: "Failed to fetch product orders",
+            error: error.message
+        })
     }
 }
 
@@ -35,14 +41,9 @@ const getAnimalFeedingAllOrders = async (req, res) => {
 const getAnimalFeedingProductById = async (req, res) => {
     const { id } = req.params;
 
-    // Validate ObjectId
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(NOT_FOUND).json({ error: "Invalid product ID" });
-    }
-
     try {
         // Find product by ID
-        const product = await Product.findOne({ _id: id, category: "animal-feeding" });
+        const product = await Product.findOne({ _id: id });
 
         if (!product) {
             return res.status(NOT_FOUND).json({ error: "Product not found" });
@@ -58,39 +59,33 @@ const getAnimalFeedingProductById = async (req, res) => {
 
 // GET ORDER BY ID
 const getAnimalFeedingOrderById = async (req, res) => {
-    const { id } = req.params;
 
-    // Validate ObjectId
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(NOT_FOUND).json({ error: "Invalid order ID" });
-    }
+    const { id } = req.params
 
     try {
-        // Find the order by ID
-        const order = await Order.findOne({ _id: id, category: "animal-feeding" });
+
+        const order = await Order.findOne({ _id: id })
 
         if (!order) {
-            return res.status(NOT_FOUND).json({ error: "Order not found" });
+            return res.status(NOT_FOUND).json({ message: "Order not found" })
         }
 
-        // Return the order if found
-        res.status(OK).json(order);
+        res.status(OK).json(order)
     } catch (error) {
-        res.status(SERVER_ERROR).json({
-            error: "Failed to fetch the order.",
-            details: error.message,
-        });
+        res.status(SERVER_ERROR).json({ message: "Failed to get order", error: error.message })
     }
-};
+}
 
 // CREATE ORDER
 const createAnimalFeedingOrder = async (req, res) => {
 
+    const { totalPrice, orderId, userId, productName, quantity, status } = req.body
+
     try {
-        const order = await Order.create({ totalPrice, orderId, userId, productName, quantity, status, category })
-        res.status(OK).json(order)
+        const order = await Order.create({ totalPrice, orderId, userId, productName, quantity, status })
+        res.status(CREATED).json(order)
     } catch (error) {
-        res.status(NOT_FOUND).json({ message: "Failed to create order", details: error.message })
+        res.status(SERVER_ERROR).json({ message: "Failed to create order", error: error.message })
     }
 }
 
@@ -98,11 +93,6 @@ const createAnimalFeedingOrder = async (req, res) => {
 const updateAnimalFeedingProduct = async (req, res) => {
     try {
         const { id } = req.params;
-
-        // Validate ObjectId
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(NOT_FOUND).json({ message: "Product not found." });
-        }
 
         // Update the product
         const updatedProduct = await Product.findOneAndUpdate(
@@ -128,11 +118,6 @@ const updateAnimalFeedingOrder = async (req, res) => {
     try {
         const { id } = req.params;
 
-        // Validate ObjectId
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(NOT_FOUND).json({ message: "Order not found." });
-        }
-
         // Update the product
         const updatedOrder = await Order.findOneAndUpdate(
             { _id: id },
@@ -156,10 +141,6 @@ const updateAnimalFeedingOrder = async (req, res) => {
 const deleteAnimalFeedingProductById = async (req, res) => {
     const { id } = req.params
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(NOT_FOUND).json({ message: "Product not found." })
-    }
-
     try {
         const deletedProduct = await Product.findByIdAndDelete(id)
         if (!deletedProduct) {
@@ -174,9 +155,7 @@ const deleteAnimalFeedingProductById = async (req, res) => {
 // delte order by id
 const deleteAnimalFeedingOrderById = async (req, res) => {
     const { id } = req.params
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(NOT_FOUND).json({ message: "order not found" })
-    }
+
     try {
         const deletedOrder = await Order.findOneAndDelete({ _id: id })
         if (!deletedOrder) {

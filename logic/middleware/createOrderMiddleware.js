@@ -1,20 +1,30 @@
+const { BAD_REQUEST, NOT_FOUND } = require("../constants/responseStatusCode");
+const mongoose = require("mongoose");
+
 const createOrderMiddleware = (req, res, next) => {
-    const { totalPrice, orderId, userId, productName, quantity, status, category } = req.body
+    const { createdBy, orderId, product, quantity, price } = req.body;
 
-    if (totalPrice == null || !userId || !productName || quantity == null) {
-        return res.status(400).json({ message: "all fields are required" })
+    // Check if required fields are present
+    if (price == null || !createdBy || !product || quantity == null) {
+        return res.status(BAD_REQUEST).json({ message: "All fields are required" });
     }
 
-    // validate price
-    if (typeof totalPrice !== "number" || totalPrice < 0) {
-        return res.status(400).json("Price must be a positive number")
+    // Validate createdBy (should be a valid ObjectId)
+    if (!mongoose.Types.ObjectId.isValid(createdBy)) {
+        return res.status(NOT_FOUND).json({ message: "Invalid User ID" });
     }
 
-    // validate qouantity
+    // Validate price (should be a positive number)
+    if (typeof price !== "number" || price < 0) {
+        return res.status(BAD_REQUEST).json({ message: "Price must be a positive number" });
+    }
+
+    // Validate quantity (should be a non-negative number)
     if (typeof quantity !== "number" || quantity < 0) {
-        return res.status(400).json("Quantity must be a none negative number")
+        return res.status(BAD_REQUEST).json({ message: "Quantity must be a non-negative number" });
     }
-    next()
-}
 
-module.exports = createOrderMiddleware
+    next();
+};
+
+module.exports = createOrderMiddleware;

@@ -4,8 +4,11 @@ const Schema = mongoose.Schema;
 const PrintingOrderSchema = new Schema(
     {
         orderId: {
-            type: String,
-            required: [true, "Order ID is required"],
+            type: Schema.Types.ObjectId,
+            required: true,
+            default: () => {
+                return `PRINTING-${Date.now()}`; // FRESHOIL-123456789
+            }
         },
         status: {
             type: String,

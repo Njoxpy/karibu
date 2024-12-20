@@ -14,7 +14,11 @@ const orderSchema = new Schema(
       default: "pending"
     },
     orderId: {
-      type: Number,
+      type: Schema.Types.ObjectId,
+      required: true,
+      default: () => {
+        return `HARDWARE-${Date.now()}`; // FRESHOIL-123456789
+      }
     },
     userId: {
       type: Number,

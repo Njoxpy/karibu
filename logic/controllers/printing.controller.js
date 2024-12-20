@@ -19,7 +19,7 @@ const createSubmission = async (req, res) => {
 // get orders
 const getPrintingOrders = async (req, res) => {
     try {
-        const orders = await PrintingSubmission.find()
+        const orders = await PrintingSubmission.find().sort({ createdAt: -1 })
 
         if (orders.length === 0) {
             return res.status(NOT_FOUND).json({ message: "No orders for now" })

@@ -1,54 +1,41 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const animalFeedingOrderSchema = new Schema(
-    {
-        branchId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Branch",
-            required: true
-        },
-        productId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Product",
-            required: true
-        },
-        quantity: {
-            type: Number,
-            required: true,
-            min: [1, "Quantity must be at least 1"]
-        },
-        totalPrice: {
-            type: Number,
-            required: true
-        }
-        ,
-        orderType: {
-            type: String,
-            enum: ["purchase", "sale"],
-            required: true
-        },
-        status: {
-            type: String,
-            enum: ["pending", "completed", "canceled"],
-            default: "pending"
-        },
-        totalAmount: {
-            type: Number,
-            required: true
-        },
-        customerId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User"
-        },
-        orderDate: {
-            type: Date,
-            default: Date.now
+const orderSchema = new Schema({
+    createdBy: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
+    orderId: {
+        type: String,
+        required: true,
+        unique: true,
+        default: () => {
+            return `ANIMAL-FEEDING-${Date.now()}`;
         }
     },
-    { timestamps: true }
-);
+    product: {
+        type: Schema.Types.ObjectId,
+        ref: 'AnimalFeedingProduct',
+        required: true,
+    },
+    quantity: {
+        type: Number,
+        required: true,
+    },
+    price: {
+        type: Number,
+        required: true,
+    },
+    totalPrice: {
+        type: Number,
+        required: true,
+        default: function () {
+            return this.price * this.quantity;
+        },
+    },
+}, { timestamps: true });
 
-const AnimalFeedingOrder = mongoose.model("AnimalFeedingOrder", animalFeedingOrderSchema);
-
-module.exports = AnimalFeedingOrder;
+const AnimalFeedingOrder = mongoose.model('AnimalFeedingOrder', orderSchema);
+module.exports = AnimalFeedingOrder

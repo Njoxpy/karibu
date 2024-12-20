@@ -6,10 +6,39 @@ const { createFreshOilProduct, createFreshOilOrder, getAllFreshOilProducts, getA
 
 // middleware
 const validateObjectId = require("../middleware/validateObjectId")
+const upload = require("../middleware/upload")
+
+// models
+const FreshOilProduct = require("../models/freshOil/freshOilproductModel")
+
 
 // create product
-router.post("/products", createFreshOilProduct)
+// POST route for creating a new product
+router.post("/products", upload.single("image"), async (req, res) => {
+    try {
+        // Check if file is uploaded
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
 
+        // Create a new product object (assuming `FreshOilProduct` model is available)
+        const newProduct = new FreshOilProduct({
+            name: req.body.name,
+            description: req.body.description,
+            quantity: req.body.quantity,
+            image: req.file.path,  // Store the file path in the database
+            price: req.body.price,
+            userId: req.body.userId,
+            total: req.body.quantity * req.body.price,
+        });
+
+        // Save the product to the database
+        const savedProduct = await newProduct.save();
+        res.status(201).json(savedProduct);  // Return the saved product as a response
+    } catch (error) {
+        res.status(500).json({ error: 'Error saving product', error: error.message });
+    }
+});
 // create order
 router.post("/orders", createFreshOilOrder)
 

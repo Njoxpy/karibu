@@ -52,7 +52,7 @@ const createHardwareOrder = async (req, res) => {
 // get all products
 const getAllHardwareProducts = async (req, res) => {
     try {
-        const products = await HardwareProduct.find()
+        const products = await HardwareProduct.find().sort({ createdAt: -1 })
 
         if (products.length === 0) {
             return res.status(NOT_FOUND).json({ message: "No products found" })
@@ -68,7 +68,7 @@ const getAllHardwareProducts = async (req, res) => {
 // get all orders
 const getAllHardwareOrders = async (req, res) => {
     try {
-        const orders = await HardwareOrder.find()
+        const orders = await HardwareOrder.find().sort({ createdAt: -1 })
 
         if (orders.length === 0) {
             return res.status(NOT_FOUND).json({ message: "No orders found" })

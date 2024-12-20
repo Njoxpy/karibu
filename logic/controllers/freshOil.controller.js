@@ -3,7 +3,7 @@ const FreshOilProduct = require("../models/freshOil/freshOilproductModel")
 const FreshOilOrder = require("../models/freshOil/freshOilOrderModel")
 
 // middleware
-const { SERVER_ERROR, CREATED, BAD_REQUEST, OK, NOT_FOUND } = require("../constants/responseStatusCode")
+const { SERVER_ERROR, CREATED, OK, NOT_FOUND } = require("../constants/responseStatusCode")
 
 // create product
 const createFreshOilProduct = async (req, res) => {
@@ -52,7 +52,7 @@ const createFreshOilOrder = async (req, res) => {
 // get all products
 const getAllFreshOilProducts = async (req, res) => {
     try {
-        const products = await FreshOilProduct.find()
+        const products = await FreshOilProduct.find().sort({ createdAt: -1 })
 
         if (products.length === 0) {
             return res.json({ message: "There are no products for now" })
@@ -67,10 +67,10 @@ const getAllFreshOilProducts = async (req, res) => {
 
 const getAllFreshOilOrders = async (req, res) => {
     try {
-        const orders = await FreshOilOrder.find()
+        const orders = await FreshOilOrder.find().sort({ createdAt: -1 })
 
         if (orders.length === 0) {
-            return res.json({ message: "There are no products for now" })
+            return res.json({ message: "There are no orders for now" })
         }
 
         res.status(OK).json(orders)
