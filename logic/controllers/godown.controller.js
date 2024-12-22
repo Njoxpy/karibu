@@ -1,19 +1,25 @@
 // CRUD
 const GodownProduct = require("../models/godown/godownProductModel")
 const GodownOrder = require("../models/godown/godownOrderModel")
+
+// response code
 const { SERVER_ERROR, CREATED, BAD_REQUEST, OK, NOT_FOUND } = require("../constants/responseStatusCode")
-const mongoose = require("mongoose")
 
 // Create product
 const createGodownProduct = async (req, res) => {
+    const { godownId, name, code, price, quantity, location, description } = req.body;
 
-    const { godownId, name, code, price, quantity, location, description } = req.body
-
-    if (!name || !code || price == null || quantity == null || !location || !description) {
-        return res.json({ message: "fill all required fields" })
+    if (!godownId || !name || !code || !price || !quantity || !location || !description) {
+        return res.status(BAD_REQUEST).json({ message: "All fields are required" });
     }
 
     try {
+        const exist = await GodownProduct.findOne({ code });
+
+        if (exist) {
+            return res.status(BAD_REQUEST).json({ message: "Items with that code already exist" });
+        }
+
         const newProduct = await GodownProduct.create({
             godownId,
             name,
@@ -21,14 +27,16 @@ const createGodownProduct = async (req, res) => {
             price,
             quantity,
             location,
-            description
-        })
+            description,
+        });
 
-        res.status(CREATED).json(newProduct)
+        res.status(CREATED).json(newProduct);
     } catch (error) {
-        res.status(SERVER_ERROR).json({ message: "failed to create product", error: error.message })
+        console.error("Error creating product:", error);
+        res.status(SERVER_ERROR).json({ message: "Failed to create product", error: error.message });
     }
-}
+};
+
 
 
 // create order

@@ -7,8 +7,16 @@ const PrintingOrderSchema = new Schema(
             type: Schema.Types.ObjectId,
             required: true,
             default: () => {
-                return `PRINTING-${Date.now()}`; // FRESHOIL-123456789
+                return `PRINTING-${Date.now()}`; 
             }
+        },
+        assignedTo: {
+            type: Schema.Types.ObjectId,
+            ref: "User", 
+          },
+        description:{
+            type: Number,
+            required: [true, "Order description is required"]
         },
         status: {
             type: String,
@@ -16,20 +24,29 @@ const PrintingOrderSchema = new Schema(
             required: true,
             default: "pending",
         },
-        productId: {
-            type: Schema.Types.ObjectId,
-            ref: "PrintingProduct",
-            required: [true, "Product ID is required"],
+        category: {
+            type: String,
+            enum: ["business card", "flyer", "brochure", "poster"],
+            required: [true, "Category is required"],
         },
         userId: {
             type: Schema.Types.ObjectId,
             ref: "User",
             required: [true, "User ID is required"],
         },
+        price: {
+            type: Number,
+            required: [true, "Price is required"],
+            min: 0,
+        },
         quantity: {
             type: Number,
             required: [true, "Quantity is required"],
             min: 1,
+        },
+        contact: {
+            type: String,
+            required: [true, "Contact information is required"],
         },
         totalPrice: {
             type: Number,
@@ -39,7 +56,7 @@ const PrintingOrderSchema = new Schema(
 );
 
 PrintingOrderSchema.pre("save", function (next) {
-    this.totalPrice = this.quantity * this.productId.price; // assuming price is on PrintingProduct
+    this.totalPrice = this.quantity * this.price;
     next();
 });
 

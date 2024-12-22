@@ -25,6 +25,35 @@ const loginUser = async (req, res) => {
     }
 };
 
+// userController.js
+
+// Controller function for creating a new user
+const createUser = async (req, res) => {
+    try {
+        const { email, password, role, category } = req.body;
+
+        if (!email || !password || !category) {
+            return res.status(400).json({ error: "All fields (email, password, category) are required" });
+        }
+
+        // Check if the email already exists
+        const userExists = await User.findOne({ email });
+        if (userExists) {
+            return res.status(400).json({ error: "Email already in use" });
+        }
+
+        // Create the new user with the provided details
+        const newUser = new User({ email, password, role, category });
+        await newUser.save();
+
+        res.status(201).json({ message: "User created successfully", user: newUser });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Server error" });
+    }
+};
+
 // Sign up user
 const signupUser = async (req, res) => {
     const { email, password, role } = req.body;
@@ -62,5 +91,6 @@ const getAllUsers = async (req, res) => {
 module.exports = {
     loginUser,
     signupUser,
-    getAllUsers
+    getAllUsers,
+    createUser
 };

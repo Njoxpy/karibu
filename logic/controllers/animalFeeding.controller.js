@@ -4,7 +4,59 @@ const Order = require("../models/animalFeeding/animalFeedingOrderModel")
 
 // status code
 const { OK, NOT_FOUND, SERVER_ERROR, CREATED } = require("../constants/responseStatusCode")
-const { default: mongoose } = require("mongoose")
+
+const searchAnimalFeedingProducts = async (req, res) => {
+    const { name, description, minPrice, maxPrice } = req.query;
+
+    try {
+        let searchQuery = {};
+
+        if (name) {
+            searchQuery.name = { $regex: name, $options: "i" }; // Case-insensitive search
+        }
+
+        if (description) {
+            searchQuery.description = { $regex: description, $options: "i" }; // Case-insensitive search
+        }
+
+        if (minPrice && maxPrice) {
+            searchQuery.price = { $gte: minPrice, $lte: maxPrice }; // Price range search
+        }
+
+        const products = await AnimalFeedingProduct.find(searchQuery);
+
+        res.status(200).json(products);
+    } catch (error) {
+        res.status(500).json({ error: "Error searching products", details: error.message });
+    }
+};
+
+// Search animal feeding orders by orderId, status, or userId
+const searchAnimalFeedingOrders = async (req, res) => {
+    const { orderId, status, userId } = req.query;
+
+    try {
+        let searchQuery = {};
+
+        if (orderId) {
+            searchQuery._id = orderId; // Search by orderId (MongoDB's ObjectId)
+        }
+
+        if (status) {
+            searchQuery.status = status; // Filter by order status (e.g., "pending", "shipped", "delivered")
+        }
+
+        if (userId) {
+            searchQuery.userId = userId; // Filter by userId
+        }
+
+        const orders = await AnimalFeedingOrder.find(searchQuery);
+
+        res.status(200).json(orders);
+    } catch (error) {
+        res.status(500).json({ error: "Error searching orders", details: error.message });
+    }
+};
 
 // GET ALL PRODUCTS
 const getAllAnimalFeedingProducts = async (req, res) => {
@@ -78,16 +130,45 @@ const getAnimalFeedingOrderById = async (req, res) => {
 
 // CREATE ORDER
 const createAnimalFeedingOrder = async (req, res) => {
-
-    const { totalPrice, orderId, userId, productName, quantity, status } = req.body
-
     try {
-        const order = await Order.create({ totalPrice, orderId, userId, productName, quantity, status })
-        res.status(CREATED).json(order)
+        const { createdBy, product, name, quantity, price } = req.body;
+
+        // Step 1: Fetch the product
+        const productDetails = await Product.findById(product);
+        if (!productDetails) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+
+        // Step 2: Check product quantity
+        if (productDetails.quantity < quantity) {
+            return res.status(400).json({ message: "Insufficient product quantity available" });
+        }
+
+        // Step 3: Create the order
+        const order = await Order.create({
+            createdBy,
+            product,
+            name,
+            quantity,
+            price,
+        });
+
+        // Step 4: Deduct the ordered quantity from the product stock
+        productDetails.quantity -= quantity;
+        await productDetails.save();
+
+        res.status(201).json({
+            message: "Order created successfully",
+            order,
+        });
     } catch (error) {
-        res.status(SERVER_ERROR).json({ message: "Failed to create order", error: error.message })
+        console.error(error);
+        res.status(500).json({
+            message: "An error occurred while creating the order",
+            error: error.message,
+        });
     }
-}
+};
 
 // UPDATE PRODUCT
 const updateAnimalFeedingProduct = async (req, res) => {
@@ -207,5 +288,7 @@ module.exports = {
     deleteAnimalFeedingProductById,
     deleteAnimalFeedingOrderById,
     searchAnimalFeedingProductName,
-    updateAnimalFeedingOrder
+    updateAnimalFeedingOrder,
+    searchAnimalFeedingProducts,
+    searchAnimalFeedingOrders
 }

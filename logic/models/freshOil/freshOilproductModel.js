@@ -15,29 +15,28 @@ const freshOilProductSchema = new Schema({
     },
     image: {
         type: String,
-    },
-    userId: {
-        type: Schema.Types.ObjectId,
-        ref: "User"
+        required: true
     },
     price: {
         type: Number,
         required: true,
     },
+    userId: {
+        type: Schema.Types.ObjectId,
+        ref: "User"
+    },
     total: {
         type: Number,
-        required: false,  // Calculated, so not needed in the request
-    }
+        required: true,
+    },
 }, { timestamps: true });
 
-// Pre-save hook to calculate the total
 freshOilProductSchema.pre('save', function (next) {
     if (this.isModified('quantity') || this.isModified('price')) {
-        // Calculate total based on quantity and price
         this.total = this.quantity * this.price;
     }
     next();
 });
 
-const FreshOilProduct = mongoose.model('FreshOilProduct', freshOilProductSchema);
-module.exports = FreshOilProduct;
+const freshOilProduct = mongoose.model('freshOilProduct', freshOilProductSchema);
+module.exports = freshOilProduct;

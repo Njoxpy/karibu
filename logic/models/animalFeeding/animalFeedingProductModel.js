@@ -18,7 +18,7 @@ const animalFeedingProductSchema = new Schema({
     },
     image: {
         type: String,
-        required: true
+        // default image
     },
     price: {
         type: Number,

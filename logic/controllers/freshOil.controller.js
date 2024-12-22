@@ -3,22 +3,74 @@ const FreshOilProduct = require("../models/freshOil/freshOilproductModel")
 const FreshOilOrder = require("../models/freshOil/freshOilOrderModel")
 
 // middleware
-const { SERVER_ERROR, CREATED, OK, NOT_FOUND } = require("../constants/responseStatusCode")
+const { SERVER_ERROR, CREATED, OK, NOT_FOUND, BAD_REQUEST } = require("../constants/responseStatusCode")
 
+const searchFreshOilProducts = async (req, res) => {
+    const { name, description, minPrice, maxPrice } = req.query;
+
+    try {
+        let searchQuery = {};
+
+        if (name) {
+            searchQuery.name = { $regex: name, $options: "i" };  // Case-insensitive search
+        }
+
+        if (description) {
+            searchQuery.description = { $regex: description, $options: "i" };  // Case-insensitive search
+        }
+
+        if (minPrice && maxPrice) {
+            searchQuery.price = { $gte: minPrice, $lte: maxPrice };  // Price range search
+        }
+
+        const products = await FreshOilProduct.find(searchQuery);
+
+        res.status(200).json(products);
+    } catch (error) {
+        res.status(500).json({ error: 'Error searching products', details: error.message });
+    }
+};
+
+
+const searchFreshOilOrders = async (req, res) => {
+    const { orderId, status, userId } = req.query;
+
+    try {
+        let searchQuery = {};
+
+        if (orderId) {
+            searchQuery._id = orderId;  // Search by orderId (MongoDB's ObjectId)
+        }
+
+        if (status) {
+            searchQuery.status = status;
+        }
+
+        if (userId) {
+            searchQuery.userId = userId;
+        }
+
+        const orders = await FreshOilOrder.find(searchQuery);
+
+        res.status(200).json(orders);
+    } catch (error) {
+        res.status(500).json({ error: 'Error searching orders', details: error.message });
+    }
+};
 // create product
 const createFreshOilProduct = async (req, res) => {
     const { name, description, quantity, image, price } = req.body
 
-    if (!name || !description) {
-        return res.json({ message: "All fields are required" })
+    if (!name || !description || !quantity || !price) {
+        return res.status(BAD_REQUEST).json({ message: "All fields are required" })
     }
 
     if (typeof quantity !== "number" || quantity < 0) {
-        return res.json({ message: "Quantity should be positive or less than zero" })
+        return res.status(BAD_REQUEST).json({ message: "Quantity should be a positive number or zero" })
     }
 
     if (typeof price !== "number" || price < 0) {
-        return res.json({ message: "Quantity should be positive or less than zero" })
+        return res.status(BAD_REQUEST).json({ message: "Price should be a positive number or zero" })
     }
 
     try {
@@ -31,14 +83,13 @@ const createFreshOilProduct = async (req, res) => {
 
 // create order
 const createFreshOilOrder = async (req, res) => {
-
-    const { createdBy, orderId, product, quantity, price } = req.body;
-
-    if (typeof price !== "number" && price < 0) {
-        return res.json({ message: "price must be positive or greater than zero" })
+    const { createdBy, orderId, product, quantity, price } = req.body
+    
+    if (typeof price !== "number" || price < 0) {
+        return res.status(BAD_REQUEST).json({ message: "Price must be a positive number or zero" })
     }
-    if (typeof quantity !== "number" && price < 0) {
-        return res.json({ message: "price must be positive or greater than zero" })
+    if (typeof quantity !== "number" || quantity < 0) {
+        return res.status(BAD_REQUEST).json({ message: "Quantity must be a positive number or zero" })
     }
 
     try {
@@ -55,7 +106,7 @@ const getAllFreshOilProducts = async (req, res) => {
         const products = await FreshOilProduct.find().sort({ createdAt: -1 })
 
         if (products.length === 0) {
-            return res.json({ message: "There are no products for now" })
+            return res.status(NOT_FOUND).json({ message: "There are no products available" })
         }
 
         res.status(OK).json(products)
@@ -65,12 +116,13 @@ const getAllFreshOilProducts = async (req, res) => {
     }
 }
 
+// get all orders
 const getAllFreshOilOrders = async (req, res) => {
     try {
         const orders = await FreshOilOrder.find().sort({ createdAt: -1 })
 
         if (orders.length === 0) {
-            return res.json({ message: "There are no orders for now" })
+            return res.status(NOT_FOUND).json({ message: "There are no orders available" })
         }
 
         res.status(OK).json(orders)
@@ -88,14 +140,14 @@ const getSingleFreshOilProduct = async (req, res) => {
         const freshOilProduct = await FreshOilProduct.findOne({ _id: id })
 
         if (!freshOilProduct) {
-            return res.status(NOT_FOUND).json({ message: "Product Not found" })
+            return res.status(NOT_FOUND).json({ message: "Product not found" })
         }
+
         res.status(OK).json(freshOilProduct)
     }
     catch (error) {
         res.status(SERVER_ERROR).json({ message: "Failed to get product", error: error.message })
     }
-
 }
 
 // get single order
@@ -103,17 +155,17 @@ const getSingleFreshOilOrder = async (req, res) => {
     const { id } = req.params
 
     try {
-        const freshOilOrder = await FreshOilProduct.findOne({ _id: id })
+        const freshOilOrder = await FreshOilOrder.findOne({ _id: id })
 
         if (!freshOilOrder) {
-            return res.status(NOT_FOUND).json({ message: "Order Not found" })
+            return res.status(NOT_FOUND).json({ message: "Order not found" })
         }
+
         res.status(OK).json(freshOilOrder)
     }
     catch (error) {
         res.status(SERVER_ERROR).json({ message: "Failed to get order", error: error.message })
     }
-
 }
 
 // update product
@@ -127,7 +179,7 @@ const updateFreshOilProduct = async (req, res) => {
             return res.status(NOT_FOUND).json({ message: "Product not found" })
         }
 
-        res.status(OK).json({ message: "Update sucessfully", updatedProduct })
+        res.status(OK).json({ message: "Updated successfully", updatedProduct })
     }
     catch (error) {
         res.status(SERVER_ERROR).json({ message: "Failed to update product details", error: error.message })
@@ -145,12 +197,11 @@ const updateFreshOilOrder = async (req, res) => {
             return res.status(NOT_FOUND).json({ message: "Order not found" })
         }
 
-        res.status(OK).json(updatedOrder)
+        res.status(OK).json({ message: "Updated successfully", updatedOrder })
     }
     catch (error) {
         res.status(SERVER_ERROR).json({ message: "Failed to update order details", error: error.message })
     }
-
 }
 
 // delete product
@@ -160,15 +211,14 @@ const deleteFreshOilProduct = async (req, res) => {
     try {
         const deletedFreshOilProduct = await FreshOilProduct.findOneAndDelete({ _id: id })
 
-        if (!deleteFreshOilProduct) {
+        if (!deletedFreshOilProduct) {
             return res.status(NOT_FOUND).json({ message: "Product not found" })
         }
 
-        res.status(OK).json({ message: "Delete sucessfully", deletedFreshOilProduct })
+        res.status(OK).json({ message: "Deleted successfully", deletedFreshOilProduct })
     } catch (error) {
         res.status(SERVER_ERROR).json({ message: "Failed to delete product", error: error.message })
     }
-
 }
 
 // delete order
@@ -178,15 +228,14 @@ const deleteFreshOilOrder = async (req, res) => {
     try {
         const deletedFreshOilOrder = await FreshOilOrder.findOneAndDelete({ _id: id })
 
-        if (!deleteFreshOilOrder) {
+        if (!deletedFreshOilOrder) {
             return res.status(NOT_FOUND).json({ message: "Order not found" })
         }
 
-        res.status(OK).json({ message: "Delete sucessfully", deletedFreshOilOrder })
+        res.status(OK).json({ message: "Deleted successfully", deletedFreshOilOrder })
     } catch (error) {
-        res.status(SERVER_ERROR).json({ message: "Failed to delete Order", error: error.message })
+        res.status(SERVER_ERROR).json({ message: "Failed to delete order", error: error.message })
     }
-
 }
 
 // exports
@@ -200,5 +249,7 @@ module.exports = {
     updateFreshOilProduct,
     updateFreshOilOrder,
     deleteFreshOilProduct,
-    deleteFreshOilOrder
+    deleteFreshOilOrder,
+    searchFreshOilProducts,
+    searchFreshOilOrders
 }

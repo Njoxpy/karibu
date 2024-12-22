@@ -32,10 +32,10 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-
-userSchema.statics.signup = async function (email, password, role = "employee") {
-  if (!email || !password) {
-    throw new Error("All fields are required");
+// Signup method with category
+userSchema.statics.signup = async function (email, password, role = "employee", category) {
+  if (!email || !password || !category) {
+    throw new Error("All fields (email, password, and category) are required");
   }
 
   if (!validator.isEmail(email)) {
@@ -43,7 +43,7 @@ userSchema.statics.signup = async function (email, password, role = "employee") 
   }
 
   if (!validator.isStrongPassword(password)) {
-    throw new Error("Password should be strong");
+    throw new Error("Password should be strong (at least 8 characters, with letters and numbers)");
   }
 
   // Validate role
@@ -51,7 +51,11 @@ userSchema.statics.signup = async function (email, password, role = "employee") 
     throw new Error("Invalid role");
   }
 
-  // validate industry category
+  // Validate category
+  if (!["printing", "fresh-oil", "hardware", "animal-feeding", "godown", "stationery"].includes(category)) {
+    throw new Error("Invalid category");
+  }
+
   const exists = await this.findOne({ email });
   if (exists) {
     throw new Error("Email already in use");
@@ -60,11 +64,10 @@ userSchema.statics.signup = async function (email, password, role = "employee") 
   const salt = await bcrypt.genSalt(10);
   const hash = await bcrypt.hash(password, salt);
 
-  // Create user with the specified role
-  const user = await this.create({ email, password: hash, role });
+  // Create user with the specified role and category
+  const user = await this.create({ email, password: hash, role, category });
   return user;
 };
-
 
 // Static login method
 userSchema.statics.login = async function (email, password) {

@@ -1,25 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 const InventoryTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
-  const [inventory, setInventory] = useState([
-    { id: 1, name: "Mifuko ya cement", code: "CCB-1001", quantity: 50, location: "Aisle 1", condition: "New", price: 50000 },
-    { id: 2, name: "Mafuta ya kupikia", code: "IP-2002", quantity: 20, location: "Aisle 3", condition: "New", price: 329900 },
-    { id: 3, name: "Sukari Mifuko", code: "PWS-3003", quantity: 10, location: "Aisle 2", condition: "Low Stock", price: 54500 },
-    { id: 4, name: "Unga wa ngano", code: "PWS-3003", quantity: 10, location: "Aisle 2", condition: "Low Stock", price: 2300 },
-    { id: 5, name: "Mifuko ya Chumvi", code: "IP-2002", quantity: 20, location: "Aisle 3", condition: "New", price: 5300 },
-    { id: 6, name: "Mchele Mama John", code: "IP-2002", quantity: 20, location: "Aisle 3", condition: "New", price: 12300 },
-    { id: 7, name: "Tembo Cement", code: "IP-2002", quantity: 20, location: "Aisle 3", condition: "New", price: 235000 },
-    { id: 8, name: "Cement Dangote", code: "IP-2002", quantity: 20, location: "Aisle 3", condition: "New", price: 25000 },
-  ]);
+  const [inventory, setInventory] = useState([]);
+  const [error, setError] = useState(null); // Error state
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
+
+  // Fetch inventory data from the endpoint
+  useEffect(() => {
+    const fetchInventoryData = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/v1/godown/products");
+        if (!response.ok) {
+          throw new Error(`Error fetching data: ${response.statusText}`);
+        }
+        const data = await response.json();
+        const formattedData = data.map((item) => ({
+          id: item._id,
+          name: item.name,
+          code: item.code,
+          price: item.price,
+          quantity: item.quantity,
+          location: item.location,
+          condition: item.condition,
+        }));
+        setInventory(formattedData);
+        setError(null); // Reset error if data is successfully fetched
+      } catch (error) {
+        setError(error.message); // Set error message if fetch fails
+        console.error("Error fetching inventory data:", error);
+      }
+    };
+
+    fetchInventoryData();
+  }, []); // Empty dependency array ensures this runs once when the component mounts
 
   const handleEdit = (item) => {
     setEditItem(item);
@@ -31,10 +52,20 @@ const InventoryTable = () => {
     setIsDeleteModalOpen(true);
   };
 
-  const confirmDelete = () => {
-    setInventory(inventory.filter((item) => item.id !== itemToDelete));
-    setIsDeleteModalOpen(false);
-    setItemToDelete(null);
+  const confirmDelete = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/v1/godown/products/${itemToDelete}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        throw new Error("Failed to delete item");
+      }
+      setInventory(inventory.filter((item) => item.id !== itemToDelete));
+      setIsDeleteModalOpen(false);
+      setItemToDelete(null);
+    } catch (error) {
+      console.error("Error deleting item:", error);
+    }
   };
 
   const cancelDelete = () => {
@@ -42,14 +73,34 @@ const InventoryTable = () => {
     setItemToDelete(null);
   };
 
-  const handleEditSubmit = (e) => {
+  const handleEditSubmit = async (e) => {
     e.preventDefault();
-    const updatedInventory = inventory.map((item) =>
-      item.id === editItem.id ? { ...editItem } : item
-    );
-    setInventory(updatedInventory);
-    setIsEditModalOpen(false);
-    setEditItem(null);
+
+    // Update the item on the backend
+    try {
+      const response = await fetch(`http://localhost:5000/api/v1/godown/products/${editItem.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(editItem),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to update item");
+      }
+      const updatedItem = await response.json();
+
+      // Update the inventory state with the updated item
+      setInventory(
+        inventory.map((item) =>
+          item.id === updatedItem._id ? { ...updatedItem, id: updatedItem._id } : item
+        )
+      );
+      setIsEditModalOpen(false);
+      setEditItem(null);
+    } catch (error) {
+      console.error("Error updating item:", error);
+    }
   };
 
   const handleInputChange = (e) => {
@@ -75,6 +126,12 @@ const InventoryTable = () => {
 
   return (
     <div className="p-4">
+      {error && (
+        <div className="mb-4 p-4 bg-red-500 text-white rounded">
+          <strong>Error:</strong> {error}
+        </div>
+      )}
+
       <div className="mb-4">
         <input
           type="text"
@@ -107,15 +164,13 @@ const InventoryTable = () => {
                 <td className="px-4 py-2 border">{item.code}</td>
                 <td className="px-4 py-2 border">{formatPrice(item.price)}</td>
                 <td
-                  className={`px-4 py-2 border ${item.quantity > 20 ? "text-green-600" : "text-orange-500"
-                    }`}
+                  className={`px-4 py-2 border ${item.quantity > 20 ? "text-green-600" : "text-orange-500"}`}
                 >
                   {item.quantity}
                 </td>
                 <td className="px-4 py-2 border">{item.location}</td>
                 <td
-                  className={`px-4 py-2 border ${item.condition === "Low Stock" ? "text-red-500" : "text-green-600"
-                    }`}
+                  className={`px-4 py-2 border ${item.condition === "Low Stock" ? "text-red-500" : "text-green-600"}`}
                 >
                   {item.condition}
                 </td>
@@ -144,8 +199,8 @@ const InventoryTable = () => {
 
       {/* Edit Modal */}
       {isEditModalOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg w-1/3">
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center z-50">
+          <div className="bg-white p-4 rounded-lg max-w-xs w-full md:w-1/3">
             <h2 className="text-xl font-bold mb-4">Edit Item</h2>
             <form onSubmit={handleEditSubmit}>
               <div className="mb-4">
@@ -199,7 +254,11 @@ const InventoryTable = () => {
                 />
               </div>
               <div className="flex justify-between">
-                <button type="button" onClick={() => setIsEditModalOpen(false)} className="bg-gray-500 text-white py-1 px-4 rounded">
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="bg-gray-500 text-white py-1 px-4 rounded"
+                >
                   Cancel
                 </button>
                 <button type="submit" className="bg-blue-500 text-white py-1 px-4 rounded">
@@ -213,8 +272,8 @@ const InventoryTable = () => {
 
       {/* Delete Confirmation Modal */}
       {isDeleteModalOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg w-1/3">
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center z-50">
+          <div className="bg-white p-4 rounded-lg max-w-xs w-full md:w-1/3">
             <h2 className="text-xl font-bold mb-4">Confirm Deletion</h2>
             <p>Are you sure you want to delete this item?</p>
             <div className="mt-4 flex justify-between">
@@ -238,7 +297,7 @@ const InventoryTable = () => {
           Previous
         </button>
         <span className="text-gray-700 px-4 py-2">
-          Page <strong>{currentPage}</strong> of {totalPages}
+          Page <strong>{currentPage}</strong> of <strong>{totalPages}</strong>
         </span>
         <button
           onClick={() => currentPage < totalPages && setCurrentPage(currentPage + 1)}

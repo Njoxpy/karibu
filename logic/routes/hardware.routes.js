@@ -1,104 +1,87 @@
-const express = require("express")
-const multer = require("multer")
-const router = express.Router()
+const express = require("express");
+const router = express.Router();
 
-// controllers
-const { createHardwareOrder, getAllHardwareProducts, getAllHardwareOrders, updateHardwareProduct, updateHardwareOrder, deleteHardwareProduct, deleteHardwareOrder, getSingleHardwareProduct, getSingleHardwareOrder } = require("../controllers/hardware.controller")
+// Controllers
+const {
+    createHardwareProduct,
+    createHardwareOrder,
+    getAllHardwareProducts,
+    getAllHardwareOrders,
+    getSingleHardwareProduct,
+    getSingleHardwareOrder,
+    updateHardwareProduct,
+    updateHardwareOrder,
+    deleteHardwareProduct,
+    deleteHardwareOrder,
+    searchHardwareProducts, // Added search controller for hardware products
+    searchHardwareOrders,   // Added search controller for hardware orders
+} = require("../controllers/hardware.controller");
 
-// middleware
-const validateProductFields = require("../middleware/validateProductFields")
-const validateObjectId = require("../middleware/validateObjectId")
+// Middleware
+const validateObjectId = require("../middleware/validateObjectId");
+const upload = require("../middleware/upload");
 
-const HardwareProduct = require("../models/hardware/productModel")
+// Models
+const HardwareProduct = require("../models/hardware/productModel");
 
-// error response
-const { SERVER_ERROR, CREATED } = require("../constants/responseStatusCode")
+// Response codes
+const { SERVER_ERROR, CREATED, BAD_REQUEST } = require("../constants/responseStatusCode");
 
-// Multer setup for image upload
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/');
-    },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+// POST: Create new hardware product
+router.post("/products", upload.single("image"), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(BAD_REQUEST).json({ error: "No file uploaded" });
+        }
+
+        const newProduct = new HardwareProduct({
+            name: req.body.name,
+            description: req.body.description,
+            quantity: req.body.quantity,
+            image: req.file.path,
+            price: req.body.price,
+            userId: req.body.userId,
+            total: req.body.quantity * req.body.price,
+        });
+
+        const savedProduct = await newProduct.save();
+        res.status(CREATED).json(savedProduct);
+    } catch (error) {
+        res.status(SERVER_ERROR).json({ error: "Error saving product", details: error.message });
     }
 });
 
-const upload = multer({ storage: storage });
+// POST: Create a hardware order
+router.post("/orders", createHardwareOrder);
 
-// add new product
-const asyncHandler = require("express-async-handler");
+// GET: Get all hardware products
+router.get("/products", getAllHardwareProducts);
 
-router.post(
-    "/products",
-    validateProductFields,
-    upload.single("image"),
-    asyncHandler(async (req, res) => {
-        const { name, description, quantity, price, userId } = req.body;
-        const thumbnail_image = req.file ? req.file.filename : null;
+// GET: Search hardware products (added search functionality)
+router.get("/products/search", searchHardwareProducts);
 
-        try {
-            const product = await HardwareProduct.create({
-                name,
-                description,
-                quantity,
-                userId,
-                price,
-                image: thumbnail_image ? `/uploads/${thumbnail_image}` : null,
-            });
-            res.status(201).json(product);
-        } catch (error) {
-            if (error.name === "ValidationError") {
-                return res.status(400).json({ message: "Validation error", error: error.errors });
-            }
-            res.status(500).json({ message: "Failed to add product", error: error.message });
-        }
-    })
-);
+// GET: Get all hardware orders
+router.get("/orders", getAllHardwareOrders);
 
-// bulk upload
-router.post("/products/bulk-upload", upload.single("file"), async (req, res) => {
+// GET: Search hardware orders (added search functionality)
+router.get("/orders/search", searchHardwareOrders);
 
-    fs.createReadStream("mauzo.xlsx")
-        .on("data", (data) => {
-            results.push(data)
-        })
-        .on("error", (err) => {
-            console.log(err)
-        })
-        .on("end", () => {
-            console.log(results);
-            console.log("well done!");
-        })
-    res.json({ message: "add new products, POST new product" })
-})
+// GET: Get single hardware product by ID
+router.get("/products/:id", validateObjectId, getSingleHardwareProduct);
 
-// create order
-router.post("/orders", createHardwareOrder)
+// GET: Get single hardware order by ID
+router.get("/orders/:id", validateObjectId, getSingleHardwareOrder);
 
-// get all products
-router.get("/products", getAllHardwareProducts)
+// PATCH: Update hardware product details
+router.patch("/products/:id", validateObjectId, updateHardwareProduct);
 
-// get all orders
-router.get("/orders", getAllHardwareOrders)
+// PATCH: Update hardware order details
+router.patch("/orders/:id", validateObjectId, updateHardwareOrder);
 
-// get product
-router.get("/products/:id", validateObjectId, getSingleHardwareProduct)
+// DELETE: Delete hardware product by ID
+router.delete("/products/:id", validateObjectId, deleteHardwareProduct);
 
-// get order
-router.get("/orders/:id", validateObjectId, getSingleHardwareOrder)
+// DELETE: Delete hardware order by ID
+router.delete("/orders/:id", validateObjectId, deleteHardwareOrder);
 
-// update product
-router.patch("/products/:id", validateObjectId, updateHardwareProduct)
-
-// update order
-router.patch("/orders/:id", validateObjectId, updateHardwareOrder)
-
-// delete product
-router.delete("/products/:id", validateObjectId, deleteHardwareProduct)
-
-// delete order
-router.delete("/orders/:id", validateObjectId, deleteHardwareOrder)
-
-module.exports = router
+module.exports = router;

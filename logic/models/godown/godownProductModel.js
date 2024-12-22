@@ -13,7 +13,12 @@ const godownProductSchema = new Schema(
         },
         code: {
             type: String,
-            unique: true
+            default: function() {
+                const timestamp = Date.now().toString(); 
+                const randomPart = Math.floor(Math.random() * 1000).toString().padStart(3, '0'); 
+                const code = `ITEM-${timestamp}-${randomPart}`; 
+                return code;
+            }
         },
         price: {
             type: Number,

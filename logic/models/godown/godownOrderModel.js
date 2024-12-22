@@ -19,10 +19,10 @@ const orderSchema = new Schema(
             min: [1, "Price must be at least 1"]
         },
         orderId: {
-            type: Schema.Types.ObjectId,
+            type: String,
             required: true,
             default: () => {
-                return `GODOWN-${Date.now()}`; // FRESHOIL-123456789
+                return `GODOWN-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
             }
         },
         status: {
@@ -31,12 +31,16 @@ const orderSchema = new Schema(
             default: "pending"
         },
         name: {
-            type: String,
-            ref: "GodownProduct"
+            type: String, // Store product name directly
+            required: true
         },
         customerId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User"
+        },
+        totalPrice: {
+            type: Number,
+            min: [1, "Total price must be at least 1"]
         }
     },
     { timestamps: true }
@@ -45,7 +49,6 @@ const orderSchema = new Schema(
 orderSchema.pre('save', function (next) {
     if (this.isModified('quantity') || this.isModified('price')) {
         this.totalPrice = this.quantity * this.price;
-        this.totalAmount = this.totalPrice;
     }
     next();
 });

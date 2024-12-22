@@ -1,14 +1,16 @@
-const PrintingSubmission = require("../models/printing/printingSubmissionModel")
+// models
 const PrintingOrder = require("../models/printing/printingOrderModel")
-const { NOT_FOUND, CREATED, SERVER_ERROR, OK } = require("../constants/responseStatusCode")
 
-// create submission: POST
+// response status code
+const { NOT_FOUND, CREATED, SERVER_ERROR, OK, BAD_REQUEST } = require("../constants/responseStatusCode")
+
+// create order: POST
 const createSubmission = async (req, res) => {
     // create new order handling
     const { description, price, quantity, contact, category } = req.body
 
     try {
-        const submission = await PrintingSubmission.create({ description, price, quantity, contact, category })
+        const submission = await PrintingOrder.create({ description, price, quantity, contact, category })
 
         res.status(CREATED).json(submission)
     } catch (error) {
@@ -19,7 +21,7 @@ const createSubmission = async (req, res) => {
 // get orders
 const getPrintingOrders = async (req, res) => {
     try {
-        const orders = await PrintingSubmission.find().sort({ createdAt: -1 })
+        const orders = await PrintingOrder.find().sort({ createdAt: -1 })
 
         if (orders.length === 0) {
             return res.status(NOT_FOUND).json({ message: "No orders for now" })
@@ -35,7 +37,7 @@ const getSinglePrintingSubmission = async (req, res) => {
     const { id } = req.params
 
     try {
-        const submission = await PrintingSubmission.findOne({ _id: id })
+        const submission = await PrintingOrder.findOne({ _id: id })
 
         if (!submission) {
             return res.status(NOT_FOUND).json({ message: "Submission not found" })
@@ -56,7 +58,7 @@ const getSinglePrintingOrder = async (req, res) => {
         const order = await PrintingOrder.findOne({ _id: id })
 
         if (!order) {
-            return res.status(404).json({ message: "Not found" })
+            return res.status(NOT_FOUND).json({ message: "Not found" })
         }
 
         res.status(OK).json(order)
@@ -73,7 +75,7 @@ const updatePrintingOrder = async (req, res) => {
         const updatedOrder = await PrintingOrder.findOneAndUpdate({ _id: id }, { ...req.body }, { new: true })
 
         if (!updatedOrder) {
-            return res.status(404).json({ message: "Order nto found" })
+            return res.status(NOT_FOUND).json({ message: "Order nto found" })
         }
 
         res.status(OK).json({ message: "Updated sucessfully", updatedOrder })
@@ -98,11 +100,63 @@ const deletePrintingOrder = async (req, res) => {
     }
 }
 
+
+// Assign a designer to an order
+const assignDesigner = async (req, res) => {
+    try {
+
+        /* 
+        WHO YOU WILL ASSIGN ORDER TO
+        */
+      const { id } = req.params;
+      const { assignedTo } = req.body;
+  
+      const order = await PrintingOrder.findById(id);
+      if (!order) {
+        return res.status(404).json({ error: "Order not found." });
+      }
+  
+      order.assignedTo = assignedTo;
+      order.status = "in progress";
+      await order.save();
+  
+      res.status(200).json(order);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+
+// update order status
+const updateOrderStatus = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+  
+      if (!["pending", "in progress", "completed"].includes(status)) {
+        return res.status(BAD_REQUEST).json({ error: "Invalid status." });
+      }
+  
+      const order = await PrintingOrder.findById(id);
+      if (!order) {
+        return res.status(NOT_FOUND).json({ error: "Order not found." });
+      }
+  
+      order.status = status;
+      await order.save();
+  
+      res.status(OK).json(order);
+    } catch (error) {
+      res.status(SERVER_ERROR).json({ error: error.message });
+    }
+  };
+
 module.exports = {
     createSubmission,
     getPrintingOrders,
     getSinglePrintingSubmission,
     getSinglePrintingOrder,
     updatePrintingOrder,
-    deletePrintingOrder
+    deletePrintingOrder,
+    updateOrderStatus,
+    assignDesigner
 }

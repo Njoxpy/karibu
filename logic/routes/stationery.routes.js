@@ -1,40 +1,82 @@
-const express = require("express")
-const router = express.Router()
+const express = require("express");
+const router = express.Router();
 
-// controllers
-const { createStationeryProduct, createStationeryOrder, getAllStationeryProducts, getAllStationeryOrders, getStationeryProduct, getStationeryOrder, updateStationeryProduct, updateStationeryOrder, deleteStationeryProduct, deleteStationeryOrder } = require("../controllers/stationery.controller")
+// Controllers
+const {
+    createStationeryOrder,
+    getAllStationeryProducts,
+    getAllStationeryOrders,
+    updateStationeryProduct,
+    updateStationeryOrder,
+    searchStationeryProducts,  // Added search functionality for products
+    searchStationeryOrders,
+    deleteStationeryProduct,
+    deleteStationeryOrder,
+    getStationeryOrder,
+    getStationeryProduct,    // Added search functionality for orders
+} = require("../controllers/stationery.controller");
 
-// validate object id
-const validateObjectId = require("../middleware/validateObjectId")
+// Middleware
+const validateObjectId = require("../middleware/validateObjectId");
 
-// create product
-router.post("/products", createStationeryProduct)
+// Models
+const StationeryProduct = require("../models/stationery/stationeryProductModel");
 
-// create product
-router.post("/orders", createStationeryOrder)
+// Response codes
+const { SERVER_ERROR, CREATED, BAD_REQUEST } = require("../constants/responseStatusCode");
 
-// get products
-router.get("/products", getAllStationeryProducts)
+// POST: Create a new stationery product
+router.post("/products", async (req, res) => {
+    try {
+        const { name, description, quantity, price, userId } = req.body;
 
-// get orders
-router.get("/orders", getAllStationeryOrders)
+        const newProduct = new StationeryProduct({
+            name,
+            description,
+            quantity,
+            price,
+            userId,
+            total: quantity * price,
+        });
 
-// get product
-router.get("/products/:id", validateObjectId, getStationeryProduct)
+        const savedProduct = await newProduct.save();
+        res.status(CREATED).json(savedProduct);
+    } catch (error) {
+        res.status(SERVER_ERROR).json({ error: "Error saving product", details: error.message });
+    }
+});
 
-// get order
-router.get("/orders/:id", validateObjectId, getStationeryOrder)
+// POST: Create a new stationery order
+router.post("/orders", createStationeryOrder);
 
-// update product
-router.patch("/products/:id", validateObjectId, updateStationeryProduct)
+// GET: Get all stationery products
+router.get("/products", getAllStationeryProducts);
 
-// update order
-router.patch("/orders/:id", validateObjectId, updateStationeryOrder)
+// GET: Search stationery products (added search functionality)
+router.get("/products/search", searchStationeryProducts);
 
-// delete product
-router.delete("/products/:id", validateObjectId, deleteStationeryProduct)
+// GET: Get all stationery orders
+router.get("/orders", getAllStationeryOrders);
 
-// delete order
-router.delete("/orders/:id", validateObjectId, deleteStationeryOrder)
+// GET: Search stationery orders (added search functionality)
+router.get("/orders/search", searchStationeryOrders);
 
-module.exports = router
+// GET: Get single stationery product by ID
+router.get("/products/:id", validateObjectId, getStationeryProduct);
+
+// GET: Get single stationery order by ID
+router.get("/orders/:id", validateObjectId, getStationeryOrder);
+
+// PATCH: Update stationery product details
+router.patch("/products/:id", validateObjectId, updateStationeryProduct);
+
+// PATCH: Update stationery order details
+router.patch("/orders/:id", validateObjectId, updateStationeryOrder);
+
+// DELETE: Delete stationery product by ID
+router.delete("/products/:id", validateObjectId, deleteStationeryProduct);
+
+// DELETE: Delete stationery order by ID
+router.delete("/orders/:id", validateObjectId, deleteStationeryOrder);
+
+module.exports = router;

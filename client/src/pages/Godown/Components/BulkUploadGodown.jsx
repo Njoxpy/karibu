@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Footer from "../../../components/Footer";
+import * as XLSX from "xlsx"; // Assuming you're using the 'xlsx' package for parsing Excel files
 
 function BulkUploadGodown() {
     const [file, setFile] = useState(null);
@@ -22,20 +23,73 @@ function BulkUploadGodown() {
     };
 
     const parseFile = (file) => {
-        // Mock file parsing (replace with actual logic)
-        const previewData = [
-            { name: "Product 1", category: "Category A", price: 100, quantity: 50 },
-            { name: "Product 2", category: "Category B", price: 200, quantity: 30 },
-        ];
-        setDataPreview(previewData);
+        const reader = new FileReader();
+        
+        reader.onload = (e) => {
+            const binaryStr = e.target.result;
+            let dataPreview = [];
+
+            if (file.type === "text/csv") {
+                // Parse CSV
+                const csvData = new TextDecoder().decode(binaryStr);
+                const rows = csvData.split("\n").map(row => row.split(","));
+                // Assuming the first row is the header
+                rows.slice(1).forEach(row => {
+                    dataPreview.push({
+                        name: row[0],
+                        category: row[1],
+                        price: parseFloat(row[2]),
+                        quantity: parseInt(row[3]),
+                    });
+                });
+            } else if (file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+                // Parse Excel using xlsx library
+                const workbook = XLSX.read(binaryStr, { type: "binary" });
+                const sheet = workbook.Sheets[workbook.SheetNames[0]]; // Assuming first sheet is for data
+                const sheetData = XLSX.utils.sheet_to_json(sheet);
+
+                sheetData.forEach(row => {
+                    dataPreview.push({
+                        name: row["Product Name"],
+                        category: row["Category"],
+                        price: parseFloat(row["Price"]),
+                        quantity: parseInt(row["Quantity"]),
+                    });
+                });
+            }
+
+            setDataPreview(dataPreview);
+        };
+        
+        reader.readAsBinaryString(file);
     };
 
-    const handleConfirmUpload = () => {
-        console.log("Uploading data to server...");
-        // Simulate successful upload
-        console.log("Products uploaded successfully!");
-        setFile(null);
-        setDataPreview([]);
+    const handleConfirmUpload = async () => {
+        if (errors.length > 0) return; // Prevent upload if errors exist
+
+        const URL = "http://localhost:5000/api/v1/godown/products/bulk-upload";
+        try {
+            const response = await fetch(URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ products: dataPreview }),
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                console.log("Products uploaded successfully!");
+                setFile(null);
+                setDataPreview([]);
+                setErrors([]);
+            } else {
+                setErrors([result.error || "Failed to upload products"]);
+            }
+        } catch (err) {
+            setErrors(["An unexpected error occurred while uploading."]);
+            console.error("Error:", err);
+        }
     };
 
     return (

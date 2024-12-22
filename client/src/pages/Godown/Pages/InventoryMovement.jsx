@@ -1,53 +1,99 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Footer from "../../../components/Footer";
 
 const InventoryMovement = () => {
-  // Sample inventory for selection (normally fetched from the database)
-  const inventory = [
-    {
-      id: 1,
-      name: "Animal Feed A",
-      code: "AF-1001",
-      quantity: 50,
-      location: "Aisle 1",
-    },
-    {
-      id: 2,
-      name: "Animal Feed B",
-      code: "AF-2002",
-      quantity: 30,
-      location: "Aisle 2",
-    },
-  ];
-
+  const [inventory, setInventory] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [transferQuantity, setTransferQuantity] = useState(0);
   const [destination, setDestination] = useState("");
   const [origin, setOrigin] = useState("");
-  const [message, setMessage] = useState("")
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchInventory = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/v1/godown/products/inventory-movement");
+        const data = await response.json();
+        
+        if (response.ok) {
+          setInventory(data.products);
+          setLoading(false);
+        } else {
+          setMessage(data.message || "Failed to fetch inventory.");
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Error fetching inventory:", error);
+        setError("Failed to fetch inventory.");
+        setLoading(false);
+      }
+    };
+
+    fetchInventory();
+  }, []);
 
   const handleItemChange = (e) => {
-    const item = inventory.find((i) => i.id === parseInt(e.target.value));
+    const item = inventory.find((i) => i._id === e.target.value);
     setSelectedItem(item);
   };
 
-  const handleTransfer = () => {
-    if (selectedItem && transferQuantity > 0 && destination) {
+  const handleTransfer = async () => {
+    if (selectedItem && transferQuantity > 0 && destination && origin) {
       if (transferQuantity > selectedItem.quantity) {
         alert("Transfer quantity exceeds available stock.");
       } else {
-        // Perform transfer (this would involve a backend API call)
-        alert(
-          `Transferred ${transferQuantity} of ${selectedItem.name} to ${destination}`
-        );
-        setSelectedItem(null);
-        setTransferQuantity(0);
-        setDestination("");
+        try {
+          const response = await fetch("http://localhost:5000/api/v1/godown/inventory-movement", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              selectedItemId: selectedItem._id,
+              transferQuantity,
+              origin,
+              destination,
+            }),
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            alert(data.message);
+            setSelectedItem(null);
+            setTransferQuantity(0);
+            setOrigin("");
+            setDestination("");
+          } else {
+            setMessage(data.message);
+          }
+        } catch (error) {
+          setMessage("An error occurred during the transfer.");
+          console.error(error);
+        }
       }
     } else {
-      setMessage("Please fill in all fields.")
+      setMessage("Please fill in all fields.");
     }
   };
+
+  if (loading) {
+    return (
+      <div className="text-center py-8">
+        <h1 className="text-xl">Loading inventory...</h1>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-8">
+        <h1 className="text-xl text-red-500">{error}</h1>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -55,7 +101,6 @@ const InventoryMovement = () => {
         <h1 className="text-3xl font-bold mb-4 text-center">Transfer Item</h1>
 
         <div className="bg-white p-6 rounded shadow-md max-w-md mx-auto">
-          {/* Select Item */}
           <label className="block mb-2 font-semibold">Select Item</label>
           <select
             onChange={handleItemChange}
@@ -63,13 +108,12 @@ const InventoryMovement = () => {
           >
             <option value="">Choose an item...</option>
             {inventory.map((item) => (
-              <option key={item.id} value={item.id}>
+              <option key={item._id} value={item._id}>
                 {item.name} - {item.quantity} available
               </option>
             ))}
           </select>
 
-          {/* Current Location */}
           {selectedItem && (
             <div className="mb-4">
               <p>
@@ -83,7 +127,6 @@ const InventoryMovement = () => {
             </div>
           )}
 
-          {/* Quantity for Transfer */}
           <label className="block mb-2 font-semibold">Transfer Quantity</label>
           <input
             type="number"
@@ -93,7 +136,7 @@ const InventoryMovement = () => {
             onChange={(e) => setTransferQuantity(Number(e.target.value))}
             className="w-full p-2 mb-4 border border-gray-300 rounded"
           />
-          {/* origin location */}
+
           <label className="block mb-2 font-semibold">Original Location</label>
           <input
             type="text"
@@ -103,7 +146,6 @@ const InventoryMovement = () => {
             className="w-full p-2 mb-4 border border-gray-300 rounded"
           />
 
-          {/* Destination Location */}
           <label className="block mb-2 font-semibold">
             Destination Location
           </label>
@@ -115,7 +157,8 @@ const InventoryMovement = () => {
             className="w-full p-2 mb-4 border border-gray-300 rounded"
           />
 
-          {/* Confirm Transfer Button */}
+          {message && <p className="text-red-500 text-sm">{message}</p>}
+
           <button
             onClick={handleTransfer}
             className="w-full p-2 bg-gray-600 text-white font-semibold rounded hover:bg-gray-700 transition"
