@@ -33,6 +33,11 @@ const godownProductSchema = new Schema(
             type: String,
             required: true,
             maxLength: [500, "Description is too long"]
+        },
+        condition:{
+            type: String,
+            enum: ["new", "low stock", "out of stock"],
+            default: "new"
         }
     },
     { timestamps: true }
