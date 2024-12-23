@@ -3,7 +3,7 @@ const Product = require("../models/animalFeeding/animalFeedingProductModel")
 const Order = require("../models/animalFeeding/animalFeedingOrderModel")
 
 // status code
-const { OK, NOT_FOUND, SERVER_ERROR, CREATED } = require("../constants/responseStatusCode")
+const { OK, NOT_FOUND, SERVER_ERROR, BAD_REQUEST } = require("../constants/responseStatusCode")
 
 const searchAnimalFeedingProducts = async (req, res) => {
     const { name, description, minPrice, maxPrice } = req.query;
@@ -23,7 +23,7 @@ const searchAnimalFeedingProducts = async (req, res) => {
             searchQuery.price = { $gte: minPrice, $lte: maxPrice }; // Price range search
         }
 
-        const products = await AnimalFeedingProduct.find(searchQuery);
+        const products = await Product.find(searchQuery);
 
         res.status(200).json(products);
     } catch (error) {
@@ -50,7 +50,7 @@ const searchAnimalFeedingOrders = async (req, res) => {
             searchQuery.userId = userId; // Filter by userId
         }
 
-        const orders = await AnimalFeedingOrder.find(searchQuery);
+        const orders = await Order.find(searchQuery);
 
         res.status(200).json(orders);
     } catch (error) {
@@ -69,7 +69,7 @@ const getAllAnimalFeedingProducts = async (req, res) => {
 
         res.status(OK).json(products)
     } catch (error) {
-        res.status(SERVER_ERROR).json({ error: "Failed to fetch products", error: error.message })
+        res.status(SERVER_ERROR).json({ error: "Failed to fetch products", details: error.message })
     }
 }
 
@@ -104,7 +104,7 @@ const getAnimalFeedingProductById = async (req, res) => {
     } catch (error) {
         res.status(SERVER_ERROR).json({
             error: "Failed to fetch the product.",
-            error: error.message,
+            details: error.message,
         });
     }
 };
@@ -229,7 +229,7 @@ const deleteAnimalFeedingProductById = async (req, res) => {
         }
         res.status(OK).json({ "product deleted sucessfully": deletedProduct })
     } catch (error) {
-        res.status(NOT_FOUND).json({ message: "failed to fetch product" })
+        res.status(NOT_FOUND).json({ message: "failed to fetch product", details: error.message })
     }
 }
 
@@ -274,7 +274,7 @@ const searchAnimalFeedingProductName = async (req, res) => {
     } catch (error) {
         // Handle any unexpected errors during the query process
         console.error('Error searching for products:', error);
-        return res.status(INTERNAL_SERVER_ERROR).json({ message: 'An error occurred while searching for products.' });
+        return res.status(SERVER_ERROR).json({ message: 'An error occurred while searching for products.' });
     }
 };
 

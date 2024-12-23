@@ -2,27 +2,21 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const animalFeedingProductSchema = new Schema({
-    name: {
-        type: String,
-        required: true,
-    },
-    description: {
-        type: String,
-    },
     quantity: {
         type: Number,
         required: true,
+        min: [0, 'Quantity must be a positive number'],
     },
     nutrients: {
         type: String,
     },
     image: {
         type: String,
-        // default image
     },
     price: {
         type: Number,
         required: true,
+        min: [0, 'Price must be a positive number'],
     },
     userId: {
         type: Schema.Types.ObjectId,
@@ -31,6 +25,7 @@ const animalFeedingProductSchema = new Schema({
     total: {
         type: Number,
         required: true,
+        min: [0, 'Total must be a positive number'],
     },
 }, { timestamps: true });
 
