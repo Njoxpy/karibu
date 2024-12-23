@@ -22,7 +22,7 @@ const AnimalFeedingProduct = require("../models/animalFeeding/animalFeedingProdu
 const upload = require("../middleware/uploadAnimalFeeding");
 
 const { validateAnimalFeedingOrder } = require("../middleware/validateOrder");
-const validateProductUpload = require("../middleware/validateProductUpload");
+// const validateProductUpload = require("../middleware/validateProductUpload");
 const { CREATED, SERVER_ERROR, BAD_REQUEST } = require("../constants/responseStatusCode");
 
 router.post("/orders", validateAnimalFeedingOrder, createAnimalFeedingOrder);
@@ -49,10 +49,10 @@ router.delete("/orders/:id", validateObjectId, deleteAnimalFeedingOrderById);
 
 router.post("/products", upload.single('image'), async (req, res) => {
   try {
-    const { name, description, quantity, nutrients, price, userId, total } = req.body;
+    const { name, description, quantity, nutrients, price,  total } = req.body;
 
     // Validate required fields
-    if (!name || !description || !quantity || !nutrients || !price || !userId || !total) {
+    if (!name || !description || !quantity || !nutrients || !price  || !total) {
       return res.status(BAD_REQUEST).json({ error: "All fields are required." });
     }
 
@@ -66,6 +66,11 @@ router.post("/products", upload.single('image'), async (req, res) => {
       return res.status(BAD_REQUEST).json({ error: "Quantity, price, and total must be greater than zero." });
     }
 
+    // Validate userId is a valid ObjectId
+    // if (!mongoose.Types.ObjectId.isValid(userId)) {
+    //   return res.status(BAD_REQUEST).json({ error: "Invalid userId." });
+    // }
+
     const image = req.file ? req.file.path : null;
 
     // Create and save the product
@@ -76,7 +81,6 @@ router.post("/products", upload.single('image'), async (req, res) => {
       nutrients,
       image,
       price,
-      userId: mongoose.Types.ObjectId,
       total
     });
 

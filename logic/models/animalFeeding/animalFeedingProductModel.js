@@ -18,10 +18,10 @@ const animalFeedingProductSchema = new Schema({
         required: true,
         min: [0, 'Price must be a positive number'],
     },
-    userId: {
-        type: Schema.Types.ObjectId,
-        ref: "User"
-    },
+    // userId: {
+    //     type: Schema.Types.ObjectId,
+    //     ref: "User"
+    // },
     total: {
         type: Number,
         required: true,
