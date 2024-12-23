@@ -6,7 +6,7 @@ const FoodUpload = () => {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
-  const [userId, setUserId] = useState(0);
+  const [userId, setUserId] = useState("");
   const [image, setImage] = useState(null);
   const [error, setError] = useState(null);
 
@@ -44,7 +44,7 @@ const FoodUpload = () => {
         setName("");
         setDescription("");
         setQuantity("");
-        setUserId(0);
+        setUserId("");
         setPrice("");
         setImage(null);
         setError(null); // Clear any errors
@@ -65,8 +65,9 @@ const FoodUpload = () => {
           onSubmit={handleSubmit}
           className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md"
         >
-          {error && <p className="text-red-600 mb-4">{error}</p>}
+          
 
+          {/* Product Name */}
           <div className="mb-4">
             <label className="block mb-2 text-gray-700" htmlFor="product-name">
               Product Name
@@ -77,10 +78,12 @@ const FoodUpload = () => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="border border-gray-300 rounded w-full p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+              placeholder="e.g. Premium Dog Food"
               required
             />
           </div>
 
+          {/* Product Description */}
           <div className="mb-4">
             <label className="block mb-2 text-gray-700" htmlFor="description">
               Description
@@ -90,24 +93,28 @@ const FoodUpload = () => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="border border-gray-300 rounded w-full p-3 h-24 focus:outline-none focus:ring-2 focus:ring-green-500"
+              placeholder="Description of the product"
               required
             ></textarea>
           </div>
 
+          {/* User Id */}
           <div className="mb-4">
             <label className="block mb-2 text-gray-700" htmlFor="userId">
               User Id
             </label>
             <input
               id="userId"
-              type="number"
+              type="text"
               value={userId}
               onChange={(e) => setUserId(e.target.value)}
               className="border border-gray-300 rounded w-full p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+              placeholder="Enter your user ID"
               required
             />
           </div>
 
+          {/* Product Price */}
           <div className="mb-4">
             <label className="block mb-2 text-gray-700" htmlFor="price">
               Price (Tsh)
@@ -118,10 +125,12 @@ const FoodUpload = () => {
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               className="border border-gray-300 rounded w-full p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+              placeholder="e.g. 25.99"
               required
             />
           </div>
 
+          {/* Product Quantity */}
           <div className="mb-4">
             <label className="block mb-2 text-gray-700" htmlFor="quantity">
               Quantity
@@ -132,6 +141,7 @@ const FoodUpload = () => {
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
               className="border border-gray-300 rounded w-full p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+              placeholder="e.g. 100"
               required
             />
           </div>
@@ -146,10 +156,11 @@ const FoodUpload = () => {
               id="image"
               onChange={(e) => setImage(e.target.files[0])}
               className="border border-gray-300 rounded w-full p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
-              required
             />
           </div>
 
+          {error && <p className="text-red-600 mb-4">{error}</p>}
+          
           <button
             type="submit"
             className="bg-green-600 text-white py-3 px-6 rounded hover:bg-green-700 transition duration-200"

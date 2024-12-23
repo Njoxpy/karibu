@@ -1,21 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import FreshOil1 from ".././../../assets/images/freshOil1.webp";
 import FreshOil2 from ".././../../assets/images/avocado.png";
 
 function Oils() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [products, setProducts] = useState([]); // State for fetched products
   const [currentPage, setCurrentPage] = useState(1); // Current page number
   const itemsPerPage = 6; // Items per page for pagination
 
-  const products = [
-    // Sample data for fresh oils
-    { id: 1, name: "Olive Oil", price: 25000, image: FreshOil1, description: "Cold-pressed extra virgin olive oil." },
-    { id: 2, name: "Coconut Oil", price: 2200, image: FreshOil2, description: "Organic, virgin coconut oil." },
-    { id: 3, name: "Avocado Oil", price: 30000, image: FreshOil2, description: "High-quality avocado oil, perfect for cooking." },
-    { id: 4, name: "Sunflower Oil", price: 15500, image: FreshOil2, description: "Refined sunflower oil for everyday use." },
-    { id: 5, name: "Peanut Oil", price: 18400, image: FreshOil2, description: "Pure peanut oil with a high smoke point." },
-    { id: 6, name: "Sesame Oil", price: 2200, image: FreshOil2, description: "Cold-pressed sesame oil with rich flavor." },
-  ];
+  useEffect(() => {
+    // Fetch fresh oil products from API
+    fetch("http://localhost:5000/api/v1/fresh-oil/products")
+      .then((response) => response.json())
+      .then((data) => setProducts(data))
+      .catch((error) => console.error("Error fetching products:", error));
+  }, []); // Empty dependency array ensures this runs only once on component mount
 
   // Filter products based on search term
   const filteredProducts = products.filter((product) =>
@@ -55,12 +54,9 @@ function Oils() {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {currentProducts.map((product) => (
-          <div
-            key={product.id}
-            className="border rounded-lg shadow-md overflow-hidden"
-          >
+          <div key={product._id} className="border rounded-lg shadow-md overflow-hidden">
             <img
-              src={product.image}
+              src={product.image} // Using image from API response
               alt={product.name}
               className="w-full h-48 object-cover"
             />
@@ -71,13 +67,13 @@ function Oils() {
 
               <div className="flex justify-between">
                 <a
-                  href={`/freshOil/products/${product.id}`}
+                  href={`/freshOil/products/${product._id}`} // Use product._id
                   className="mt-4 inline-block bg-yellow-500 text-white py-2 px-4 rounded"
                 >
                   Order Now
                 </a>
                 <a
-                  href={`/freshOil/product-detail?productId=${product.id}`}
+                  href={`/freshOil/product-detail?productId=${product._id}`} // Use product._id
                   className="mt-4 inline-block bg-yellow-500 text-white py-2 px-4 rounded ml-2"
                 >
                   View Details

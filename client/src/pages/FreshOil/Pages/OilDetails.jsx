@@ -2,30 +2,38 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Footer from '../../../components/Footer';
 
-// Simulated product database
-const productDatabase = [
-  { id: 1, name: "Avocado Oil", price: 15000, category: "fresh oil" },
-  { id: 2, name: "Coconut Oil", price: 1200, category: "oil" },
-  { id: 3, name: "Sesame Oil", price: 25, category: "oil" },
-];
-
 const OilDetails = () => {
-  // Get the id from the URL params
-  const { id } = useParams();
+  const { id } = useParams(); // Get the product ID from the URL params
 
-  // State to manage product data and user input
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [loading, setLoading] = useState(true);  // To track loading state
+  const [error, setError] = useState(null);  // To handle any errors
 
   useEffect(() => {
-    // Fetch the product by ID (this could be an API call in a real app)
-    const foundProduct = productDatabase.find((p) => p.id === parseInt(id));
-    if (foundProduct) {
-      setProduct(foundProduct);
-      setTotalPrice(foundProduct.price * quantity); // Initialize total price
-    }
-  }, [id, quantity]); // Recalculate total price when id or quantity changes
+    // Fetch the product data based on the ID
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`http://localhost:5000/api/v1/fresh-oil/products/${id}`);
+        const data = await response.json();
+
+        if (response.ok) {
+          setProduct(data);  // Set the fetched product data
+          setTotalPrice(data.price * quantity);  // Set initial total price based on quantity
+        } else {
+          throw new Error('Product not found');
+        }
+      } catch (error) {
+        setError(error.message);  // Handle the error
+      } finally {
+        setLoading(false);  // Set loading to false once fetch is complete
+      }
+    };
+
+    fetchProduct();
+  }, [id, quantity]); // Re-fetch when id or quantity changes
 
   const handleQuantityChange = (e) => {
     const newQuantity = parseInt(e.target.value);
@@ -39,16 +47,24 @@ const OilDetails = () => {
     e.preventDefault();
     const orderData = {
       totalPrice,
-      status: "pending",
+      status: 'pending',
       orderId: Date.now(), // Generate a unique order ID
-      userId: 4, // Example user ID
-      productName: product ? product.name : "Unknown Product",
+      userId: 4, // Example user ID, replace as needed
+      productName: product ? product.name : 'Unknown Product',
       quantity,
-      category: product ? product.category : "Unknown Category",
+      category: product ? product.category : 'Unknown Category',
     };
-    console.log("Order submitted:", orderData);
-    // Handle further logic like calling an API to submit the order
+    console.log('Order submitted:', orderData);
+    // Handle order submission, e.g., call an API to submit the order
   };
+
+  if (loading) {
+    return <div>Loading...</div>;  // Show loading message while fetching data
+  }
+
+  if (error) {
+    return <div>{`Error: ${error}`}</div>;  // Show error message if there's an issue
+  }
 
   if (!product) {
     return <div>Product not found.</div>;

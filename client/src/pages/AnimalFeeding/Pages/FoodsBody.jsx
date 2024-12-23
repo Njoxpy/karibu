@@ -1,157 +1,31 @@
-import { useState } from "react";
-import Animal1 from ".././../../assets/images/animal1.jpg";
-import Animal2 from ".././../../assets/images/animal2.jpg";
+import { useState, useEffect } from "react";
+import Animal2 from "../../../assets/images/animal2.jpg"; // Update the path accordingly
 
 function FoodsBody() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const products = [
-    // Sample data for products
-    {
-      id: 1,
-      name: "Premium Dog Food",
-      price: 25_000,
-      image: { Animal1 },
-      description: "High-quality dog food with essential nutrients.",
-      category: "Dog Food",
-      stock: 30,
-      weight: "5kg",
-      brand: "HealthyPaws",
-      ingredients: ["Chicken", "Rice", "Omega-3", "Vitamins"],
-    },
-    {
-      id: 2,
-      name: "Gourmet Cat Food",
-      price: 224_900,
-      image: { Animal2 },
-      description: "Nutritious cat food made with real fish.",
-      category: "Cat Food",
-      stock: 50,
-      weight: "3kg",
-      brand: "WhiskerLickin",
-      ingredients: ["Salmon", "Brown Rice", "Omega-6", "Minerals"],
-    },
-    {
-      id: 3,
-      name: "Organic Rabbit Pellets",
-      price: 1_899_000,
-      image: { Animal2 },
-      description: "Organic pellets formulated for rabbits.",
-      category: "Rabbit Food",
-      stock: 20,
-      weight: "2kg",
-      brand: "BunnyBest",
-      ingredients: ["Alfalfa", "Timothy Hay", "Vegetables"],
-    },
-    {
-      id: 4,
-      name: "Bird Seed Mix",
-      price: 1_299_990,
-      image: { Animal1 },
-      description: "Seed mix for a variety of pet birds.",
-      category: "Bird Food",
-      stock: 40,
-      weight: "1kg",
-      brand: "FeatheredFriends",
-      ingredients: ["Sunflower Seeds", "Millet", "Corn", "Oats"],
-    },
-    {
-      id: 5,
-      name: "Horse Feed Pellets",
-      price: 359_900,
-      image: { Animal1 },
-      description: "Nutrient-rich pellets for active horses.",
-      category: "Horse Food",
-      stock: 15,
-      weight: "10kg",
-      brand: "EquiStrong",
-      ingredients: ["Corn", "Barley", "Soybean Meal", "Vitamins"],
-    },
-    {
-      id: 6,
-      name: "Fish Flakes",
-      price: 149_000,
-      image: { Animal2 },
-      description: "Flake food for freshwater aquarium fish.",
-      category: "Fish Food",
-      stock: 60,
-      weight: "200g",
-      brand: "AquaLife",
-      ingredients: ["Fish Meal", "Shrimp", "Spirulina", "Minerals"],
-    },
-    {
-      id: 7,
-      name: "Fish Flakes",
-      price: 10_490,
-      image: { Animal2 },
-      description: "Flake food for freshwater aquarium fish.",
-      category: "Fish Food",
-      stock: 60,
-      weight: "200g",
-      brand: "AquaLife",
-      ingredients: ["Fish Meal", "Shrimp", "Spirulina", "Minerals"],
-    },
-    {
-      id: 8,
-      name: "Fish Flakes",
-      price: 10.49,
-      image: { Animal2 },
-      description: "Flake food for freshwater aquarium fish.",
-      category: "Fish Food",
-      stock: 60,
-      weight: "200g",
-      brand: "AquaLife",
-      ingredients: ["Fish Meal", "Shrimp", "Spirulina", "Minerals"],
-    },
-    {
-      id: 9,
-      name: "Fish Flakes",
-      price: 104_900,
-      image: { Animal2 },
-      description: "Flake food for freshwater aquarium fish.",
-      category: "Fish Food",
-      stock: 60,
-      weight: "200g",
-      brand: "AquaLife",
-      ingredients: ["Fish Meal", "Shrimp", "Spirulina", "Minerals"],
-    },
-    {
-      id: 10,
-      name: "Fish Flakes",
-      price: 104_900,
-      image: { Animal2 },
-      description: "Flake food for freshwater aquarium fish.",
-      category: "Fish Food",
-      stock: 60,
-      weight: "200g",
-      brand: "AquaLife",
-      ingredients: ["Fish Meal", "Shrimp", "Spirulina", "Minerals"],
-    },
-    {
-      id: 11,
-      name: "Fish Flakes",
-      price: 104_900,
-      image: { Animal2 },
-      description: "Flake food for freshwater aquarium fish.",
-      category: "Fish Food",
-      stock: 60,
-      weight: "200g",
-      brand: "AquaLife",
-      ingredients: ["Fish Meal", "Shrimp", "Spirulina", "Minerals"],
-    },
-    {
-      id: 12,
-      name: "Fish Flakes",
-      price: 104_900,
-      image: { Animal2 },
-      description: "Flake food for freshwater aquarium fish.",
-      category: "Fish Food",
-      stock: 60,
-      weight: "200g",
-      brand: "AquaLife",
-      ingredients: ["Fish Meal", "Shrimp", "Spirulina", "Minerals"],
-    },
-  ];
+  // Fetch products from the API
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/v1/animal-feeding/products");
+        if (!response.ok) {
+          throw new Error("Failed to fetch products");
+        }
+        const data = await response.json();
+        setProducts(data); // Set the fetched products
+        setIsLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setIsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   // Pagination setup
   const itemsPerPage = 6; // Number of items per page
@@ -182,23 +56,31 @@ function FoodsBody() {
           className="border rounded p-2 w-full"
         />
       </div>
+      
+      {/* Loading state */}
+      {isLoading && <p>Loading products...</p>}
+      
+      {/* Error state */}
+      {error && <p className="text-red-500">{error}</p>}
+
+      {/* Display products */}
       {currentProducts.length === 0 ? (
-        <p>no orders placed yet.</p>
+        <p>No products found.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {currentProducts
             .filter((product) => {
               return searchTerm.toLowerCase() === ""
                 ? product
-                : product.name.toLowerCase().includes(searchTerm);
+                : product.name.toLowerCase().includes(searchTerm.toLowerCase());
             })
             .map((product) => (
               <div
-                key={product.id}
+                key={product._id}
                 className="border rounded-lg shadow-md overflow-hidden"
               >
                 <img
-                  src={Animal2}
+                  src={product.image || Animal2} // Use default image if no image is provided
                   alt={product.name}
                   className="w-full h-48 object-cover"
                 />
@@ -207,13 +89,13 @@ function FoodsBody() {
                   <p className="text-gray-600">{product.description}</p>
                   <p className="font-bold text-green-700">Tsh {product.price}</p>
                   <a
-                    href={`/animal-feeding/products/${product.id}`}
+                    href={`/animal-feeding/products/${product._id}`}
                     className="mt-4 inline-block bg-green-500 text-white py-2 px-4 rounded"
                   >
                     Order Now
                   </a>
                   <a
-                    href={`/animal-feeding/product-detail?productId=${product.id}`}
+                    href={`/animal-feeding/product-detail?productId=${product._id}`}
                     className="mt-4 inline-block bg-green-500 text-white py-2 px-4 rounded ml-2"
                   >
                     View Details
@@ -224,8 +106,8 @@ function FoodsBody() {
         </div>
       )}
 
+      {/* Pagination controls */}
       <div className="mt-4 flex justify-center">
-        {/* Pagination controls */}
         <button
           onClick={() => changePage(currentPage - 1)}
           disabled={currentPage === 1}

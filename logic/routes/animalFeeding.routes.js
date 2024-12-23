@@ -49,14 +49,14 @@ router.delete("/orders/:id", validateObjectId, deleteAnimalFeedingOrderById);
 
 router.post("/products", upload.single('image'), async (req, res) => {
   try {
-    const { name, description, quantity, nutrients, price,  total } = req.body;
+    const { name, description, quantity, nutrients, price, total, userId } = req.body;
 
     // Validate required fields
-    if (!name || !description || !quantity || !nutrients || !price  || !total) {
+    if (!name || !description || !quantity || !nutrients || !price || !total || !userId) {
       return res.status(BAD_REQUEST).json({ error: "All fields are required." });
     }
 
-    // Validate quantity, price, and total should be numbers
+    // Validate that quantity, price, and total are numbers
     if (isNaN(quantity) || isNaN(price) || isNaN(total)) {
       return res.status(BAD_REQUEST).json({ error: "Quantity, price, and total must be valid numbers." });
     }
@@ -66,14 +66,15 @@ router.post("/products", upload.single('image'), async (req, res) => {
       return res.status(BAD_REQUEST).json({ error: "Quantity, price, and total must be greater than zero." });
     }
 
-    // Validate userId is a valid ObjectId
-    // if (!mongoose.Types.ObjectId.isValid(userId)) {
-    //   return res.status(BAD_REQUEST).json({ error: "Invalid userId." });
-    // }
+    // Validate userId (e.g., if using JWT or session-based authentication)
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(BAD_REQUEST).json({ error: "Invalid userId." });
+    }
 
+    // Optional: validate file if an image is expected
     const image = req.file ? req.file.path : null;
 
-    // Create and save the product
+    // Create a new product instance
     const newProduct = new AnimalFeedingProduct({
       name,
       description,
@@ -81,18 +82,21 @@ router.post("/products", upload.single('image'), async (req, res) => {
       nutrients,
       image,
       price,
-      total
+      total,
+      userId
     });
 
+    // Save the product to the database
     await newProduct.save();
 
-    // Return response with created status
+    // Return success response
     res.status(CREATED).json({
       message: "Product created successfully",
       product: newProduct
     });
   } catch (error) {
     // Handle server errors
+    console.error(error); // Log the error for debugging
     res.status(SERVER_ERROR).json({ error: error.message });
   }
 });

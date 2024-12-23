@@ -43,11 +43,10 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-// Encrypt password before saving or updating
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
 
-  const saltRounds = parseInt(process.env.SALT_ROUNDS) || 10; // You can make salt rounds configurable via environment variables.
+  const saltRounds = parseInt(process.env.SALT_ROUNDS) || 10; 
   const salt = await bcrypt.genSalt(saltRounds);
   this.password = await bcrypt.hash(this.password, salt);
   next();

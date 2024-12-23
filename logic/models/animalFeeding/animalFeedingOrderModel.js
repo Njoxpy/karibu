@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 const AnimalFeedingProduct = require('./animalFeedingProductModel'); // Import the product model
 
 const animalFeedingOrderSchema = new Schema({
-    orderNumber: {
+    orderId: {
         type: String,
         unique: true,
         default: () => `ANIMAL-FEEDING-${Date.now()}-${Math.floor(Math.random() * 10000)}`,

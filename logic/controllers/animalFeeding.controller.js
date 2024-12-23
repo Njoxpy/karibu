@@ -1,10 +1,11 @@
 // models
-const Product = require("../models/animalFeeding/animalFeedingProductModel")
-const Order = require("../models/animalFeeding/animalFeedingOrderModel")
+const Product = require("../models/animalFeeding/animalFeedingProductModel");
+const Order = require("../models/animalFeeding/animalFeedingOrderModel");
 
 // status code
-const { OK, NOT_FOUND, SERVER_ERROR, BAD_REQUEST } = require("../constants/responseStatusCode")
+const { OK, NOT_FOUND, SERVER_ERROR, BAD_REQUEST } = require("../constants/responseStatusCode");
 
+// Search animal feeding products with filters
 const searchAnimalFeedingProducts = async (req, res) => {
     const { name, description, minPrice, maxPrice } = req.query;
 
@@ -12,26 +13,30 @@ const searchAnimalFeedingProducts = async (req, res) => {
         let searchQuery = {};
 
         if (name) {
-            searchQuery.name = { $regex: name, $options: "i" }; // Case-insensitive search
+            searchQuery.name = { $regex: name, $options: "i" };
         }
 
         if (description) {
-            searchQuery.description = { $regex: description, $options: "i" }; // Case-insensitive search
+            searchQuery.description = { $regex: description, $options: "i" };
         }
 
         if (minPrice && maxPrice) {
-            searchQuery.price = { $gte: minPrice, $lte: maxPrice }; // Price range search
+            searchQuery.price = { $gte: minPrice, $lte: maxPrice };
         }
 
         const products = await Product.find(searchQuery);
 
-        res.status(200).json(products);
+        if (!res.headersSent) {
+            return res.status(OK).json(products); // Ensure response is sent only once
+        }
     } catch (error) {
-        res.status(500).json({ error: "Error searching products", details: error.message });
+        if (!res.headersSent) {
+            return res.status(SERVER_ERROR).json({ error: "Error searching products", details: error.message });
+        }
     }
 };
 
-// Search animal feeding orders by orderId, status, or userId
+// Search animal feeding orders with filters
 const searchAnimalFeedingOrders = async (req, res) => {
     const { orderId, status, userId } = req.query;
 
@@ -39,112 +44,139 @@ const searchAnimalFeedingOrders = async (req, res) => {
         let searchQuery = {};
 
         if (orderId) {
-            searchQuery._id = orderId; // Search by orderId (MongoDB's ObjectId)
+            searchQuery._id = orderId;
         }
 
         if (status) {
-            searchQuery.status = status; // Filter by order status (e.g., "pending", "shipped", "delivered")
+            searchQuery.status = status;
         }
 
         if (userId) {
-            searchQuery.userId = userId; // Filter by userId
+            searchQuery.userId = userId;
         }
 
         const orders = await Order.find(searchQuery);
 
-        res.status(200).json(orders);
+        if (!res.headersSent) {
+            return res.status(OK).json(orders); // Ensure response is sent only once
+        }
     } catch (error) {
-        res.status(500).json({ error: "Error searching orders", details: error.message });
+        if (!res.headersSent) {
+            return res.status(SERVER_ERROR).json({ error: "Error searching orders", details: error.message });
+        }
     }
 };
 
 // GET ALL PRODUCTS
 const getAllAnimalFeedingProducts = async (req, res) => {
     try {
-        const products = await Product.find().sort({ createdAt: -1 })
+        const products = await Product.find().sort({ createdAt: -1 });
 
         if (products.length === 0) {
-            return res.json({ message: "there are no products now" })
+            if (!res.headersSent) {
+                return res.status(OK).json({ message: "There are no products now" });
+            }
         }
 
-        res.status(OK).json(products)
+        if (!res.headersSent) {
+            return res.status(OK).json(products); // Ensure response is sent only once
+        }
     } catch (error) {
-        res.status(SERVER_ERROR).json({ error: "Failed to fetch products", details: error.message })
+        if (!res.headersSent) {
+            return res.status(SERVER_ERROR).json({ error: "Failed to fetch products", details: error.message });
+        }
     }
-}
+};
 
 // GET ALL ORDERS
 const getAnimalFeedingAllOrders = async (req, res) => {
     try {
-        const orders = await Order.find().sort({ createdAt: -1 })
+        const orders = await Order.find().sort({ createdAt: -1 });
+
         if (orders.length === 0) {
-            return res.json({ message: "There are no orders now" })
+            if (!res.headersSent) {
+                return res.status(OK).json({ message: "There are no orders now" });
+            }
         }
-        res.status(OK).json(orders)
+
+        if (!res.headersSent) {
+            return res.status(OK).json(orders); // Ensure response is sent only once
+        }
     } catch (error) {
-        res.status(SERVER_ERROR).json({
-            message: "Failed to fetch product orders",
-            error: error.message
-        })
+        if (!res.headersSent) {
+            return res.status(SERVER_ERROR).json({ message: "Failed to fetch orders", details: error.message });
+        }
     }
-}
+};
 
 // GET PRODUCT BY ID
 const getAnimalFeedingProductById = async (req, res) => {
     const { id } = req.params;
 
+    if (!id) {
+        return res.status(BAD_REQUEST).json({ error: "Product ID is required" });
+    }
+
     try {
-        // Find product by ID
         const product = await Product.findOne({ _id: id });
 
         if (!product) {
-            return res.status(NOT_FOUND).json({ error: "Product not found" });
+            if (!res.headersSent) {
+                return res.status(NOT_FOUND).json({ error: "Product not found" });
+            }
         }
-        res.status(OK).json(product);
+
+        if (!res.headersSent) {
+            return res.status(OK).json(product); // Ensure response is sent only once
+        }
     } catch (error) {
-        res.status(SERVER_ERROR).json({
-            error: "Failed to fetch the product.",
-            details: error.message,
-        });
+        if (!res.headersSent) {
+            return res.status(SERVER_ERROR).json({ error: "Failed to fetch the product.", details: error.message });
+        }
     }
 };
 
 // GET ORDER BY ID
 const getAnimalFeedingOrderById = async (req, res) => {
+    const { id } = req.params;
 
-    const { id } = req.params
+    if (!id) {
+        return res.status(BAD_REQUEST).json({ error: "Order ID is required" });
+    }
 
     try {
-
-        const order = await Order.findOne({ _id: id })
+        const order = await Order.findOne({ _id: id });
 
         if (!order) {
-            return res.status(NOT_FOUND).json({ message: "Order not found" })
+            if (!res.headersSent) {
+                return res.status(NOT_FOUND).json({ message: "Order not found" });
+            }
         }
 
-        res.status(OK).json(order)
+        if (!res.headersSent) {
+            return res.status(OK).json(order); // Ensure response is sent only once
+        }
     } catch (error) {
-        res.status(SERVER_ERROR).json({ message: "Failed to get order", error: error.message })
+        if (!res.headersSent) {
+            return res.status(SERVER_ERROR).json({ message: "Failed to get order", details: error.message });
+        }
     }
-}
+};
 
 // CREATE ORDER
 const createAnimalFeedingOrder = async (req, res) => {
     try {
         const { createdBy, product, name, quantity, price } = req.body;
 
-        // Step 1: Fetch the product
         const productDetails = await Product.findById(product);
         if (!productDetails) {
-            return res.status(404).json({ message: "Product not found" });
+            return res.status(NOT_FOUND).json({ message: "Product not found" });
         }
 
-        // Step 2: Check product quantity
         if (productDetails.quantity < quantity) {
-            return res.status(400).json({ message: "Insufficient product quantity available" });
+            return res.status(BAD_REQUEST).json({ message: "Insufficient product quantity available" });
         }
 
-        // Step 3: Create the order
         const order = await Order.create({
             createdBy,
             product,
@@ -153,128 +185,135 @@ const createAnimalFeedingOrder = async (req, res) => {
             price,
         });
 
-        // Step 4: Deduct the ordered quantity from the product stock
         productDetails.quantity -= quantity;
         await productDetails.save();
 
-        res.status(201).json({
-            message: "Order created successfully",
-            order,
-        });
+        if (!res.headersSent) {
+            return res.status(201).json({ message: "Order created successfully", order });
+        }
     } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            message: "An error occurred while creating the order",
-            error: error.message,
-        });
+        if (!res.headersSent) {
+            return res.status(SERVER_ERROR).json({ message: "An error occurred while creating the order", error: error.message });
+        }
     }
 };
 
 // UPDATE PRODUCT
 const updateAnimalFeedingProduct = async (req, res) => {
+    const { id } = req.params;
+
     try {
-        const { id } = req.params;
+        const updatedProduct = await Product.findOneAndUpdate({ _id: id }, { ...req.body }, { new: true });
 
-        // Update the product
-        const updatedProduct = await Product.findOneAndUpdate(
-            { _id: id },
-            { ...req.body },
-            { new: true }
-        );
-
-        // Handle case where product does not exist
         if (!updatedProduct) {
-            return res.status(NOT_FOUND).json({ message: "Product not found." });
+            if (!res.headersSent) {
+                return res.status(NOT_FOUND).json({ message: "Product not found." });
+            }
         }
 
-        // Return the updated product
-        res.status(OK).json({ "updated product": updatedProduct });
+        if (!res.headersSent) {
+            return res.status(OK).json({ "updated product": updatedProduct }); // Ensure response is sent only once
+        }
     } catch (error) {
-        res.status(SERVER_ERROR).json({ message: "Server error", error: error.message });
+        if (!res.headersSent) {
+            return res.status(SERVER_ERROR).json({ message: "Server error", details: error.message });
+        }
     }
 };
 
 // UPDATE ORDER
 const updateAnimalFeedingOrder = async (req, res) => {
+    const { id } = req.params;
+
     try {
-        const { id } = req.params;
+        const updatedOrder = await Order.findOneAndUpdate({ _id: id }, { ...req.body }, { new: true });
 
-        // Update the product
-        const updatedOrder = await Order.findOneAndUpdate(
-            { _id: id },
-            { ...req.body },
-            { new: true }
-        );
-
-        // Handle case where product does not exist
         if (!updatedOrder) {
-            return res.status(NOT_FOUND).json({ message: "Order not found." });
+            if (!res.headersSent) {
+                return res.status(NOT_FOUND).json({ message: "Order not found." });
+            }
         }
 
-        // Return the updated product
-        res.status(OK).json({ "updated order": updatedOrder });
+        if (!res.headersSent) {
+            return res.status(OK).json({ "updated order": updatedOrder }); // Ensure response is sent only once
+        }
     } catch (error) {
-        res.status(SERVER_ERROR).json({ message: "Server error", error: error.message });
+        if (!res.headersSent) {
+            return res.status(SERVER_ERROR).json({ message: "Server error", details: error.message });
+        }
     }
 };
 
-// delete product by id
+// DELETE PRODUCT BY ID
 const deleteAnimalFeedingProductById = async (req, res) => {
-    const { id } = req.params
+    const { id } = req.params;
 
     try {
-        const deletedProduct = await Product.findByIdAndDelete(id)
+        const deletedProduct = await Product.findByIdAndDelete(id);
+
         if (!deletedProduct) {
-            return res.status(NOT_FOUND).json({ message: "Product not found" })
+            if (!res.headersSent) {
+                return res.status(NOT_FOUND).json({ message: "Product not found" });
+            }
         }
-        res.status(OK).json({ "product deleted sucessfully": deletedProduct })
-    } catch (error) {
-        res.status(NOT_FOUND).json({ message: "failed to fetch product", details: error.message })
-    }
-}
 
-// delte order by id
+        if (!res.headersSent) {
+            return res.status(OK).json({ "product deleted successfully": deletedProduct });
+        }
+    } catch (error) {
+        if (!res.headersSent) {
+            return res.status(SERVER_ERROR).json({ message: "Failed to delete product", details: error.message });
+        }
+    }
+};
+
+// DELETE ORDER BY ID
 const deleteAnimalFeedingOrderById = async (req, res) => {
-    const { id } = req.params
+    const { id } = req.params;
 
     try {
-        const deletedOrder = await Order.findOneAndDelete({ _id: id })
-        if (!deletedOrder) {
-            res.status(NOT_FOUND).json({ message: "order not found" })
-        }
-        res.status(OK).json({ "order deleted sucessfully": deletedOrder })
-    } catch (error) {
-        res.status(NOT_FOUND).json({ message: "failed to get order", error: error.message })
-    }
-}
+        const deletedOrder = await Order.findOneAndDelete({ _id: id });
 
-// search product
+        if (!deletedOrder) {
+            if (!res.headersSent) {
+                return res.status(NOT_FOUND).json({ message: "Order not found" });
+            }
+        }
+
+        if (!res.headersSent) {
+            return res.status(OK).json({ "order deleted successfully": deletedOrder });
+        }
+    } catch (error) {
+        if (!res.headersSent) {
+            return res.status(SERVER_ERROR).json({ message: "Failed to delete order", details: error.message });
+        }
+    }
+};
+
+// SEARCH PRODUCT BY NAME
 const searchAnimalFeedingProductName = async (req, res) => {
     const { productName } = req.query;
 
-    // Check if the product name query parameter is provided
     if (!productName) {
         return res.status(BAD_REQUEST).json({ error: "Product name is required" });
     }
 
     try {
-        // Search for products with a case-insensitive regex match on the name
-        const products = await Product.find({
-            name: { $regex: productName, $options: "i" }
-        });
+        const products = await Product.find({ name: { $regex: productName, $options: "i" } });
 
-        // If no products are found, return a 'not found' response
         if (products.length === 0) {
-            return res.status(NOT_FOUND).json({ message: "No products found with that name." });
+            if (!res.headersSent) {
+                return res.status(NOT_FOUND).json({ message: "No products found with that name." });
+            }
         }
 
-        // Return the found products with an 'OK' status
-        res.status(OK).json(products);
-
+        if (!res.headersSent) {
+            return res.status(OK).json(products); // Ensure response is sent only once
+        }
     } catch (error) {
-        // Handle any unexpected errors during the query process
-        console.error('Error searching for products:', error);
-        return res.status(SERVER_ERROR).json({ message: 'An error occurred while searching for products.' });
+        if (!res.headersSent) {
+            return res.status(SERVER_ERROR).json({ message: 'An error occurred while searching for products.', details: error.message });
+        }
     }
 };
 
@@ -291,4 +330,4 @@ module.exports = {
     updateAnimalFeedingOrder,
     searchAnimalFeedingProducts,
     searchAnimalFeedingOrders
-}
+};
