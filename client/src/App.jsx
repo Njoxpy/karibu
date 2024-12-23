@@ -188,7 +188,7 @@ export default function App() {
             <Route path="products" element={<AnimalFeedingProductsLayout />}>
               <Route index element={<FoodsBody />} />
               <Route
-                path=":productId"
+                path=":id"
                 element={<ProductDetail />}
                 errorElement={<ErrorPage />}
               />
