@@ -2,30 +2,28 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Footer from '../../../components/Footer';
 
-// Simulated product database
-const productDatabase = [
-  { id: 1, name: "Mechanical Keyboard", price: 150, category: "office-equipment" },
-  { id: 2, name: "Organic Rabbit Pellets", price: 1200, category: "electronics" },
-  { id: 3, name: "Fish Flakes", price: 25, category: "accessories" },
-];
-
 const HardwareDetails = () => {
-  // Get the id from the URL params
   const { id } = useParams();
 
-  // State to manage product data and user input
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   useEffect(() => {
-    // Fetch the product by ID (this could be an API call in a real app)
-    const foundProduct = productDatabase.find((p) => p.id === parseInt(id));
-    if (foundProduct) {
-      setProduct(foundProduct);
-      setTotalPrice(foundProduct.price * quantity); // Initialize total price
-    }
-  }, [id, quantity]); // Recalculate total price when id or quantity changes
+    const fetchProduct = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/v1/hardware/products/${id}`);
+        const productData = await response.json();
+        setProduct(productData);
+        setTotalPrice(productData.price * quantity);
+      } catch (error) {
+        console.error('Error fetching product:', error);
+      }
+    };
+
+    fetchProduct();
+  }, [id, quantity]);
 
   const handleQuantityChange = (e) => {
     const newQuantity = parseInt(e.target.value);
@@ -35,23 +33,52 @@ const HardwareDetails = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const orderData = {
       totalPrice,
       status: "pending",
-      orderId: Date.now(), // Generate a unique order ID
+      orderId: Date.now(),
       userId: 4, // Example user ID
-      productName: product ? product.name : "Unknown Product",
+      productName: product.name,
       quantity,
-      category: product ? product.category : "Unknown Category",
+      category: product.category,
     };
-    console.log("Order submitted:", orderData);
-    // Handle further logic like calling an API to submit the order
+
+    try {
+      const response = await fetch("http://localhost:5000/api/v1/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      if (response.ok) {
+        alert('Order placed successfully');
+      } else {
+        alert('Order failed. Please try again');
+      }
+    } catch (error) {
+      console.error('Error submitting order:', error);
+      alert('Error submitting order');
+    }
+  };
+
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(price);
   };
 
   if (!product) {
-    return <div>Product not found.</div>;
+    return (
+      <div>
+        <h2>Product not found</h2>
+        <p>The product you are looking for does not exist. Please try again.</p>
+      </div>
+    );
   }
 
   return (
@@ -101,7 +128,7 @@ const HardwareDetails = () => {
             <input
               type="text"
               id="price"
-              value={`$${product.price}`}
+              value={formatPrice(product.price)}
               readOnly
               className="w-full p-2 border border-gray-300 rounded-md mt-1"
             />
@@ -113,7 +140,7 @@ const HardwareDetails = () => {
             <input
               type="text"
               id="totalPrice"
-              value={`$${totalPrice}`}
+              value={formatPrice(totalPrice)}
               readOnly
               className="w-full p-2 border border-gray-300 rounded-md mt-1"
             />
@@ -122,7 +149,7 @@ const HardwareDetails = () => {
           {/* Terms and Conditions Checkbox */}
           <div className="mb-6">
             <label className="inline-flex items-center">
-              <input type="checkbox" className="form-checkbox h-4 w-4 text-blue-600" />
+              <input type="checkbox" className="form-checkbox h-4 w-4 text-blue-600" onChange={() => setAgreedToTerms(!agreedToTerms)} />
               <span className="ml-2 text-sm text-gray-600">I agree to the terms and conditions</span>
             </label>
           </div>
@@ -130,7 +157,8 @@ const HardwareDetails = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700"
+            className={`w-full bg-blue-600 text-white p-2 rounded-md ${!agreedToTerms ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={!agreedToTerms}
           >
             Complete Order
           </button>

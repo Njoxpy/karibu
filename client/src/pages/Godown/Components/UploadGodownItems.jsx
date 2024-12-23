@@ -7,8 +7,14 @@ const UploadGodownItems = () => {
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
   const [location, setLocation] = useState("");
+  const [condition, setCondition] = useState("new"); // Default condition is "new"
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
 
+  // Assume godownId is passed somehow (e.g., from context or URL params)
+  const godownId = "yourGodownId"; // Replace with actual logic to get godownId
+
+  // Form validation
   const validateForm = () => {
     if (!name || !description || !price || !quantity || !location) {
       return "All fields are required.";
@@ -22,24 +28,30 @@ const UploadGodownItems = () => {
     return null;
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Form validation
     const validationError = validateForm();
     if (validationError) {
       setError(validationError);
       return;
     }
 
-    const URL = "http://localhost:5000/api/v1/godown/products";
-
+    // Form data
     const newProduct = {
+      godownId,
       name,
       description,
       price,
       quantity,
       location,
+      condition,
     };
+
+    // API endpoint to create the product
+    const URL = "http://localhost:5000/api/v1/godown/products";
 
     try {
       const response = await fetch(URL, {
@@ -57,13 +69,15 @@ const UploadGodownItems = () => {
         return;
       }
 
-      // Reset form fields if successful
+      // Reset form fields and show success message
       setName("");
       setDescription("");
       setPrice("");
       setQuantity("");
       setLocation("");
+      setCondition("new"); // Reset condition
       setError(null);
+      setSuccess(true);
       console.log("New product added:", json);
     } catch (err) {
       setError("An unexpected error occurred");
@@ -150,10 +164,35 @@ const UploadGodownItems = () => {
             />
           </div>
 
+          {/* Condition Dropdown */}
+          <div className="mb-6">
+            <label className="block mb-2 text-gray-700 font-medium" htmlFor="condition">
+              Condition
+            </label>
+            <select
+              id="condition"
+              value={condition}
+              onChange={(e) => setCondition(e.target.value)}
+              className="border border-gray-300 rounded w-full p-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="new">New</option>
+              <option value="low stock">Low stock</option>
+              <option value="out of stock">Out of stock</option>
+            </select>
+          </div>
+
+          {/* Display error messages */}
           {error && (
             <div className="mb-6 text-red-600 text-center font-medium">{error}</div>
           )}
-          
+
+          {/* Display success message */}
+          {success && (
+            <div className="mb-6 text-green-600 text-center font-medium">
+              Product successfully uploaded!
+            </div>
+          )}
+
           <button
             type="submit"
             className="w-full py-3 px-6 bg-blue-600 text-white text-lg rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"

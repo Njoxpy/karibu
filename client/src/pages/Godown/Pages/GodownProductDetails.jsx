@@ -2,56 +2,90 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Footer from '../../../components/Footer';
 
-// Simulated product database
-const productDatabase = [
-  { id: 1, name: "Construction Cement Bag", price: 50000, category: "good cement made from the southside of Tanzania" },
-  { id: 2, name: "Industrial Paint", price: 1200, category: "paint" },
-  { id: 3, name: "Iron", price: 25, category: "iron for the industry" },
-];
-
 const GodownProductDetails = () => {
-  // Get the id from the URL params
-  const { id } = useParams();
+  const { id } = useParams(); // Get the product ID from the URL params
 
-  // State to manage product data and user input
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  // Fetch product data from the backend
   useEffect(() => {
-    // Fetch the product by ID (this could be an API call in a real app)
-    const foundProduct = productDatabase.find((p) => p.id === parseInt(id));
-    if (foundProduct) {
-      setProduct(foundProduct);
-      setTotalPrice(foundProduct.price * quantity); // Initialize total price
-    }
+    const fetchProduct = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/v1/godown/products/${id}`);
+        if (!response.ok) {
+          throw new Error('Product not found');
+        }
+        const data = await response.json();
+        setProduct(data);
+        setTotalPrice(data.price * quantity); // Initialize total price
+        setLoading(false);
+      } catch (error) {
+        setError(error.message);
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
   }, [id, quantity]); // Recalculate total price when id or quantity changes
 
   const handleQuantityChange = (e) => {
     const newQuantity = parseInt(e.target.value);
+    if (newQuantity < 1) {
+      return; // Prevent quantity from going below 1
+    }
     setQuantity(newQuantity);
     if (product) {
       setTotalPrice(product.price * newQuantity);
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Prepare order data
     const orderData = {
-      totalPrice,
-      status: "pending",
-      orderId: Date.now(), // Generate a unique order ID
-      userId: 4, // Example user ID
-      productName: product ? product.name : "Unknown Product",
+      productId: product._id,
+      name: product.name,
       quantity,
-      category: product ? product.category : "Unknown Category",
+      price: product.price,
+      total: totalPrice,
+      status: 'pending', // Default order status
+      userId: 4, // Assuming user ID is 4 for now, replace with actual user ID
     };
-    console.log("Order submitted:", orderData);
-    // Handle further logic like calling an API to submit the order
+
+    setLoading(true);
+    try {
+      const response = await fetch('http://localhost:5000/api/v1/godown/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        alert(`Order successfully placed! Order ID: ${data.orderId}`);
+      } else {
+        throw new Error('Failed to place the order');
+      }
+    } catch (error) {
+      alert(`Error: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  if (!product) {
-    return <div className='text-red-600 text-center p-4'>Product not found.</div>;
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div className='text-red-600 text-center p-4'>{error}</div>;
   }
 
   return (
@@ -123,8 +157,9 @@ const GodownProductDetails = () => {
           <button
             type="submit"
             className="w-full bg-gray-600 text-white p-2 rounded-md hover:bg-gray-700"
+            disabled={loading}
           >
-            Complete Order
+            {loading ? 'Processing Order...' : 'Complete Order'}
           </button>
         </form>
       </div>
