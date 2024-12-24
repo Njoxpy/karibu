@@ -9,35 +9,68 @@ const { SERVER_ERROR, CREATED, BAD_REQUEST, OK, NOT_FOUND } = require("../consta
 const createGodownProduct = async (req, res) => {
     const { godownId, name, code, price, quantity, location, description } = req.body;
 
-    // make godownId not required for now
-    if (!name || !code || !price || !quantity || !location || !description) {
+    // Validate that all required fields are provided
+    if (!godownId || !name || !price || !quantity || !location || !description) {
         return res.status(BAD_REQUEST).json({ message: "All fields are required" });
     }
 
-    try {
-        const exist = await GodownProduct.findOne({ code });
+    // Validate price and quantity
+    if (isNaN(price) || price <= 0) {
+        return res.status(BAD_REQUEST).json({ message: "Price must be a positive number" });
+    }
 
+    if (isNaN(quantity) || quantity <= 0 || !Number.isInteger(Number(quantity))) {
+        return res.status(BAD_REQUEST).json({ message: "Quantity must be a positive integer" });
+    }
+
+    try {
+        // Check if the godownId exists in the Godown collection
+        const godown = await GodownProduct.findById(godownId);
+        if (!godown) {
+            return res.status(BAD_REQUEST).json({ message: "Invalid Godown ID" });
+        }
+
+        // Generate a unique code if it's not provided
+        let productCode = code;
+        if (!productCode) {
+            const timestamp = Date.now().toString();
+            const randomPart = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+            productCode = `ITEM-${timestamp}-${randomPart}`;
+        }
+
+        // Check if product with the same code already exists
+        const exist = await GodownProduct.findOne({ code: productCode });
         if (exist) {
             return res.status(BAD_REQUEST).json({ message: "Items with that code already exist" });
         }
 
+        // Create the new product
         const newProduct = await GodownProduct.create({
             godownId,
             name,
-            code,
+            code: productCode,
             price,
             quantity,
             location,
             description,
         });
 
-        res.status(CREATED).json(newProduct);
+        return res.status(CREATED).json(newProduct);
     } catch (error) {
         console.error("Error creating product:", error);
-        res.status(SERVER_ERROR).json({ message: "Failed to create product", error: error.message });
+
+        // Enhanced error handling
+        if (error.name === "MongoError" && error.code === 11000) {
+            return res.status(BAD_REQUEST).json({ message: "Duplicate value error: " + error.message });
+        }
+
+        if (error.name === "ValidationError") {
+            return res.status(BAD_REQUEST).json({ message: "Validation failed: " + error.message });
+        }
+
+        return res.status(SERVER_ERROR).json({ message: "Failed to create product", error: error.message });
     }
 };
-
 
 
 // create order

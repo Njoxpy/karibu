@@ -145,57 +145,66 @@ const InventoryTable = () => {
       <h1 className="text-2xl font-bold mb-4 text-center">Godown Inventory List</h1>
 
       <div className="overflow-x-auto">
-        <table className="min-w-full border border-gray-300">
-          <thead>
-            <tr className="bg-gray-200 text-gray-800 text-center">
-              <th className="px-4 py-2 border">Item Name</th>
-              <th className="px-4 py-2 border">Item Code</th>
-              <th className="px-4 py-2 border">Price</th>
-              <th className="px-4 py-2 border">Quantity</th>
-              <th className="px-4 py-2 border">Location</th>
-              <th className="px-4 py-2 border">Condition</th>
-              <th className="px-4 py-2 border">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {paginatedInventory.map((item) => (
-              <tr key={item.id} className="hover:bg-gray-100 text-left">
-                <td className="px-4 py-2 border">{item.name}</td>
-                <td className="px-4 py-2 border">{item.code}</td>
-                <td className="px-4 py-2 border">{formatPrice(item.price)}</td>
-                <td
-                  className={`px-4 py-2 border ${item.quantity > 20 ? "text-green-600" : "text-orange-500"}`}
-                >
-                  {item.quantity}
-                </td>
-                <td className="px-4 py-2 border">{item.location}</td>
-                <td
-                  className={`px-4 py-2 border ${item.condition === "Low Stock" ? "text-red-500" : "text-green-600"}`}
-                >
-                  {item.condition}
-                </td>
-                <td className="px-4 py-2 border flex justify-evenly">
-                  <button
-                    onClick={() => handleEdit(item)}
-                    className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 transition"
-                  >
-                    Edit
-                  </button>
-                  <button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 transition">
-                    <Link to={`/godown/products/${item.id}`}>Place Order</Link>
-                  </button>
-                  <button
-                    onClick={() => handleDelete(item.id)}
-                    className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
-                  >
-                    Delete
-                  </button>
-                </td>
+        {paginatedInventory.length > 0 ? (
+          <table className="min-w-full border border-gray-300">
+            <thead>
+              <tr className="bg-gray-200 text-gray-800 text-center">
+                <th className="px-4 py-2 border">Item Name</th>
+                <th className="px-4 py-2 border">Item Code</th>
+                <th className="px-4 py-2 border">Price</th>
+                <th className="px-4 py-2 border">Quantity</th>
+                <th className="px-4 py-2 border">Location</th>
+                <th className="px-4 py-2 border">Condition</th>
+                <th className="px-4 py-2 border">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {paginatedInventory.map((item) => (
+                <tr key={item.id} className="hover:bg-gray-100 text-left">
+                  <td className="px-4 py-2 border">{item.name}</td>
+                  <td className="px-4 py-2 border">{item.code}</td>
+                  <td className="px-4 py-2 border">{formatPrice(item.price)}</td>
+                  <td
+                    className={`px-4 py-2 border ${item.quantity > 20 ? "text-green-600" : "text-orange-500"}`}
+                  >
+                    {item.quantity}
+                  </td>
+                  <td className="px-4 py-2 border">{item.location}</td>
+                  <td
+                    className={`px-4 py-2 border ${item.quantity < 6 ? "text-red-500 font-bold" : "text-green-600 font-bold"
+                      }`}
+                  >
+                    {item.quantity < 6 ? "Out of Stock" : item.condition}
+                  </td>
+                  <td className="px-4 py-2 border flex justify-evenly">
+                    <button
+                      onClick={() => handleEdit(item)}
+                      className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 transition"
+                    >
+                      Edit
+                    </button>
+                    <button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 transition">
+                      <Link to={`/godown/products/${item.id}`}>Place Order</Link>
+                    </button>
+                    <button
+                      onClick={() => handleDelete(item.id)}
+                      className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+
+          </table>
+        ) : (
+          <div className="text-center py-4">
+            <p className="text-gray-700 text-lg">No results found for your search.</p>
+          </div>
+        )}
       </div>
+
 
       {/* Edit Modal */}
       {isEditModalOpen && (
