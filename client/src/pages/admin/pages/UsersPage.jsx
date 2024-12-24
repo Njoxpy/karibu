@@ -1,17 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";  // Using axios for HTTP requests
 
 const UsersPage = () => {
-  const [users, setUsers] = useState([
-    { id: 1, name: "Godbless Nyagawa", email: "godblessnyagawa12@gmail.com", role: "Admin", status: "active" },
-    { id: 2, name: "Jane Kimbweta", email: "jane@gmail.com", role: "User", status: "inactive" },
-    { id: 3, name: "Alice Makalius", email: "alice@example.com", role: "User", status: "active" },
-    { id: 4, name: "John Samweli", email: "johnsamweli@gmail.com", role: "Admin", status: "active" },
-    { id: 5, name: "Yuda Mwita", email: "mwitayuda@gmail.com", role: "User", status: "inactive" },
-    { id: 6, name: "Karim Gesu", email: "karimugesu@example.com", role: "User", status: "active" },
-    { id: 7, name: "Aisha Kibona", email: "aishakibona@gmail.com", role: "Admin", status: "active" },
-    { id: 8, name: "Matty Kingunge", email: "kingenguematty@gmail.com", role: "User", status: "inactive" },
-  ]);
+  const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -19,8 +11,22 @@ const UsersPage = () => {
   const [userToDelete, setUserToDelete] = useState(null);
   const [newUsername, setNewUsername] = useState("");
 
+  // Fetch users from API
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/v1/users");
+        setUsers(response.data);  // Assuming the API returns an array of users
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
+    fetchUsers();
+  }, []); // Empty dependency array to run once on mount
+
   const handleDelete = () => {
-    setUsers(users.filter((user) => user.id !== userToDelete.id));
+    setUsers(users.filter((user) => user._id !== userToDelete._id)); // Use _id for delete
     setDeleteModalOpen(false);
     alert("User deleted successfully!");
   };
@@ -28,29 +34,32 @@ const UsersPage = () => {
   const handleEdit = () => {
     setUsers(
       users.map((user) =>
-        user.id === userToEdit.id ? { ...user, name: newUsername } : user
+        user._id === userToEdit._id ? { ...user, email: newUsername } : user // Update email or another field
       )
     );
     setEditModalOpen(false);
-    alert("Username updated successfully!");
+    alert("User updated successfully!");
   };
 
   const filteredUsers = users.filter(
     (user) =>
-      user.name.toLowerCase().includes(search.toLowerCase()) ||
-      user.email.toLowerCase().includes(search.toLowerCase())
+      user.email.toLowerCase().includes(search.toLowerCase()) || // Search by email
+      user.role.toLowerCase().includes(search.toLowerCase()) // Optionally, search by role
   );
 
   return (
     <div className="p-5">
       <h2 className="text-3xl font-semibold mb-6 text-gray-800">Manage Users</h2>
 
+      {/* Display number of users */}
+      <p className="text-lg mb-4">Total Users: {users.length}</p>  {/* This will display the number of users */}
+
       {/* Search Bar */}
       <div className="mb-5">
         <input
           type="text"
           className="p-3 border rounded-md w-full shadow-sm focus:outline-blue-400"
-          placeholder="Search by name or email"
+          placeholder="Search by email or role"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -69,38 +78,27 @@ const UsersPage = () => {
           <thead>
             <tr className="bg-gray-100">
               <th className="px-6 py-3 text-left">User ID</th>
-              <th className="px-6 py-3 text-left">Name</th>
               <th className="px-6 py-3 text-left">Email</th>
               <th className="px-6 py-3 text-left">Role</th>
-              <th className="px-6 py-3 text-left">Status</th>
+              <th className="px-6 py-3 text-left">Category</th>
               <th className="px-6 py-3 text-left">Actions</th>
             </tr>
           </thead>
           <tbody>
             {filteredUsers.map((user, index) => (
               <tr
-                key={user.id}
+                key={user._id} // Use _id for key
                 className={`border-b ${index % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-gray-100`}
               >
-                <td className="px-6 py-3">{user.id}</td>
-                <td className="px-6 py-3">{user.name}</td>
+                <td className="px-6 py-3">{user._id}</td> {/* Display _id */}
                 <td className="px-6 py-3">{user.email}</td>
                 <td className="px-6 py-3">{user.role}</td>
-                <td className="px-6 py-3">
-                  <span
-                    className={`px-3 py-1 text-sm rounded-full ${user.status === "active"
-                      ? "bg-green-100 text-green-800"
-                      : "bg-red-100 text-red-800"
-                      }`}
-                  >
-                    {user.status}
-                  </span>
-                </td>
+                <td className="px-6 py-3">{user.category}</td> {/* Display category */}
                 <td className="px-6 py-3 space-x-3">
                   <button
                     onClick={() => {
                       setUserToEdit(user);
-                      setNewUsername(user.name);
+                      setNewUsername(user.email); // Default to email for editing
                       setEditModalOpen(true);
                     }}
                     className="text-blue-600 hover:text-blue-800"
@@ -127,7 +125,7 @@ const UsersPage = () => {
       {editModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-md shadow-md w-96">
-            <h3 className="text-xl font-semibold mb-4">Edit Username</h3>
+            <h3 className="text-xl font-semibold mb-4">Edit User</h3>
             <input
               type="text"
               className="p-3 border rounded-md w-full mb-4 shadow-sm focus:outline-blue-400"
