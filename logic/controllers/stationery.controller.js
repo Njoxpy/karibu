@@ -24,7 +24,7 @@ const searchStationeryProducts = async (req, res) => {
             searchQuery.price = { $gte: minPrice, $lte: maxPrice }; // Filter by price range
         }
 
-        const products = await StationeryProduct.find(searchQuery);
+        const products = await Product.find(searchQuery);
         res.status(200).json(products);
     } catch (error) {
         res.status(SERVER_ERROR).json({ error: "Error searching products", details: error.message });
@@ -50,7 +50,7 @@ const searchStationeryOrders = async (req, res) => {
             searchQuery.userId = userId; // Filter orders by userId
         }
 
-        const orders = await StationeryOrder.find(searchQuery);
+        const orders = await Order.find(searchQuery);
         res.status(200).json(orders);
     } catch (error) {
         res.status(SERVER_ERROR).json({ error: "Error searching orders", details: error.message });
@@ -68,7 +68,7 @@ const getAllStationeryProducts = async (req, res) => {
 
         res.status(OK).json(products);
     } catch (error) {
-        res.status(SERVER_ERROR).json({ error: "Failed to fetch products", error: error.message });
+        res.status(SERVER_ERROR).json({ error: "Failed to fetch products", details: error.message });
     }
 };
 
@@ -100,7 +100,7 @@ const getStationeryProduct = async (req, res) => {
 
         res.status(OK).json(product);
     } catch (error) {
-        res.status(SERVER_ERROR).json({ error: "Failed to fetch the product", error: error.message });
+        res.status(SERVER_ERROR).json({ error: "Failed to fetch the product", details: error.message });
     }
 };
 

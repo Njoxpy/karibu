@@ -9,7 +9,8 @@ const { SERVER_ERROR, CREATED, BAD_REQUEST, OK, NOT_FOUND } = require("../consta
 const createGodownProduct = async (req, res) => {
     const { godownId, name, code, price, quantity, location, description } = req.body;
 
-    if (!godownId || !name || !code || !price || !quantity || !location || !description) {
+    // make godownId not required for now
+    if (!name || !code || !price || !quantity || !location || !description) {
         return res.status(BAD_REQUEST).json({ message: "All fields are required" });
     }
 
@@ -197,9 +198,9 @@ const deleteGodownOrder = async (req, res) => {
 }
 
 // move godown item functionality
-const moveGodownItem = async (req, res) => {
+// const moveGodownItem = async (req, res) => {
 
-}
+// }
 
 module.exports = {
     createGodownProduct,

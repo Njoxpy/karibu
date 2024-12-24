@@ -12,7 +12,7 @@ const GodownItemsDetailsError = () => {
         </p>
         <Link
           href="/godown"
-          className="bg-green-500 text-white py-2 px-4 rounded"
+          className="bg-gray-500 text-white py-2 px-4 rounded"
         >
           Go Back to Godown main page
         </Link>

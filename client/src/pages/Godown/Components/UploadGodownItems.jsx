@@ -3,6 +3,7 @@ import Footer from "../../../components/Footer";
 
 const UploadGodownItems = () => {
   const [name, setName] = useState("");
+  const [code, setCode] = useState("")
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
@@ -48,6 +49,7 @@ const UploadGodownItems = () => {
       quantity,
       location,
       condition,
+      code
     };
 
     // API endpoint to create the product

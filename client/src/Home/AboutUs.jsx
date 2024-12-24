@@ -1,4 +1,4 @@
-import { FaRocket, FaLightbulb, FaRoad } from "react-icons/fa";
+import { FaRocket, FaLightbulb } from "react-icons/fa";
 
 const AboutUs = () => {
   return (

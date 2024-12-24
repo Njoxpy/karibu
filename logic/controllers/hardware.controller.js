@@ -23,7 +23,7 @@ const searchHardwareProducts = async (req, res) => {
             searchQuery.price = { $gte: minPrice, $lte: maxPrice }; // Price range search
         }
 
-        const products = await HardwareProduct.find(searchQuery);
+        const products = await Product.find(searchQuery);
 
         res.status(200).json(products);
     } catch (error) {
@@ -50,7 +50,7 @@ const searchHardwareOrders = async (req, res) => {
             searchQuery.userId = userId; // Filter by userId
         }
 
-        const orders = await HardwareOrder.find(searchQuery);
+        const orders = await Order.find(searchQuery);
 
         res.status(200).json(orders);
     } catch (error) {

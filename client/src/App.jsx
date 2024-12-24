@@ -153,7 +153,8 @@ import UserProfile from "./components/UserProfile";
 import Reports from "./pages/admin/pages/Reports"
 import AddUserPage from "./pages/admin/pages/UsersPage";
 
-import UserLayout from "./pages/admin/layout/UserLayout";
+import OilDetailsError from "./pages/FreshOil/Error/OilDetailsError";
+import GodownItemsDetailsError from "./pages/Godown/Error/GodownItemsDetailsError";
 
 export default function App() {
   const router = createBrowserRouter(
@@ -209,7 +210,7 @@ export default function App() {
             <Route index element={<OilList />} />
             <Route path="products" element={<OilLayoutProduct />}>
               <Route index element={<Oils />} />
-              <Route path=":id" element={<OilDetails />} />
+              <Route path=":id" element={<OilDetails />} errorElement={<OilDetailsError />} />
             </Route>
             <Route path="orders" element={<FreshOilOrders />} />
             <Route
@@ -228,7 +229,11 @@ export default function App() {
             <Route index element={<Godown />} />
             <Route path="products" element={<GodownLayoutProduct />}>
               <Route index element={<InventoryTable />} />
-              <Route path=":id" element={<GodownProductDetails />} />
+              <Route 
+              path=":id" 
+              element={<GodownProductDetails />} 
+              errorElement={<GodownItemsDetailsError />} 
+              />
             </Route>
             <Route path="orders" element={<GodownOrders />} />
             <Route

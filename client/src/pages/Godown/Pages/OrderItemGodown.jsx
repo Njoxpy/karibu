@@ -1,41 +1,108 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Footer from '../../../components/Footer';
 
-const products = [
-    { id: 1, name: "Mchele", price: 5000, category: "office-equipment" },
-    { id: 2, name: "Mafuta ya kupikia", price: 1200, category: "electronics" },
-    { id: 3, name: "Sukari", price: 25000, category: "accessories" },
-];
-
 const OrderItemGodown = () => {
-    const [selectedProduct, setSelectedProduct] = useState(products[0]);
+    const [products, setProducts] = useState([]); // State to store fetched products
+    const [selectedProduct, setSelectedProduct] = useState(null);
     const [quantity, setQuantity] = useState(1);
-    const [totalPrice, setTotalPrice] = useState(selectedProduct.price);
+    const [totalPrice, setTotalPrice] = useState(0);
+    const [isLoading, setIsLoading] = useState(true); // Loading state
+    const [error, setError] = useState(null); // Error state
+    const [successMessage, setSuccessMessage] = useState(null); // Success message state
 
+    // Fetch products from the API
+    const fetchProducts = async () => {
+        try {
+            const response = await fetch("http://localhost:5000/api/v1/godown/products");
+            const data = await response.json();
+            // console.log("API Response:", data); // Log the response for debugging
+
+            if (response.ok) {
+                setProducts(data); // Set the products array to the state
+                setSelectedProduct(data[0]); // Set the first product as default
+                setTotalPrice(data[0].price); // Set the initial total price
+                setIsLoading(false); // Set loading to false after cthe data is fetched
+            } else {
+                setError("Failed to fetch products");
+                setIsLoading(false);
+            }
+        } catch (error) {
+            // console.error("Error fetching products:", error);
+            setError("Error fetching products");
+            setIsLoading(false);
+        }
+    };
+
+    // Effect to fetch products when the component mounts
+    useEffect(() => {
+        fetchProducts();
+    }, []);
+
+    // Handle product change from dropdown
     const handleProductChange = (event) => {
-        const productId = parseInt(event.target.value);
-        const product = products.find((product) => product.id === productId);
+        const productId = event.target.value;
+        const product = products.find((product) => product._id === productId);
         setSelectedProduct(product);
         setTotalPrice(product.price * quantity);
     };
 
+    // Handle quantity change
     const handleQuantityChange = (event) => {
         const newQuantity = parseInt(event.target.value);
         setQuantity(newQuantity);
-        setTotalPrice(selectedProduct.price * newQuantity);
+        if (selectedProduct) {
+            setTotalPrice(selectedProduct.price * newQuantity);
+        }
     };
 
-    const handleSubmit = (event) => {
+    // Handle form submission to create order
+    const handleSubmit = async (event) => {
         event.preventDefault();
+        if (!selectedProduct) {
+            setError("Please select a product.");
+            return;
+        }
+
         const orderData = {
-            productId: selectedProduct.id,
-            productName: selectedProduct.name,
+            productId: selectedProduct._id,
             quantity,
             totalPrice,
         };
-        console.log('Order Data:', orderData);
-        // Handle further order submission (API call, etc.)
+
+        try {
+            // Send the order data to the backend to create the order
+            const response = await fetch("http://localhost:5000/api/v1/godown/orders", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(orderData),
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                setSuccessMessage('Order placed successfully!');
+                setError(null); // Reset any previous errors
+                setSelectedProduct(null);
+                setQuantity(1);
+                setTotalPrice(0);
+            } else {
+                setError(result.message || 'Failed to place order');
+            }
+        } catch (error) {
+            // console.error('Error placing order:', error);
+            setError('Error placing order');
+        }
     };
+
+    // Render loading, error, or product list
+    if (isLoading) {
+        return <div>Loading products...</div>;
+    }
+
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
 
     return (
         <>
@@ -48,11 +115,11 @@ const OrderItemGodown = () => {
                         <label className="block text-sm font-medium text-gray-700">Select Product</label>
                         <select
                             className="w-full p-2 border border-gray-300 rounded-md mt-1"
-                            value={selectedProduct.id}
+                            value={selectedProduct?._id || ""}
                             onChange={handleProductChange}
                         >
                             {products.map((product) => (
-                                <option key={product.id} value={product.id}>
+                                <option key={product._id} value={product._id}>
                                     {product.name}
                                 </option>
                             ))}
@@ -64,7 +131,7 @@ const OrderItemGodown = () => {
                         <label className="block text-sm font-medium text-gray-700">Product Name</label>
                         <input
                             type="text"
-                            value={selectedProduct.name}
+                            value={selectedProduct?.name || ""}
                             readOnly
                             className="w-full p-2 border border-gray-300 rounded-md mt-1"
                         />
@@ -75,7 +142,7 @@ const OrderItemGodown = () => {
                         <label className="block text-sm font-medium text-gray-700">Category</label>
                         <input
                             type="text"
-                            value={selectedProduct.category}
+                            value={selectedProduct?.category || ""}
                             readOnly
                             className="w-full p-2 border border-gray-300 rounded-md mt-1"
                         />
@@ -98,7 +165,7 @@ const OrderItemGodown = () => {
                         <label className="block text-sm font-medium text-gray-700">Price per Item</label>
                         <input
                             type="text"
-                            value={`Tsh ${selectedProduct.price}`}
+                            value={`Tsh ${selectedProduct?.price || 0}`}
                             readOnly
                             className="w-full p-2 border border-gray-300 rounded-md mt-1"
                         />
@@ -123,6 +190,13 @@ const OrderItemGodown = () => {
                         Complete Order
                     </button>
                 </form>
+
+                {/* Success Message */}
+                {successMessage && (
+                    <div className="mt-4 text-green-500">
+                        {successMessage}
+                    </div>
+                )}
             </div>
             <Footer />
         </>

@@ -1,27 +1,38 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Footer from "../../../components/Footer";
 import { Link } from "react-router-dom";
 
-const GodownOrders = () => {
-  const [orders, setOrders] = useState([
-    { productName: "Mifuko ya Saruji", quantity: 2, totalPrice: 4000, id: 1 },
-    { productName: "Bati za Ujenzi", quantity: 1, totalPrice: 2440, id: 2 },
-    { productName: "Vipande vya Mbao", quantity: 3, totalPrice: 6440, id: 3 },
-    { productName: "Ndoo za Rangi", quantity: 3, totalPrice: 6300, id: 4 },
-    { productName: "Magunia ya Nafaka", quantity: 3, totalPrice: 60000, id: 5 },
-    { productName: "Vyuma vya Reli", quantity: 3, totalPrice: 60000, id: 6 },
-    { productName: "Madumu ya Mafuta", quantity: 3, totalPrice: 6880, id: 7 },
-    { productName: "Magunia ya Mchele", quantity: 3, totalPrice: 6880, id: 8 },
-  ]);
+// Utility function to format date
+const formatDate = (date) => new Date(date).toLocaleDateString();
 
+const GodownOrders = () => {
+  const [orders, setOrders] = useState([]);
+  const [filteredOrders, setFilteredOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
-  const totalPages = Math.ceil(orders.length / itemsPerPage);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [orderToEdit, setOrderToEdit] = useState(null);
   const [orderToDelete, setOrderToDelete] = useState(null);
+  const [filter, setFilter] = useState("all"); // Default filter is "all"
 
+  // Fetch orders from API
+  const fetchOrders = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/v1/godown/orders");
+      const data = await response.json();
+      if (response.ok) {
+        setOrders(data);
+        setFilteredOrders(data); // Initially set filtered orders as all fetched orders
+      } else {
+        console.error("Failed to fetch orders");
+      }
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+    }
+  };
+
+  // Handle pagination
   const handleNextPage = () => {
     if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
@@ -31,14 +42,111 @@ const GodownOrders = () => {
   };
 
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedOrders = orders.slice(startIndex, startIndex + itemsPerPage);
+  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+  const paginatedOrders = filteredOrders.slice(startIndex, startIndex + itemsPerPage);
 
-  const handleRemoveOrder = (orderId) => {
-    const updatedOrders = orders.filter((order) => order.id !== orderId);
-    setOrders(updatedOrders);
-    setShowDeleteModal(false);  // Close delete modal
+  // Filter orders based on selected time range (all, day, week, month)
+  const filterOrders = () => {
+    const now = new Date();
+    let filtered;
+
+    if (filter === "all") {
+      filtered = orders; // No filtering, show all orders
+    } else if (filter === "day") {
+      filtered = orders.filter((order) => {
+        const orderDate = new Date(order.createdAt);
+        return orderDate.toDateString() === now.toDateString();
+      });
+    } else if (filter === "week") {
+      const weekStart = new Date(now);
+      weekStart.setDate(now.getDate() - now.getDay()); // Get the start of the current week (Sunday)
+      const weekEnd = new Date(now);
+      weekEnd.setDate(now.getDate() + (6 - now.getDay())); // Get the end of the current week (Saturday)
+
+      filtered = orders.filter((order) => {
+        const orderDate = new Date(order.createdAt);
+        return orderDate >= weekStart && orderDate <= weekEnd;
+      });
+    } else if (filter === "month") {
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1); // Get the first day of the current month
+      const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0); // Get the last day of the current month
+
+      filtered = orders.filter((order) => {
+        const orderDate = new Date(order.createdAt);
+        return orderDate >= monthStart && orderDate <= monthEnd;
+      });
+    }
+
+    setFilteredOrders(filtered);
   };
 
+  // Handle filter change
+  const handleFilterChange = (newFilter) => {
+    setFilter(newFilter);
+  };
+
+  useEffect(() => {
+    fetchOrders(); // Fetch orders when the component mounts
+  }, []);
+
+  useEffect(() => {
+    filterOrders(); // Filter orders when the filter state or orders change
+  }, [filter, orders]);
+
+  // Handle deleting an order
+  const handleDeleteOrder = async (orderId) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/v1/godown/orders/${orderId}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        const updatedOrders = orders.filter((order) => order._id !== orderId);
+        setOrders(updatedOrders);
+        setFilteredOrders(updatedOrders);
+        setShowDeleteModal(false);
+      } else {
+        console.error("Failed to delete the order");
+      }
+    } catch (error) {
+      console.error("Error deleting order:", error);
+    }
+  };
+
+  // Handle editing an order
+  const handleEditOrder = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/v1/godown/orders/${orderToEdit._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderToEdit),
+      });
+
+      if (response.ok) {
+        const updatedOrder = await response.json();
+        const updatedOrders = orders.map((order) =>
+          order._id === updatedOrder._id ? updatedOrder : order
+        );
+        setOrders(updatedOrders);
+        setFilteredOrders(updatedOrders);
+        setShowEditModal(false);
+        setOrderToEdit(null);
+      } else {
+        console.error("Failed to update the order");
+      }
+    } catch (error) {
+      console.error("Error updating order:", error);
+    }
+  };
+
+  // Handle Remove Order Modal
+  const openDeleteModal = (orderId) => {
+    setOrderToDelete(orderId);
+    setShowDeleteModal(true);
+  };
+
+  // Handle Edit Order Modal
   const openEditModal = (order) => {
     setOrderToEdit(order);
     setShowEditModal(true);
@@ -56,44 +164,73 @@ const GodownOrders = () => {
 
   return (
     <>
-      <div className="p-4">
-        <h1 className="text-2xl font-bold mb-4 text-center">Orders List</h1>
-        {orders.length === 0 ? (
-          <p>No orders</p>
+      <div className="max-w-7xl mx-auto p-6 bg-white rounded-lg shadow-md">
+        <h1 className="text-3xl font-semibold mb-6 text-gray-800 text-center">Orders List</h1>
+
+        {/* Filter Options */}
+        <div className="mb-6 text-center">
+          <button
+            onClick={() => handleFilterChange("all")}
+            className={`py-2 px-6 rounded-md mx-2 transition duration-300 ${filter === "all" ? "bg-indigo-600 text-white" : "bg-gray-200 text-gray-800 hover:bg-indigo-100"}`}
+          >
+            All
+          </button>
+          <button
+            onClick={() => handleFilterChange("day")}
+            className={`py-2 px-6 rounded-md mx-2 transition duration-300 ${filter === "day" ? "bg-indigo-600 text-white" : "bg-gray-200 text-gray-800 hover:bg-indigo-100"}`}
+          >
+            Today
+          </button>
+          <button
+            onClick={() => handleFilterChange("week")}
+            className={`py-2 px-6 rounded-md mx-2 transition duration-300 ${filter === "week" ? "bg-indigo-600 text-white" : "bg-gray-200 text-gray-800 hover:bg-indigo-100"}`}
+          >
+            This Week
+          </button>
+          <button
+            onClick={() => handleFilterChange("month")}
+            className={`py-2 px-6 rounded-md mx-2 transition duration-300 ${filter === "month" ? "bg-indigo-600 text-white" : "bg-gray-200 text-gray-800 hover:bg-indigo-100"}`}
+          >
+            This Month
+          </button>
+        </div>
+
+        {filteredOrders.length === 0 ? (
+          <p className="text-center text-gray-500">No orders found for the selected time period</p>
         ) : (
           <table className="min-w-full border border-gray-300">
             <thead>
-              <tr className="bg-blue-200">
-                <th className="border border-gray-300 px-4 py-2">Product Name</th>
-                <th className="border border-gray-300 px-4 py-2">Quantity</th>
-                <th className="border border-gray-300 px-4 py-2">Total Price</th>
-                <th className="border border-gray-300 px-4 py-2">Actions</th>
+              <tr className="bg-gray-100">
+                <th className="px-6 py-3 text-left text-gray-600">Product Name</th>
+                <th className="px-6 py-3 text-left text-gray-600">Quantity</th>
+                <th className="px-6 py-3 text-left text-gray-600">Total Price</th>
+                <th className="px-6 py-3 text-left text-gray-600">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {paginatedOrders.map((order, index) => (
-                <tr key={index} className="hover:bg-blue-100">
-                  <td className="border border-gray-300 px-4 py-2">{order.productName}</td>
-                  <td className="border border-gray-300 px-4 py-2">{order.quantity}</td>
-                  <td className="border border-gray-300 px-4 py-2">Tsh {order.totalPrice}</td>
-                  <td className="border border-gray-300 px-4 py-2 flex justify-evenly">
-                    <button
-                      onClick={() => { setOrderToDelete(order.id); setShowDeleteModal(true); }}
-                      className="bg-red-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-red-600 mr-2"
-                    >
-                      Remove
-                    </button>
-                    <button
-                      onClick={() => openEditModal(order)}
-                      className="bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-600 transition-all"
-                    >
-                      Edit
-                    </button>
-                    <button className="bg-blue-500 text-white py-1 px-2 rounded">
-                      <Link to={`/godown/orders/${order.id}`}>
-                        Order Details
-                      </Link>
-                    </button>
+              {paginatedOrders.map((order) => (
+                <tr key={order._id} className="hover:bg-indigo-50">
+                  <td className="px-6 py-4 text-gray-800">{order.name}</td>
+                  <td className="px-6 py-4 text-gray-800">{order.quantity}</td>
+                  <td className="px-6 py-4 text-gray-800">Tsh {order.totalPrice}</td>
+                  <td className="px-6 py-4">
+                    <div className="flex justify-start gap-2">
+                      <button
+                        onClick={() => openDeleteModal(order._id)}
+                        className="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 transition"
+                      >
+                        Remove
+                      </button>
+                      <button
+                        onClick={() => openEditModal(order)}
+                        className="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition"
+                      >
+                        Edit
+                      </button>
+                      <button className="bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600 transition">
+                        <Link to={`/godown/orders/${order._id}`}>Details</Link>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -102,97 +239,112 @@ const GodownOrders = () => {
         )}
 
         {/* Pagination Controls */}
-        <div className="flex justify-center m-2">
+        <div className="flex justify-center my-6">
           <button
             onClick={handlePrevPage}
             disabled={currentPage === 1}
-            className={`py-1 px-2 rounded transition duration-300 mr-2 ${currentPage === 1 ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-600"}`}
+            className="px-4 py-2 bg-gray-300 text-gray-800 rounded-l-md disabled:bg-gray-200"
           >
             Previous
           </button>
-          <span className="text-gray-700 px-2">
-            Page {currentPage} of {totalPages}
-          </span>
           <button
             onClick={handleNextPage}
             disabled={currentPage === totalPages}
-            className={`py-1 px-2 rounded transition duration-300 mr-2 ${currentPage === totalPages ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-600"}`}
+            className="px-4 py-2 bg-gray-300 text-gray-800 rounded-r-md disabled:bg-gray-200"
           >
             Next
           </button>
         </div>
-      </div>
 
-      {/* Edit Modal */}
-      {showEditModal && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-500 bg-opacity-75">
-          <div className="bg-white p-6 rounded-lg w-96">
-            <h2 className="text-xl font-bold mb-4">Edit Order</h2>
-            <label className="block mb-2">Product Name</label>
-            <input
-              type="text"
-              className="border border-gray-300 rounded w-full p-2 mb-4"
-              value={orderToEdit.productName}
-              onChange={(e) => setOrderToEdit({ ...orderToEdit, productName: e.target.value })}
-            />
-            <label className="block mb-2">Quantity</label>
-            <input
-              type="number"
-              className="border border-gray-300 rounded w-full p-2 mb-4"
-              value={orderToEdit.quantity}
-              onChange={(e) => setOrderToEdit({ ...orderToEdit, quantity: e.target.value })}
-            />
-            <label className="block mb-2">Total Price</label>
-            <input
-              type="number"
-              className="border border-gray-300 rounded w-full p-2 mb-4"
-              value={orderToEdit.totalPrice}
-              onChange={(e) => setOrderToEdit({ ...orderToEdit, totalPrice: e.target.value })}
-            />
-            <div className="flex justify-end">
+        {/* Edit Modal */}
+        {showEditModal && (
+          <div
+            className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+            onClick={closeEditModal}
+          >
+            <div
+              className="bg-white p-8 rounded-lg max-w-3xl w-full shadow-xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="text-2xl font-semibold mb-4 text-gray-800">Edit Order</h2>
+              <form>
+                <label className="block mb-4 text-gray-600">
+                  Product Name:
+                  <input
+                    type="text"
+                    className="w-full p-3 border border-gray-300 rounded-md"
+                    value={orderToEdit?.name || ""}
+                    onChange={(e) => setOrderToEdit({ ...orderToEdit, name: e.target.value })}
+                  />
+                </label>
+                <label className="block mb-4 text-gray-600">
+                  Quantity:
+                  <input
+                    type="number"
+                    className="w-full p-3 border border-gray-300 rounded-md"
+                    value={orderToEdit?.quantity || ""}
+                    onChange={(e) => setOrderToEdit({ ...orderToEdit, quantity: e.target.value })}
+                  />
+                </label>
+                <label className="block mb-4 text-gray-600">
+                  Total Price:
+                  <input
+                    type="number"
+                    className="w-full p-3 border border-gray-300 rounded-md"
+                    value={orderToEdit?.totalPrice || ""}
+                    onChange={(e) => setOrderToEdit({ ...orderToEdit, totalPrice: e.target.value })}
+                  />
+                </label>
+                <div className="flex justify-end mt-4">
+                  <button
+                    type="button"
+                    className="bg-indigo-600 text-white py-2 px-6 rounded-md hover:bg-indigo-700"
+                    onClick={handleEditOrder}
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </form>
               <button
                 onClick={closeEditModal}
-                className="bg-gray-400 text-white py-1 px-4 rounded mr-2"
+                className="absolute top-4 right-4 text-gray-500 text-xl"
               >
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  const updatedOrders = orders.map(order => order.id === orderToEdit.id ? orderToEdit : order);
-                  setOrders(updatedOrders);
-                  closeEditModal();
-                }}
-                className="bg-blue-500 text-white py-1 px-4 rounded"
-              >
-                Save
+                ×
               </button>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Delete Confirmation Modal */}
-      {showDeleteModal && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-500 bg-opacity-75">
-          <div className="bg-white p-6 rounded-lg w-96">
-            <h2 className="text-xl font-bold mb-4">Are you sure you want to delete this order?</h2>
-            <div className="flex justify-end">
-              <button
-                onClick={closeDeleteModal}
-                className="bg-gray-400 text-white py-1 px-4 rounded mr-2"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => handleRemoveOrder(orderToDelete)}
-                className="bg-red-500 text-white py-1 px-4 rounded"
-              >
-                Delete
-              </button>
+        {/* Delete Modal */}
+        {showDeleteModal && (
+          <div
+            className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+            onClick={closeDeleteModal}
+          >
+            <div
+              className="bg-white p-8 rounded-lg max-w-sm w-full shadow-xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="text-2xl font-semibold mb-4 text-gray-800">Confirm Delete</h2>
+              <p className="text-gray-600">Are you sure you want to delete this order?</p>
+              <div className="flex justify-end mt-6">
+                <button
+                  onClick={() => handleDeleteOrder(orderToDelete)}
+                  className="bg-red-600 text-white py-2 px-6 rounded-md hover:bg-red-700"
+                >
+                  Yes, Delete
+                </button>
+                <button
+                  onClick={closeDeleteModal}
+                  className="ml-4 bg-gray-300 text-gray-800 py-2 px-6 rounded-md hover:bg-gray-400"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       <Footer />
     </>

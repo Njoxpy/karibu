@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-const OrderDetailsError = () => {
+const HardwareOrderError = () => {
   return (
     <>
       <div className="flex flex-col items-center justify-center h-screen bg-red-100">
@@ -11,14 +11,14 @@ const OrderDetailsError = () => {
           We&apos;re sorry, the order you are looking for does not exist.
         </p>
         <Link
-          href="/printing/orders"
+          href="/hardware"
           className="bg-blue-500 text-white py-2 px-4 rounded"
         >
-          Go Back to printing orders page
+          Go Back to hardware main page
         </Link>
       </div>
     </>
   );
 };
 
-export default OrderDetailsError;
+export default HardwareOrderError;
