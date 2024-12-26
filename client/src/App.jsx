@@ -8,8 +8,6 @@ import {
 // layout
 import RootLayout from "./layouts/RootLayout";
 import OrdersLayout from "./pages/Printing/Layouts/OrdersLayout";
-import ReceiptLayout from "./pages/Printing/Layouts/ReceiptLayout";
-
 // errors
 import NotFound from "./error/NotFound";
 import OrderDetailsError from "./pages/Printing/Error/OrderDetailsError";
@@ -18,14 +16,12 @@ import OrderDetailsError from "./pages/Printing/Error/OrderDetailsError";
 import Home from "./Home/Home";
 import Login from "./auth/Login";
 import SubmitWork from "./pages/Printing/Pages/SubmitWork";
-import Receipt from "./pages/Printing/Pages/Receipt";
 import UserDashboard from "./pages/Printing/Pages/UserDashboard";
 import OrdersTable from "./pages/Printing/Orders/OrderTable";
 import Contact from "./pages/Contact";
 
 // details
 import OrderDetails from "./pages/Printing/Orders/OrderDetails";
-import ReceiptDetails from "./pages/Printing/receipt/ReceiptDetails";
 
 /* hardware */
 
@@ -229,10 +225,10 @@ export default function App() {
             <Route index element={<Godown />} />
             <Route path="products" element={<GodownLayoutProduct />}>
               <Route index element={<InventoryTable />} />
-              <Route 
-              path=":id" 
-              element={<GodownProductDetails />} 
-              errorElement={<GodownItemsDetailsError />} 
+              <Route
+                path=":id"
+                element={<GodownProductDetails />}
+                errorElement={<GodownItemsDetailsError />}
               />
             </Route>
             <Route path="orders" element={<GodownOrders />} />
@@ -273,10 +269,7 @@ export default function App() {
           <Route path="/printing" element={<PrintingLayout />}>
             <Route index element={<HomePrinting />} />
             <Route path="submit" element={<SubmitWork />} />
-            <Route path="receipts" element={<ReceiptLayout />}>
-              <Route index element={<Receipt />} />
-              <Route path=":id" element={<ReceiptDetails />} />
-            </Route>
+
             <Route path="orders" element={<OrdersLayout />}>
               <Route index element={<OrdersTable />} />
               <Route

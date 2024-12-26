@@ -49,14 +49,6 @@ function PrintingLayout() {
               <li>
                 <Link
                   className="hover:text-blue-200 transition-colors duration-200"
-                  to="/printing/receipts"
-                >
-                  Receipts
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="hover:text-blue-200 transition-colors duration-200"
                   to="/printing/orders"
                 >
                   Orders
@@ -86,15 +78,6 @@ function PrintingLayout() {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Submit
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="hover:text-blue-200 transition-colors duration-200"
-                  to="/printing/receipts"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Receipts
                 </Link>
               </li>
               <li>
