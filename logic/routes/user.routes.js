@@ -8,6 +8,7 @@ userRoutes.post("/login", loginUser)
 // signup route
 userRoutes.post("/signup", signupUser)
 
+// get all users
 userRoutes.get("/", getAllUsers)
 
 module.exports = userRoutes
