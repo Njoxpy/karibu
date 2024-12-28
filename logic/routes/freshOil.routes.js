@@ -1,4 +1,5 @@
 const express = require("express");
+const multer = require("multer");
 const mongoose = require("mongoose")
 const router = express.Router();
 
@@ -19,7 +20,19 @@ const {
 
 // Middleware
 const validateObjectId = require("../middleware/validateObjectId");
-const upload = require("../middleware/upload");
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, '/uploads/freshOil'); // Adjust path as necessary
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+        cb(null, file.fieldname + '-' + uniqueSuffix)
+    }
+})
+
+const upload = multer({ storage: storage })
+
 
 // Models
 const FreshOilProduct = require("../models/freshOil/freshOilproductModel");
@@ -30,44 +43,56 @@ const { SERVER_ERROR, CREATED, BAD_REQUEST } = require("../constants/responseSta
 // POST: Create new product
 router.post("/products", upload.single("image"), async (req, res) => {
     try {
+        // Check if all required fields are present
+        const { name, description, quantity, price, userId } = req.body;
 
-        // check all fields
-        if (!req.body.name || !req.body.description || !req.body.quantity || !req.body.price || !req.body.userId) {
-            return res.status(BAD_REQUEST).json({ message: "Fill all required fields" })
+        if (!name || !description || !quantity || !price || !userId) {
+            return res.status(BAD_REQUEST).json({ message: "All required fields must be provided." });
         }
 
-        // Validate that quantity, price, and total are numbers
-        if (isNaN(req.body.quantity) || isNaN(req.body.price)) {
-            return res.status(BAD_REQUEST).json({ error: "Quantity and price must be valid numbers." });
+        // Validate that quantity and price are valid numbers
+        if (isNaN(quantity) || isNaN(price)) {
+            return res.status(BAD_REQUEST).json({ message: "Quantity and price must be valid numbers." });
         }
 
-        // Validate that quantity, price, and total are greater than zero
-        if (req.body.quantity <= 0 || req.body.price <= 0) {
-            return res.status(BAD_REQUEST).json({ error: "Quantity, price, and total must be greater than zero." });
+        // Validate that quantity and price are greater than zero
+        if (quantity <= 0 || price <= 0) {
+            return res.status(BAD_REQUEST).json({ message: "Quantity and price must be greater than zero." });
         }
 
-        if (!mongoose.Types.ObjectId.isValid(req.body.userId)) {
-            return res.status(BAD_REQUEST).json({ error: "Invalid userId." });
+        // Validate userId as a valid MongoDB ObjectId
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(BAD_REQUEST).json({ message: "Invalid userId." });
         }
 
-        // Optional: validate file if an image is expected
+        // Optional: Handle the image file upload (if provided)
         const image = req.file ? req.file.path : null;
 
-        // Create a new FreshOilProduct object
+        // Create a new product object
         const newProduct = new FreshOilProduct({
-            name: req.body.name,
-            description: req.body.description,
-            quantity: req.body.quantity,
-            // image: req.file.path, 
-            price: req.body.price,
-            userId: req.body.userId,
-            total: req.body.quantity * req.body.price,
+            name,
+            description,
+            quantity,
+            price,
+            image,
+            userId,
+            total: quantity * price, // Automatically calculate total based on quantity and price
         });
 
+        // Save the product to the database
         const savedProduct = await newProduct.save();
-        res.status(CREATED).json(savedProduct);
+
+        // Respond with the created product
+        res.status(CREATED).json({
+            message: "Product created successfully",
+            product: savedProduct
+        });
+
     } catch (error) {
-        res.status(SERVER_ERROR).json({ error: 'Error saving product', details: error.message });
+        res.status(SERVER_ERROR).json({
+            message: "Error creating product",
+            details: error.message
+        });
     }
 });
 

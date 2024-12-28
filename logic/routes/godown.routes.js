@@ -15,6 +15,7 @@ const {
   updateGodownOrderById,
   deleteGodownProduct,
   deleteGodownOrder,
+  bulkUploadGodownProducts
 } = require("../controllers/godown.controller");
 
 // middleware
@@ -31,101 +32,54 @@ const { SERVER_ERROR, CREATED, BAD_REQUEST, OK } = require("../constants/respons
 // create product
 router.post("/products", createGodownProduct);
 
-// bulk upload
-router.post("/products", createGodownProduct);
-
-// bulk upload
-router.post("/products/bulk-upload", upload.single("file"), async (req, res) => {
-  const results = [];
-  const failedRows = [];
-
+router.post('/products/bulk-upload', upload.single('file'), async (req, res) => {
   try {
-    // Check if file is uploaded and is a valid Excel or CSV file
-    if (!req.file || !(req.file.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || req.file.mimetype === 'text/csv')) {
-      return res.status(BAD_REQUEST).json({ message: 'Please upload a valid Excel or CSV file.' });
-    }
+    const filePath = req.file.path;
 
-    const filePath = path.join(__dirname, '..', 'uploads', req.file.filename);
-    console.log(`File uploaded to: ${filePath}`); // Log the file upload path
+    // Read the Excel file
+    const workbook = XLSX.readFile(filePath);
+    const sheetName = workbook.SheetNames[0]; // Get the first sheet
+    const worksheet = workbook.Sheets[sheetName];
 
-    const fileExt = path.extname(req.file.originalname).toLowerCase();
-    let excelData = [];
+    // Parse data from the Excel sheet
+    const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
-    // Parse the uploaded file based on extension
-    if (fileExt === '.xlsx') {
-      const workbook = XLSX.readFile(filePath);
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-      excelData = XLSX.utils.sheet_to_json(worksheet, { raw: true });
-    } else if (fileExt === '.csv') {
-      const csvData = fs.readFileSync(filePath, 'utf-8');
-      const csvRows = csvData.split('\n').map(row => row.split(','));
-      const headers = csvRows[0];
-      excelData = csvRows.slice(1).map(row => {
-        const obj = {};
-        headers.forEach((header, i) => {
-          obj[header] = row[i];
-        });
-        return obj;
-      });
-    }
+    // Validate and save the data
+    const newProducts = [];
+    for (let row of jsonData) {
+      const { name, price, quantity, location, description, userId } = row;
 
-    // File is empty or has invalid data
-    if (excelData.length === 0) {
-      return res.status(BAD_REQUEST).json({ message: 'The uploaded file is empty or does not contain valid data.' });
-    }
-
-    // Assume default godownId (can be dynamically assigned or fetched from the file)
-    const defaultGodownId = '60f8f7f7f3c5e41c2c6d3d71';  // Replace with actual godown ID or dynamic logic
-
-    // Bulk insert for better performance
-    const products = excelData.map(productData => {
-      // Validate required fields and collect error details
-      let errors = [];
-      if (!productData.name) errors.push('Name is required');
-      if (!productData.price) errors.push('Price is required');
-      if (!productData.quantity) errors.push('Quantity is required');
-      if (!productData.location) errors.push('Location is required');
-
-      if (errors.length > 0) {
-        failedRows.push({ row: productData, errors });
-        return null;  // Skip this row
+      if (!name || !price || !quantity || !location || !description || !userId) {
+        return res.status(BAD_REQUEST).json({ message: "Missing required fields in Excel" });
       }
 
-      // Create product object
-      return {
-        godownId: productData.godownId || defaultGodownId,  // Assign godownId (can be dynamically fetched or passed)
-        name: productData.name,
-        code: productData.code || `ITEM-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,  // Auto-generate code if missing
-        price: productData.price,
-        quantity: productData.quantity,
-        location: productData.location,
-        description: productData.description || '',  // Default empty description if not provided
-        condition: productData.condition || 'new',  // Default to "new" if no condition
-        total: productData.quantity * productData.price,
-      };
-    }).filter(product => product !== null);  // Remove null entries (failed rows)
+      if (isNaN(price) || isNaN(quantity)) {
+        return res.status(BAD_REQUEST).json({ message: "Price and Quantity must be valid numbers" });
+      }
 
-    // Perform bulk insert
-    if (products.length > 0) {
-      const savedProducts = await GodownProduct.insertMany(products);
-      results.push(...savedProducts);
+      const newProduct = await GodownProduct.create({
+        name,
+        price,
+        quantity,
+        location,
+        description,
+        userId
+      });
+
+      newProducts.push(newProduct);
     }
 
-    // Clean up uploaded file after processing
-    fs.unlinkSync(filePath); // Delete the uploaded file
+    // Cleanup the uploaded file (optional)
+    fs.unlinkSync(filePath);
 
-    res.status(CREATED).json({
-      message: 'Products uploaded successfully',
-      data: results.length,
-      failedRows: failedRows.length > 0 ? failedRows : null,
-    });
-
+    res.status(CREATED).json({ message: `${newProducts.length} products uploaded successfully`, newProducts });
   } catch (error) {
-    console.error('Error during bulk upload:', error);
-    res.status(SERVER_ERROR).json({ error: 'Error during bulk upload', details: error.message });
+    res.status(SERVER_ERROR).json({ message: "Failed to process the Excel file", error: error.message });
   }
 });
+
+// bulk upload
+router.post("/products", createGodownProduct);
 
 // Other routes remain the same (create, get, update, delete, etc.)
 

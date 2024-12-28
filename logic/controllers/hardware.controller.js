@@ -1,226 +1,330 @@
-// response code
-const { SERVER_ERROR, BAD_REQUEST, CREATED, NOT_FOUND, OK } = require("../constants/responseStatusCode")
+const mongoose = require("mongoose");
+const HardwareProduct = require("../models/hardware/productModel");
+const HardwareOrder = require("../models/hardware/orderModel");
+const { SERVER_ERROR, CREATED, BAD_REQUEST, OK, NOT_FOUND } = require("../constants/responseStatusCode");
 
-// Hardware Models
-const Product = require("../models/hardware/productModel")
-const Order = require("../models/hardware/orderModel")
-
-const searchHardwareProducts = async (req, res) => {
-    const { name, description, minPrice, maxPrice } = req.query;
-
-    try {
-        let searchQuery = {};
-
-        if (name) {
-            searchQuery.name = { $regex: name, $options: "i" }; // Case-insensitive search
-        }
-
-        if (description) {
-            searchQuery.description = { $regex: description, $options: "i" }; // Case-insensitive search
-        }
-
-        if (minPrice && maxPrice) {
-            searchQuery.price = { $gte: minPrice, $lte: maxPrice }; // Price range search
-        }
-
-        const products = await Product.find(searchQuery);
-
-        res.status(200).json(products);
-    } catch (error) {
-        res.status(500).json({ error: "Error searching products", details: error.message });
-    }
-};
-
-// Search hardware orders by orderId, status, or userId
-const searchHardwareOrders = async (req, res) => {
-    const { orderId, status, userId } = req.query;
-
-    try {
-        let searchQuery = {};
-
-        if (orderId) {
-            searchQuery._id = orderId; // Search by orderId (MongoDB's ObjectId)
-        }
-
-        if (status) {
-            searchQuery.status = status; // Filter by order status (e.g., "pending", "shipped", "delivered")
-        }
-
-        if (userId) {
-            searchQuery.userId = userId; // Filter by userId
-        }
-
-        const orders = await Order.find(searchQuery);
-
-        res.status(200).json(orders);
-    } catch (error) {
-        res.status(500).json({ error: "Error searching orders", details: error.message });
-    }
-};
-
-// CREATE PRODUCT
+// Create a Hardware Product
 const createHardwareProduct = async (req, res) => {
-    const { productId, quantity, price, status, name, customerId } = req.body
-
     try {
-        const newProduct = await Product.create({
-            productId,
-            quantity,
-            price,
-            status,
+        const { name, price, quantity, description, userId } = req.body;
+
+        // Validate required fields
+        if (!name || price === undefined || quantity === undefined || !description || !userId) {
+            return res.status(BAD_REQUEST).json({ message: "All fields are required" });
+        }
+
+        // Validate that price and quantity are numbers
+        if (isNaN(quantity) || isNaN(price)) {
+            return res.status(BAD_REQUEST).json({ error: "Quantity and price must be valid numbers." });
+        }
+
+        // Validate that quantity and price are greater than or equal to zero
+        if (quantity < 0 || price < 0) {
+            return res.status(BAD_REQUEST).json({ error: "Quantity and price must be greater than or equal to zero." });
+        }
+
+        // Validate userId
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(BAD_REQUEST).json({ error: "Invalid userId." });
+        }
+
+        // Create a new hardware product
+        const newProduct = await HardwareProduct.create({
             name,
-            customerId
-        })
-        res.status(CREATED).json(newProduct)
-    } catch (error) {
-        res.status(SERVER_ERROR).json({ message: "Failed to create hardware product", error: error.message })
-    }
-}
-
-// CREATE ORDER
-const createHardwareOrder = async (req, res) => {
-    const { productId, quantity, price, status, name, customerId } = req.body
-
-    if (!quantity || !price || !productId || !name || !customerId) {
-        return res.status(BAD_REQUEST).json({ message: "All fields are required" })
-    }
-
-    try {
-        const newOrder = await Order.create({
-            productId,
-            quantity,
             price,
-            status,
-            name,
-            customerId
-        })
-        res.status(CREATED).json(newOrder)
-    } catch (error) {
-        res.status(SERVER_ERROR).json({ message: "Failed to create hardware order", error: error.message })
-    }
-}
+            quantity,
+            description,
+            userId
+        });
 
-// GET ALL PRODUCTS
+        res.status(CREATED).json({ message: "Product created successfully", newProduct });
+    } catch (error) {
+        res.status(SERVER_ERROR).json({ message: "Failed to create product", error: error.message });
+    }
+};
+
+// Get All Hardware Products
 const getAllHardwareProducts = async (req, res) => {
     try {
-        const products = await Product.find().sort({ createdAt: -1 })
-        if (products.length === 0) {
-            return res.status(NOT_FOUND).json({ message: "No products found" })
-        }
-        res.status(OK).json(products)
-    } catch (error) {
-        res.status(SERVER_ERROR).json({ message: "Failed to get products", error: error.message })
-    }
-}
+        const products = await HardwareProduct.find().sort({ createdAt: -1 });
 
-// GET ALL ORDERS
+        if (products.length === 0) {
+            return res.status(NOT_FOUND).json({ message: "No products available" });
+        }
+
+        res.status(OK).json(products);
+    } catch (error) {
+        res.status(SERVER_ERROR).json({ message: "Failed to get products", error: error.message });
+    }
+};
+
+// Get Hardware Product by ID
+const getHardwareProductById = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const product = await HardwareProduct.findById(id);
+
+        if (!product) {
+            return res.status(NOT_FOUND).json({ message: "Product not found" });
+        }
+
+        res.status(OK).json(product);
+    } catch (error) {
+        res.status(SERVER_ERROR).json({ message: "Failed to get product", error: error.message });
+    }
+};
+
+// Update Hardware Product by ID
+const updateHardwareProductById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { price, quantity } = req.body;
+
+        // Validate price and quantity
+        if (price <= 0) {
+            return res.status(BAD_REQUEST).json({ message: "Price should not be zero or negative" });
+        }
+
+        if (quantity < 0) {
+            return res.status(BAD_REQUEST).json({ message: "Quantity cannot be negative" });
+        }
+
+        // Get the product from the database
+        const product = await HardwareProduct.findById(id);
+
+        if (!product) {
+            return res.status(BAD_REQUEST).json({ message: "Product not found" });
+        }
+
+        // Handle the condition when quantity is 0
+        if (quantity === 0) {
+            product.condition = "Out of Stock"; // or set an "out of stock" status field
+        } else if (quantity < 10) {
+            product.condition = "Low Stock";
+        } else {
+            product.condition = "In Stock"; // or any other condition based on your logic
+        }
+
+        // Update product properties
+        Object.keys(req.body).forEach((key) => {
+            if (key !== "condition") {
+                product[key] = req.body[key];
+            }
+        });
+
+        // Save the updated product
+        await product.save();
+
+        // Send success response
+        res.status(OK).json({ message: "Product updated successfully", product });
+    } catch (error) {
+        // Handle errors and send server error response
+        if (!res.headersSent) {
+            return res.status(SERVER_ERROR).json({ message: "Server error", details: error.message });
+        }
+    }
+};
+
+// Delete Hardware Product by ID
+const deleteHardwareProductById = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const deletedProduct = await HardwareProduct.findByIdAndDelete(id);
+
+        if (!deletedProduct) {
+            return res.status(NOT_FOUND).json({ message: "Product not found" });
+        }
+
+        res.status(OK).json({ message: "Product deleted successfully" });
+    } catch (error) {
+        res.status(SERVER_ERROR).json({ message: "Failed to delete product", error: error.message });
+    }
+};
+
+const createHardwareOrder = async (req, res) => {
+    try {
+        const { productId, quantity, userId } = req.body;
+
+        // Validate required fields
+        if (!productId || quantity === undefined || !userId) {
+            return res.status(BAD_REQUEST).json({ message: "All fields are required" });
+        }
+
+        // Check if quantity is greater than 0
+        if (quantity <= 0) {
+            return res.status(BAD_REQUEST).json({ message: "Quantity must be greater than 0" });
+        }
+
+        const product = await HardwareProduct.findById(productId);
+        if (!product) {
+            return res.status(NOT_FOUND).json({ message: "Product not found" });
+        }
+
+        // Check if enough stock is available
+        if (product.quantity < quantity) {
+            return res.status(BAD_REQUEST).json({ message: "Not enough stock available" });
+        }
+
+        // Create new hardware order
+        const newOrder = new HardwareOrder({
+            productId,
+            quantity,
+            userId,
+            totalPrice: product.price * quantity
+        });
+
+        await newOrder.save();
+
+        // Update product stock
+        product.quantity -= quantity;
+
+        // Update product condition if stock changes
+        if (product.quantity === 0) {
+            product.condition = "out of stock";
+        } else if (product.quantity < 10) {
+            product.condition = "low stock";
+        } else {
+            product.condition = "new";
+        }
+
+        await product.save();
+
+        res.status(CREATED).json({ message: "Order created successfully", newOrder });
+    } catch (error) {
+        res.status(SERVER_ERROR).json({ message: "Failed to create order", error: error.message });
+    }
+};
+
+// Get All Hardware Orders
 const getAllHardwareOrders = async (req, res) => {
     try {
-        const orders = await Order.find().sort({ createdAt: -1 })
+        const orders = await HardwareOrder.find();
+
         if (orders.length === 0) {
-            return res.status(NOT_FOUND).json({ message: "No orders found" })
+            return res.status(NOT_FOUND).json({ message: "No orders available" });
         }
-        res.status(OK).json(orders)
-    } catch (error) {
-        res.status(SERVER_ERROR).json({ message: "Failed to get orders", error: error.message })
-    }
-}
 
-// GET PRODUCT BY ID
-const getSingleHardwareProduct = async (req, res) => {
-    const { id } = req.params
-    try {
-        const product = await Product.findOne({ _id: id })
-        if (!product) {
-            return res.status(NOT_FOUND).json({ message: "Product not found" })
-        }
-        res.status(OK).json(product)
+        res.status(OK).json(orders);
     } catch (error) {
-        res.status(SERVER_ERROR).json({ message: "Failed to get product", error: error.message })
+        res.status(SERVER_ERROR).json({ message: "Failed to get orders", error: error.message });
     }
-}
+};
 
-// GET ORDER BY ID
-const getSingleHardwareOrder = async (req, res) => {
-    const { id } = req.params
+// Get Hardware Order by ID
+const getHardwareOrderById = async (req, res) => {
+    const { id } = req.params;
+
     try {
-        const order = await Order.findOne({ _id: id })
+        const order = await HardwareOrder.findById(id);
+
         if (!order) {
-            return res.status(NOT_FOUND).json({ message: "Order not found" })
+            return res.status(NOT_FOUND).json({ message: "Order not found" });
         }
-        res.status(OK).json(order)
-    } catch (error) {
-        res.status(SERVER_ERROR).json({ message: "Failed to get order", error: error.message })
-    }
-}
 
-// UPDATE PRODUCT
-const updateHardwareProduct = async (req, res) => {
-    const { id } = req.params
-    try {
-        const updatedProduct = await Product.findOneAndUpdate({ _id: id }, { ...req.body }, { new: true })
-        if (!updatedProduct) {
-            return res.status(NOT_FOUND).json({ message: "Product not found" })
-        }
-        res.status(OK).json({ message: "Updated successfully", updatedProduct })
+        res.status(OK).json(order);
     } catch (error) {
-        res.status(SERVER_ERROR).json({ message: "Failed to update product", error: error.message })
+        res.status(SERVER_ERROR).json({ message: "Failed to get order", error: error.message });
     }
-}
+};
 
-// UPDATE ORDER
-const updateHardwareOrder = async (req, res) => {
-    const { id } = req.params
-    try {
-        const updatedOrder = await Order.findOneAndUpdate({ _id: id }, { ...req.body }, { new: true })
-        if (!updatedOrder) {
-            return res.status(NOT_FOUND).json({ message: "Order not found" })
-        }
-        res.status(OK).json({ message: "Updated successfully", updatedOrder })
-    } catch (error) {
-        res.status(SERVER_ERROR).json({ message: "Failed to update order", error: error.message })
-    }
-}
+// Update Hardware Order by ID
+const updateHardwareOrderById = async (req, res) => {
+    const { id } = req.params;
 
-// DELETE PRODUCT
-const deleteHardwareProduct = async (req, res) => {
-    const { id } = req.params
     try {
-        const deletedProduct = await Product.findOneAndDelete({ _id: id })
-        if (!deletedProduct) {
-            return res.status(NOT_FOUND).json({ message: "Product not found" })
-        }
-        res.status(OK).json({ message: "Deleted successfully", deletedProduct })
-    } catch (error) {
-        res.status(SERVER_ERROR).json({ message: "Failed to delete product", error: error.message })
-    }
-}
+        const { quantity } = req.body;
 
-// DELETE ORDER
-const deleteHardwareOrder = async (req, res) => {
-    const { id } = req.params
-    try {
-        const deletedOrder = await Order.findOneAndDelete({ _id: id })
-        if (!deletedOrder) {
-            return res.status(NOT_FOUND).json({ message: "Order not found" })
+        // Validate quantity
+        if (quantity <= 0) {
+            return res.status(BAD_REQUEST).json({ message: "Quantity must be greater than 0" });
         }
-        res.status(OK).json({ message: "Deleted successfully", deletedOrder })
+
+        const order = await HardwareOrder.findById(id);
+        if (!order) {
+            return res.status(NOT_FOUND).json({ message: "Order not found" });
+        }
+
+        const product = await HardwareProduct.findById(order.productId);
+        if (!product) {
+            return res.status(NOT_FOUND).json({ message: "Product not found" });
+        }
+
+        // Check if the new quantity is available in stock
+        if (product.quantity < quantity) {
+            return res.status(BAD_REQUEST).json({ message: "Not enough stock available" });
+        }
+
+        // Update order
+        order.quantity = quantity;
+        order.totalPrice = product.price * quantity;
+        await order.save();
+
+        // Update product stock
+        product.quantity -= quantity;
+
+        // Update product condition
+        if (product.quantity === 0) {
+            product.condition = "out of stock";
+        } else if (product.quantity < 10) {
+            product.condition = "low stock";
+        } else {
+            product.condition = "new";
+        }
+
+        await product.save();
+
+        res.status(OK).json({ message: "Order updated successfully", order });
     } catch (error) {
-        res.status(SERVER_ERROR).json({ message: "Failed to delete order", error: error.message })
+        res.status(SERVER_ERROR).json({ message: "Failed to update order", error: error.message });
     }
-}
+};
+
+// Delete Hardware Order by ID
+const deleteHardwareOrderById = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const order = await HardwareOrder.findById(id);
+        if (!order) {
+            return res.status(NOT_FOUND).json({ message: "Order not found" });
+        }
+
+        const product = await HardwareProduct.findById(order.productId);
+        if (product) {
+            // Restore the stock in case of deletion
+            product.quantity += order.quantity;
+
+            // Update product condition
+            if (product.quantity === 0) {
+                product.condition = "out of stock";
+            } else if (product.quantity < 10) {
+                product.condition = "low stock";
+            } else {
+                product.condition = "new";
+            }
+
+            await product.save();
+        }
+
+        await order.deleteOne();
+        res.status(OK).json({ message: "Order deleted successfully" });
+    } catch (error) {
+        res.status(SERVER_ERROR).json({ message: "Failed to delete order", error: error.message });
+    }
+};
+
 
 module.exports = {
     createHardwareProduct,
     createHardwareOrder,
-    getAllHardwareProducts,
     getAllHardwareOrders,
-    getSingleHardwareProduct,
-    getSingleHardwareOrder,
-    updateHardwareProduct,
-    updateHardwareOrder,
-    deleteHardwareProduct,
-    deleteHardwareOrder,
-    searchHardwareProducts,
-    searchHardwareOrders
-}
+    getHardwareOrderById,
+    getAllHardwareProducts,
+    getHardwareProductById,
+    updateHardwareProductById,
+    updateHardwareOrderById,
+    deleteHardwareProductById,
+    deleteHardwareOrderById
+};

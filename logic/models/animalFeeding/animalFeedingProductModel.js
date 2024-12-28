@@ -1,38 +1,46 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const animalFeedingProductSchema = new Schema({
+const freshOilProductSchema = new Schema({
     name: {
         type: String,
         required: [true, "Product name is required"],
     },
     description: {
         type: String,
-        required: [true, "Product description"],
+        required: [true, "Product description is required"],
+        maxLength: [500, "Description is too long"]
     },
     quantity: {
         type: Number,
-        required: [true, "Quantity is required"],
-        min: [0, 'Quantity must be a positive number'],
+        required: [true, "Product quantity is required"],
+        min: [0, "Quantity must be a positive number"]
     },
-    nutrients: {
-        type: String,
-        required: [true, "Nutrients are required"]
+    price: {
+        type: Number,
+        required: [true, "Product price is required"],
+        min: [0, "Price must be a positive number"]
     },
     image: {
         type: String,
     },
-    price: {
-        type: Number,
-        required: [true, "Price is required"],
-        min: [0, 'Price must be a positive number'],
-    },
     userId: {
         type: Schema.Types.ObjectId,
         ref: "User",
-        required: [true, "Admin user is required to create a product"],
+        required: [true, "Admin user is required to create a product"]
+    },
+    total: {
+        type: Number,
     },
 }, { timestamps: true });
 
-const AnimalFeedingProduct = mongoose.model('AnimalFeedingProduct', animalFeedingProductSchema);
-module.exports = AnimalFeedingProduct;
+// Pre-save hook to calculate the total price before saving
+freshOilProductSchema.pre('save', function (next) {
+    if (this.isModified('quantity') || this.isModified('price')) {
+        this.total = this.quantity * this.price;
+    }
+    next();
+});
+
+const FreshOilProduct = mongoose.model('FreshOilProduct', freshOilProductSchema);
+module.exports = FreshOilProduct;

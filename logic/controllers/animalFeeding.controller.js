@@ -8,7 +8,6 @@ const { OK, NOT_FOUND, SERVER_ERROR, BAD_REQUEST } = require("../constants/respo
 const AnimalFeedingProduct = require("../models/animalFeeding/animalFeedingProductModel");
 const AnimalFeedingOrder = require("../models/animalFeeding/animalFeedingOrderModel");
 
-// Search animal feeding products with filters
 const searchAnimalFeedingProducts = async (req, res) => {
     const { name, description, minPrice, maxPrice } = req.query;
 
@@ -70,7 +69,6 @@ const searchAnimalFeedingOrders = async (req, res) => {
     }
 };
 
-// GET ALL PRODUCTS
 const getAllAnimalFeedingProducts = async (req, res) => {
     try {
         const products = await Product.find().sort({ createdAt: -1 });
@@ -82,7 +80,7 @@ const getAllAnimalFeedingProducts = async (req, res) => {
         }
 
         if (!res.headersSent) {
-            return res.status(OK).json(products); // Ensure response is sent only once
+            return res.status(OK).json(products);
         }
     } catch (error) {
         if (!res.headersSent) {
@@ -95,9 +93,7 @@ const getAllAnimalFeedingProducts = async (req, res) => {
 // Get all orders
 const getAnimalFeedingAllOrders = async (req, res) => {
     try {
-        const orders = await AnimalFeedingOrder.find()
-            .populate("productId", "name") // Populate product name
-            .populate("userId", "email"); // Populate user email
+        const orders = await AnimalFeedingOrder.find().sort({ createdAt: -1 });
         res.status(200).json(orders);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -204,8 +200,13 @@ const updateAnimalFeedingProduct = async (req, res) => {
         const { id } = req.params;
         const { price, quantity } = req.body;
 
-        if (price <= 0 || quantity <= 0) {
-            return res.status(BAD_REQUEST).json({ message: "Price and qunatity should not be zero" })
+        if (price <= 0) {
+            return res.status(BAD_REQUEST).json({ message: "Price or should not be zero" })
+        }
+
+        if (quantity < 0) {
+            return res.status(BAD_REQUEST).json({ message: "Price cannot be negative" });
+
         }
 
         const updates = req.body;
@@ -214,6 +215,10 @@ const updateAnimalFeedingProduct = async (req, res) => {
 
         if (!product) {
             return res.status(BAD_REQUEST).json({ message: "Product not found" })
+        }
+
+        if (quantity === 0) {
+            product.condition = "Out of Stock"; // or set an "out of stock" status field
         }
 
         Object.keys(updates).forEach((key) => {
@@ -237,15 +242,10 @@ const updateAnimalFeedingOrder = async (req, res) => {
     const { quantity } = req.body;
 
     try {
-        // Find the order
+        // Find the existing order
         const order = await AnimalFeedingOrder.findById(id);
         if (!order) {
             return res.status(404).json({ error: "Order not found" });
-        }
-
-        // Ensure quantity is at least 1
-        if (quantity < 1) {
-            return res.status(400).json({ error: "Quantity must be at least 1" });
         }
 
         // Find the product associated with the order
@@ -254,31 +254,27 @@ const updateAnimalFeedingOrder = async (req, res) => {
             return res.status(404).json({ error: "Product not found" });
         }
 
-        // Check if there is enough stock to fulfill the updated quantity
-        if (product.quantity + order.quantity < quantity) {
+        // Check if the new quantity is valid (considering the original quantity in stock)
+        const updatedStock = product.quantity + order.quantity - quantity; // Adjust stock based on old order quantity
+        if (updatedStock < 0) {
             return res.status(400).json({ error: "Insufficient stock" });
         }
 
-        // Update stock based on the new order quantity
-        product.quantity += order.quantity - quantity;
+        // Update the product stock
+        product.quantity = updatedStock;
         await product.save();
 
-        // Update the order quantity and total price
+        // Update order details
         order.quantity = quantity;
-        order.total = quantity * order.price;
-
-        // Save the updated order
+        order.total = quantity * product.price; // Recalculate the total based on the current product price
         await order.save();
 
-        // Send back the updated order
-        res.status(200).json({
-            message: "Order updated successfully",
-            order
-        });
+        res.status(200).json({ message: "Order updated successfully", order });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
+
 
 
 
@@ -311,17 +307,13 @@ const deleteAnimalFeedingOrderById = async (req, res) => {
     const { id } = req.params;
 
     try {
+        // Find the order by its ID
         const order = await AnimalFeedingOrder.findById(id);
         if (!order) {
             return res.status(NOT_FOUND).json({ error: "Order not found" });
         }
 
-        // Revert stock
-        const product = await AnimalFeedingProduct.findById(order.productId);
-        product.quantity += order.quantity;
-        await product.save();
-
-        // Delete order
+        // Delete the order
         await order.deleteOne();
 
         res.status(OK).json({ message: "Order deleted successfully" });
@@ -329,6 +321,7 @@ const deleteAnimalFeedingOrderById = async (req, res) => {
         res.status(SERVER_ERROR).json({ error: error.message });
     }
 };
+
 
 
 // SEARCH PRODUCT BY NAME

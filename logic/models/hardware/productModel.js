@@ -1,42 +1,44 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const hardwareProductSchema = new Schema({
-    name: {
-        type: String,
-        required: true,
+const hardwareProductSchema = new Schema(
+    {
+        name: {
+            type: String,
+            required: [true, "Product name is required"],
+        },
+        price: {
+            type: Number,
+            required: [true, "Price is required"],
+            min: [0, "Price must be at least 0"]
+        },
+        quantity: {
+            type: Number,
+            required: [true, "Quantity is required"],
+            min: [0, "Quantity must be at least 0"]
+        },
+        description: {
+            type: String,
+            required: [true, "Description is required"],
+            maxLength: [500, "Description is too long"]
+        },
+        totalPrice: {
+            type: Number,
+            min: [0, "Total price must be at least 0"]
+        },
+        userId: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+            required: [true, "Admin user is required to create a product"]
+        },
     },
-    description: {
-        type: String,
-    },
-    quantity: {
-        type: Number,
-        required: true,
-    },
-    image: {
-        type: String,
-        required: true
-    },
-    price: {
-        type: Number,
-        required: true,
-    },
-    userId: {
-        type: Schema.Types.ObjectId,
-        ref: "User"
-    },
-    total: {
-        type: Number,
-        required: true,
-    },
-}, { timestamps: true });
+    { timestamps: true }
+);
 
-hardwareProductSchema.pre('save', function (next) {
-    if (this.isModified('quantity') || this.isModified('price')) {
-        this.total = this.quantity * this.price;
-    }
+hardwareProductSchema.pre("save", function (next) {
+    this.totalPrice = this.quantity * this.price;
     next();
 });
 
-const hardwareProduct = mongoose.model('hardwareProduct', hardwareProductSchema);
-module.exports = hardwareProduct;
+const HardwareProduct = mongoose.model("HardwareProduct", hardwareProductSchema);
+module.exports = HardwareProduct;

@@ -47,7 +47,7 @@ router.delete("/products/:id", validateObjectId, deleteAnimalFeedingProductById)
 
 router.delete("/orders/:id", validateObjectId, deleteAnimalFeedingOrderById);
 
-router.post("/products", upload.single('image'), async (req, res) => {
+router.post("/products/bulk-upload", upload.single('image'), async (req, res) => {
   try {
     const { name, description, quantity, nutrients, price, userId } = req.body;
 

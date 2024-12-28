@@ -7,6 +7,63 @@ const GodownOrder = require("../models/godown/godownOrderModel")
 // response code
 const { SERVER_ERROR, CREATED, BAD_REQUEST, OK, NOT_FOUND } = require("../constants/responseStatusCode")
 
+const bulkUploadGodownProducts = async (req, res) => {
+    try {
+        const products = req.body;
+
+        // Check if the products array is empty
+        if (!Array.isArray(products) || products.length === 0) {
+            return res.status(BAD_REQUEST).json({ message: "Please provide an array of products to upload" });
+        }
+
+        // Validate each product before inserting it
+        const validProducts = [];
+        const invalidProducts = [];
+
+        for (const product of products) {
+            const { name, price, quantity, location, description, userId } = product;
+
+            // Validate required fields
+            if (!name || !price || !quantity || !location || !description || !userId) {
+                invalidProducts.push({ product, error: "All fields are required" });
+                continue;
+            }
+
+            // Validate price and quantity
+            if (price <= 0 || quantity <= 0) {
+                invalidProducts.push({ product, error: "Price and quantity must be greater than zero" });
+                continue;
+            }
+
+            if (!mongoose.Types.ObjectId.isValid(userId)) {
+                invalidProducts.push({ product, error: "Invalid userId" });
+                continue;
+            }
+
+            // If the product is valid, add to the valid list
+            validProducts.push(product);
+        }
+
+        // If there are any invalid products, respond with them
+        if (invalidProducts.length > 0) {
+            return res.status(BAD_REQUEST).json({
+                message: "Some products are invalid",
+                invalidProducts,
+            });
+        }
+
+        // Bulk insert valid products into the database
+        const newProducts = await GodownProduct.insertMany(validProducts);
+
+        res.status(CREATED).json({
+            message: `${newProducts.length} products uploaded successfully`,
+            newProducts,
+        });
+    } catch (error) {
+        res.status(SERVER_ERROR).json({ message: "Failed to bulk upload products", error: error.message });
+    }
+};
+
 // Create product
 const createGodownProduct = async (req, res) => {
 
@@ -147,41 +204,95 @@ const getGodownOrder = async (req, res) => {
 
 // update product by id
 const updateGodownProductById = async (req, res) => {
-    const { id } = req.params
+    const { id } = req.params;
 
     try {
-        const updatedProduct = await GodownProduct.findOneAndUpdate(
-            { _id: id },
-            { ...req.body },
-            { new: true }
-        )
-        if (!updatedProduct) {
-            return res.status(NOT_FOUND).json({ message: "Product not found" })
+        const { price, quantity } = req.body;
+
+        if (price < 0) {
+            return res.status(BAD_REQUEST).json({ message: "Price cannot be negative" });
         }
-        res.status(OK).json({ message: "updated sucessfully", updatedProduct })
+
+        if (quantity < 0) {
+            return res.status(BAD_REQUEST).json({ message: "Quantity cannot be negative" });
+        }
+
+        const updates = req.body;
+
+        const product = await GodownProduct.findById(id);
+
+        if (!product) {
+            return res.status(BAD_REQUEST).json({ message: "Product not found" });
+        }
+
+        if (quantity === 0) {
+            product.condition = "Out of Stock"; // or set an "out of stock" status field
+        }
+
+        Object.keys(updates).forEach((key) => {
+            product[key] = updates[key];
+        });
+
+        await product.save();
+
+        res.status(OK).json({ message: "Updated successfully", product });
     } catch (error) {
-        res.status(SERVER_ERROR).json({ message: "failed to update product", error: error.message })
+        if (!res.headersSent) {
+            return res.status(SERVER_ERROR).json({ message: "Server error", details: error.message });
+        }
     }
-}
+};
+
+
 
 // update order by id
 const updateGodownOrderById = async (req, res) => {
-    const { id } = req.params
+    const { id } = req.params;
+    const { quantity, productId } = req.body;
 
     try {
-        const updatedOrder = await GodownOrder.findOneAndUpdate(
-            { _id: id },
-            { ...req.body },
-            { new: true }
-        )
-        if (!updatedOrder) {
-            res.status(NOT_FOUND).json({ message: "Order not found" })
+        // Validate the input
+        if (quantity && quantity <= 0) {
+            return res.status(BAD_REQUEST).json({ message: "Quantity must be greater than zero." });
         }
-        res.status(OK).json({ message: "updated sucessfully", updatedOrder })
+
+        // Find the existing order
+        const order = await GodownOrder.findById(id);
+        if (!order) {
+            return res.status(NOT_FOUND).json({ message: "Order not found." });
+        }
+
+        // If quantity is updated, ensure the product has enough stock
+        if (quantity && productId) {
+            const product = await GodownProduct.findById(productId);
+            if (!product) {
+                return res.status(NOT_FOUND).json({ message: "Product not found." });
+            }
+
+            const quantityDifference = quantity - order.quantity; // Difference between new and old quantities
+
+            if (quantityDifference > 0 && product.quantity < quantityDifference) {
+                return res.status(BAD_REQUEST).json({ message: "Insufficient product quantity available." });
+            }
+
+            // Update product stock
+            product.quantity -= quantityDifference;
+            await product.save();
+        }
+
+        // Update order fields
+        Object.keys(req.body).forEach((key) => {
+            order[key] = req.body[key];
+        });
+
+        await order.save();
+
+        res.status(OK).json({ message: "Order updated successfully.", updatedOrder: order });
     } catch (error) {
-        res.status(SERVER_ERROR).json({ message: "failed to update order", error: error.message })
+        res.status(SERVER_ERROR).json({ message: "Failed to update order.", error: error.message });
     }
-}
+};
+
 
 // delete product
 const deleteGodownProduct = async (req, res) => {
@@ -232,5 +343,6 @@ module.exports = {
     updateGodownProductById,
     updateGodownOrderById,
     deleteGodownProduct,
-    deleteGodownOrder
+    deleteGodownOrder,
+    bulkUploadGodownProducts
 }

@@ -84,10 +84,10 @@ const createFreshOilProduct = async (req, res) => {
 // create order
 const createFreshOilOrder = async (req, res) => {
     try {
-        const { userId, productId, quantity, price } = req.body;
+        const { productId, quantity, userId } = req.body;
 
-        if (!userId || !productId || !quantity || !price) {
-            return res.status(BAD_REQUEST).json({ message: "All fields are required" })
+        if (!productId || !quantity || !userId) {
+            return res.status(BAD_REQUEST).json({ message: "All fields are required" });
         }
 
         const productDetails = await FreshOilProduct.findById(productId);
@@ -99,6 +99,8 @@ const createFreshOilOrder = async (req, res) => {
         if (productDetails.quantity < quantity) {
             return res.status(BAD_REQUEST).json({ message: "Insufficient product quantity available" });
         }
+
+        const price = productDetails.price;
 
         const order = await FreshOilOrder.create({
             userId,
@@ -196,7 +198,7 @@ const updateFreshOilProduct = async (req, res) => {
         const { price, quantity } = req.body;
 
         if (price <= 0 || quantity <= 0) {
-            return res.status(BAD_REQUEST).json({ message: "Price and qunatity should not be zero" })
+            return res.status(BAD_REQUEST).json({ message: "Price or quantity should not be zero" })
         }
 
         const updates = req.body;
@@ -223,50 +225,63 @@ const updateFreshOilProduct = async (req, res) => {
 
 // update order
 const updateFreshOilOrder = async (req, res) => {
+    const { id } = req.params;
+    const { quantity } = req.body;
+
     try {
-        const { id } = req.params
-        const { price, quantity } = req.body
-
-        if (price <= 0 || quantity <= 0) {
-            return res.status(BAD_REQUEST).json({ message: "Price or quantity should not be zero and should be postive" })
-        }
-
-        const updates = req.body
-
+        // Find the existing order
         const order = await FreshOilOrder.findById(id);
-
         if (!order) {
-            return res.status(BAD_REQUEST).json({ message: "Order not found" })
+            return res.status(404).json({ error: "Order not found" });
         }
 
-        Object.keys(updates).forEach((key) => {
-            order[key] = updates[key];
-        });
+        // Find the product associated with the order
+        const product = await FreshOilProduct.findById(order.productId);
+        if (!product) {
+            return res.status(404).json({ error: "Product not found" });
+        }
 
+        // Check if the new quantity is valid (considering the original quantity in stock)
+        const updatedStock = product.quantity + order.quantity - quantity; // Adjust stock based on old order quantity
+        if (updatedStock < 0) {
+            return res.status(400).json({ error: "Insufficient stock" });
+        }
+
+        // Update the product stock
+        product.quantity = updatedStock;
+        await product.save();
+
+        // Update order details
+        order.quantity = quantity;
+        order.total = quantity * product.price; // Recalculate the total based on the current product price
         await order.save();
 
-        res.status(OK).json({ message: "Updated sucessfully", order })
+        res.status(200).json({ message: "Order updated successfully", order });
     } catch (error) {
-        res.status(SERVER_ERROR).json({ message: "Failed to update order", error: error.message })
+        res.status(500).json({ error: error.message });
     }
-}
+};
 
 // delete product
 const deleteFreshOilProduct = async (req, res) => {
-    const { id } = req.params
+    const { id } = req.params;
 
     try {
-        const deletedFreshOilProduct = await FreshOilProduct.findOneAndDelete({ _id: id })
+        // Find and delete the FreshOilProduct by its ID
+        const deletedFreshOilProduct = await FreshOilProduct.findOneAndDelete({ _id: id });
 
         if (!deletedFreshOilProduct) {
-            return res.status(NOT_FOUND).json({ message: "Product not found" })
+            return res.status(NOT_FOUND).json({ message: "Product not found" });
         }
 
-        res.status(OK).json({ message: "Deleted successfully", deletedFreshOilProduct })
+        // Respond with success
+        res.status(OK).json({ message: "Deleted successfully", deletedFreshOilProduct });
     } catch (error) {
-        res.status(SERVER_ERROR).json({ message: "Failed to delete product", error: error.message })
+        // Handle any server errors
+        res.status(SERVER_ERROR).json({ message: "Failed to delete product", error: error.message });
     }
 }
+
 
 // delete order
 const deleteFreshOilOrder = async (req, res) => {
