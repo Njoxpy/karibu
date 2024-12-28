@@ -4,30 +4,33 @@ const Schema = mongoose.Schema;
 const freshOilProductSchema = new Schema({
     name: {
         type: String,
-        required: true,
+        required: [true, "Product name is required"],
     },
     description: {
         type: String,
+        required: [true, "Product description is required"],
+        maxLength: [500, "Description is too long"]
     },
     quantity: {
         type: Number,
-        required: true,
-    },
-    image: {
-        type: String,
-        required: true
+        required: [true, "Product quantity is required"],
     },
     price: {
         type: Number,
-        required: true,
+        required: [true, "Product price is required"],
+        min: 0,
+    },
+    image: {
+        type: String,
+        // required: [true, "Product image is required"]
     },
     userId: {
         type: Schema.Types.ObjectId,
-        ref: "User"
+        ref: "User",
+        required: [true, "Admin user is required to create a product"]
     },
     total: {
-        type: Number,
-        required: true,
+        type: Number
     },
 }, { timestamps: true });
 

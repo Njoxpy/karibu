@@ -4,18 +4,15 @@ const Schema = mongoose.Schema;
 const PrintingOrderSchema = new Schema(
     {
         orderId: {
-            type: Schema.Types.ObjectId,
+            type: String,
             required: true,
             default: () => {
-                return `PRINTING-${Date.now()}`; 
+                return `PRINTING-${Date.now()}`;
             }
         },
-        assignedTo: {
-            type: Schema.Types.ObjectId,
-            ref: "User", 
-          },
-        description:{
-            type: Number,
+
+        description: {
+            type: String,
             required: [true, "Order description is required"]
         },
         status: {
@@ -26,13 +23,13 @@ const PrintingOrderSchema = new Schema(
         },
         category: {
             type: String,
-            enum: ["business card", "flyer", "brochure", "poster"],
+            enum: ["business card", "flyer", "brochure", "poster", "books", "magazine", "clothing", "cards", "banners", "cups", "bags"],
             required: [true, "Category is required"],
         },
         userId: {
             type: Schema.Types.ObjectId,
             ref: "User",
-            required: [true, "User ID is required"],
+            // required: [true, "User ID is required"],
         },
         price: {
             type: Number,
@@ -57,6 +54,7 @@ const PrintingOrderSchema = new Schema(
 
 PrintingOrderSchema.pre("save", function (next) {
     this.totalPrice = this.quantity * this.price;
+
     next();
 });
 

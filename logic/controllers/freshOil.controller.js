@@ -83,20 +83,41 @@ const createFreshOilProduct = async (req, res) => {
 
 // create order
 const createFreshOilOrder = async (req, res) => {
-    const { createdBy, orderId, product, quantity, price } = req.body
-    
-    if (typeof price !== "number" || price < 0) {
-        return res.status(BAD_REQUEST).json({ message: "Price must be a positive number or zero" })
-    }
-    if (typeof quantity !== "number" || quantity < 0) {
-        return res.status(BAD_REQUEST).json({ message: "Quantity must be a positive number or zero" })
-    }
-
     try {
-        const order = await FreshOilOrder.create({ createdBy, orderId, product, quantity, price })
-        res.status(CREATED).json(order)
+        const { userId, productId, quantity, price } = req.body;
+
+        if (!userId || !productId || !quantity || !price) {
+            return res.status(BAD_REQUEST).json({ message: "All fields are required" })
+        }
+
+        const productDetails = await FreshOilProduct.findById(productId);
+
+        if (!productDetails) {
+            return res.status(NOT_FOUND).json({ message: "Product not found" });
+        }
+
+        if (productDetails.quantity < quantity) {
+            return res.status(BAD_REQUEST).json({ message: "Insufficient product quantity available" });
+        }
+
+        const order = await FreshOilOrder.create({
+            userId,
+            productId,
+            quantity,
+            price,
+            total: quantity * price
+        });
+
+        productDetails.quantity -= quantity;
+        await productDetails.save();
+
+        if (!res.headersSent) {
+            return res.status(201).json({ message: "Order created successfully", order });
+        }
     } catch (error) {
-        res.status(SERVER_ERROR).json({ message: "Failed to create order", error: error.message })
+        if (!res.headersSent) {
+            return res.status(SERVER_ERROR).json({ message: "An error occurred while creating the order", error: error.message });
+        }
     }
 }
 
@@ -170,37 +191,63 @@ const getSingleFreshOilOrder = async (req, res) => {
 
 // update product
 const updateFreshOilProduct = async (req, res) => {
-    const { id } = req.params
-
     try {
-        const updatedProduct = await FreshOilProduct.findOneAndUpdate({ _id: id }, { ...req.body }, { new: true })
+        const { id } = req.params;
+        const { price, quantity } = req.body;
 
-        if (!updatedProduct) {
-            return res.status(NOT_FOUND).json({ message: "Product not found" })
+        if (price <= 0 || quantity <= 0) {
+            return res.status(BAD_REQUEST).json({ message: "Price and qunatity should not be zero" })
         }
 
-        res.status(OK).json({ message: "Updated successfully", updatedProduct })
-    }
-    catch (error) {
-        res.status(SERVER_ERROR).json({ message: "Failed to update product details", error: error.message })
+        const updates = req.body;
+
+        const product = await FreshOilProduct.findById(id);
+
+        if (!product) {
+            return res.status(BAD_REQUEST).json({ message: "Product not found" })
+        }
+
+        Object.keys(updates).forEach((key) => {
+            product[key] = updates[key];
+        })
+
+        await product.save();
+
+        res.status(OK).json({ message: "Updated sucessfully", product })
+    } catch (error) {
+        if (!res.headersSent) {
+            return res.status(SERVER_ERROR).json({ message: "Server error", details: error.message });
+        }
     }
 }
 
 // update order
 const updateFreshOilOrder = async (req, res) => {
-    const { id } = req.params
-
     try {
-        const updatedOrder = await FreshOilOrder.findOneAndUpdate({ _id: id }, { ...req.body }, { new: true })
+        const { id } = req.params
+        const { price, quantity } = req.body
 
-        if (!updatedOrder) {
-            return res.status(NOT_FOUND).json({ message: "Order not found" })
+        if (price <= 0 || quantity <= 0) {
+            return res.status(BAD_REQUEST).json({ message: "Price or quantity should not be zero and should be postive" })
         }
 
-        res.status(OK).json({ message: "Updated successfully", updatedOrder })
-    }
-    catch (error) {
-        res.status(SERVER_ERROR).json({ message: "Failed to update order details", error: error.message })
+        const updates = req.body
+
+        const order = await FreshOilOrder.findById(id);
+
+        if (!order) {
+            return res.status(BAD_REQUEST).json({ message: "Order not found" })
+        }
+
+        Object.keys(updates).forEach((key) => {
+            order[key] = updates[key];
+        });
+
+        await order.save();
+
+        res.status(OK).json({ message: "Updated sucessfully", order })
+    } catch (error) {
+        res.status(SERVER_ERROR).json({ message: "Failed to update order", error: error.message })
     }
 }
 

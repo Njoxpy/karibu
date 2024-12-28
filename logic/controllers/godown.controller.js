@@ -1,3 +1,5 @@
+const mongoose = require("mongoose")
+
 // CRUD
 const GodownProduct = require("../models/godown/godownProductModel")
 const GodownOrder = require("../models/godown/godownOrderModel")
@@ -7,88 +9,73 @@ const { SERVER_ERROR, CREATED, BAD_REQUEST, OK, NOT_FOUND } = require("../consta
 
 // Create product
 const createGodownProduct = async (req, res) => {
-    const { godownId, name, code, price, quantity, location, description } = req.body;
-
-    // Validate that all required fields are provided
-    if (!godownId || !name || !price || !quantity || !location || !description) {
-        return res.status(BAD_REQUEST).json({ message: "All fields are required" });
-    }
-
-    // Validate price and quantity
-    if (isNaN(price) || price <= 0) {
-        return res.status(BAD_REQUEST).json({ message: "Price must be a positive number" });
-    }
-
-    if (isNaN(quantity) || quantity <= 0 || !Number.isInteger(Number(quantity))) {
-        return res.status(BAD_REQUEST).json({ message: "Quantity must be a positive integer" });
-    }
 
     try {
-        // Check if the godownId exists in the Godown collection
-        const godown = await GodownProduct.findById(godownId);
-        if (!godown) {
-            return res.status(BAD_REQUEST).json({ message: "Invalid Godown ID" });
+        const { name, price, quantity, location, description, userId } = req.body;
+
+        if (!name || !price || !quantity || !location || !description || !userId) {
+            return res.status(BAD_REQUEST).json({ message: "All fields are required" })
         }
 
-        // Generate a unique code if it's not provided
-        let productCode = code;
-        if (!productCode) {
-            const timestamp = Date.now().toString();
-            const randomPart = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-            productCode = `ITEM-${timestamp}-${randomPart}`;
+        if (isNaN(quantity) || isNaN(price)) {
+            return res.status(BAD_REQUEST).json({ error: "Quantity and price must be valid numbers." });
         }
 
-        // Check if product with the same code already exists
-        const exist = await GodownProduct.findOne({ code: productCode });
-        if (exist) {
-            return res.status(BAD_REQUEST).json({ message: "Items with that code already exist" });
+        if (quantity <= 0 || price <= 0) {
+            return res.status(BAD_REQUEST).json({ error: "Quantity, price, and total must be greater than zero." });
         }
 
-        // Create the new product
-        const newProduct = await GodownProduct.create({
-            godownId,
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(BAD_REQUEST).json({ error: "Invalid userId." });
+        }
+
+        const newItem = await GodownProduct.create({
             name,
-            code: productCode,
             price,
             quantity,
             location,
             description,
-        });
+            userId
+        })
 
-        return res.status(CREATED).json(newProduct);
+        res.status(CREATED).json(newItem)
     } catch (error) {
-        console.error("Error creating product:", error);
-
-        // Enhanced error handling
-        if (error.name === "MongoError" && error.code === 11000) {
-            return res.status(BAD_REQUEST).json({ message: "Duplicate value error: " + error.message });
-        }
-
-        if (error.name === "ValidationError") {
-            return res.status(BAD_REQUEST).json({ message: "Validation failed: " + error.message });
-        }
-
-        return res.status(SERVER_ERROR).json({ message: "Failed to create product", error: error.message });
+        res.status(SERVER_ERROR).json({ message: "Failed to create product", error: error.message });
     }
 };
 
 
 // create order
 const createGodownOrder = async (req, res) => {
-    const { productId, quantity, price, status, name, customerId } = req.body;
-
-    if (quantity == null || price == null || !productId || !name || !customerId) {
-        return res.status(BAD_REQUEST).json({ message: "All fields are required" });
-    }
 
     try {
+
+        const { productId, quantity, userId } = req.body;
+
+        if (quantity == null || !productId || !userId) {
+            return res.status(BAD_REQUEST).json({ message: "All fields are required" });
+        }
+
+        // fetch product
+        const productDetails = await GodownProduct.findById(productId)
+        if (!productDetails) {
+            return res.status(NOT_FOUND).json({ message: "Product not found" })
+        }
+
+        if (productDetails.quantity < quantity) {
+            return res.status(BAD_REQUEST).json({ message: "Insufficient product quantity available" })
+        }
+
+        productDetails.quantity -= quantity;
+        await productDetails.save();
+
+        const totalPrice = productDetails.price * quantity;
+
         const newOrder = await GodownOrder.create({
             productId,
             quantity,
-            price,
-            status,
-            name,
-            customerId
+            userId,
+            totalPrice
         });
 
         res.status(CREATED).json(newOrder);
@@ -104,7 +91,7 @@ const getAllGodownProducts = async (req, res) => {
         const products = await GodownProduct.find().sort({ createdAt: -1 })
 
         if (products.length === 0) {
-            return res.json({ message: "not products for now" })
+            return res.status(NOT_FOUND).json({ message: "No products for now" })
         }
         res.status(OK).json(products)
     } catch (error) {
@@ -118,7 +105,7 @@ const getAllGodownOrders = async (req, res) => {
         const orders = await GodownOrder.find().sort({ createdAt: -1 })
 
         if (orders.length === 0) {
-            return res.json({ message: "There are no orders for now" })
+            return res.status(NOT_FOUND).json({ message: "There are no orders for now" })
         }
         res.status(OK).json(orders)
     } catch (error) {
@@ -143,7 +130,7 @@ const getAllGodownProductById = async (req, res) => {
 }
 
 // get order by id
-const getAllGodownOrderById = async (req, res) => {
+const getGodownOrder = async (req, res) => {
     const { id } = req.params
 
     try {
@@ -241,7 +228,7 @@ module.exports = {
     getAllGodownProducts,
     getAllGodownOrders,
     getAllGodownProductById,
-    getAllGodownOrderById,
+    getGodownOrder,
     updateGodownProductById,
     updateGodownOrderById,
     deleteGodownProduct,

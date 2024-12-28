@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // For page redirection
-import { jsPDF } from "jspdf"; // For generating PDF receipts
-import "../../../styles/submitWork.css"; // Custom styling
+import { useNavigate } from "react-router-dom";
+import { jsPDF } from "jspdf";
+import "../../../styles/submitWork.css";
 
 function SubmitWork() {
-  const navigate = useNavigate(); // To navigate between pages
+  const navigate = useNavigate();
 
   // State variables for form fields
   const [price, setPrice] = useState(0);
@@ -13,11 +13,11 @@ function SubmitWork() {
   const [contact, setContact] = useState(0);
   const [category, setCategory] = useState("magazine");
 
-  // State for storing receipts
+  // State for storing receipts (if needed)
   const [receipts, setReceipts] = useState([]);
 
   // Form submission handler
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Simple validation: Check if required fields are filled and valid
@@ -27,59 +27,80 @@ function SubmitWork() {
     }
 
     // Create the order data object
-    const orderData = { description, price, quantity, contact, category };
+    const orderData = { description, price: parseFloat(price), quantity: parseInt(quantity), contact, category };
 
-    // Add the order to the receipts array
-    setReceipts((prevReceipts) => [...prevReceipts, orderData]);
+    try {
+      // Send the order data to the backend API
+      const response = await fetch("http://localhost:5000/api/v1/printing/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(orderData),
+      });
 
-    // Generate the PDF receipt using jsPDF
-    const doc = new jsPDF();
-    doc.setFont("courier", "normal");
+      if (!response.ok) {
+        throw new Error("Failed to create order");
+      }
 
-    // Title Section with brand blue color
-    doc.setFontSize(18);
-    doc.setTextColor(0, 123, 255); // Brand Blue color
-    doc.text("Order Submission Receipt", 20, 20);
+      const data = await response.json();
 
-    // Line separator
-    doc.setLineWidth(0.5);
-    doc.setDrawColor(0, 123, 255);
-    doc.line(20, 25, 190, 25);
+      // Add the order to the receipts array (if needed)
+      setReceipts((prevReceipts) => [...prevReceipts, data]);
 
-    // Section title with brand green color
-    doc.setTextColor(40, 167, 69); // Brand Green color
-    doc.setFontSize(14);
-    doc.text("Order Details", 20, 40);
+      // Generate the PDF receipt using jsPDF
+      const doc = new jsPDF();
+      doc.setFont("tahoma", "normal");
 
-    // Background color for the order details section (white)
-    doc.setFillColor(255, 255, 255);
-    doc.rect(20, 45, 170, 10, "F");
+      // Title Section with brand blue color
+      doc.setFontSize(18);
+      doc.setTextColor(0, 123, 255); // Brand Blue color
+      doc.text("Order Submission Receipt", 20, 20);
 
-    // Reset text color for the order content (Brand Blue)
-    doc.setTextColor(0, 123, 255);
-    doc.setFontSize(12);
+      // Line separator
+      doc.setLineWidth(0.5);
+      doc.setDrawColor(0, 123, 255);
+      doc.line(20, 25, 190, 25);
 
-    // Add order details to the PDF
-    doc.text(`Description: ${description}`, 20, 55);
-    doc.text(`Price: Tsh ${price}`, 20, 65);
-    doc.text(`Quantity: ${quantity}`, 20, 75);
-    doc.text(`Contact: ${contact}`, 20, 85);
-    doc.text(`Category: ${category}`, 20, 95);
+      // Section title with brand green color
+      doc.setTextColor(40, 167, 69); // Brand Green color
+      doc.setFontSize(14);
+      doc.text("Order Details", 20, 40);
 
-    // Line separator after order details
-    doc.setDrawColor(0, 123, 255);
-    doc.line(20, 100, 190, 100);
+      // Background color for the order details section (white)
+      doc.setFillColor(255, 255, 255);
+      doc.rect(20, 45, 170, 10, "F");
 
-    // Footer with brand green color
-    doc.setFontSize(10);
-    doc.setTextColor(40, 167, 69);
-    doc.text("Thank you for your order!", 20, 110);
+      // Reset text color for the order content (Brand Blue)
+      doc.setTextColor(0, 123, 255);
+      doc.setFontSize(12);
 
-    // Save the PDF with a custom name
-    doc.save("order_submission_receipt.pdf");
+      // Add order details to the PDF
+      doc.text(`Description: ${description}`, 20, 55);
+      doc.text(`Price Per Item: Tsh ${price}`, 20, 65);
+      doc.text(`Quantity: ${quantity}`, 20, 75);
+      doc.text(`Contact: ${contact}`, 20, 85);
+      doc.text(`Category: ${category}`, 20, 95);
+      doc.text(`Total Price: Tsh ${price * quantity}`, 20, 95);
 
-    // Navigate to the orders page and pass the receipts state
-    navigate("/printing/orders", { state: { receipts } });
+      // Line separator after order details
+      doc.setDrawColor(0, 123, 255);
+      doc.line(20, 100, 190, 100);
+
+      // Footer with brand green color
+      doc.setFontSize(10);
+      doc.setTextColor(40, 167, 69);
+      doc.text("Thank you for your order!", 20, 110);
+
+      // Save the PDF with a custom name
+      doc.save(`${description}_receipt.pdf`);
+
+      // Navigate to the orders page and pass the receipts state
+      navigate("/printing/orders", { state: { receipts } });
+
+    } catch (error) {
+      alert("Error creating order: " + error.message);
+    }
   };
 
   // Cancel form submission and reset fields
@@ -116,7 +137,7 @@ function SubmitWork() {
 
           <div className="p-2">
             <label htmlFor="price" className="font-bold text-gray-700">
-              Price in Tsh:
+              Price in Tsh Per Item:
             </label>
             <input
               type="number"
@@ -149,7 +170,7 @@ function SubmitWork() {
               Contact
             </label>
             <input
-              type="number"
+              type="tel"
               id="contact"
               name="contact"
               required

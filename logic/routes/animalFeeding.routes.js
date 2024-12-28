@@ -25,7 +25,7 @@ const { validateAnimalFeedingOrder } = require("../middleware/validateOrder");
 // const validateProductUpload = require("../middleware/validateProductUpload");
 const { CREATED, SERVER_ERROR, BAD_REQUEST } = require("../constants/responseStatusCode");
 
-router.post("/orders", validateAnimalFeedingOrder, createAnimalFeedingOrder);
+router.post("/orders", createAnimalFeedingOrder);
 
 router.get("/products", getAllAnimalFeedingProducts);
 
@@ -49,20 +49,20 @@ router.delete("/orders/:id", validateObjectId, deleteAnimalFeedingOrderById);
 
 router.post("/products", upload.single('image'), async (req, res) => {
   try {
-    const { name, description, quantity, nutrients, price, total, userId } = req.body;
+    const { name, description, quantity, nutrients, price, userId } = req.body;
 
     // Validate required fields
-    if (!name || !description || !quantity || !nutrients || !price || !total || !userId) {
+    if (!name || !description || !quantity || !nutrients || !price || !userId) {
       return res.status(BAD_REQUEST).json({ error: "All fields are required." });
     }
 
     // Validate that quantity, price, and total are numbers
-    if (isNaN(quantity) || isNaN(price) || isNaN(total)) {
-      return res.status(BAD_REQUEST).json({ error: "Quantity, price, and total must be valid numbers." });
+    if (isNaN(quantity) || isNaN(price)) {
+      return res.status(BAD_REQUEST).json({ error: "Quantity and price must be valid numbers." });
     }
 
     // Validate that quantity, price, and total are greater than zero
-    if (quantity <= 0 || price <= 0 || total <= 0) {
+    if (quantity <= 0 || price <= 0) {
       return res.status(BAD_REQUEST).json({ error: "Quantity, price, and total must be greater than zero." });
     }
 
@@ -82,7 +82,6 @@ router.post("/products", upload.single('image'), async (req, res) => {
       nutrients,
       image,
       price,
-      total,
       userId
     });
 

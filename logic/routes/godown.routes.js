@@ -10,7 +10,7 @@ const {
   getAllGodownProducts,
   getAllGodownOrders,
   getAllGodownProductById,
-  getAllGodownOrderById,
+  getGodownOrder,
   updateGodownProductById,
   updateGodownOrderById,
   deleteGodownProduct,
@@ -23,7 +23,7 @@ const upload = require("../middleware/uploadGodown");
 
 // models
 const GodownProduct = require("../models/godown/godownProductModel");
-const Inventory =  require("../models/godown/inventoryModel")
+const Inventory = require("../models/godown/inventoryModel")
 
 // response code
 const { SERVER_ERROR, CREATED, BAD_REQUEST, OK } = require("../constants/responseStatusCode");
@@ -142,7 +142,7 @@ router.get("/orders", getAllGodownOrders);
 router.get("/products/:id", validateObjectId, getAllGodownProductById);
 
 // get order by id
-router.get("/orders/:id", validateObjectId, getAllGodownOrderById);
+router.get("/orders/:id", validateObjectId, getGodownOrder);
 
 // update product by id
 router.patch("/products/:id", validateObjectId, updateGodownProductById);
@@ -187,7 +187,7 @@ router.post("/inventory-movement", async (req, res) => {
         code: item.code,
         quantity: transferQuantity,
         location: destination,
-        godownId: item.godownId,  
+        godownId: item.godownId,
       });
     } else {
       destinationItem.quantity += transferQuantity;

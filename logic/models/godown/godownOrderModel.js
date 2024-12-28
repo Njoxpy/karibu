@@ -1,22 +1,19 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const orderSchema = new Schema(
+const GodownProduct = require("./godownProductModel")
+
+const godownOrderSchema = new Schema(
     {
         productId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "GodownProduct",
-            required: true
+            required: [true, "Product is required"]
         },
         quantity: {
             type: Number,
-            required: true,
+            required: [true, "Quantity is required"],
             min: [1, "Quantity must be at least 1"]
-        },
-        price: {
-            type: Number,
-            required: true,
-            min: [1, "Price must be at least 1"]
         },
         orderId: {
             type: String,
@@ -25,18 +22,10 @@ const orderSchema = new Schema(
                 return `GODOWN-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
             }
         },
-        status: {
-            type: String,
-            enum: ["pending", "completed", "canceled"],
-            default: "pending"
-        },
-        name: {
-            type: String, // Store product name directly
-            required: true
-        },
-        customerId: {
+        userId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "User"
+            ref: "User",
+            required: [true, "User ID is required"]
         },
         totalPrice: {
             type: Number,
@@ -46,13 +35,30 @@ const orderSchema = new Schema(
     { timestamps: true }
 );
 
-orderSchema.pre('save', function (next) {
-    if (this.isModified('quantity') || this.isModified('price')) {
-        this.totalPrice = this.quantity * this.price;
-    }
+godownOrderSchema.pre('save', function (next) {
+
+    const product = this.productId;
+    const quantity = this.quantity;
+
+    this.totalPrice = product.price * quantity;
+
     next();
 });
 
-const GodownOrder = mongoose.model("GodownOrder", orderSchema);
+godownOrderSchema.post('save', async function (doc, next) {
+    try {
+        const product = await GodownProduct.findById(doc.productId);
+        if (product.quantity < doc.quantity) {
+            throw new Error('Not enough stock available');
+        }
+        product.quantity -= doc.quantity;
+        await product.save();
+        next();
+    } catch (err) {
+        next(err);
+    }
+});
+
+const GodownOrder = mongoose.model("GodownOrder", godownOrderSchema);
 
 module.exports = GodownOrder;

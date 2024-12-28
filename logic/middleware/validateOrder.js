@@ -26,11 +26,11 @@ const validateNonNegativeNumber = (number, fieldName) => {
 
 // Middleware for validating animal feeding order data
 const validateAnimalFeedingOrder = (req, res, next) => {
-    const { createdBy, product, name, quantity, price, orderId } = req.body;
+    const { userId, product, name, quantity, price, orderId } = req.body;
 
-    // Validate createdBy (User ObjectId)
-    const createdByError = validateObjectIdFormat(createdBy, "CreatedBy");
-    if (createdByError) return res.status(400).json({ success: false, message: createdByError });
+    // Validate userId (User ObjectId)
+    const userIdError = validateObjectIdFormat(userId, "UserId");
+    if (userIdError) return res.status(400).json({ success: false, message: userIdError });
 
     // Validate product (AnimalFeedingProduct ObjectId)
     const productError = validateObjectIdFormat(product, "Product");
@@ -74,7 +74,7 @@ const validateObjectId = (req, res, next) => {
 
 // Middleware for validating query parameters
 const validateQueryParams = (req, res, next) => {
-    const { price, quantity, createdBy, product } = req.query;
+    const { price, quantity, userId, product } = req.query;
 
     // Validate price
     if (price !== undefined) {
@@ -90,10 +90,10 @@ const validateQueryParams = (req, res, next) => {
         if (quantityError) return res.status(400).json({ success: false, message: quantityError });
     }
 
-    // Validate createdBy (User ObjectId)
-    if (createdBy) {
-        const createdByError = validateObjectIdFormat(createdBy, "CreatedBy");
-        if (createdByError) return res.status(400).json({ success: false, message: createdByError });
+    // Validate userId (User ObjectId)
+    if (userId) {
+        const userIdError = validateObjectIdFormat(userId, "UserId");
+        if (userIdError) return res.status(400).json({ success: false, message: userIdError });
     }
 
     // Validate product (AnimalFeedingProduct ObjectId)

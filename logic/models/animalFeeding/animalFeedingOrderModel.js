@@ -8,45 +8,62 @@ const animalFeedingOrderSchema = new Schema({
         unique: true,
         default: () => `ANIMAL-FEEDING-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
     },
-    product: {
+    productId: {
         type: Schema.Types.ObjectId,
         ref: 'AnimalFeedingProduct',
-        required: true,
+        required: [true, "Product is required"],
     },
     quantity: {
         type: Number,
-        required: true,
+        required: [true, "Quantity is required"],
         min: [1, 'Quantity must be at least 1'],
     },
     price: {
         type: Number,
-        required: true,
-        min: [0, 'Price must be at least 0'],
+        required: [true, "Price is required"],
+        min: [0, 'Price cannot be negative'],
     },
     total: {
-        type: Number, 
+        type: Number,
+        min: [0, "Total price cannot be negative"]
     },
+    userId: {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+        required: [true, "User ID is required"]
+    }
 }, { timestamps: true });
 
 // Pre-save hook to calculate total
 animalFeedingOrderSchema.pre('save', function (next) {
-    this.total = this.quantity * this.price;
-    next();
+    if (!this.price) {
+        // Fetch the price from the product if not provided
+        AnimalFeedingProduct.findById(this.productId, (err, product) => {
+            if (err || !product) {
+                return next(new Error('Product not found'));
+            }
+            this.price = product.price; // Assign the product price to the order
+            this.total = this.quantity * this.price;
+            next();
+        });
+    } else {
+        this.total = this.quantity * this.price;
+        next();
+    }
 });
 
 // Post-save hook to update product stock
-animalFeedingOrderSchema.post('save', async function(doc, next) {
+animalFeedingOrderSchema.post('save', async function (doc, next) {
     try {
-        // Find the product and update its stock
-        const product = await AnimalFeedingProduct.findById(doc.product);
+        const product = await AnimalFeedingProduct.findById(doc.productId);
         if (product.quantity < doc.quantity) {
             throw new Error('Not enough stock available');
         }
-        product.quantity -= doc.quantity; // Decrease product stock by the order quantity
-        await product.save(); // Save updated product
+        product.quantity -= doc.quantity;
+        await product.save();
         next();
     } catch (err) {
-        next(err); // Propagate error if any
+        next(err);
     }
 });
 
