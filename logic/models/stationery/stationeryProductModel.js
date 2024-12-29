@@ -1,46 +1,53 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-// Define the schema
+// Define the schema with validation
 const stationeryProductSchema = new Schema({
-    name: {
-        type: String,
-        required: true,
-    },
     description: {
         type: String,
-    },
-    quantity: {
-        type: Number,
-        required: true,
+        trim: true, 
     },
     image: {
         type: String,
-        required: true
+        validate: {
+            validator: function (v) {
+                return /^(https?:\/\/)/.test(v); 
+            },
+            message: 'Invalid image URL',
+        },
+    },
+    name: {
+        type: String,
+        required: [true, 'Product name is required'],
+        trim: true, 
     },
     price: {
         type: Number,
-        required: true,
+        required: [true, 'Price is required'],
+        min: [0.01, 'Price must be greater than 0'],
+    },
+    quantity: {
+        type: Number,
+        required: [true, 'Quantity is required'],
+        min: [1, 'Quantity must be at least 1'], 
+    },
+    totalPrice: {
+        type: Number,
     },
     userId: {
         type: Schema.Types.ObjectId,
-        ref: "User"
-    },
-    total: {
-        type: Number,
-        required: true,
+        ref: "User",
+        required: [true, 'User ID is required'],
     },
 }, { timestamps: true });
 
-// Pre-save middleware to calculate the total
 stationeryProductSchema.pre('save', function (next) {
     if (this.isModified('quantity') || this.isModified('price')) {
-        this.total = this.quantity * this.price;
+        this.totalPrice = this.quantity * this.price;
     }
     next();
 });
 
-// Check if the model already exists before defining it
-const StationeryProduct = mongoose.models.StationeryProduct || mongoose.model('StationeryProduct', stationeryProductSchema);
 
+const StationeryProduct = mongoose.model('StationeryProduct', stationeryProductSchema);
 module.exports = StationeryProduct;

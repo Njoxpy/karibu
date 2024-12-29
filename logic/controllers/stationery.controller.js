@@ -3,7 +3,9 @@ const Product = require("../models/stationery/stationeryProductModel");
 const Order = require("../models/stationery/stationerOrderModel");
 
 // status code
-const { OK, NOT_FOUND, SERVER_ERROR, CREATED } = require("../constants/responseStatusCode");
+const { OK, NOT_FOUND, SERVER_ERROR, CREATED, BAD_REQUEST } = require("../constants/responseStatusCode");
+const StationeryProduct = require("../models/stationery/stationeryProductModel");
+const StationeryOrder = require("../models/stationery/stationerOrderModel");
 
 
 const searchStationeryProducts = async (req, res) => {
@@ -63,7 +65,7 @@ const getAllStationeryProducts = async (req, res) => {
         const products = await Product.find().sort({ createdAt: -1 });
 
         if (products.length === 0) {
-            return res.json({ message: "There are no products now" });
+            return res.status(NOT_FOUND).json({ message: "There are no products now" });
         }
 
         res.status(OK).json(products);
@@ -124,59 +126,139 @@ const getStationeryOrder = async (req, res) => {
 // CREATE ORDER
 const createStationeryOrder = async (req, res) => {
     try {
-        const { createdBy, product, name, quantity, price } = req.body;
+        const { productId, quantity, userId } = req.body;
 
-        const productDetails = await Product.findById(product);
-        if (!productDetails) {
-            return res.status(404).json({ message: "Product not found" });
+        // Check if all fields are provided
+        if (!productId || !quantity || !userId) {
+            return res.status(BAD_REQUEST).json({ message: "All fields are required" });
         }
 
-        if (productDetails.quantity < quantity) {
-            return res.status(400).json({ message: "Insufficient product quantity available" });
+        if (!productId) {
+            return res.status(BAD_REQUEST).json({ message: "Product ID is required" });
+        }
+        if (!quantity) {
+            return res.status(BAD_REQUEST).json({ message: "Quantity is required" });
+        }
+        if (!userId) {
+            return res.status(BAD_REQUEST).json({ message: "User ID is required" });
         }
 
-        const order = await Order.create({ createdBy, product, name, quantity, price });
+        // Fetch the product from the database
+        const product = await StationeryProduct.findById(productId);
+        if (!product) {
+            return res.status(NOT_FOUND).json({ error: "Product not found" });
+        }
 
-        productDetails.quantity -= quantity;
-        await productDetails.save();
+        // Check if there's enough stock
+        if (product.quantity < quantity) {
+            return res.status(BAD_REQUEST).json({ message: "Insufficient stock" });
+        }
 
-        res.status(CREATED).json({ message: "Order created successfully", order });
+        const price = product.price;
+
+        // Create the order
+        const order = await StationeryOrder.create({
+            productId,
+            quantity,
+            price,  // Ensure price is passed
+            total: quantity * price,
+            userId
+        });
+
+        // Update the product stock
+        product.quantity -= quantity;
+        await product.save();
+
+        // Return response
+        if (!res.headersSent) {
+            return res.status(201).json({ message: "Order created successfully", order });
+        }
     } catch (error) {
-        res.status(SERVER_ERROR).json({ message: "An error occurred while creating the order", error: error.message });
+        if (!res.headersSent) {
+            return res.status(SERVER_ERROR).json({ message: "An error occurred while creating the order", error: error.message });
+        }
     }
 };
 
 // UPDATE PRODUCT
 const updateStationeryProduct = async (req, res) => {
-    const { id } = req.params;
 
     try {
-        const updatedProduct = await Product.findOneAndUpdate({ _id: id }, { ...req.body }, { new: true });
+        const { id } = req.params;
+        const { price, quantity } = req.body;
 
-        if (!updatedProduct) {
-            return res.status(NOT_FOUND).json({ message: "Product not found" });
+        if (price <= 0) {
+            return res.status(BAD_REQUEST).json({ message: "Price or should not be zero" })
         }
 
-        res.status(OK).json({ message: "Product updated successfully", updatedProduct });
+        if (quantity < 0) {
+            return res.status(BAD_REQUEST).json({ message: "Price cannot be negative" });
+
+        }
+
+        const updates = req.body;
+
+        const product = await StationeryProduct.findById(id);
+
+        if (!product) {
+            return res.status(BAD_REQUEST).json({ message: "Product not found" })
+        }
+
+        if (quantity === 0) {
+            product.condition = "Out of Stock"; 
+        }
+
+        Object.keys(updates).forEach((key) => {
+            product[key] = updates[key];
+        })
+
+        await product.save();
+
+        res.status(OK).json({ message: "Updated sucessfully", product })
     } catch (error) {
-        res.status(SERVER_ERROR).json({ message: "Failed to update product", error: error.message });
+        if (!res.headersSent) {
+            return res.status(SERVER_ERROR).json({ message: "Server error", details: error.message });
+        }
     }
 };
+
 
 // UPDATE ORDER
 const updateStationeryOrder = async (req, res) => {
     const { id } = req.params;
+    const { quantity } = req.body;
 
     try {
-        const updatedOrder = await Order.findOneAndUpdate({ _id: id }, { ...req.body }, { new: true });
-
-        if (!updatedOrder) {
-            return res.status(NOT_FOUND).json({ message: "Order not found" });
+        // Find the existing order
+        const order = await StationeryOrder.findById(id);
+        if (!order) {
+            return res.status(404).json({ error: "Order not found" });
         }
 
-        res.status(OK).json({ message: "Order updated successfully", updatedOrder });
+        // Find the product associated with the order
+        const product = await StationeryProduct.findById(order.productId);
+        if (!product) {
+            return res.status(404).json({ error: "Product not found" });
+        }
+
+        // Check if the new quantity is valid (considering the original quantity in stock)
+        const updatedStock = product.quantity + order.quantity - quantity; // Adjust stock based on old order quantity
+        if (updatedStock < 0) {
+            return res.status(400).json({ error: "Insufficient stock" });
+        }
+
+        // Update the product stock
+        product.quantity = updatedStock;
+        await product.save();
+
+        // Update order details
+        order.quantity = quantity;
+        order.total = quantity * product.price; // Recalculate the total based on the current product price
+        await order.save();
+
+        res.status(200).json({ message: "Order updated successfully", order });
     } catch (error) {
-        res.status(SERVER_ERROR).json({ message: "Failed to update order", error: error.message });
+        res.status(500).json({ error: error.message });
     }
 };
 

@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const router = express.Router();
 
 // Controllers
@@ -28,21 +29,39 @@ const { SERVER_ERROR, CREATED, BAD_REQUEST } = require("../constants/responseSta
 // POST: Create a new stationery product
 router.post("/products", async (req, res) => {
     try {
-        const { name, description, quantity, price, userId } = req.body;
+        const { name, price, quantity, description, userId } = req.body;
 
-        const newProduct = new StationeryProduct({
+        // Validate required fields
+        if (!name || price === undefined || quantity === undefined || !description || !userId) {
+            return res.status(BAD_REQUEST).json({ message: "All fields are required" });
+        }
+
+        // Validate that price and quantity are numbers
+        if (isNaN(quantity) || isNaN(price)) {
+            return res.status(BAD_REQUEST).json({ error: "Quantity and price must be valid numbers." });
+        }
+
+        // Validate that quantity and price are greater than or equal to zero
+        if (quantity < 0 || price < 0) {
+            return res.status(BAD_REQUEST).json({ error: "Quantity and price must be greater than or equal to zero." });
+        }
+
+        // Validate userId
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(BAD_REQUEST).json({ error: "Invalid userId." });
+        }
+
+        const newProduct = await StationeryProduct.create({
             name,
-            description,
-            quantity,
             price,
+            quantity,
+            description,
             userId,
-            total: quantity * price,
-        });
+        })
 
-        const savedProduct = await newProduct.save();
-        res.status(CREATED).json(savedProduct);
+        res.status(CREATED).json(newProduct);
     } catch (error) {
-        res.status(SERVER_ERROR).json({ error: "Error saving product", details: error.message });
+        res.status(SERVER_ERROR).json({ message: "Failed to create product", error: error.message });
     }
 });
 

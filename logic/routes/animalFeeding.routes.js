@@ -1,6 +1,12 @@
 const express = require("express");
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 const router = express.Router();
+
+const authenticate = require("../middleware/auth/authenticate");
+const authorizeAdmin = require("../middleware/auth/authorizeAdmin");
+const authorizeEmployee = require("../middleware/auth/authorizeEmployee");
+const checkCategory = require("../middleware/auth/checkCategory");
+const validateObjectId = require("../middleware/validateObjectId");
 
 const {
   createAnimalFeedingOrder,
@@ -16,38 +22,33 @@ const {
   searchAnimalFeedingOrders,
 } = require("../controllers/animalFeeding.controller");
 
-const validateObjectId = require("../middleware/validateObjectId");
 const AnimalFeedingProduct = require("../models/animalFeeding/animalFeedingProductModel");
 
 const upload = require("../middleware/uploadAnimalFeeding");
 
-const { validateAnimalFeedingOrder } = require("../middleware/validateOrder");
-// const validateProductUpload = require("../middleware/validateProductUpload");
 const { CREATED, SERVER_ERROR, BAD_REQUEST } = require("../constants/responseStatusCode");
 
-router.post("/orders", createAnimalFeedingOrder);
+// Authenticate and authorize routes
 
-router.get("/products", getAllAnimalFeedingProducts);
+// Admin can create orders, view orders, and update or delete products
+router.post("/orders", authenticate, authorizeAdmin, createAnimalFeedingOrder); // Admin can create orders
+router.get("/products", authenticate, getAllAnimalFeedingProducts); // View all products (any authenticated user)
+router.get("/products/search", authenticate, searchAnimalFeedingProducts); // Search products (any authenticated user)
+router.get("/orders", authenticate, getAnimalFeedingAllOrders); // View all orders (admin only)
+router.get("/orders/search", authenticate, searchAnimalFeedingOrders); // Search orders (admin only)
+router.get("/products/:id", authenticate, validateObjectId, getAnimalFeedingProductById); // Get product by ID
+router.get("/orders/:id", authenticate, validateObjectId, getAnimalFeedingOrderById); // Get order by ID
 
-router.get("/products/search", searchAnimalFeedingProducts);
+// Admin can update products and orders, but employee can only update orders
+router.patch("/products/:id", authenticate, authorizeAdmin, validateObjectId, updateAnimalFeedingProduct); // Admin can update product
+router.patch("/orders/:id", authenticate, authorizeEmployee, validateObjectId, updateAnimalFeedingOrder); // Employee can update orders
 
-router.get("/orders", getAnimalFeedingAllOrders);
+// Admin can delete products and orders, but employees cannot
+router.delete("/products/:id", authenticate, authorizeAdmin, validateObjectId, deleteAnimalFeedingProductById); // Admin can delete product
+router.delete("/orders/:id", authenticate, authorizeAdmin, validateObjectId, deleteAnimalFeedingOrderById); // Admin can delete order
 
-router.get("/orders/search", searchAnimalFeedingOrders);
-
-router.get("/products/:id", validateObjectId, getAnimalFeedingProductById);
-
-router.get("/orders/:id", validateObjectId, getAnimalFeedingOrderById);
-
-router.patch("/products/:id", validateObjectId, updateAnimalFeedingProduct);
-
-router.patch("/orders/:id", validateObjectId, updateAnimalFeedingOrder);
-
-router.delete("/products/:id", validateObjectId, deleteAnimalFeedingProductById);
-
-router.delete("/orders/:id", validateObjectId, deleteAnimalFeedingOrderById);
-
-router.post("/products/bulk-upload", upload.single('image'), async (req, res) => {
+// Bulk upload products (admin only)
+router.post("/products/bulk-upload", authenticate, authorizeAdmin, upload.single('image'), async (req, res) => {
   try {
     const { name, description, quantity, nutrients, price, userId } = req.body;
 
