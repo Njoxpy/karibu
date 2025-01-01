@@ -19,15 +19,17 @@ const {
 
 // Middleware
 const validateObjectId = require("../middleware/validateObjectId");
+const upload = require("../middleware/stationery/uploadStationery");
 
 // Models
 const StationeryProduct = require("../models/stationery/stationeryProductModel");
 
 // Response codes
-const { SERVER_ERROR, CREATED, BAD_REQUEST } = require("../constants/responseStatusCode");
+const { BAD_REQUEST } = require("../constants/responseStatusCode");
 
 // POST: Create a new stationery product
-router.post("/products", async (req, res) => {
+
+router.post("/products", upload.single('image'), async (req, res) => {
     try {
         const { name, price, quantity, description, userId } = req.body;
 
@@ -41,7 +43,7 @@ router.post("/products", async (req, res) => {
             return res.status(BAD_REQUEST).json({ error: "Quantity and price must be valid numbers." });
         }
 
-        // Validate that quantity and price are greater than or equal to zero
+        // Validate quantity and price greater than or equal to zero
         if (quantity < 0 || price < 0) {
             return res.status(BAD_REQUEST).json({ error: "Quantity and price must be greater than or equal to zero." });
         }
@@ -51,17 +53,26 @@ router.post("/products", async (req, res) => {
             return res.status(BAD_REQUEST).json({ error: "Invalid userId." });
         }
 
+        // Ensure image is uploaded
+        if (!req.file) {
+            return res.status(BAD_REQUEST).json({ message: "Image is required" });
+        }
+
+        const image = req.file.path; // Get the image path
+
+        // Create product in the database
         const newProduct = await StationeryProduct.create({
             name,
             price,
             quantity,
             description,
             userId,
-        })
+            image, // Save the path of the uploaded image
+        });
 
-        res.status(CREATED).json(newProduct);
+        res.status(201).json(newProduct); // Respond with the created product
     } catch (error) {
-        res.status(SERVER_ERROR).json({ message: "Failed to create product", error: error.message });
+        res.status(500).json({ message: "Failed to create product", error: error.message });
     }
 });
 

@@ -9,12 +9,6 @@ const stationeryProductSchema = new Schema({
     },
     image: {
         type: String,
-        validate: {
-            validator: function (v) {
-                return /^(https?:\/\/)/.test(v); 
-            },
-            message: 'Invalid image URL',
-        },
     },
     name: {
         type: String,
