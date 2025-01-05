@@ -47,6 +47,10 @@ curl.md
 rest.md
 animal.md
 
+# javascript files(unnecessary)
 generate.js
-
 me.js
+
+
+# excell files
+*.xlsx
