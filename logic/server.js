@@ -14,6 +14,9 @@ const printingRoutes = require("./routes/printing.routes");
 const hardwareRoutes = require("./routes/hardware.routes");
 const stationeryRoutes = require("./routes/stationery.routes");
 
+// log
+const log = require("./logs/logger");
+
 // database
 const connectDB = require("./config/DB");
 
@@ -23,11 +26,12 @@ app.use(cors());
 
 app.use(
   cors({
-    origin: "http://localhost:5173", // Allow only frontend from localhost:3000
+    origin: "http://localhost:5173", // Allow only frontend from localhost:5173
   })
 );
 
 app.use(express.json());
+app.use(log)
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
@@ -36,11 +40,10 @@ app.get("/", (req, res) => {
 });
 
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
-  standardHeaders: "draft-8", // draft-6: `RateLimit-*` headers; draft-7 & draft-8: combined `RateLimit` header
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
-  // store: ... , // Redis, Memcached, etc. See below.
+  windowMs: 15 * 60 * 1000, 
+  limit: 100, 
+  standardHeaders: "draft-8",
+  legacyHeaders: false, 
 });
 
 // middleware
