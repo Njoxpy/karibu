@@ -1,7 +1,11 @@
 const express = require("express");
 const XLSX = require("xlsx");
-const path = require("path");
 const fs = require("fs");
+const multer = require("multer");
+
+// Multer setup for single file upload
+const uploadExcell = multer({ dest: "uploads/" });
+const { validationResult } = require("express-validator");
 const router = express.Router();
 
 const {
@@ -15,76 +19,120 @@ const {
   updateGodownOrderById,
   deleteGodownProduct,
   deleteGodownOrder,
-  bulkUploadGodownProducts
+  getAvailableProducts,
+  getRevenue,
+  transferInventory,
 } = require("../controllers/godown.controller");
 
 // middleware
 const validateObjectId = require("../middleware/validateObjectId");
-const upload = require("../middleware/uploadGodown");
 
 // models
 const GodownProduct = require("../models/godown/godownProductModel");
-const Inventory = require("../models/godown/inventoryModel")
+const Inventory = require("../models/godown/inventoryModel");
 
 // response code
-const { SERVER_ERROR, CREATED, BAD_REQUEST, OK } = require("../constants/responseStatusCode");
+const {
+  SERVER_ERROR,
+  BAD_REQUEST,
+  OK,
+} = require("../constants/responseStatusCode");
 
 // create product
 router.post("/products", createGodownProduct);
 
-router.post('/products/bulk-upload', upload.single('file'), async (req, res) => {
-  try {
-    const filePath = req.file.path;
-
-    // Read the Excel file
-    const workbook = XLSX.readFile(filePath);
-    const sheetName = workbook.SheetNames[0]; // Get the first sheet
-    const worksheet = workbook.Sheets[sheetName];
-
-    // Parse data from the Excel sheet
-    const jsonData = XLSX.utils.sheet_to_json(worksheet);
-
-    // Validate and save the data
-    const newProducts = [];
-    for (let row of jsonData) {
-      const { name, price, quantity, location, description, userId } = row;
-
-      if (!name || !price || !quantity || !location || !description || !userId) {
-        return res.status(BAD_REQUEST).json({ message: "Missing required fields in Excel" });
-      }
-
-      if (isNaN(price) || isNaN(quantity)) {
-        return res.status(BAD_REQUEST).json({ message: "Price and Quantity must be valid numbers" });
-      }
-
-      const newProduct = await GodownProduct.create({
-        name,
-        price,
-        quantity,
-        location,
-        description,
-        userId
-      });
-
-      newProducts.push(newProduct);
+router.post(
+  "/products/bulk-upload",
+  uploadExcell.single("file"), // Expecting a field 'file'
+  async (req, res) => {
+    // Step 1: Check if a file is uploaded
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
     }
 
-    // Cleanup the uploaded file (optional)
-    fs.unlinkSync(filePath);
+    // Step 2: Validate request data (if any other validation required)
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
 
-    res.status(CREATED).json({ message: `${newProducts.length} products uploaded successfully`, newProducts });
-  } catch (error) {
-    res.status(SERVER_ERROR).json({ message: "Failed to process the Excel file", error: error.message });
+    try {
+      const filePath = req.file.path; // Path to the uploaded file
+
+      // Step 3: Read and parse the Excel file
+      const workbook = XLSX.readFile(filePath);
+      const sheetName = workbook.SheetNames[0]; // Assuming data is in the first sheet
+      const worksheet = workbook.Sheets[sheetName];
+      const jsonData = XLSX.utils.sheet_to_json(worksheet); // Convert sheet to JSON
+
+      const newProducts = [];
+      const failedRows = [];
+
+      // Step 4: Process each row and store in the database
+      for (let i = 0; i < jsonData.length; i++) {
+        const row = jsonData[i];
+
+        // Validate row data (e.g., check for missing required fields)
+        if (!row.name || !row.price || !row.quantity) {
+          failedRows.push({ row: i + 1, error: "Missing required fields" });
+          continue;
+        }
+
+        try {
+          // Create a new product entry
+          const newProduct = await GodownProduct.create({
+            name: row.name,
+            price: parseFloat(row.price), // Parse price as a float
+            quantity: parseInt(row.quantity), // Parse quantity as an integer
+            location: row.location,
+            description: row.description,
+            userId: row.userId,
+          });
+
+          newProducts.push(newProduct);
+        } catch (error) {
+          // Log specific error for the row and continue
+          failedRows.push({ row: i + 1, error: error.message });
+          console.error(`Error processing row ${i + 1}:`, error);
+        }
+      }
+
+      // Step 5: Clean up the uploaded file (delete it after processing)
+      await fs.promises.unlink(filePath);
+
+      // Step 6: Respond with the result
+      if (failedRows.length > 0) {
+        return res.status(400).json({
+          message: "Some rows failed to upload",
+          failedRows,
+          successfulUploads: newProducts.length,
+        });
+      }
+
+      res.status(201).json({
+        message: `${newProducts.length} products uploaded successfully`,
+        newProducts,
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: "Failed to process the Excel file",
+        error: error.message,
+      });
+    }
   }
-});
+);
 
-// bulk upload
+module.exports = router;
+
 router.post("/products", createGodownProduct);
 
 // Other routes remain the same (create, get, update, delete, etc.)
 
 // create order
 router.post("/orders", createGodownOrder);
+
+router.get("/available-products", getAvailableProducts);
+router.get("/revenue", getRevenue);
 
 // get all products
 router.get("/products", getAllGodownProducts);
@@ -110,60 +158,6 @@ router.delete("/products/:id", validateObjectId, deleteGodownProduct);
 // delete product by id
 router.delete("/orders/:id", validateObjectId, deleteGodownOrder);
 
-router.post("/inventory-movement", async (req, res) => {
-  const { selectedItemId, transferQuantity, origin, destination } = req.body;
-
-  try {
-    if (!selectedItemId || !transferQuantity || !origin || !destination) {
-      return res.status(BAD_REQUEST).json({ message: "Please fill in all fields." });
-    }
-
-    const item = await GodownProduct.findOne({ _id: selectedItemId });
-    if (!item) {
-      return res.status(BAD_REQUEST).json({ message: "Item not found." });
-    }
-
-    if (item.location !== origin) {
-      return res.status(BAD_REQUEST).json({ message: "Item is not at the specified origin location." });
-    }
-
-    if (transferQuantity > item.quantity) {
-      return res.status(BAD_REQUEST).json({ message: "Transfer quantity exceeds available stock." });
-    }
-
-    item.quantity -= transferQuantity;
-    await item.save();
-
-    let destinationItem = await Inventory.findOne({ location: destination, name: item.name });
-    if (!destinationItem) {
-      destinationItem = new GodownProduct({
-        name: item.name,
-        code: item.code,
-        quantity: transferQuantity,
-        location: destination,
-        godownId: item.godownId,
-      });
-    } else {
-      destinationItem.quantity += transferQuantity;
-    }
-
-    await destinationItem.save();
-
-    // Return success message
-    res.status(OK).json({
-      message: `Successfully transferred ${transferQuantity} ${item.name} from ${origin} to ${destination}`,
-      data: {
-        item: item.name,
-        transferredQuantity: transferQuantity,
-        from: origin,
-        to: destination,
-      },
-    });
-  } catch (error) {
-    console.error("Error during inventory movement:", error);
-    res.status(SERVER_ERROR).json({ error: "Error processing the inventory movement.", details: error.message });
-  }
-});
-
+router.post("/inventory-movement", transferInventory);
 
 module.exports = router;

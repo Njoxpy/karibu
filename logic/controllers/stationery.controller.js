@@ -3,7 +3,7 @@ const Product = require("../models/stationery/stationeryProductModel");
 const Order = require("../models/stationery/stationerOrderModel");
 
 // status code
-const { OK, NOT_FOUND, SERVER_ERROR, CREATED, BAD_REQUEST } = require("../constants/responseStatusCode");
+const { OK, NOT_FOUND, SERVER_ERROR, BAD_REQUEST } = require("../constants/responseStatusCode");
 const StationeryProduct = require("../models/stationery/stationeryProductModel");
 const StationeryOrder = require("../models/stationery/stationerOrderModel");
 

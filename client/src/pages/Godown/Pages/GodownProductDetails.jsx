@@ -105,15 +105,9 @@ const GodownProductDetails = () => {
             />
           </div>
 
-          {/* Product Category */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Category</label>
-            <input
-              type="text"
-              value={product.category}
-              readOnly
-              className="w-full p-2 border border-gray-300 rounded-md mt-1 capitalize"
-            />
+          <label htmlFor="quantity" className="block text-sm font-medium text-gray-700">Quantity Available</label>
+            <p className="w-full p-2 borde mt-1">{product && product.quantity}</p>
           </div>
 
           {/* Quantity Input */}

@@ -14,7 +14,7 @@ const InventoryMovement = () => {
   useEffect(() => {
     const fetchInventory = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/v1/godown/products/inventory-movement");
+        const response = await fetch("http://localhost:5000/api/v1/godown/products/");
         const data = await response.json();
         
         if (response.ok) {
@@ -90,7 +90,7 @@ const InventoryMovement = () => {
   if (error) {
     return (
       <div className="text-center py-8">
-        <h1 className="text-xl text-red-500">{error}</h1>
+        <h1 className="text-xl text-red-500 p-2 mb-2 font-bold">{error}</h1>
       </div>
     );
   }
@@ -107,7 +107,7 @@ const InventoryMovement = () => {
             className="w-full p-2 mb-4 border border-gray-300 rounded"
           >
             <option value="">Choose an item...</option>
-            {inventory.map((item) => (
+            {inventory && inventory.map((item) => (
               <option key={item._id} value={item._id}>
                 {item.name} - {item.quantity} available
               </option>
@@ -157,7 +157,7 @@ const InventoryMovement = () => {
             className="w-full p-2 mb-4 border border-gray-300 rounded"
           />
 
-          {message && <p className="text-red-500 text-sm">{message}</p>}
+          {message && <p className="text-red-500 text-sm p-2 mb-2 font-bold">{message}</p>}
 
           <button
             onClick={handleTransfer}

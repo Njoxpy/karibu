@@ -107,15 +107,6 @@ function AnimalFeedingLayout() {
               <li>
                 <Link
                   className="hover:text-gray-200 transition-colors duration-200"
-                  to="/godown/search"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Search
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="hover:text-gray-200 transition-colors duration-200"
                   to="/godown/orders"
                   onClick={() => setIsMenuOpen(false)}
                 >

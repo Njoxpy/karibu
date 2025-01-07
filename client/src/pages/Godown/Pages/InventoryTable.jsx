@@ -127,7 +127,7 @@ const InventoryTable = () => {
   return (
     <div className="p-4">
       {error && (
-        <div className="mb-4 p-4 bg-red-500 text-white rounded">
+        <div className="mb-4 p-4 text-red-500 rounded">
           <strong>Error:</strong> {error}
         </div>
       )}
