@@ -1,31 +1,30 @@
 import { useState, useEffect } from "react";
 import Animal2 from "../../../assets/images/animal2.jpg"; // Update the path accordingly
+import { useAnimalFeeding } from "../../../hooks/animalFeeding/useAnimalFeeding"; // Import the custom hook
 
 function FoodsBody() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [products, setProducts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState(""); // Local state for search
+  const { products, isLoading, error, dispatch } = useAnimalFeeding(); // Access context using the custom hook
 
   // Fetch products from the API
   useEffect(() => {
     const fetchProducts = async () => {
+      dispatch({ type: "SET_LOADING" }); // Dispatch loading action
+
       try {
         const response = await fetch("http://localhost:5000/api/v1/animal-feeding/products");
         if (!response.ok) {
           throw new Error("Failed to fetch products");
         }
         const data = await response.json();
-        setProducts(data); // Set the fetched products
-        setIsLoading(false);
+        dispatch({ type: "SET_ANIMAL_FEEDING_PRODUCTS", payload: data }); // Dispatch products to context
       } catch (err) {
-        setError(err.message);
-        setIsLoading(false);
+        dispatch({ type: "SET_ERROR", payload: err.message }); // Dispatch error
       }
     };
 
     fetchProducts();
-  }, []);
+  }, [dispatch]); // Add dispatch to dependency array to avoid warning
 
   // Pagination setup
   const itemsPerPage = 6; // Number of items per page
@@ -59,7 +58,7 @@ function FoodsBody() {
       
       {/* Loading state */}
       {isLoading && <p>Loading products...</p>}
-      
+
       {/* Error state */}
       {error && <p className="text-red-500">{error}</p>}
 
