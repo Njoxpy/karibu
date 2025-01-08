@@ -2,55 +2,49 @@ version: "1.0"
 name: Savarrah Project
 # This is the project name that will appear in Qodana
 
-# Specify the language you are using, in this case, Golang
+# Specify the languages you're using
 languages:
-  - golang
+  - javascript
+  - jsx  # For React components
 
 # Define the paths to scan within the project
 paths:
-  - ./src  # Assuming your main project source code is under the 'src' folder
-  - ./tests  # If you have a 'tests' folder for unit tests or similar
+  - ./src  # Your main project source code
+  - ./client/src  # If you have a separate React client
 
-# Set up additional checks for Golang if you are using linters or custom checks
-golang:
+# Node.js specific checks
+nodejs:
   enabled: true
-  # Specify Go module file if it's part of the project
-  go_module: ./go.mod
-  
-# Custom rules configuration can be added if necessary
-rules:
-  # You can enable or disable specific rules here
-  enabled:
-    - golang:golint  # For Golang linting
-    - golang:govet   # For Go vet checks
-    - golang:staticcheck  # For static analysis
-  disabled:
-    # Example: disable unnecessary rule
-    - golang:golint:comment  # Disable comment rule if not required
+  package_manager: npm  # Or yarn if you're using yarn
+  package_file: ./package.json  # Specify the path to package.json for dependency management
 
-# Set up MongoDB/SQL-related checks or other external dependencies
-# You can add external configurations if your project connects with databases
-# or other services.
+# React specific checks
+react:
+  enabled: true
+  version: "17"  # Adjust this depending on your React version
+  eslint: true  # Enable ESLint for React checks
+
+# Custom rules configuration can be added here
+rules:
+  enabled:
+    - javascript:eslint  # Enable ESLint for JavaScript
+    - javascript:prettier  # For Prettier formatting checks
+    - nodejs:eslint  # Enable ESLint for Node.js
+  disabled:
+    # Example: disable rules you don't need
+    - react:no-unused-vars  # If unused variables in React components are not an issue
+
+# Optional: MongoDB and Express configuration
 databases:
   - mongodb:
-      uri: "mongodb://localhost:27017/savarrah"  # Example MongoDB connection URI
+      uri: "mongodb://localhost:27017/savarrah"  # Example MongoDB URI
       database: savarrah
 
-# Optional: You can set Qodana to run certain checks only in specific environments
-# You could define different environments or enable checks for specific conditions
-environments:
-  dev:
-    enabled:
-      - golang:golint
-  prod:
-    enabled:
-      - golang:staticcheck
-
-# Define how reports should be generated, if necessary
+# Reports and CI integration
 reports:
-  output_dir: ./qodana-reports  # The directory where reports will be saved
+  output_dir: ./qodana-reports  # Directory to store Qodana reports
 
-# Optionally, include integration with CI/CD tools like Jenkins, GitLab CI, etc.
+# CI/CD configuration for integration with tools like GitHub Actions, Jenkins, etc.
 ci:
   enabled: true
-  provider: github_actions  # Example, adjust according to your CI setup
+  provider: github_actions  # Adjust if you're using a different CI provider
