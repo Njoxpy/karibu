@@ -10,55 +10,55 @@ function Services() {
     <section className="bg-white px-6 pt-14 lg:px-8" id="services">
       <div className="container mx-auto px-6 text-center">
         <h2 className="text-3xl font-extrabold text-blue-600 mb-6">
-          Our Services
+          Huduma Zetu
         </h2>
         <p className="text-lg text-gray-600 mb-12">
-          Discover our wide range of services tailored to meet your business
-          needs.
+          Gundua huduma zetu mbalimbali zilizobuniwa kukidhi mahitaji yako ya
+          kibiashara.
         </p>
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {[
             {
-              title: "Printing",
+              title: "Uchapishaji",
               image: printingImage,
-              alt: "Printing Services",
+              alt: "Huduma za Uchapishaji",
               description:
-                "High-quality printing services for all your business needs, from brochures to business cards.",
+                "Huduma za uchapishaji wa hali ya juu kwa mahitaji yako yote ya kibiashara, kuanzia vipeperushi hadi kadi za biashara.",
             },
             {
-              title: "Fresh Oil",
+              title: "Mafuta Safi",
               image: oilImage,
-              alt: "Fresh Oil Services",
+              alt: "Huduma za Mafuta Safi",
               description:
-                "Providing high-quality, fresh oils for various industrial and culinary applications.",
+                "Tunatoa mafuta safi ya hali ya juu kwa matumizi mbalimbali ya viwandani na jikoni.",
             },
             {
-              title: "Hardware",
+              title: "Vifaa vya Ujenzi",
               image: hardImage,
-              alt: "Hardware Services",
+              alt: "Huduma za Vifaa vya Ujenzi",
               description:
-                "A wide range of hardware products, from construction materials to DIY tools.",
+                "Bidhaa mbalimbali za vifaa vya ujenzi, kuanzia vifaa vya ujenzi hadi zana za DIY.",
             },
             {
-              title: "Animal Feeding",
+              title: "Lishe ya Wanyama",
               image: animal2Image,
-              alt: "Animal Feeding Services",
+              alt: "Huduma za Lishe ya Wanyama",
               description:
-                "High-quality feed and nutrition products for your livestock, ensuring their health and productivity.",
+                "Chakula na bidhaa za lishe za hali ya juu kwa mifugo wako, kuhakikisha afya na uzalishaji wao.",
             },
             {
-              title: "Godown",
+              title: "Maghala",
               image: godownImage,
-              alt: "Godown Services",
+              alt: "Huduma za Maghala",
               description:
-                "Secure storage solutions with a range of warehouses tailored to your business needs.",
+                "Suluhisho salama za hifadhi na maghala mbalimbali yanayokidhi mahitaji yako ya biashara.",
             },
             {
-              title: "Stationery",
+              title: "Vifaa vya Ofisini",
               image: stationeryImage,
-              alt: "Stationery Services",
+              alt: "Huduma za Vifaa vya Ofisini",
               description:
-                "A wide selection of stationery products for office and business use, from pens to paper.",
+                "Uchaguzi mpana wa bidhaa za ofisini kwa matumizi ya kiofisi na kibiashara, kuanzia kalamu hadi karatasi.",
             },
           ].map((service, index) => (
             <div

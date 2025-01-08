@@ -8,34 +8,33 @@ import stationery from "../assets/images/stationery1.jpg";
 import printing from "../assets/images/printing.jpg";
 import godown from "../assets/images/godown-new-11.jpg";
 import animalFeeding from "../assets/images/animalFeeding.jpg";
-import { Link } from "react-router-dom";
 
 const images = [
-    { id: 1, src: stationery, alt: "Stationery products on display" },
-    { id: 2, src: printing, alt: "Printing services in action" },
-    { id: 3, src: godown, alt: "Well-organized warehouse" },
-    { id: 4, src: animalFeeding, alt: "Animal feeding services" },
+    { id: 1, src: stationery, alt: "Bidhaa za vifaa vya ofisini zikiwa kwenye onyesho" },
+    { id: 2, src: printing, alt: "Huduma za uchapishaji zikiendelea" },
+    { id: 3, src: godown, alt: "Ghala lililopangwa vizuri" },
+    { id: 4, src: animalFeeding, alt: "Huduma za kulisha wanyama" },
 ];
 
 const HelloSection = () => {
     return (
         <div className="relative bg-gray-100">
-            {/* Hero Section */}
+            {/* Sehemu ya Kwanza */}
             <div className="py-16 text-center bg-indigo-600 text-white">
                 <h1 className="text-4xl font-bold">
-                    Greetings from Your Leading Provider of Quality Products
+                    Karibu kutoka kwa Mtoa Huduma Bora wa Bidhaa za Ubora wa Hali ya Juu
                 </h1>
                 <p className="mt-4 text-lg">
-                    Leading provider of quality services and products across industries including Hardware, Fresh Oil, Stationery, and more.
+                    Tunatoa huduma na bidhaa za hali ya juu katika sekta mbalimbali kama vile Vifaa vya Ofisini, Mafuta Safi, Uchapishaji, na mengine mengi.
                 </p>
-                <Link to={"/contact"}>
+                <a href="#contact">
                     <button className="mt-6 bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600">
-                        Contact Us
+                        Wasiliana Nasi
                     </button>
-                </Link>
+                </a>
             </div>
 
-            {/* Slideshow Section */}
+            {/* Sehemu ya Slideshow */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <Swiper
                     modules={[Navigation, Pagination, Autoplay]}
@@ -44,7 +43,7 @@ const HelloSection = () => {
                     autoplay={{ delay: 3000 }}
                     pagination={{ clickable: true }}
                     a11y={{ enabled: true }}
-                    aria-label="Slideshow featuring our key services and products"
+                    aria-label="Slideshow inayoonyesha huduma na bidhaa zetu kuu"
                     className="rounded-lg overflow-hidden shadow-lg bg-gray-200"
                 >
                     {images.map((image) => (

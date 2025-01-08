@@ -4,6 +4,7 @@ import logo from "../assets/images/logoWithName.png"; // Import your logo image
 
 const RootLayout = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const fallbackLogo = "Savarrah"
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -17,7 +18,6 @@ const RootLayout = () => {
     { name: "Hardware", path: "/hardware" },
     { name: "Printing", path: "/printing" },
     { name: "FreshOil", path: "/freshOil" },
-    { name: "Contact", path: "/contact" },
     { name: "Admin", path: "/admin" },
   ];
 
@@ -26,11 +26,12 @@ const RootLayout = () => {
       <nav className="flex items-center justify-between flex-wrap bg-primary p-6">
         {/* Logo */}
         <div className="flex items-center flex-shrink-0 text-white mr-6">
-          <Link to="/">
+          <Link to="/" aria-label="Go to Home Page">
             <img
-              src={logo}
+              src={logo || fallbackLogo}
               alt="Savarrah Logo"
-              className="h-10 w-auto" // Adjust height/width as needed
+              className="h-10 w-auto"
+              onError={(e) => {e.target.src = fallbackLogo}}
             />
           </Link>
         </div>
