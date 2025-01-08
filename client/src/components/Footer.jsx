@@ -6,11 +6,11 @@ const Footer = () => {
           <div>
             <h2 className="text-2xl font-semibold text-green-400">Savarrah</h2>
             <p className="mt-4 max-w-xs text-gray-300">
-              Leading provider of quality services and products across
-              industries including Hardware, Fresh Oil, Stationery, Animal feeding and Printing.
+              Mtoa huduma bora wa bidhaa na huduma za hali ya juu katika
+              sekta mbalimbali ikiwemo Vifaa vya Ujenzi, Mafuta Safi, Vifaa vya Ofisini, Lishe ya Wanyama, na Uchapishaji.
             </p>
 
-            {/* Social Media Links */}
+            {/* Viungo vya Mitandao ya Kijamii */}
             <ul className="mt-8 flex gap-6">
               {["Facebook", "Instagram", "Twitter", "LinkedIn"].map(
                 (platform) => (
@@ -22,7 +22,7 @@ const Footer = () => {
                       className="text-gray-300 transition hover:opacity-75"
                       aria-label={platform}
                     >
-                      {/* Placeholder for social media icons */}
+                      {/* Nafasi ya Icons za mitandao */}
                       <span className="sr-only">{platform}</span>
                     </a>
                   </li>
@@ -31,19 +31,19 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Footer Navigation Links */}
+          {/* Viungo vya Uendeshaji */}
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-4">
-            {/* Services Section */}
+            {/* Sehemu ya Huduma */}
             <div>
-              <h3 className="font-medium text-green-400">Services</h3>
+              <h3 className="font-medium text-green-400">Huduma</h3>
               <ul className="mt-6 space-y-4 text-sm text-gray-300">
                 {[
-                  "Hardware Supplies",
-                  "Fresh Oil Distribution",
-                  "Stationery Solutions",
-                  "Animal Feed Supplies",
-                  "Storage and Logistics",
-                  "Printing",
+                  "Vifaa vya Ujenzi",
+                  "Usambazaji wa Mafuta Safi",
+                  "Suluhisho za Vifaa vya Ofisini",
+                  "Chakula cha Lishe ya Wanyama",
+                  "Hifadhi na Usafirishaji",
+                  "Uchapishaji",
                 ].map((service) => (
                   <li key={service}>
                     <a href="#services" className="hover:opacity-75">
@@ -54,11 +54,11 @@ const Footer = () => {
               </ul>
             </div>
 
-            {/* Company Section */}
+            {/* Sehemu ya Kampuni */}
             <div>
-              <h3 className="font-medium text-green-400">Company</h3>
+              <h3 className="font-medium text-green-400">Kampuni</h3>
               <ul className="mt-6 space-y-4 text-sm text-gray-300">
-                {["About Us", "Meet Our Team", "Careers", "Our Location"].map(
+                {["Kuhusu Sisi", "Kutana na Timu Yetu", "Ajira", "Mahali Yetu"].map(
                   (companyInfo) => (
                     <li key={companyInfo}>
                       <a href="#" className="hover:opacity-75">
@@ -70,14 +70,11 @@ const Footer = () => {
               </ul>
             </div>
 
-            {/* Helpful Links Section */}
+            {/* Viungo vya Msaada */}
             <div>
-              <h3 className="font-medium text-green-400">Helpful Links</h3>
+              <h3 className="font-medium text-green-400">Viungo vya Msaada</h3>
               <ul className="mt-6 space-y-4 text-sm text-gray-300">
-                {[
-                  "Contact Us",
-                  "Customer Support",
-                ].map((link) => (
+                {["Wasiliana Nasi", "Huduma kwa Wateja"].map((link) => (
                   <li key={link}>
                     <a href="#" className="hover:opacity-75">
                       {link}
@@ -87,15 +84,15 @@ const Footer = () => {
               </ul>
             </div>
 
-            {/* Legal Section */}
+            {/* Sehemu ya Sheria */}
             <div>
-              <h3 className="font-medium text-green-400">Legal</h3>
+              <h3 className="font-medium text-green-400">Sheria</h3>
               <ul className="mt-6 space-y-4 text-sm text-gray-300">
                 {[
-                  "Privacy Policy",
-                  "Terms of Service",
-                  "Disclaimer",
-                  "Accessibility",
+                  "Sera ya Faragha",
+                  "Masharti ya Huduma",
+                  "Kanusho",
+                  "Ufikiaji",
                 ].map((legalInfo) => (
                   <li key={legalInfo}>
                     <a href="#" className="hover:opacity-75">
@@ -108,9 +105,9 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Bottom Bar */}
+        {/* Sehemu ya Chini */}
         <p className="text-xs text-white font-bold text-center mt-8">
-          &copy; {new Date().getFullYear()} Savarrah. All rights reserved.
+          &copy; {new Date().getFullYear()} Savarrah. Haki zote zimehifadhiwa.
         </p>
       </div>
     </footer>

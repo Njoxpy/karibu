@@ -47,7 +47,7 @@ const AboutUs = () => {
         {/* Kitufe cha Jifunze Zaidi */}
         <div className="flex justify-center">
           <button className="inline-block text-center bg-blue-600 text-white text-lg font-semibold py-3 px-8 rounded-md hover:bg-blue-500 mt-8 transition-all duration-300 ease-in-out transform hover:scale-105">
-            Jifunze Zaidi
+           <a href="#services"> Jifunze Zaidi</a>
           </button>
         </div>
       </div>
