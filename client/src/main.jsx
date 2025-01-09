@@ -15,7 +15,7 @@ import { GodownContextProvider } from "./context/GodownContext";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
       <AnimalFeedingContextProvider>
-        <FreshOilContextProvider>  {/* Add FreshOilContextProvider */}
+        <FreshOilContextProvider> 
           <HardwareContextProvider>
             <PrintingContextProvider>
               <StationeryContextProvider>

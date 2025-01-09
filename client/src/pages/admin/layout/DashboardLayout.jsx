@@ -1,5 +1,4 @@
-// src/pages/admin/DashboardLayout.jsx
-import { Link, useLocation } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
 
@@ -26,37 +25,57 @@ const DashboardLayout = () => {
     };
 
     const handleLogout = () => {
-        // Add your logout logic here (e.g., clear session, redirect, etc.)
+        // Clear session, tokens, etc.
         console.log("Logging out...");
     };
 
     return (
         <div className="flex min-h-screen">
             {/* Sidebar */}
-            <div className={`bg-blue-500 text-white w-64 ${open ? "block" : "hidden"} md:block`}>
+            <div
+                className={`bg-blue-500 text-white w-64 ${open ? "sidebar-open" : "sidebar-closed"} md:block sidebar-transition`}
+            >
                 <div className="p-4">
-                    <h2 className="text-2xl font-bold"><Link to={"/admin"}>Welcome Leon</Link></h2>
+                    <h2 className="text-2xl font-bold">
+                        <NavLink to="/admin">Welcome Leon</NavLink>
+                    </h2>
                 </div>
                 <ul className="space-y-4">
                     <li>
-                        <Link to="/admin/products" className="block py-2 px-4 hover:bg-blue-700">
+                        <NavLink
+                            to="/admin/products"
+                            className="block py-2 px-4 hover:bg-blue-700"
+                            activeClassName="bg-blue-700"
+                        >
                             Products
-                        </Link>
+                        </NavLink>
                     </li>
                     <li>
-                        <Link to="/admin/orders" className="block py-2 px-4 hover:bg-blue-700">
+                        <NavLink
+                            to="/admin/orders"
+                            className="block py-2 px-4 hover:bg-blue-700"
+                            activeClassName="bg-blue-700"
+                        >
                             Orders
-                        </Link>
+                        </NavLink>
                     </li>
                     <li>
-                        <Link to="/admin/users" className="block py-2 px-4 hover:bg-blue-700">
+                        <NavLink
+                            to="/admin/users"
+                            className="block py-2 px-4 hover:bg-blue-700"
+                            activeClassName="bg-blue-700"
+                        >
                             Users
-                        </Link>
+                        </NavLink>
                     </li>
                     <li>
-                        <Link to="/admin/reports" className="block py-2 px-4 hover:bg-blue-700">
+                        <NavLink
+                            to="/admin/reports"
+                            className="block py-2 px-4 hover:bg-blue-700"
+                            activeClassName="bg-blue-700"
+                        >
                             Reports
-                        </Link>
+                        </NavLink>
                     </li>
                 </ul>
             </div>
@@ -83,14 +102,6 @@ const DashboardLayout = () => {
                         {openProfileDropdown && (
                             <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md">
                                 <ul className="py-1">
-                                    <li>
-                                        <Link
-                                            to="/admin/settings"
-                                            className="block px-4 py-2 text-gray-700 hover:bg-blue-500 hover:text-white"
-                                        >
-                                            Settings
-                                        </Link>
-                                    </li>
                                     <li>
                                         <button
                                             onClick={handleLogout}

@@ -251,7 +251,7 @@ const updateGodownProductById = async (req, res) => {
   try {
     const { price, quantity } = req.body;
 
-    if (price < 0) {
+    if (price <= 0) {
       return res
         .status(BAD_REQUEST)
         .json({ message: "Price cannot be negative" });

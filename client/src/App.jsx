@@ -142,7 +142,6 @@ import ProductsPage from "./pages/admin/pages/ProductsPage";
 import OrdersPage from "./pages/admin/pages/OrdersPage";
 import UsersPage from "./pages/admin/pages/UsersPage";
 import ReportsPage from "./pages/admin/pages/ReportsPage";
-import SettingsPage from "./pages/admin/pages/SettingsPage";
 import AddProduct from "./pages/admin/components/AddProduct";
 import OrderDetailsPage from "./pages/admin/order/OrderDetailsPage";
 import UserProfile from "./components/UserProfile";
@@ -166,7 +165,6 @@ export default function App() {
           <Route path="users/create" element={<AddUserPage />} />
           <Route path="report" element={<Reports />} />
           <Route path="reports" element={<ReportsPage />} />
-          <Route path="settings" element={<SettingsPage />} />
         </Route>
         <Route path="/" element={<RootLayout />}>
           <Route index element={<Home />} />

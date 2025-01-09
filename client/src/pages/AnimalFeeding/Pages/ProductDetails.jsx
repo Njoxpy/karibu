@@ -37,19 +37,17 @@ const ProductDetails = () => {
     fetchProduct();
   }, [id, quantity]);
 
-  const handleQuantityChange = (e) => {
-    const newQuantity = parseInt(e.target.value);
+  const handleQuantityIncrease = () => {
+    if (product && quantity < product.stock) {
+      setQuantity(quantity + 1);
+      setTotalPrice((quantity + 1) * product.price);
+    }
+  };
 
-    if (product && newQuantity > product.stock) {
-      setStockError(`Only ${product.stock} items are available in stock.`);
-      setQuantity(product.stock);
-      setTotalPrice(product.price * product.stock);
-    } else {
-      setStockError('');
-      setQuantity(newQuantity);
-      if (product) {
-        setTotalPrice(product.price * newQuantity);
-      }
+  const handleQuantityDecrease = () => {
+    if (quantity > 1) {
+      setQuantity(quantity - 1);
+      setTotalPrice((quantity - 1) * product.price);
     }
   };
 
@@ -62,7 +60,7 @@ const ProductDetails = () => {
     }
 
     const orderData = {
-      createdBy: "67697f0560f383df632c6d6f", // Replace with actual user ID
+      userId: "67700904be771ff27c9aab8b", // Replace with actual user ID
       product: product._id,
       name: product.name,
       quantity,
@@ -90,86 +88,114 @@ const ProductDetails = () => {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{`Error: ${error}`}</div>;
-  if (!product) return <div className="p-4 text-gray-500">Product not found.</div>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-4 text-lg text-gray-700">
+        Loading...
+      </div>
+    );
+  }
+  
+  if (error) {
+    return (
+      <div className="p-4 text-lg text-red-500">
+        {`Error: ${error}`}
+      </div>
+    );
+  }
+  
+  if (!product) {
+    return (
+      <div className="p-4 text-lg text-gray-500">
+        Product not found.
+      </div>
+    );
+  }
+  
 
   return (
     <>
-      <div className="max-w-md mx-auto bg-white p-8 rounded-xl shadow-lg">
-        <h2 className="text-2xl font-semibold mb-6 text-center">{product.name}</h2>
+      <div className="max-w-xl mx-auto bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 p-8 rounded-xl shadow-2xl transition-all ease-in-out duration-300">
+        <h2 className="text-3xl font-semibold text-white mb-6 text-center">{product.name}</h2>
 
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="bg-white p-4 rounded-lg shadow-lg">
             <label className="block text-sm font-medium text-gray-700">Product Name</label>
             <input
               type="text"
               value={product.name}
               readOnly
-              className="w-full p-2 border border-gray-300 rounded-md mt-1"
+              className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          <div className="mb-4">
+          <div className="bg-white p-4 rounded-lg shadow-lg">
             <label className="block text-sm font-medium text-gray-700">Category</label>
             <input
               type="text"
               value={product.category}
               readOnly
-              className="w-full p-2 border border-gray-300 rounded-md mt-1 capitalize"
+              className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          <div className="mb-4">
+          <div className="bg-white p-4 rounded-lg shadow-lg flex justify-between items-center">
             <label htmlFor="quantity" className="block text-sm font-medium text-gray-700">Quantity</label>
-            <input
-              type="number"
-              id="quantity"
-              value={quantity}
-              onChange={handleQuantityChange}
-              className="w-full p-2 border border-gray-300 rounded-md mt-1"
-              min="1"
-            />
-            {stockError && <p className="text-red-500 text-sm">{stockError}</p>}
+            <div className="flex items-center space-x-4">
+              <button
+                type="button"
+                onClick={handleQuantityDecrease}
+                className="w-8 h-8 flex justify-center items-center bg-blue-600 text-white rounded-full hover:bg-blue-700"
+              >
+                -
+              </button>
+              <span className="text-lg font-semibold">{quantity}</span>
+              <button
+                type="button"
+                onClick={handleQuantityIncrease}
+                className="w-8 h-8 flex justify-center items-center bg-blue-600 text-white rounded-full hover:bg-blue-700"
+              >
+                +
+              </button>
+            </div>
+            {stockError && <p className="text-red-500 text-sm mt-2">{stockError}</p>}
           </div>
 
-          <div className="mb-4">
+          <div className="bg-white p-4 rounded-lg shadow-lg">
             <label htmlFor="price" className="block text-sm font-medium text-gray-700">Price per Item</label>
             <input
               type="text"
               id="price"
               value={`Tsh ${product.price}`}
               readOnly
-              className="w-full p-2 border border-gray-300 rounded-md mt-1"
+              className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          <div className="mb-4">
+          <div className="bg-white p-4 rounded-lg shadow-lg">
             <label htmlFor="totalPrice" className="block text-sm font-medium text-gray-700">Total Price</label>
             <input
               type="text"
               id="totalPrice"
               value={`Tsh ${totalPrice}`}
               readOnly
-              className="w-full p-2 border border-gray-300 rounded-md mt-1"
+              className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          <div className="mb-6">
-            <label className="inline-flex items-center">
-              <input
-                type="checkbox"
-                className="form-checkbox h-4 w-4 text-blue-600"
-                checked={termsAccepted}
-                onChange={() => setTermsAccepted(!termsAccepted)}
-              />
-              <span className="ml-2 text-sm text-gray-600">I agree to the terms and conditions</span>
-            </label>
+          <div className="bg-white p-4 rounded-lg shadow-lg flex items-center">
+            <input
+              type="checkbox"
+              className="h-4 w-4 text-blue-600"
+              checked={termsAccepted}
+              onChange={() => setTermsAccepted(!termsAccepted)}
+            />
+            <span className="ml-2 text-sm text-gray-600">I agree to the terms and conditions</span>
           </div>
 
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700"
+            className="w-full py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
             disabled={stockError || !termsAccepted}
           >
             Complete Order
@@ -177,7 +203,7 @@ const ProductDetails = () => {
         </form>
 
         {orderStatus && (
-          <div className={`mt-4 p-2 ${orderStatus.success ? 'bg-green-500' : 'bg-red-500'} text-white text-center`}>
+          <div className={`mt-4 p-4 text-white text-center rounded-lg ${orderStatus.success ? 'bg-green-500' : 'bg-red-500'}`}>
             {orderStatus.message}
           </div>
         )}
