@@ -17,8 +17,11 @@ const InventoryMovement = () => {
         const response = await fetch("http://localhost:5000/api/v1/godown/products/");
         const data = await response.json();
         
+        console.log("Fetched data:", data);
+        
         if (response.ok) {
           setInventory(data.products);
+          console.log("Set inventory:", data.products);
           setLoading(false);
         } else {
           setMessage(data.message || "Failed to fetch inventory.");
@@ -81,90 +84,108 @@ const InventoryMovement = () => {
 
   if (loading) {
     return (
-      <div className="text-center py-8">
-        <h1 className="text-xl">Loading inventory...</h1>
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="animate-pulse text-2xl text-gray-700 font-semibold">
+          Loading inventory...
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="text-center py-8">
-        <h1 className="text-xl text-red-500 p-2 mb-2 font-bold">{error}</h1>
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="bg-red-50 p-6 rounded-lg shadow-lg">
+          <h1 className="text-2xl text-red-600 font-bold">{error}</h1>
+        </div>
       </div>
     );
   }
 
   return (
     <>
-      <div className="p-4 bg-gray-100 min-h-screen">
-        <h1 className="text-3xl font-bold mb-4 text-center">Transfer Item</h1>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+        <h1 className="text-4xl font-bold mb-8 text-center text-gray-800 tracking-tight">
+          Transfer Item
+        </h1>
 
-        <div className="bg-white p-6 rounded shadow-md max-w-md mx-auto">
-          <label className="block mb-2 font-semibold">Select Item</label>
-          <select
-            onChange={handleItemChange}
-            className="w-full p-2 mb-4 border border-gray-300 rounded"
-          >
-            <option value="">Choose an item...</option>
-            {inventory && inventory.map((item) => (
-              <option key={item._id} value={item._id}>
-                {item.name} - {item.quantity} available
-              </option>
-            ))}
-          </select>
-
-          {selectedItem && (
-            <div className="mb-4">
-              <p>
-                Current Location:{" "}
-                <span className="font-semibold">{selectedItem.location}</span>
-              </p>
-              <p>
-                Available Quantity:{" "}
-                <span className="font-semibold">{selectedItem.quantity}</span>
-              </p>
+        <div className="max-w-xl mx-auto bg-white rounded-xl shadow-xl overflow-hidden">
+          <div className="p-8 space-y-6">
+            <div className="space-y-2">
+              <label className="text-gray-700 text-sm font-semibold uppercase tracking-wide">Select Item</label>
+              <select
+                onChange={handleItemChange}
+                className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              >
+                <option value="">Choose an item...</option>
+                {inventory && inventory.map((item) => (
+                  <option key={item._id} value={item._id}>
+                    {item.name} - {item.quantity} available
+                  </option>
+                ))}
+              </select>
             </div>
-          )}
 
-          <label className="block mb-2 font-semibold">Transfer Quantity</label>
-          <input
-            type="number"
-            min="1"
-            max={selectedItem ? selectedItem.quantity : 0}
-            value={transferQuantity}
-            onChange={(e) => setTransferQuantity(Number(e.target.value))}
-            className="w-full p-2 mb-4 border border-gray-300 rounded"
-          />
+            {selectedItem && (
+              <div className="p-4 bg-gray-50 rounded-lg space-y-2">
+                <p className="text-gray-600">
+                  Current Location:{" "}
+                  <span className="font-semibold text-gray-800">{selectedItem.location}</span>
+                </p>
+                <p className="text-gray-600">
+                  Available Quantity:{" "}
+                  <span className="font-semibold text-gray-800">{selectedItem.quantity}</span>
+                </p>
+              </div>
+            )}
 
-          <label className="block mb-2 font-semibold">Original Location</label>
-          <input
-            type="text"
-            placeholder="Enter original location"
-            value={origin}
-            onChange={(e) => setOrigin(e.target.value)}
-            className="w-full p-2 mb-4 border border-gray-300 rounded"
-          />
+            <div className="space-y-2">
+              <label className="text-gray-700 text-sm font-semibold uppercase tracking-wide">Transfer Quantity</label>
+              <input
+                type="number"
+                min="1"
+                max={selectedItem ? selectedItem.quantity : 0}
+                value={transferQuantity}
+                onChange={(e) => setTransferQuantity(Number(e.target.value))}
+                className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              />
+            </div>
 
-          <label className="block mb-2 font-semibold">
-            Destination Location
-          </label>
-          <input
-            type="text"
-            placeholder="Enter destination location"
-            value={destination}
-            onChange={(e) => setDestination(e.target.value)}
-            className="w-full p-2 mb-4 border border-gray-300 rounded"
-          />
+            <div className="space-y-2">
+              <label className="text-gray-700 text-sm font-semibold uppercase tracking-wide">Original Location</label>
+              <input
+                type="text"
+                placeholder="Enter original location"
+                value={origin}
+                onChange={(e) => setOrigin(e.target.value)}
+                className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              />
+            </div>
 
-          {message && <p className="text-red-500 text-sm p-2 mb-2 font-bold">{message}</p>}
+            <div className="space-y-2">
+              <label className="text-gray-700 text-sm font-semibold uppercase tracking-wide">Destination Location</label>
+              <input
+                type="text"
+                placeholder="Enter destination location"
+                value={destination}
+                onChange={(e) => setDestination(e.target.value)}
+                className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              />
+            </div>
 
-          <button
-            onClick={handleTransfer}
-            className="w-full p-2 bg-gray-600 text-white font-semibold rounded hover:bg-gray-700 transition"
-          >
-            Confirm Transfer
-          </button>
+            {message && (
+              <div className="bg-red-50 text-red-600 p-4 rounded-lg text-sm font-medium">
+                {message}
+              </div>
+            )}
+
+            <button
+              onClick={handleTransfer}
+              className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
+            >
+              Confirm Transfer
+            </button>
+          </div>
         </div>
       </div>
       <Footer />

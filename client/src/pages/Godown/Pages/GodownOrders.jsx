@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import Footer from "../../../components/Footer";
 import { Link } from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Utility function to format date
 const formatDate = (date) => new Date(date).toLocaleDateString();
@@ -163,191 +165,223 @@ const GodownOrders = () => {
   };
 
   return (
-    <>
-      <div className="max-w-7xl mx-auto p-6 bg-white rounded-lg shadow-md">
-        <h1 className="text-3xl font-semibold mb-6 text-gray-800 text-center">Orders List</h1>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
+          <div className="bg-gradient-to-r from-gray-700 to-gray-800 px-6 py-8">
+            <h1 className="text-3xl font-bold text-white text-center">Orders Management</h1>
+            <p className="text-gray-300 text-center mt-2">Track and manage your orders</p>
+          </div>
 
-        {/* Filter Options */}
-        <div className="mb-6 text-center">
-          <button
-            onClick={() => handleFilterChange("all")}
-            className={`py-2 px-6 rounded-md mx-2 transition duration-300 ${filter === "all" ? "bg-indigo-600 text-white" : "bg-gray-200 text-gray-800 hover:bg-indigo-100"}`}
-          >
-            All
-          </button>
-          <button
-            onClick={() => handleFilterChange("day")}
-            className={`py-2 px-6 rounded-md mx-2 transition duration-300 ${filter === "day" ? "bg-indigo-600 text-white" : "bg-gray-200 text-gray-800 hover:bg-indigo-100"}`}
-          >
-            Today
-          </button>
-          <button
-            onClick={() => handleFilterChange("week")}
-            className={`py-2 px-6 rounded-md mx-2 transition duration-300 ${filter === "week" ? "bg-indigo-600 text-white" : "bg-gray-200 text-gray-800 hover:bg-indigo-100"}`}
-          >
-            This Week
-          </button>
-          <button
-            onClick={() => handleFilterChange("month")}
-            className={`py-2 px-6 rounded-md mx-2 transition duration-300 ${filter === "month" ? "bg-indigo-600 text-white" : "bg-gray-200 text-gray-800 hover:bg-indigo-100"}`}
-          >
-            This Month
-          </button>
-        </div>
-
-        {filteredOrders.length === 0 ? (
-          <p className="text-center text-gray-500">No orders found for the selected time period</p>
-        ) : (
-          <table className="min-w-full border border-gray-300">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="px-6 py-3 text-left text-gray-600">Product Name</th>
-                <th className="px-6 py-3 text-left text-gray-600">Quantity</th>
-                <th className="px-6 py-3 text-left text-gray-600">Total Price</th>
-                <th className="px-6 py-3 text-left text-gray-600">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedOrders.map((order) => (
-                <tr key={order._id} className="hover:bg-indigo-50">
-                  <td className="px-6 py-4 text-gray-800">{order.name}</td>
-                  <td className="px-6 py-4 text-gray-800">{order.quantity}</td>
-                  <td className="px-6 py-4 text-gray-800">Tsh {order.totalPrice}</td>
-                  <td className="px-6 py-4">
-                    <div className="flex justify-start gap-2">
-                      <button
-                        onClick={() => openDeleteModal(order._id)}
-                        className="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 transition"
-                      >
-                        Remove
-                      </button>
-                      <button
-                        onClick={() => openEditModal(order)}
-                        className="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition"
-                      >
-                        Edit
-                      </button>
-                      <button className="bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600 transition">
-                        <Link to={`/godown/orders/${order._id}`}>Details</Link>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
+          {/* Filter Options */}
+          <div className="p-6">
+            <div className="flex flex-wrap justify-center gap-3 mb-8">
+              {['all', 'day', 'week', 'month'].map((filterOption) => (
+                <button
+                  key={filterOption}
+                  onClick={() => handleFilterChange(filterOption)}
+                  className={`
+                    px-6 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
+                    ${filter === filterOption
+                      ? 'bg-gray-700 text-white shadow-lg transform scale-105'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}
+                  `}
+                >
+                  {filterOption === 'all' ? 'All Orders' :
+                   filterOption === 'day' ? 'Today' :
+                   filterOption === 'week' ? 'This Week' : 'This Month'}
+                </button>
               ))}
-            </tbody>
-          </table>
-        )}
+            </div>
 
-        {/* Pagination Controls */}
-        <div className="flex justify-center my-6">
-          <button
-            onClick={handlePrevPage}
-            disabled={currentPage === 1}
-            className="px-4 py-2 bg-gray-300 text-gray-800 rounded-l-md disabled:bg-gray-200"
-          >
-            Previous
-          </button>
-          <button
-            onClick={handleNextPage}
-            disabled={currentPage === totalPages}
-            className="px-4 py-2 bg-gray-300 text-gray-800 rounded-r-md disabled:bg-gray-200"
-          >
-            Next
-          </button>
+            {filteredOrders.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="text-gray-400 mb-4">
+                  <svg className="mx-auto h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                </div>
+                <p className="text-gray-500 text-lg">No orders found for the selected time period</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead>
+                    <tr className="bg-gray-50">
+                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Price</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {paginatedOrders.map((order) => (
+                      <tr key={order._id} className="hover:bg-gray-50 transition-colors duration-200">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">{order.name}</div>
+                          <div className="text-sm text-gray-500">ID: {order._id.slice(-6)}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                            {order.quantity} units
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          Tsh {order.totalPrice.toLocaleString()}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                          <button
+                            onClick={() => openEditModal(order)}
+                            className="text-gray-700 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-lg transition-colors duration-200"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => openDeleteModal(order._id)}
+                            className="text-red-600 hover:text-red-900 bg-red-100 hover:bg-red-200 px-3 py-1 rounded-lg transition-colors duration-200"
+                          >
+                            Delete
+                          </button>
+                          <Link
+                            to={`/godown/orders/${order._id}`}
+                            className="text-gray-700 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-lg transition-colors duration-200"
+                          >
+                            Details
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {/* Pagination Controls */}
+            <div className="flex justify-center items-center gap-4 mt-6">
+              <button
+                onClick={handlePrevPage}
+                disabled={currentPage === 1}
+                className={`
+                  px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200
+                  ${currentPage === 1
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-gray-700 text-white hover:bg-gray-800'}
+                `}
+              >
+                Previous
+              </button>
+              <span className="text-gray-600">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+                className={`
+                  px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200
+                  ${currentPage === totalPages
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-gray-700 text-white hover:bg-gray-800'}
+                `}
+              >
+                Next
+              </button>
+            </div>
+          </div>
         </div>
+      </div>
 
-        {/* Edit Modal */}
-        {showEditModal && (
-          <div
-            className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-            onClick={closeEditModal}
-          >
-            <div
-              className="bg-white p-8 rounded-lg max-w-3xl w-full shadow-xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h2 className="text-2xl font-semibold mb-4 text-gray-800">Edit Order</h2>
-              <form>
-                <label className="block mb-4 text-gray-600">
-                  Product Name:
+      {/* Edit Modal */}
+      {showEditModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4">
+            <div className="p-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Edit Order</h2>
+              <form className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
                   <input
                     type="text"
-                    className="w-full p-3 border border-gray-300 rounded-md"
                     value={orderToEdit?.name || ""}
                     onChange={(e) => setOrderToEdit({ ...orderToEdit, name: e.target.value })}
+                    className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-400 focus:border-transparent"
                   />
-                </label>
-                <label className="block mb-4 text-gray-600">
-                  Quantity:
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
                   <input
                     type="number"
-                    className="w-full p-3 border border-gray-300 rounded-md"
                     value={orderToEdit?.quantity || ""}
                     onChange={(e) => setOrderToEdit({ ...orderToEdit, quantity: e.target.value })}
+                    className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-400 focus:border-transparent"
                   />
-                </label>
-                <label className="block mb-4 text-gray-600">
-                  Total Price:
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Total Price</label>
                   <input
                     type="number"
-                    className="w-full p-3 border border-gray-300 rounded-md"
                     value={orderToEdit?.totalPrice || ""}
                     onChange={(e) => setOrderToEdit({ ...orderToEdit, totalPrice: e.target.value })}
+                    className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-400 focus:border-transparent"
                   />
-                </label>
-                <div className="flex justify-end mt-4">
+                </div>
+                <div className="flex justify-end gap-3 mt-6">
                   <button
                     type="button"
-                    className="bg-indigo-600 text-white py-2 px-6 rounded-md hover:bg-indigo-700"
+                    onClick={closeEditModal}
+                    className="px-4 py-2 text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors duration-200"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
                     onClick={handleEditOrder}
+                    className="px-4 py-2 text-white bg-gray-700 rounded-xl hover:bg-gray-800 transition-colors duration-200"
                   >
                     Save Changes
                   </button>
                 </div>
               </form>
-              <button
-                onClick={closeEditModal}
-                className="absolute top-4 right-4 text-gray-500 text-xl"
-              >
-                ×
-              </button>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Delete Modal */}
-        {showDeleteModal && (
-          <div
-            className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-            onClick={closeDeleteModal}
-          >
-            <div
-              className="bg-white p-8 rounded-lg max-w-sm w-full shadow-xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h2 className="text-2xl font-semibold mb-4 text-gray-800">Confirm Delete</h2>
-              <p className="text-gray-600">Are you sure you want to delete this order?</p>
-              <div className="flex justify-end mt-6">
-                <button
-                  onClick={() => handleDeleteOrder(orderToDelete)}
-                  className="bg-red-600 text-white py-2 px-6 rounded-md hover:bg-red-700"
-                >
-                  Yes, Delete
-                </button>
+      {/* Delete Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full mx-4">
+            <div className="p-6">
+              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
+                <svg className="h-8 w-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 text-center mb-4">Confirm Delete</h3>
+              <p className="text-gray-500 text-center mb-6">
+                Are you sure you want to delete this order? This action cannot be undone.
+              </p>
+              <div className="flex justify-center gap-3">
                 <button
                   onClick={closeDeleteModal}
-                  className="ml-4 bg-gray-300 text-gray-800 py-2 px-6 rounded-md hover:bg-gray-400"
+                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors duration-200"
                 >
                   Cancel
+                </button>
+                <button
+                  onClick={() => handleDeleteOrder(orderToDelete)}
+                  className="px-4 py-2 text-white bg-red-600 rounded-xl hover:bg-red-700 transition-colors duration-200"
+                >
+                  Delete
                 </button>
               </div>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       <Footer />
-    </>
+      <ToastContainer />
+    </div>
   );
 };
 

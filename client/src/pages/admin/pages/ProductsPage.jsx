@@ -1,57 +1,108 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const ProductsPage = () => {
-    // Example static products data related to Savvarah
-    const [products, setProducts] = useState([
-        { _id: 1, name: 'Fresh Olive Oil', category: 'oil', description: 'High-quality olive oil for cooking and health.', price: '250' },
-        { _id: 2, name: 'Animal Feed (Cattle)', category: 'animal feed', description: 'Nutritious cattle feed for milk production.', price: '150' },
-        { _id: 3, name: 'Printer Paper A4', category: 'stationery', description: 'Premium A4 paper for official use.', price: '80' },
-        { _id: 4, name: 'Stationery Set', category: 'stationery', description: 'Complete stationery set for daily use.', price: '200' },
-        { _id: 5, name: 'Animal Feed (Poultry)', category: 'animal feed', description: 'Complete poultry feed for growth and eggs.', price: '120' },
-        { _id: 6, name: 'Printing Services', category: 'printing', description: 'Bulk printing services for documents and marketing.', price: '500' },
-    ]);
-
+    const [products, setProducts] = useState([]);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [formData, setFormData] = useState({ name: '', description: '', price: '' });
     const [searchTerm, setSearchTerm] = useState("");
     const [page, setPage] = useState(1);
-    const [categoryFilter, setCategoryFilter] = useState(""); // Filter for category
+    const [categoryFilter, setCategoryFilter] = useState("");
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const itemsPerPage = 5;
 
-    // Handle delete
-    const handleDelete = (id) => {
-        setProducts(products.filter((product) => product._id !== id));
+    useEffect(() => {
+        const fetchAllProducts = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                
+                const endpoints = [
+                    'http://localhost:5000/api/v1/animal-feeding/products',
+                    'http://localhost:5000/api/v1/fresh-oil/products',
+                    'http://localhost:5000/api/v1/godown/products',
+                    'http://localhost:5000/api/v1/hardware/products',
+                    'http://localhost:5000/api/v1/stationery/products'
+                ];
+
+                const responses = await Promise.all(
+                    endpoints.map(async endpoint => {
+                        try {
+                            const response = await axios.get(endpoint);
+                            console.log(`Response from ${endpoint}:`, response.data);
+                            return response;
+                        } catch (err) {
+                            console.error(`Failed to fetch from ${endpoint}:`, err);
+                            throw new Error(`Failed to fetch from ${endpoint}: ${err.message}`);
+                        }
+                    })
+                );
+
+                const allProducts = responses.reduce((acc, response) => {
+                    const products = response.data.products || response.data || [];
+                    return [...acc, ...products];
+                }, []);
+
+                setProducts(allProducts);
+                setLoading(false);
+            } catch (err) {
+                console.error('Detailed error:', err);
+                setError(`Failed to fetch products: ${err.message}`);
+                setLoading(false);
+            }
+        };
+
+        fetchAllProducts();
+    }, []);
+
+    const handleDelete = async (id) => {
+        try {
+            // You'll need to determine which endpoint to use based on the product category
+            // This is a simplified example
+            await axios.delete(`http://localhost:5000/api/v1/products/${id}`);
+            setProducts(products.filter((product) => product._id !== id));
+        } catch (err) {
+            console.error('Failed to delete product:', err);
+        }
     };
 
-    // Handle edit click
     const handleEditClick = (product) => {
         setSelectedProduct(product);
-        setFormData({ name: product.name, description: product.description, price: product.price });
+        setFormData({ 
+            name: product.name, 
+            description: product.description, 
+            price: product.price 
+        });
         setShowModal(true);
     };
 
-    // Handle modal close
     const handleModalClose = () => {
         setShowModal(false);
     };
 
-    // Handle form change
     const handleFormChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
 
-    // Handle form submit (update product)
-    const handleFormSubmit = (e) => {
+    const handleFormSubmit = async (e) => {
         e.preventDefault();
-        const updatedProduct = { ...selectedProduct, ...formData };
-        setProducts(products.map(product => product._id === selectedProduct._id ? updatedProduct : product));
-        setShowModal(false);
+        try {
+            // You'll need to determine which endpoint to use based on the product category
+            // This is a simplified example
+            await axios.put(`http://localhost:5000/api/v1/products/${selectedProduct._id}`, formData);
+            setProducts(products.map(product => 
+                product._id === selectedProduct._id ? { ...product, ...formData } : product
+            ));
+            setShowModal(false);
+        } catch (err) {
+            console.error('Failed to update product:', err);
+        }
     };
 
-    // Filter products based on search term and category
     const filteredProducts = products.filter(product => {
         return (
             (product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -60,10 +111,7 @@ const ProductsPage = () => {
         );
     });
 
-    // Paginate the filtered products
     const paginatedProducts = filteredProducts.slice((page - 1) * itemsPerPage, page * itemsPerPage);
-
-    // Pagination Controls
     const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 
     const handlePagination = (newPage) => {
@@ -72,6 +120,14 @@ const ProductsPage = () => {
         }
     };
 
+    if (loading) {
+        return <div className="text-center py-4">Loading...</div>;
+    }
+
+    if (error) {
+        return <div className="text-center py-4 text-red-500">{error}</div>;
+    }
+
     return (
         <div className="container mx-auto p-4">
             <h2 className="text-2xl font-bold mb-4">Products</h2>
@@ -79,7 +135,6 @@ const ProductsPage = () => {
                 Add New Product
             </Link>
 
-            {/* Search Bar */}
             <div className="mb-4">
                 <input
                     type="text"
@@ -90,7 +145,6 @@ const ProductsPage = () => {
                 />
             </div>
 
-            {/* Category Filter */}
             <div className="mb-4">
                 <select
                     value={categoryFilter}
@@ -101,7 +155,8 @@ const ProductsPage = () => {
                     <option value="oil">Oil</option>
                     <option value="animal feed">Animal Feed</option>
                     <option value="stationery">Stationery</option>
-                    <option value="printing">Printing</option>
+                    <option value="hardware">Hardware</option>
+                    <option value="godown">Godown</option>
                 </select>
             </div>
 
@@ -147,7 +202,6 @@ const ProductsPage = () => {
                 </table>
             </div>
 
-            {/* Pagination */}
             <div className="mt-5 flex justify-between items-center">
                 <button
                     onClick={() => handlePagination(page - 1)}
@@ -168,7 +222,6 @@ const ProductsPage = () => {
                 </button>
             </div>
 
-            {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center z-50">
                     <div className="bg-white p-6 rounded-lg w-96">

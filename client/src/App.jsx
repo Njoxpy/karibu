@@ -163,7 +163,6 @@ export default function App() {
           <Route path="orders/:id" element={<OrderDetailsPage />} />
           <Route path="users" element={<UsersPage />} />
           <Route path="users/create" element={<AddUserPage />} />
-          <Route path="report" element={<Reports />} />
           <Route path="reports" element={<ReportsPage />} />
         </Route>
         <Route path="/" element={<RootLayout />}>
