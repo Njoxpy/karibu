@@ -1,46 +1,47 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
+const ITEMS_PER_PAGE = 6;
+const API_URL = "http://localhost:5000/api/v1/godown/products";
+
 const InventoryTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
   const [inventory, setInventory] = useState([]);
-  const [error, setError] = useState(null); // Error state
-
+  const [error, setError] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
 
-  // Fetch inventory data from the endpoint
   useEffect(() => {
-    const fetchInventoryData = async () => {
-      try {
-        const response = await fetch("http://localhost:5000/api/v1/godown/products");
-        if (!response.ok) {
-          throw new Error(`Error fetching data: ${response.statusText}`);
-        }
-        const data = await response.json();
-        const formattedData = data.map((item) => ({
-          id: item._id,
-          name: item.name,
-          code: item.code,
-          price: item.price,
-          quantity: item.quantity,
-          location: item.location,
-          condition: item.condition,
-        }));
-        setInventory(formattedData);
-        setError(null); // Reset error if data is successfully fetched
-      } catch (error) {
-        setError(error.message); // Set error message if fetch fails
-        console.error("Error fetching inventory data:", error);
-      }
-    };
-
     fetchInventoryData();
-  }, []); // Empty dependency array ensures this runs once when the component mounts
+  }, []);
+
+  const fetchInventoryData = async () => {
+    try {
+      const response = await fetch(API_URL);
+      if (!response.ok) {
+        throw new Error(`Error fetching data: ${response.statusText}`);
+      }
+      const data = await response.json();
+      setInventory(formatInventoryData(data));
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
+  const formatInventoryData = (data) => {
+    return data.map((item) => ({
+      id: item._id,
+      name: item.name,
+      code: item.code,
+      price: item.price,
+      quantity: item.quantity,
+      location: item.location,
+      condition: item.condition,
+    }));
+  };
 
   const handleEdit = (item) => {
     setEditItem(item);
@@ -114,10 +115,10 @@ const InventoryTable = () => {
     const filteredInventory = inventory.filter((item) =>
       item.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
-    const totalPages = Math.ceil(filteredInventory.length / itemsPerPage);
+    const totalPages = Math.ceil(filteredInventory.length / ITEMS_PER_PAGE);
     const paginatedInventory = filteredInventory.slice(
-      (currentPage - 1) * itemsPerPage,
-      currentPage * itemsPerPage
+      (currentPage - 1) * ITEMS_PER_PAGE,
+      currentPage * ITEMS_PER_PAGE
     );
     return { paginatedInventory, totalPages };
   };
