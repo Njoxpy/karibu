@@ -2,49 +2,55 @@ version: "1.0"
 name: Savarrah Project
 # This is the project name that will appear in Qodana
 
-# Specify the languages you're using
+# Specify the language you are using, in this case, Golang
 languages:
-  - javascript
-  - jsx  # For React components
+  - golang
 
 # Define the paths to scan within the project
 paths:
-  - ./src  # Your main project source code
-  - ./client/src  # If you have a separate React client
+  - ./src  # Assuming your main project source code is under the 'src' folder
+  - ./tests  # If you have a 'tests' folder for unit tests or similar
 
-# Node.js specific checks
-nodejs:
+# Set up additional checks for Golang if you are using linters or custom checks
+golang:
   enabled: true
-  package_manager: npm  # Or yarn if you're using yarn
-  package_file: ./package.json  # Specify the path to package.json for dependency management
-
-# React specific checks
-react:
-  enabled: true
-  version: "17"  # Adjust this depending on your React version
-  eslint: true  # Enable ESLint for React checks
-
-# Custom rules configuration can be added here
+  # Specify Go module file if it's part of the project
+  go_module: ./go.mod
+  
+# Custom rules configuration can be added if necessary
 rules:
+  # You can enable or disable specific rules here
   enabled:
-    - javascript:eslint  # Enable ESLint for JavaScript
-    - javascript:prettier  # For Prettier formatting checks
-    - nodejs:eslint  # Enable ESLint for Node.js
+    - golang:golint  # For Golang linting
+    - golang:govet   # For Go vet checks
+    - golang:staticcheck  # For static analysis
   disabled:
-    # Example: disable rules you don't need
-    - react:no-unused-vars  # If unused variables in React components are not an issue
+    # Example: disable unnecessary rule
+    - golang:golint:comment  # Disable comment rule if not required
 
-# Optional: MongoDB and Express configuration
+# Set up MongoDB/SQL-related checks or other external dependencies
+# You can add external configurations if your project connects with databases
+# or other services.
 databases:
   - mongodb:
-      uri: "mongodb://localhost:27017/savarrah"  # Example MongoDB URI
+      uri: "mongodb://localhost:27017/savarrah"  # Example MongoDB connection URI
       database: savarrah
 
-# Reports and CI integration
-reports:
-  output_dir: ./qodana-reports  # Directory to store Qodana reports
+# Optional: You can set Qodana to run certain checks only in specific environments
+# You could define different environments or enable checks for specific conditions
+environments:
+  dev:
+    enabled:
+      - golang:golint
+  prod:
+    enabled:
+      - golang:staticcheck
 
-# CI/CD configuration for integration with tools like GitHub Actions, Jenkins, etc.
+# Define how reports should be generated, if necessary
+reports:
+  output_dir: ./qodana-reports  # The directory where reports will be saved
+
+# Optionally, include integration with CI/CD tools like Jenkins, GitLab CI, etc.
 ci:
   enabled: true
-  provider: github_actions  # Adjust if you're using a different CI provider
+  provider: github_actions  # Example, adjust according to your CI setup
