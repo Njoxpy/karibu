@@ -2,26 +2,38 @@ const jwt = require("jsonwebtoken");
 const { UNAUTHORIZED } = require("../../constants/responseStatusCode");
 
 const authenticate = (req, res, next) => {
-    // Get the token from the Authorization header (e.g., 'Bearer <token>')
-    const token = req.headers.authorization?.split(" ")[1];
-
-    // If no token is found, return a 401 Unauthorized response
-    if (!token) {
-        return res.status(UNAUTHORIZED).json({ error: "Authentication required" });
-    }
-
     try {
-        // Verify the token using JWT's secret key
+        // Check if Authorization header is present
+        const authHeader = req.headers.authorization;
+
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
+            return res
+                .status(UNAUTHORIZED)
+                .json({ error: "Authorization header missing or malformed" });
+        }
+
+        // Extract the token
+        const token = authHeader.split(" ")[1];
+
+        if (!token) {
+            return res
+                .status(UNAUTHORIZED)
+                .json({ error: "Authentication token not found" });
+        }
+
+        // Verify the token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        // Attach the decoded user data to the request object for use in routes
+        // Attach the decoded user data to the request object
         req.user = decoded;
 
         // Proceed to the next middleware or route handler
         next();
     } catch (error) {
-        // If token verification fails, return a 401 Unauthorized response
-        return res.status(UNAUTHORIZED).json({ error: "Invalid or expired token" });
+        console.error("Authentication Error:", error.message); // Log for debugging
+        return res
+            .status(UNAUTHORIZED)
+            .json({ error: "Invalid or expired authentication token" });
     }
 };
 
