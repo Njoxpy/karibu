@@ -109,9 +109,61 @@ const getAllUsers = async (req, res) => {
     }
 };
 
+// Update user details
+const updateUser = async (req, res) => {
+    const { userId } = req.params; // The user ID is expected in the URL parameters
+    const { email, password, role, category } = req.body;
+
+    try {
+        // Find the user by ID
+        const user = await User.findById(userId);
+
+        // If user is not found, return 404
+        if (!user) {
+            return res.status(NOT_FOUND).json({ message: "User not found" });
+        }
+
+        // Update the user with the new data
+        if (email) user.email = email;
+        if (password) user.password = password;
+        if (role) user.role = role;
+        if (category) user.category = category;
+
+        // Save the updated user
+        await user.save();
+
+        // Respond with the updated user
+        res.status(OK).json({ message: "User updated successfully", user });
+    } catch (error) {
+        res.status(SERVER_ERROR).json({ error: error.message });
+    }
+};
+
+// Delete a user
+const deleteUser = async (req, res) => {
+    const { userId } = req.params; // The user ID is expected in the URL parameters
+
+    try {
+        // Find and delete the user by ID
+        const user = await User.findByIdAndDelete(userId);
+
+        // If user is not found, return 404
+        if (!user) {
+            return res.status(NOT_FOUND).json({ message: "User not found" });
+        }
+
+        // Respond with a success message
+        res.status(OK).json({ message: "User deleted successfully" });
+    } catch (error) {
+        res.status(SERVER_ERROR).json({ error: error.message });
+    }
+};
+
 module.exports = {
     loginUser,
     signupUser,
     getAllUsers,
-    createUser
+    createUser,
+    updateUser,
+    deleteUser,
 };
