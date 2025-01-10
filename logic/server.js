@@ -39,6 +39,14 @@ app.get("/", (req, res) => {
   res.json("hello world from savarrah");
 });
 
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(err.status || 500).json({
+    error: err.message || "Internal Server Error",
+  });
+});
+
+
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, 
   limit: 100, 

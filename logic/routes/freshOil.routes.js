@@ -1,6 +1,14 @@
+// Fresh Oil Routes
 const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
+
+// Middleware
+const authenticate = require("../middleware/auth/authenticate");
+const checkCategory = require("../middleware/auth/checkCategory");
+const checkPermissions = require("../middleware/auth/permissionMiddleware");
+const validateObjectId = require("../middleware/validateObjectId");
+const upload = require("../middleware/uploadAnimalFeeding");
 
 // Controllers
 const {
@@ -19,119 +27,174 @@ const {
   getAvailableProducts,
 } = require("../controllers/freshOil.controller");
 
-// Middleware
-const validateObjectId = require("../middleware/validateObjectId");
-
-const upload = require("../middleware/uploadAnimalFeeding");
-
 // Models
 const FreshOilProduct = require("../models/freshOil/freshOilproductModel");
 
 // Response codes
-const {
-  SERVER_ERROR,
-  CREATED,
-  BAD_REQUEST,
-} = require("../constants/responseStatusCode");
+const { SERVER_ERROR, CREATED, BAD_REQUEST } = require("../constants/responseStatusCode");
 
-// POST: Create new product
-router.post("/products", upload.single("image"), async (req, res) => {
-  try {
-    // Check if all required fields are present
-    const { name, description, quantity, price, userId } = req.body;
+// Routes
 
-    if (!name || !description || !quantity || !price || !userId) {
-      return res
-        .status(BAD_REQUEST)
-        .json({ message: "All required fields must be provided." });
+// Product Routes
+router.get(
+  "/products",
+  authenticate,
+  checkCategory(["fresh-oil", "admin"]),
+  getAllFreshOilProducts
+);
+
+router.get(
+  "/products/search",
+  authenticate,
+  checkCategory(["fresh-oil", "admin"]),
+  searchFreshOilProducts
+);
+
+router.get(
+  "/products/:id",
+  authenticate,
+  checkCategory(["fresh-oil", "admin"]),
+  validateObjectId,
+  getSingleFreshOilProduct
+);
+
+router.post(
+  "/products",
+  authenticate,
+  checkCategory(["admin"]), // Admin only
+  checkPermissions(["createProduct"]),
+  upload.single("image"),
+  async (req, res) => {
+    try {
+      const { name, description, quantity, price, userId } = req.body;
+
+      if (!name || !description || !quantity || !price || !userId) {
+        return res
+          .status(BAD_REQUEST)
+          .json({ message: "All required fields must be provided." });
+      }
+
+      if (isNaN(quantity) || isNaN(price)) {
+        return res
+          .status(BAD_REQUEST)
+          .json({ message: "Quantity and price must be valid numbers." });
+      }
+
+      if (quantity <= 0 || price <= 0) {
+        return res
+          .status(BAD_REQUEST)
+          .json({ message: "Quantity and price must be greater than zero." });
+      }
+
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(BAD_REQUEST).json({ message: "Invalid userId." });
+      }
+
+      const image = req.file ? req.file.path : null;
+      const newProduct = new FreshOilProduct({
+        name,
+        description,
+        quantity,
+        price,
+        image,
+        userId,
+        total: quantity * price,
+      });
+
+      const savedProduct = await newProduct.save();
+      res.status(CREATED).json({
+        message: "Product created successfully",
+        product: savedProduct,
+      });
+    } catch (error) {
+      res.status(SERVER_ERROR).json({
+        message: "Error creating product",
+        details: error.message,
+      });
     }
-
-    // Validate that quantity and price are valid numbers
-    if (isNaN(quantity) || isNaN(price)) {
-      return res
-        .status(BAD_REQUEST)
-        .json({ message: "Quantity and price must be valid numbers." });
-    }
-
-    // Validate that quantity and price are greater than zero
-    if (quantity <= 0 || price <= 0) {
-      return res
-        .status(BAD_REQUEST)
-        .json({ message: "Quantity and price must be greater than zero." });
-    }
-
-    // Validate userId as a valid MongoDB ObjectId
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(BAD_REQUEST).json({ message: "Invalid userId." });
-    }
-
-    // Optional: Handle the image file upload (if provided)
-    const image = req.file ? req.file.path : null;
-
-    // Create a new product object
-    const newProduct = new FreshOilProduct({
-      name,
-      description,
-      quantity,
-      price,
-      image,
-      userId,
-      total: quantity * price, // Automatically calculate total based on quantity and price
-    });
-
-    // Save the product to the database
-    const savedProduct = await newProduct.save();
-
-    // Respond with the created product
-    res.status(CREATED).json({
-      message: "Product created successfully",
-      product: savedProduct,
-    });
-  } catch (error) {
-    res.status(SERVER_ERROR).json({
-      message: "Error creating product",
-      details: error.message,
-    });
   }
-});
+);
 
-// POST: Create a fresh oil order
-router.post("/orders", createFreshOilOrder);
+router.patch(
+  "/products/:id",
+  authenticate,
+  checkCategory(["admin"]),
+  validateObjectId,
+  checkPermissions(["updateProduct"]),
+  updateFreshOilProduct
+);
 
-// GET: Get all fresh oil products
-router.get("/products", getAllFreshOilProducts);
+router.delete(
+  "/products/:id",
+  authenticate,
+  checkCategory(["admin"]),
+  validateObjectId,
+  checkPermissions(["deleteProduct"]),
+  deleteFreshOilProduct
+);
 
-// GET: Search products (added search functionality)
-router.get("/products/search", searchFreshOilProducts);
+// Order Routes
+router.post(
+  "/orders",
+  authenticate,
+  checkCategory(["fresh-oil", "admin"]),
+  checkPermissions(["createOrder"]),
+  createFreshOilOrder
+);
 
-// GET: Get all orders
-router.get("/orders", getAllFreshOilOrders);
+router.get(
+  "/orders",
+  authenticate,
+  checkCategory(["fresh-oil", "admin"]),
+  getAllFreshOilOrders
+);
 
-router.get("/total-orders", getTotalCostByDate);
+router.get(
+  "/orders/search",
+  authenticate,
+  checkCategory(["fresh-oil", "admin"]),
+  searchFreshOilOrders
+);
 
-router.get("/available-products", getAvailableProducts);
+router.get(
+  "/orders/:id",
+  authenticate,
+  checkCategory(["fresh-oil", "admin"]),
+  validateObjectId,
+  getSingleFreshOilOrder
+);
 
-// GET: Search orders (added search functionality)
-router.get("/orders/search", searchFreshOilOrders);
+router.patch(
+  "/orders/:id",
+  authenticate,
+  checkCategory(["admin"]),
+  validateObjectId,
+  checkPermissions(["updateOrder"]),
+  updateFreshOilOrder
+);
 
-// GET: Get single product by ID
-router.get("/products/:id", validateObjectId, getSingleFreshOilProduct);
+router.delete(
+  "/orders/:id",
+  authenticate,
+  checkCategory(["admin"]),
+  validateObjectId,
+  checkPermissions(["deleteOrder"]),
+  deleteFreshOilOrder
+);
 
-// GET: Get single order by ID
-router.get("/orders/:id", validateObjectId, getSingleFreshOilOrder);
+// Miscellaneous Routes
+router.get(
+  "/available-products",
+  authenticate,
+  checkCategory(["fresh-oil", "admin"]),
+  getAvailableProducts
+);
 
-// PATCH: Update product details
-router.patch("/products/:id", validateObjectId, updateFreshOilProduct);
-
-// PATCH: Update order details
-router.patch("/orders/:id", validateObjectId, updateFreshOilOrder);
-
-// DELETE: Delete product by ID
-router.delete("/products/:id", validateObjectId, deleteFreshOilProduct);
-
-// DELETE: Delete order by ID
-router.delete("/orders/:id", validateObjectId, deleteFreshOilOrder);
-
-// Handling bulk upload and image upload
+router.get(
+  "/total-orders",
+  authenticate,
+  checkCategory(["admin"]),
+  getTotalCostByDate
+);
 
 module.exports = router;

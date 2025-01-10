@@ -1,11 +1,12 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const router = express.Router();
 
+
+const AnimalFeedingProduct = require("../models/animalFeeding/animalFeedingProductModel");
+
 const authenticate = require("../middleware/auth/authenticate");
-const authorizeAdmin = require("../middleware/auth/authorizeAdmin");
-const authorizeEmployee = require("../middleware/auth/authorizeEmployee");
 const checkCategory = require("../middleware/auth/checkCategory");
+const checkPermissions = require("../middleware/auth/permissionMiddleware");
 const validateObjectId = require("../middleware/validateObjectId");
 
 const {
@@ -19,134 +20,158 @@ const {
   deleteAnimalFeedingProductById,
   deleteAnimalFeedingOrderById,
   searchAnimalFeedingProducts,
-  searchAnimalFeedingOrders,
-  getAnimalFeedingTotalCost,
   getTotalCostByDate,
   getAvailableProducts,
   getRevenue,
 } = require("../controllers/animalFeeding.controller");
 
-const AnimalFeedingProduct = require("../models/animalFeeding/animalFeedingProductModel");
-
 const upload = require("../middleware/uploadAnimalFeeding");
 
-const {
-  CREATED,
-  SERVER_ERROR,
-  BAD_REQUEST,
-} = require("../constants/responseStatusCode");
+// Constants for HTTP status codes
+const { CREATED,  SERVER_ERROR } = require("../constants/responseStatusCode");
 
-// Authenticate and authorize routes
+// Routes
 
-// Admin can create orders, view orders, and update or delete products
-router.post("/orders", createAnimalFeedingOrder); // Admin can create orders
-router.get("/products", getAllAnimalFeedingProducts); // View all products (any authenticated user)
-router.get("/products/search", searchAnimalFeedingProducts); // Search products (any authenticated user)
-router.get("/orders", getAnimalFeedingAllOrders); // View all orders (admin only)
-router.get("/orders/search", searchAnimalFeedingOrders); // Search orders (admin only)
+// Product Routes
+router.get(
+  "/products",
+  authenticate,
+  checkCategory(["animal-feeding", "admin"]),
+  getAllAnimalFeedingProducts
+); // Employees and Admins can view products
+
+router.get(
+  "/products/search",
+  authenticate,
+  checkCategory(["animal-feeding", "admin"]),
+  searchAnimalFeedingProducts
+); // Employees and Admins can search products
+
 router.get(
   "/products/:id",
-
+  authenticate,
+  checkCategory(["animal-feeding", "admin"]),
   validateObjectId,
   getAnimalFeedingProductById
-); // Get product by ID
-router.get("/orders/:id", validateObjectId, getAnimalFeedingOrderById); // Get order by ID
+); // Employees and Admins can view product by ID
 
-// Admin can update products and orders, but employee can only update orders
-router.patch("/products/:id", validateObjectId, updateAnimalFeedingProduct); // Admin can update product
-router.patch("/orders/:id", validateObjectId, updateAnimalFeedingOrder); // Employee can update orders
+router.post(
+  "/products",
+  authenticate,
+  checkCategory(["admin"]), // Admin only
+  checkPermissions(["createProduct"]), // Ensure admin has permission to create
+  upload.single("image"),
+  async (req, res) => {
+    try {
+      const { name, description, quantity, nutrients, price, userId } = req.body;
 
-router.get("/available-products", getAvailableProducts);
-router.get("/revenue", getRevenue);
+      // Validation logic here ...
 
-// Admin can delete products and orders, but employees cannot
+      const image = req.file ? req.file.path : null;
+      const newProduct = new AnimalFeedingProduct({
+        name,
+        description,
+        quantity,
+        nutrients,
+        image,
+        price,
+        userId,
+      });
+
+      await newProduct.save();
+      res.status(CREATED).json({
+        message: "Product created successfully",
+        product: newProduct,
+      });
+    } catch (error) {
+      console.error(error);
+      res
+        .status(SERVER_ERROR)
+        .json({ error: "Server error, please try again later." });
+    }
+  }
+);
+
+router.patch(
+  "/products/:id",
+  authenticate,
+  checkCategory(["admin"]),
+  validateObjectId,
+  checkPermissions(["updateProduct"]), // Admin only
+  updateAnimalFeedingProduct
+);
+
 router.delete(
   "/products/:id",
+  authenticate,
+  checkCategory(["admin"]),
   validateObjectId,
+  checkPermissions(["deleteProduct"]), // Admin only
   deleteAnimalFeedingProductById
-); // Admin can delete product
-router.delete("/orders/:id", validateObjectId, deleteAnimalFeedingOrderById); // Admin can delete order
+);
 
-// total cost
-router.get("/total-orders", getTotalCostByDate);
-// Bulk upload products (admin only)
-router.post("/products", upload.single("image"), async (req, res) => {
-  try {
-    const { name, description, quantity, nutrients, price, userId } = req.body;
+// Order Routes
+router.post(
+  "/orders",
+  authenticate,
+  checkCategory(["animal-feeding", "admin"]),
+  checkPermissions(["createOrder"]), // Employees and Admins can create orders
+  createAnimalFeedingOrder
+);
 
-    // Validate required fields
-    if (!name || !description || !quantity || !nutrients || !price || !userId) {
-      return res
-        .status(BAD_REQUEST)
-        .json({ error: "All fields are required." });
-    }
+router.get(
+  "/orders",
+  authenticate,
+  checkCategory(["animal-feeding", "admin"]),
+  getAnimalFeedingAllOrders
+); // Employees and Admins can view orders
 
-    // Validate that quantity, price are numbers
-    if (isNaN(quantity) || isNaN(price)) {
-      return res
-        .status(BAD_REQUEST)
-        .json({ error: "Quantity and price must be valid numbers." });
-    }
+router.get(
+  "/orders/:id",
+  authenticate,
+  checkCategory(["animal-feeding", "admin"]),
+  validateObjectId,
+  getAnimalFeedingOrderById
+); // Employees and Admins can view order by ID
 
-    // Validate that quantity, price are greater than zero
-    if (quantity <= 0 || price <= 0) {
-      return res.status(BAD_REQUEST).json({
-        error: "Quantity, price must be greater than zero.",
-      });
-    }
+router.patch(
+  "/orders/:id",
+  authenticate,
+  checkCategory(["admin"]), // Only admin can update orders
+  validateObjectId,
+  checkPermissions(["updateOrder"]),
+  updateAnimalFeedingOrder
+);
 
-    // Validate userId (e.g., if using JWT or session-based authentication)
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(BAD_REQUEST).json({ error: "Invalid userId." });
-    }
+router.delete(
+  "/orders/:id",
+  authenticate,
+  checkCategory(["admin"]),
+  validateObjectId,
+  checkPermissions(["deleteOrder"]), // Only admin can delete orders
+  deleteAnimalFeedingOrderById
+);
 
-    // Optional: validate image (e.g., file type and size validation)
-    if (req.file) {
-      const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
-      const maxSize = 5 * 1024 * 1024; // Max 5MB
+// Other Routes
+router.get(
+  "/available-products",
+  authenticate,
+  checkCategory(["animal-feeding", "admin"]),
+  getAvailableProducts
+);
 
-      if (!allowedTypes.includes(req.file.mimetype)) {
-        return res.status(BAD_REQUEST).json({
-          error: "Invalid file type. Only JPEG, PNG, and GIF are allowed.",
-        });
-      }
+router.get(
+  "/revenue",
+  authenticate,
+  checkCategory(["admin"]), // Admin only
+  getRevenue
+);
 
-      if (req.file.size > maxSize) {
-        return res
-          .status(BAD_REQUEST)
-          .json({ error: "File size exceeds the maximum limit of 5MB." });
-      }
-    }
-
-    // Assign the image path if available
-    const image = req.file ? req.file.path : null;
-
-    // Create a new product instance
-    const newProduct = new AnimalFeedingProduct({
-      name,
-      description,
-      quantity,
-      nutrients,
-      image,
-      price,
-      userId,
-    });
-
-    // Save the product to the database
-    await newProduct.save();
-
-    // Return success response
-    res.status(CREATED).json({
-      message: "Product created successfully",
-      product: newProduct,
-    });
-  } catch (error) {
-    // Handle server errors
-    console.error(error); // Log detailed error for debugging
-    res
-      .status(SERVER_ERROR)
-      .json({ error: "Server error, please try again later." });
-  }
-});
+router.get(
+  "/total-orders",
+  authenticate,
+  checkCategory(["admin"]), // Admin only
+  getTotalCostByDate
+);
 
 module.exports = router;
