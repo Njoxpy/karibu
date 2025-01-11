@@ -1,14 +1,31 @@
-const express = require("express")
-const { loginUser, signupUser, getAllUsers } = require("../controllers/user.controller")
-const userRoutes = express.Router()
+const express = require("express");
+const { loginUser, signupUser, getAllUsers } = require("../controllers/user.controller");
 
-// login route
-userRoutes.post("/login", loginUser)
+// Import middleware
+const authenticate = require("../middleware/auth/authenticate");
+const checkCategory = require("../middleware/auth/checkCategory");
+const checkPermissions = require("../middleware/auth/permissionMiddleware");
 
-// signup route
-userRoutes.post("/signup", signupUser)
+const userRoutes = express.Router();
 
-// get all users
-userRoutes.get("/", getAllUsers)
+// Public route - login remains accessible to all
+userRoutes.post("/login", loginUser);
 
-module.exports = userRoutes
+// Protected routes - admin only
+userRoutes.post(
+    "/signup", 
+    authenticate,
+    checkCategory(["admin"]),
+    checkPermissions(["createUser"]),
+    signupUser
+);
+
+userRoutes.get(
+    "/", 
+    authenticate,
+    checkCategory(["admin"]),
+    checkPermissions(["viewUsers"]),
+    getAllUsers
+);
+
+module.exports = userRoutes;
