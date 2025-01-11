@@ -68,37 +68,52 @@ const searchFreshOilOrders = async (req, res) => {
 };
 // create product
 const createFreshOilProduct = async (req, res) => {
-  const { name, description, quantity, image, price } = req.body;
-
-  if (!name || !description || !quantity || !price) {
-    return res.status(BAD_REQUEST).json({ message: "All fields are required" });
-  }
-
-  if (typeof quantity !== "number" || quantity < 0) {
-    return res
-      .status(BAD_REQUEST)
-      .json({ message: "Quantity should be a positive number or zero" });
-  }
-
-  if (typeof price !== "number" || price < 0) {
-    return res
-      .status(BAD_REQUEST)
-      .json({ message: "Price should be a positive number or zero" });
-  }
-
   try {
-    const product = await FreshOilProduct.create({
+    const { name, description, quantity, price, userId } = req.body;
+
+    if (!name || !description || !quantity || !price || !userId) {
+      return res
+        .status(BAD_REQUEST)
+        .json({ message: "All required fields must be provided." });
+    }
+
+    if (isNaN(quantity) || isNaN(price)) {
+      return res
+        .status(BAD_REQUEST)
+        .json({ message: "Quantity and price must be valid numbers." });
+    }
+
+    if (quantity <= 0 || price <= 0) {
+      return res
+        .status(BAD_REQUEST)
+        .json({ message: "Quantity and price must be greater than zero." });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(BAD_REQUEST).json({ message: "Invalid userId." });
+    }
+
+    const image = req.file ? req.file.path : null;
+    const newProduct = new FreshOilProduct({
       name,
       description,
       quantity,
-      image,
       price,
+      image,
+      userId,
+      total: quantity * price,
     });
-    res.status(CREATED).json(product);
+
+    const savedProduct = await newProduct.save();
+    res.status(CREATED).json({
+      message: "Product created successfully",
+      product: savedProduct,
+    });
   } catch (error) {
-    res
-      .status(SERVER_ERROR)
-      .json({ message: "Failed to create product", error: error.message });
+    res.status(SERVER_ERROR).json({
+      message: "Error creating product",
+      details: error.message,
+    });
   }
 };
 

@@ -22,7 +22,8 @@ const authenticate = (req, res, next) => {
         }
 
         // Verify the token
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.SECRET);
+
 
         // Attach the decoded user data to the request object
         req.user = decoded;
