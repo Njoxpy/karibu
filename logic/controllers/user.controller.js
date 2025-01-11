@@ -2,12 +2,12 @@ const { NOT_FOUND, OK, BAD_REQUEST, SERVER_ERROR } = require("../constants/respo
 const User = require("../models/user/userModel");
 const jwt = require("jsonwebtoken");
 
-// Helper function to create a token
-const createToken = (_id, role) => {
-    return jwt.sign({ _id, role }, process.env.SECRET, { expiresIn: "30d" }); // 30 days token expiration
+// Helper function to create a token (now includes category)
+const createToken = (_id, role, category) => {
+    return jwt.sign({ _id, role, category }, process.env.SECRET, { expiresIn: "30d" }); // 30 days token expiration
 };
 
-// Login user
+// Login user (Modified to include category in the token)
 const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
@@ -20,13 +20,14 @@ const loginUser = async (req, res) => {
         // Try to login using the User model method
         const user = await User.login(email, password);
 
-        // Create a token
-        const token = createToken(user._id, user.role);
+        // Create a token with category
+        const token = createToken(user._id, user.role, user.category);
 
         // Return response with token and user details
         res.status(OK).json({
             email: user.email,
             role: user.role,
+            category: user.category,
             token,
         });
     } catch (error) {
@@ -34,35 +35,7 @@ const loginUser = async (req, res) => {
     }
 };
 
-// Controller function for creating a new user
-const createUser = async (req, res) => {
-    try {
-        const { email, password, role, category } = req.body;
-
-        // Validate input fields (email, password, category)
-        if (!email || !password || !category) {
-            return res.status(BAD_REQUEST).json({ error: "All fields (email, password, and category) are required" });
-        }
-
-        // Check if the email already exists
-        const userExists = await User.findOne({ email });
-        if (userExists) {
-            return res.status(BAD_REQUEST).json({ error: "Email already in use" });
-        }
-
-        // Create a new user with the provided details
-        const newUser = new User({ email, password, role, category });
-        await newUser.save();
-
-        // Respond with success message and new user details
-        res.status(201).json({ message: "User created successfully", user: newUser });
-    } catch (error) {
-        console.error(error);
-        res.status(SERVER_ERROR).json({ error: "Server error" });
-    }
-};
-
-// Sign up user
+// Signup user (Modified to include category in the token)
 const signupUser = async (req, res) => {
     const { email, password, role, category } = req.body;
 
@@ -78,13 +51,14 @@ const signupUser = async (req, res) => {
         // Attempt to sign up the user
         const user = await User.signup(email, password, userRole, category);
 
-        // Create a token for the new user
-        const token = createToken(user._id, user.role);
+        // Create a token for the new user, now including category
+        const token = createToken(user._id, user.role, user.category);
 
         // Respond with success message, user details, and token
         res.status(201).json({
             email: user.email,
             role: user.role,
+            category: user.category,
             token,
         });
     } catch (error) {
@@ -163,7 +137,6 @@ module.exports = {
     loginUser,
     signupUser,
     getAllUsers,
-    createUser,
     updateUser,
     deleteUser,
 };
