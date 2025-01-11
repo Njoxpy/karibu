@@ -25,6 +25,7 @@ const {
   searchFreshOilOrders,
   getTotalCostByDate,
   getAvailableProducts,
+  createFreshOilProduct,
 } = require("../controllers/freshOil.controller");
 
 // Models
@@ -33,6 +34,13 @@ const FreshOilProduct = require("../models/freshOil/freshOilproductModel");
 // Response codes
 const { SERVER_ERROR, CREATED, BAD_REQUEST } = require("../constants/responseStatusCode");
 
+// Add pagination middleware
+const addPagination = (req, res, next) => {
+  req.query.page = parseInt(req.query.page) || 1;
+  req.query.limit = parseInt(req.query.limit) || 10;
+  next();
+};
+
 // Routes
 
 // Product Routes
@@ -40,6 +48,7 @@ router.get(
   "/products",
   authenticate,
   checkCategory(["fresh-oil", "admin"]),
+  addPagination,
   getAllFreshOilProducts
 );
 
@@ -61,58 +70,10 @@ router.get(
 router.post(
   "/products",
   authenticate,
-  checkCategory(["admin"]), // Admin only
+  checkCategory(["admin"]),
   checkPermissions(["createProduct"]),
   upload.single("image"),
-  async (req, res) => {
-    try {
-      const { name, description, quantity, price, userId } = req.body;
-
-      if (!name || !description || !quantity || !price || !userId) {
-        return res
-          .status(BAD_REQUEST)
-          .json({ message: "All required fields must be provided." });
-      }
-
-      if (isNaN(quantity) || isNaN(price)) {
-        return res
-          .status(BAD_REQUEST)
-          .json({ message: "Quantity and price must be valid numbers." });
-      }
-
-      if (quantity <= 0 || price <= 0) {
-        return res
-          .status(BAD_REQUEST)
-          .json({ message: "Quantity and price must be greater than zero." });
-      }
-
-      if (!mongoose.Types.ObjectId.isValid(userId)) {
-        return res.status(BAD_REQUEST).json({ message: "Invalid userId." });
-      }
-
-      const image = req.file ? req.file.path : null;
-      const newProduct = new FreshOilProduct({
-        name,
-        description,
-        quantity,
-        price,
-        image,
-        userId,
-        total: quantity * price,
-      });
-
-      const savedProduct = await newProduct.save();
-      res.status(CREATED).json({
-        message: "Product created successfully",
-        product: savedProduct,
-      });
-    } catch (error) {
-      res.status(SERVER_ERROR).json({
-        message: "Error creating product",
-        details: error.message,
-      });
-    }
-  }
+  createFreshOilProduct
 );
 
 router.patch(
@@ -146,6 +107,7 @@ router.get(
   "/orders",
   authenticate,
   checkCategory(["fresh-oil", "admin"]),
+  addPagination,
   getAllFreshOilOrders
 );
 
