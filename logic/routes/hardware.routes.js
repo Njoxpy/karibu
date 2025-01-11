@@ -2,25 +2,94 @@ const express = require("express");
 const router = express.Router();
 const hardwareController = require("../controllers/hardware.controller");
 
-// Create a new product
-router.post("/products", hardwareController.createHardwareProduct);
+// Import middleware
+const authenticate = require("../middleware/auth/authenticate");
+const checkCategory = require("../middleware/auth/checkCategory");
+const checkPermissions = require("../middleware/auth/permissionMiddleware");
+const validateObjectId = require("../middleware/validateObjectId");
 
-// Get all products
-router.get("/products", hardwareController.getAllHardwareProducts);
+// Product Routes
+router.post(
+  "/products", 
+  authenticate,
+  checkCategory(["admin"]),
+  checkPermissions(["createProduct"]),
+  hardwareController.createHardwareProduct
+);
 
-// Get a product by ID
-router.get("/products/:id", hardwareController.getHardwareProductById);
+router.get(
+  "/products", 
+  authenticate,
+  checkCategory(["hardware", "admin"]),
+  hardwareController.getAllHardwareProducts
+);
 
-// Update a product by ID
-router.patch("/products/:id", hardwareController.updateHardwareProductById);
+router.get(
+  "/products/:id", 
+  authenticate,
+  checkCategory(["hardware", "admin"]),
+  validateObjectId,
+  hardwareController.getHardwareProductById
+);
 
-// Delete a product by ID
-router.delete("/products/:id", hardwareController.deleteHardwareProductById);
+router.patch(
+  "/products/:id", 
+  authenticate,
+  checkCategory(["admin"]),
+  validateObjectId,
+  checkPermissions(["updateProduct"]),
+  hardwareController.updateHardwareProductById
+);
 
-router.post("/orders", hardwareController.createHardwareOrder);
-router.get("/orders", hardwareController.getAllHardwareOrders);
-router.get("/orders/:id", hardwareController.getHardwareOrderById);
-router.patch("/orders/:id", hardwareController.updateHardwareOrderById);
-router.delete("/orders/:id", hardwareController.deleteHardwareOrderById);
+router.delete(
+  "/products/:id", 
+  authenticate,
+  checkCategory(["admin"]),
+  validateObjectId,
+  checkPermissions(["deleteProduct"]),
+  hardwareController.deleteHardwareProductById
+);
+
+// Order Routes
+router.post(
+  "/orders", 
+  authenticate,
+  checkCategory(["hardware", "admin"]),
+  checkPermissions(["createOrder"]),
+  hardwareController.createHardwareOrder
+);
+
+router.get(
+  "/orders", 
+  authenticate,
+  checkCategory(["hardware", "admin"]),
+  hardwareController.getAllHardwareOrders
+);
+
+router.get(
+  "/orders/:id", 
+  authenticate,
+  checkCategory(["hardware", "admin"]),
+  validateObjectId,
+  hardwareController.getHardwareOrderById
+);
+
+router.patch(
+  "/orders/:id", 
+  authenticate,
+  checkCategory(["admin"]),
+  validateObjectId,
+  checkPermissions(["updateOrder"]),
+  hardwareController.updateHardwareOrderById
+);
+
+router.delete(
+  "/orders/:id", 
+  authenticate,
+  checkCategory(["admin"]),
+  validateObjectId,
+  checkPermissions(["deleteOrder"]),
+  hardwareController.deleteHardwareOrderById
+);
 
 module.exports = router;

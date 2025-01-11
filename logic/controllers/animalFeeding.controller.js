@@ -266,20 +266,7 @@ const updateAnimalFeedingProduct = async (req, res) => {
 
 // UPDATE ORDER
 // Update an order (Admin only)
-const updateProductStock = async (productId, quantityChange) => {
-  const product = await AnimalFeedingProduct.findById(productId);
-  if (!product) {
-    throw new Error("Product not found");
-  }
 
-  const updatedStock = product.quantity - quantityChange;
-  if (updatedStock < 0) {
-    throw new Error("Not enough stock available");
-  }
-
-  product.quantity = updatedStock;
-  await product.save();
-};
 
 const updateAnimalFeedingOrder = async (req, res) => {
   const { id } = req.params;

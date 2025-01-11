@@ -1,31 +1,80 @@
-const express = require("express")
+const express = require("express");
 
 // controller
-const { createOrder, getPrintingOrders, getSinglePrintingOrder, updatePrintingOrder, deletePrintingOrder, updateOrderStatus } = require("../controllers/printing.controller")
+const { 
+  createOrder, 
+  getPrintingOrders, 
+  getSinglePrintingOrder, 
+  updatePrintingOrder, 
+  deletePrintingOrder, 
+  updateOrderStatus 
+} = require("../controllers/printing.controller");
 
 // router
-const router = express.Router()
+const router = express.Router();
 
 // middleware
-const validateObjectId = require("../middleware/validateObjectId")
-const validatePrintingOrder = require("../middleware/printing/validatePrintingOrder")
+const authenticate = require("../middleware/auth/authenticate");
+const checkCategory = require("../middleware/auth/checkCategory");
+const checkPermissions = require("../middleware/auth/permissionMiddleware");
+const validateObjectId = require("../middleware/validateObjectId");
+const validatePrintingOrder = require("../middleware/printing/validatePrintingOrder");
 
 // create
-router.post("/orders", validatePrintingOrder, createOrder)
+router.post(
+  "/orders", 
+  authenticate,
+  checkCategory(["printing", "admin"]),
+  checkPermissions(["createOrder"]),
+  validatePrintingOrder, 
+  createOrder
+);
 
-// orders
-router.get("/orders", getPrintingOrders)
+// get all orders
+router.get(
+  "/orders", 
+  authenticate,
+  checkCategory(["printing", "admin"]),
+  getPrintingOrders
+);
 
-// order
-router.get("/orders/:id", validateObjectId, getSinglePrintingOrder)
+// get single order
+router.get(
+  "/orders/:id", 
+  authenticate,
+  checkCategory(["printing", "admin"]),
+  validateObjectId, 
+  getSinglePrintingOrder
+);
 
-// update
-router.patch("/orders/:id", validateObjectId, updatePrintingOrder)
+// update order
+router.patch(
+  "/orders/:id", 
+  authenticate,
+  checkCategory(["admin"]),
+  validateObjectId,
+  checkPermissions(["updateOrder"]), 
+  updatePrintingOrder
+);
 
-// delete
-router.delete("/orders/:id", validateObjectId, deletePrintingOrder)
+// delete order
+router.delete(
+  "/orders/:id", 
+  authenticate,
+  checkCategory(["admin"]),
+  validateObjectId,
+  checkPermissions(["deleteOrder"]), 
+  deletePrintingOrder
+);
 
 // update order status
-router.put("orders/:id/status", updateOrderStatus)
+router.put(
+  "/orders/:id/status", 
+  authenticate,
+  checkCategory(["printing", "admin"]),
+  checkPermissions(["updateOrderStatus"]),
+  validateObjectId,
+  updateOrderStatus
+);
 
-module.exports = router
+module.exports = router;

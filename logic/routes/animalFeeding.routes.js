@@ -28,7 +28,8 @@ const {
 const upload = require("../middleware/uploadAnimalFeeding");
 
 // Constants for HTTP status codes
-const { CREATED,  SERVER_ERROR } = require("../constants/responseStatusCode");
+const { CREATED,  SERVER_ERROR, BAD_REQUEST } = require("../constants/responseStatusCode");
+const validateRequestBody = require("../middleware/animalFeeding/validateProductCreate");
 
 // Routes
 
@@ -59,13 +60,15 @@ router.post(
   "/products",
   authenticate,
   checkCategory(["admin"]), // Admin only
-  checkPermissions(["createProduct"]), // Ensure admin has permission to create
+  checkPermissions(["createProduct"]),
   upload.single("image"),
   async (req, res) => {
     try {
       const { name, description, quantity, nutrients, price, userId } = req.body;
 
-      // Validation logic here ...
+      if(!name || !description || !quantity || !nutrients ||  !price || !userId){
+        return res.status(BAD_REQUEST).json({message:"All fields are required"});
+      }
 
       const image = req.file ? req.file.path : null;
       const newProduct = new AnimalFeedingProduct({

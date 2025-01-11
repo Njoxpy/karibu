@@ -2,6 +2,8 @@
 const FreshOilProduct = require("../models/freshOil/freshOilproductModel");
 const FreshOilOrder = require("../models/freshOil/freshOilOrderModel");
 
+const mongoose = require("mongoose");
+
 // middleware
 const {
   SERVER_ERROR,
@@ -66,6 +68,8 @@ const searchFreshOilOrders = async (req, res) => {
       .json({ error: "Error searching orders", details: error.message });
   }
 };
+
+
 // create product
 const createFreshOilProduct = async (req, res) => {
   try {
@@ -285,6 +289,11 @@ const updateFreshOilOrder = async (req, res) => {
   const { id } = req.params;
   const { quantity } = req.body;
 
+  // Ensure quantity is a valid number
+  if (isNaN(quantity) || quantity <= 0) {
+    return res.status(400).json({ error: "Invalid quantity value" });
+  }
+
   try {
     // Find the existing order
     const order = await FreshOilOrder.findById(id);
@@ -298,7 +307,7 @@ const updateFreshOilOrder = async (req, res) => {
       return res.status(404).json({ error: "Product not found" });
     }
 
-    // Check if the new quantity is valid (considering the original quantity in stock)
+    // Calculate the updated stock
     const updatedStock = product.quantity + order.quantity - quantity; // Adjust stock based on old order quantity
     if (updatedStock < 0) {
       return res.status(400).json({ error: "Insufficient stock" });
@@ -318,6 +327,7 @@ const updateFreshOilOrder = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 // delete product
 const deleteFreshOilProduct = async (req, res) => {
@@ -439,7 +449,7 @@ const getTotalCostByDate = async (req, res) => {
 
 const getRevenueByDateRange = async (startDate, endDate) => {
   try {
-    const revenueData = await AnimalFeedingOrder.aggregate([
+    const revenueData = await FreshOilOrder.aggregate([
       {
         $match: {
           createdAt: {
