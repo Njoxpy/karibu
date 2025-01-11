@@ -26,6 +26,7 @@ const {
   getTotalCostByDate,
   getAvailableProducts,
   createFreshOilProduct,
+  getRevenue,
 } = require("../controllers/freshOil.controller");
 
 // Models
@@ -50,6 +51,13 @@ router.get(
   checkCategory(["fresh-oil", "admin"]),
   addPagination,
   getAllFreshOilProducts
+);
+
+router.get(
+  "/revenue",
+  authenticate,
+  checkCategory(["admin"]), // Admin only
+  getRevenue
 );
 
 router.get(
