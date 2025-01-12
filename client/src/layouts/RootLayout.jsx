@@ -1,25 +1,65 @@
 import { Link, NavLink, Outlet } from "react-router-dom";
 import { useState } from "react";
+import useLogout from "../hooks/auth/useLogout"; // Import the useLogout hook
 import logo from "../assets/images/logoWithName.png"; // Import your logo image
+import { useAuth } from "../hooks/auth/useAuth";
 
 const RootLayout = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const fallbackLogo = "Savarrah"
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const logout = useLogout(); // Use the useLogout hook
+  const { user } = useAuth();
+  const fallbackLogo = "Savarrah";
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const handleLogoutClick = () => {
+    setIsModalOpen(true); // Open the modal
+  };
+
+  const confirmLogout = () => {
+    setIsModalOpen(false); // Close the modal
+    logout(); // Call the logout function to log the user out
+  };
+
+  const cancelLogout = () => {
+    setIsModalOpen(false); // Close the modal without logging out
+  };
+
+  // Define menu items
   const menuItems = [
     { name: "Home", path: "/" },
-    { name: "Godown", path: "/godown" },
-    { name: "Stationery", path: "/stationery" },
-    { name: "Animal Feeding", path: "/animal-feeding" },
-    { name: "Hardware", path: "/hardware" },
-    { name: "Printing", path: "/printing" },
-    { name: "FreshOil", path: "/freshOil" },
-    { name: "Admin", path: "/admin" },
+    { name: "Contact", path: "/contact" }, // Always visible for all users
+    ...(user?.category === "godown"
+      ? [{ name: "Godown", path: "/godown" }]
+      : []),
+    ...(user?.category === "stationery"
+      ? [{ name: "Stationery", path: "/stationery" }]
+      : []),
+    ...(user?.category === "animalFeeding"
+      ? [{ name: "Animal Feeding", path: "/animal-feeding" }]
+      : []),
+    ...(user?.category === "hardware"
+      ? [{ name: "Hardware", path: "/hardware" }]
+      : []),
+    ...(user?.category === "printing"
+      ? [{ name: "Printing", path: "/printing" }]
+      : []),
+    ...(user?.category === "freshOil"
+      ? [{ name: "FreshOil", path: "/freshOil" }]
+      : []),
+    ...(user?.category === "admin"
+      ? [
+          { name: "Admin", path: "/admin" },
+          { name: "Settings", path: "/settings" }, // Add more admin links as needed
+        ]
+      : []),
   ];
+
+  // If user is admin, show all pages (Admin role can access all pages)
+  const isAdmin = user?.role === "admin"; // Check if the user is admin
 
   return (
     <>
@@ -31,7 +71,9 @@ const RootLayout = () => {
               src={logo || fallbackLogo}
               alt="Savarrah Logo"
               className="h-10 w-auto"
-              onError={(e) => {e.target.src = fallbackLogo}}
+              onError={(e) => {
+                e.target.src = fallbackLogo;
+              }}
             />
           </Link>
         </div>
@@ -56,7 +98,9 @@ const RootLayout = () => {
 
         {/* Menu Links */}
         <div
-          className={`w-full ${isMenuOpen ? "block" : "hidden"} lg:flex lg:items-center lg:w-auto`}
+          className={`w-full ${
+            isMenuOpen ? "block" : "hidden"
+          } lg:flex lg:items-center lg:w-auto`}
         >
           <div className="text-sm lg:flex-grow">
             {menuItems.map((item) => (
@@ -74,17 +118,60 @@ const RootLayout = () => {
             ))}
           </div>
 
-          {/* Login and Signup Buttons */}
-          <div>
-            <Link
-              to="/login"
-              className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-blue-500 hover:bg-white mt-4 lg:mt-0 mr-2"
-            >
-              Login
-            </Link>
-          </div>
+          {/* Conditional Rendering for Login/Logout */}
+          {!user ? (
+            <div>
+              <Link
+                to="/login"
+                className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-blue-500 hover:bg-white mt-4 lg:mt-0 mr-2"
+              >
+                Login
+              </Link>
+            </div>
+          ) : (
+            <>
+              <div>
+                <p className="text-white text-sm font-semibold">
+                  {user?.email}
+                </p>
+              </div>
+              <div>
+                <button
+                  onClick={handleLogoutClick}
+                  className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-red-500 bg-red-500 hover:bg-red-600 hover:border-red-600 mt-4 lg:mt-0 transition duration-200"
+                  aria-label="Logout"
+                >
+                  Logout
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </nav>
+
+      {/* Modal Popup */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full">
+            <h2 className="text-xl font-semibold mb-4">Confirm Logout</h2>
+            <p className="mb-6">Are you sure you want to log out?</p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={cancelLogout}
+                className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmLogout}
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Nested Routes */}
       <Outlet />
