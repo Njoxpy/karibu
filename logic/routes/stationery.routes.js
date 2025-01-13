@@ -4,17 +4,20 @@ const router = express.Router();
 
 // Controllers
 const {
-    createStationeryOrder,
-    getAllStationeryProducts,
-    getAllStationeryOrders,
-    updateStationeryProduct,
-    updateStationeryOrder,
-    searchStationeryProducts,
-    searchStationeryOrders,
-    deleteStationeryProduct,
-    deleteStationeryOrder,
-    getStationeryOrder,
-    getStationeryProduct,
+  createStationeryOrder,
+  getAllStationeryProducts,
+  getAllStationeryOrders,
+  updateStationeryProduct,
+  updateStationeryOrder,
+  searchStationeryProducts,
+  searchStationeryOrders,
+  deleteStationeryProduct,
+  deleteStationeryOrder,
+  getStationeryOrder,
+  getStationeryProduct,
+  getRevenue,
+  getTotalCostByDate,
+  getAvailableProducts,
 } = require("../controllers/stationery.controller");
 
 // Middleware
@@ -32,156 +35,186 @@ const { BAD_REQUEST } = require("../constants/responseStatusCode");
 
 // POST: Create a new stationery product
 router.post(
-    "/products", 
-    authenticate,
-    checkCategory(["admin"]),
-    checkPermissions(["createProduct"]),
-    upload.single('image'), 
-    async (req, res) => {
-        try {
-            const { name, price, quantity, description, userId } = req.body;
+  "/products",
+  authenticate,
+  checkCategory(["admin"]),
+  checkPermissions(["createProduct"]),
+  upload.single("image"),
+  async (req, res) => {
+    try {
+      const { name, price, quantity, description, userId } = req.body;
 
-            // Validate required fields
-            if (!name || price === undefined || quantity === undefined || !description || !userId) {
-                return res.status(BAD_REQUEST).json({ message: "All fields are required" });
-            }
+      // Validate required fields
+      if (
+        !name ||
+        price === undefined ||
+        quantity === undefined ||
+        !description ||
+        !userId
+      ) {
+        return res
+          .status(BAD_REQUEST)
+          .json({ message: "All fields are required" });
+      }
 
-            // Validate that price and quantity are numbers
-            if (isNaN(quantity) || isNaN(price)) {
-                return res.status(BAD_REQUEST).json({ error: "Quantity and price must be valid numbers." });
-            }
+      // Validate that price and quantity are numbers
+      if (isNaN(quantity) || isNaN(price)) {
+        return res
+          .status(BAD_REQUEST)
+          .json({ error: "Quantity and price must be valid numbers." });
+      }
 
-            // Validate quantity and price greater than or equal to zero
-            if (quantity < 0 || price < 0) {
-                return res.status(BAD_REQUEST).json({ error: "Quantity and price must be greater than or equal to zero." });
-            }
+      // Validate quantity and price greater than or equal to zero
+      if (quantity < 0 || price < 0) {
+        return res.status(BAD_REQUEST).json({
+          error: "Quantity and price must be greater than or equal to zero.",
+        });
+      }
 
-            // Validate userId
-            if (!mongoose.Types.ObjectId.isValid(userId)) {
-                return res.status(BAD_REQUEST).json({ error: "Invalid userId." });
-            }
+      // Validate userId
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(BAD_REQUEST).json({ error: "Invalid userId." });
+      }
 
-            // Ensure image is uploaded
-            if (!req.file) {
-                return res.status(BAD_REQUEST).json({ message: "Image is required" });
-            }
+      // Ensure image is uploaded
+      if (!req.file) {
+        return res.status(BAD_REQUEST).json({ message: "Image is required" });
+      }
 
-            const image = req.file.path; // Get the image path
+      const image = req.file.path; // Get the image path
 
-            // Create product in the database
-            const newProduct = await StationeryProduct.create({
-                name,
-                price,
-                quantity,
-                description,
-                userId,
-                image,
-            });
+      // Create product in the database
+      const newProduct = await StationeryProduct.create({
+        name,
+        price,
+        quantity,
+        description,
+        userId,
+        image,
+      });
 
-            res.status(201).json(newProduct);
-        } catch (error) {
-            res.status(500).json({ message: "Failed to create product", error: error.message });
-        }
+      res.status(201).json(newProduct);
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: "Failed to create product", error: error.message });
     }
+  }
 );
 
 // POST: Create a new stationery order
 router.post(
-    "/orders", 
-    authenticate,
-    checkCategory(["stationery", "admin"]),
-    checkPermissions(["createOrder"]),
-    createStationeryOrder
+  "/orders",
+  authenticate,
+  checkCategory(["stationery", "admin"]),
+  checkPermissions(["createOrder"]),
+  createStationeryOrder
 );
 
 // GET: Get all stationery products
 router.get(
-    "/products", 
-    authenticate,
-    checkCategory(["stationery", "admin"]),
-    getAllStationeryProducts
+  "/products",
+  authenticate,
+  checkCategory(["stationery", "admin"]),
+  getAllStationeryProducts
 );
 
 // GET: Search stationery products
 router.get(
-    "/products/search", 
-    authenticate,
-    checkCategory(["stationery", "admin"]),
-    searchStationeryProducts
+  "/products/search",
+  authenticate,
+  checkCategory(["stationery", "admin"]),
+  searchStationeryProducts
 );
 
 // GET: Get all stationery orders
 router.get(
-    "/orders", 
-    authenticate,
-    checkCategory(["stationery", "admin"]),
-    getAllStationeryOrders
+  "/orders",
+  authenticate,
+  checkCategory(["stationery", "admin"]),
+  getAllStationeryOrders
 );
 
 // GET: Search stationery orders
 router.get(
-    "/orders/search", 
-    authenticate,
-    checkCategory(["stationery", "admin"]),
-    searchStationeryOrders
+  "/orders/search",
+  authenticate,
+  checkCategory(["stationery", "admin"]),
+  searchStationeryOrders
 );
 
 // GET: Get single stationery product by ID
 router.get(
-    "/products/:id", 
-    authenticate,
-    checkCategory(["stationery", "admin"]),
-    validateObjectId, 
-    getStationeryProduct
+  "/products/:id",
+  authenticate,
+  checkCategory(["stationery", "admin"]),
+  validateObjectId,
+  getStationeryProduct
 );
 
 // GET: Get single stationery order by ID
 router.get(
-    "/orders/:id", 
-    authenticate,
-    checkCategory(["stationery", "admin"]),
-    validateObjectId, 
-    getStationeryOrder
+  "/orders/:id",
+  authenticate,
+  checkCategory(["stationery", "admin"]),
+  validateObjectId,
+  getStationeryOrder
 );
 
 // PATCH: Update stationery product details
 router.patch(
-    "/products/:id", 
-    authenticate,
-    checkCategory(["admin"]),
-    validateObjectId,
-    checkPermissions(["updateProduct"]), 
-    updateStationeryProduct
+  "/products/:id",
+  authenticate,
+  checkCategory(["admin"]),
+  validateObjectId,
+  checkPermissions(["updateProduct"]),
+  updateStationeryProduct
 );
 
 // PATCH: Update stationery order details
 router.patch(
-    "/orders/:id", 
-    authenticate,
-    checkCategory(["admin"]),
-    validateObjectId,
-    checkPermissions(["updateOrder"]), 
-    updateStationeryOrder
+  "/orders/:id",
+  authenticate,
+  checkCategory(["admin"]),
+  validateObjectId,
+  checkPermissions(["updateOrder"]),
+  updateStationeryOrder
 );
 
 // DELETE: Delete stationery product by ID
 router.delete(
-    "/products/:id", 
-    authenticate,
-    checkCategory(["admin"]),
-    validateObjectId,
-    checkPermissions(["deleteProduct"]), 
-    deleteStationeryProduct
+  "/products/:id",
+  authenticate,
+  checkCategory(["admin"]),
+  validateObjectId,
+  checkPermissions(["deleteProduct"]),
+  deleteStationeryProduct
 );
 
 // DELETE: Delete stationery order by ID
 router.delete(
-    "/orders/:id", 
-    authenticate,
-    checkCategory(["admin"]),
-    validateObjectId,
-    checkPermissions(["deleteOrder"]), 
-    deleteStationeryOrder
+  "/orders/:id",
+  authenticate,
+  checkCategory(["admin"]),
+  validateObjectId,
+  checkPermissions(["deleteOrder"]),
+  deleteStationeryOrder
 );
+
+router.get(
+  "/available-products",
+  authenticate,
+  checkCategory(["animal-feeding", "admin"]),
+  getAvailableProducts
+);
+
+router.get(
+  "/total-orders",
+  authenticate,
+  checkCategory(["admin"]),
+  getTotalCostByDate
+);
+
+router.get("/revenue", authenticate, checkCategory(["admin"]), getRevenue);
 
 module.exports = router;

@@ -1,5 +1,12 @@
 const express = require("express");
-const { loginUser, signupUser, getAllUsers } = require("../controllers/user.controller");
+const {
+  loginUser,
+  signupUser,
+  getAllUsers,
+  getUserById,
+  updateUser,
+  deleteUser,
+} = require("../controllers/user.controller");
 
 // Import middleware
 const authenticate = require("../middleware/auth/authenticate");
@@ -13,19 +20,43 @@ userRoutes.post("/login", loginUser);
 
 // Protected routes - admin only
 userRoutes.post(
-    "/signup", 
-    authenticate,
-    checkCategory(["admin"]),
-    checkPermissions(["createUser"]),
-    signupUser
+  "/signup",
+  authenticate,
+  checkCategory(["admin"]),
+  checkPermissions(["createUser"]),
+  signupUser
 );
 
 userRoutes.get(
-    "/", 
-    authenticate,
-    checkCategory(["admin"]),
-    checkPermissions(["viewUsers"]),
-    getAllUsers
+  "/",
+  authenticate,
+  checkCategory(["admin"]),
+  checkPermissions(["viewUsers"]),
+  getAllUsers
+);
+
+userRoutes.get(
+  "/:id",
+  authenticate,
+  checkCategory(["admin"]),
+  checkPermissions(["viewUsers"]),
+  getUserById
+);
+
+userRoutes.put(
+  "/:id",
+  authenticate,
+  checkCategory(["admin"]),
+  checkPermissions(["updateUser"]),
+  updateUser
+);
+
+userRoutes.delete(
+  "/:id",
+  authenticate,
+  checkCategory(["admin"]),
+  checkPermissions(["deleteUser"]),
+  deleteUser
 );
 
 module.exports = userRoutes;
