@@ -221,8 +221,7 @@ const getAllGodownProductById = async (req, res) => {
     }
     res.status(OK).json(product);
   } catch (error) {
-    res
-      .status(SERVER_ERROR)
+    res.status(SERVER_ERROR);
   }
 };
 
@@ -404,20 +403,27 @@ const transferInventory = async (req, res) => {
       !transferredBy
     ) {
       return res
-        .status(BAD_REQUEST)
+        .status(400) // BAD_REQUEST
         .json({ message: "Please fill in all required fields." });
     }
 
     // Step 1: Fetch the product from the GodownProduct model
     const product = await GodownProduct.findById(selectedItemId);
     if (!product) {
-      return res.status(BAD_REQUEST).json({ message: "Product not found." });
+      return res.status(400).json({ message: "Product not found." });
+    }
+
+    // Ensure that `product` contains required fields
+    if (!product.quantity || !product.location) {
+      return res
+        .status(500) // SERVER_ERROR
+        .json({ message: "Product data is invalid or incomplete." });
     }
 
     // Step 2: Ensure the product has enough stock
     if (transferQuantity > product.quantity) {
       return res
-        .status(BAD_REQUEST)
+        .status(400)
         .json({ message: "Transfer quantity exceeds available stock." });
     }
 
@@ -425,7 +431,7 @@ const transferInventory = async (req, res) => {
     const movementData = {
       product: selectedItemId,
       transferQuantity,
-      origin: product.location, // Assuming product has a location field
+      origin: product.location,
       destination,
       transferredBy,
       reason,
@@ -459,7 +465,7 @@ const transferInventory = async (req, res) => {
     await destinationInventory.save();
 
     // Step 6: Respond with success
-    res.status(OK).json({
+    return res.status(200).json({
       message: `Successfully transferred ${transferQuantity} units of ${product.name} from ${product.location} to ${destination}`,
       data: {
         product: product.name,
@@ -472,7 +478,9 @@ const transferInventory = async (req, res) => {
     });
   } catch (error) {
     console.error("Error during inventory movement:", error);
-    res.status(SERVER_ERROR).json({
+
+    // Send a detailed error response
+    return res.status(500).json({
       error: "Error processing inventory movement.",
       details: error.message,
     });
@@ -581,6 +589,52 @@ const getRevenue = async (req, res) => {
   }
 };
 
+const getTotalCostByDate = async (req, res) => {
+  const { filter } = req.query; // Expected values: 'day', 'week', 'month'
+  const now = new Date();
+  let startDate;
+
+  if (filter === "day") {
+    startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  } else if (filter === "week") {
+    const startOfWeek = now.getDate() - now.getDay(); // Sunday as the first day of the week
+    startDate = new Date(now.getFullYear(), now.getMonth(), startOfWeek);
+  } else if (filter === "month") {
+    startDate = new Date(now.getFullYear(), now.getMonth(), 1); // First day of the current month
+  } else {
+    return res
+      .status(400)
+      .json({ message: 'Invalid filter. Use "day", "week", or "month".' });
+  }
+
+  try {
+    const totalCost = await GodownOrder.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startDate, $lt: now },
+        },
+      },
+      {
+        $group: {
+          _id: null, // Group all matching documents together
+          totalCost: { $sum: "$total" }, // Sum up the `total` field
+        },
+      },
+    ]);
+
+    if (totalCost.length === 0) {
+      return res.status(200).json({
+        totalCost: 0,
+        message: "No orders found for the specified period",
+      });
+    }
+
+    res.status(200).json({ totalCost: totalCost[0].totalCost });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   createGodownProduct,
   createGodownOrder,
@@ -596,4 +650,5 @@ module.exports = {
   getRevenue,
   getAvailableProducts,
   transferInventory,
+  getTotalCostByDate,
 };

@@ -20,6 +20,7 @@ const {
   getAvailableProducts,
   getRevenue,
   transferInventory,
+  getTotalCostByDate,
 } = require("../controllers/godown.controller");
 
 // Import middleware
@@ -39,8 +40,6 @@ const {
   BAD_REQUEST,
   OK,
 } = require("../constants/responseStatusCode");
-
-// Multer setup
 
 // Create product route
 router.post(
