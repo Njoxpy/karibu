@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const cors = require("cors");
-const helmet = require('helmet');
+const helmet = require("helmet");
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
 
@@ -14,7 +14,7 @@ const userRoutes = require("./routes/user.routes");
 const printingRoutes = require("./routes/printing.routes");
 const hardwareRoutes = require("./routes/hardware.routes");
 const stationeryRoutes = require("./routes/stationery.routes");
-const reportsRoutes = require("./routes/reports/reports")
+const reportsRoutes = require("./routes/reports/reports");
 
 // log
 const log = require("./logs/logger");
@@ -35,18 +35,21 @@ app.use(
 app.use(helmet());
 
 // Update CORS configuration
-app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? process.env.ALLOWED_ORIGIN 
-    : 'http://localhost:5173',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true, // Enable if using cookies/sessions
-  maxAge: 86400 // Cache preflight requests for 24 hours
-}));
+app.use(
+  cors({
+    origin:
+      process.env.NODE_ENV === "production"
+        ? process.env.ALLOWED_ORIGIN
+        : "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true, // Enable if using cookies/sessions
+    maxAge: 86400, // Cache preflight requests for 24 hours
+  })
+);
 
 app.use(express.json());
-app.use(log)
+app.use(log);
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
@@ -58,22 +61,29 @@ app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(err.status || 500).json({
     error: err.message || "Internal Server Error",
-    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
   });
 });
 
-
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, 
-  limit: 100, 
+  windowMs: 15 * 60 * 1000,
+  limit: 100,
   standardHeaders: "draft-8",
-  legacyHeaders: false, 
+  legacyHeaders: false,
 });
-
 
 // middleware
 app.use(morgan("dev"));
 app.use(limiter);
+
+app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    return res.status(400).json({ message: err.message });
+  } else if (err) {
+    return res.status(400).json({ message: err.message });
+  }
+  next();
+});
 
 // register routes
 app.use("/api/v1/animal-feeding", animalFeedingRoutes);
@@ -84,7 +94,6 @@ app.use("/api/v1/printing", printingRoutes);
 app.use("/api/v1/stationery", stationeryRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/reports", reportsRoutes);
-
 
 // connect to DB
 connectDB();

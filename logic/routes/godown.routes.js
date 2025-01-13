@@ -24,6 +24,7 @@ const {
 } = require("../controllers/godown.controller");
 
 // Import middleware
+const uploadExcel = require("../middleware/excell/uploadExcel"); // Adjust to your middleware path
 const authenticate = require("../middleware/auth/authenticate");
 const checkCategory = require("../middleware/auth/checkCategory");
 const checkPermissions = require("../middleware/auth/permissionMiddleware");
@@ -40,12 +41,6 @@ const {
   OK,
 } = require("../constants/responseStatusCode");
 
-// Multer setup
-const uploadExcell = multer({
-  dest: "uploads/",
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max file size
-});
-
 // Create product route
 router.post(
   "/products",
@@ -55,69 +50,71 @@ router.post(
   createGodownProduct
 );
 
-// Bulk upload products from Excel file
 router.post(
   "/products/bulk-upload",
   authenticate,
   checkCategory(["admin"]),
   checkPermissions(["createProduct"]),
-  uploadExcell.single("file"),
+  uploadExcel.single("file"),
   async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });
     }
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
+
     try {
-      const filePath = req.file.path;
-      const workbook = XLSX.readFile(filePath);
+      // Step 1: Read and parse the Excel file
+      const workbook = XLSX.read(req.file.buffer, { type: "buffer" });
       const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
       const jsonData = XLSX.utils.sheet_to_json(worksheet);
-      const newProducts = [];
+
+      // Step 2: Prepare data for bulkWrite
+      const bulkOperations = [];
       const failedRows = [];
-
-      for (let i = 0; i < jsonData.length; i++) {
-        const row = jsonData[i];
-        // Validate row data
+      jsonData.forEach((row, index) => {
         if (!row.name || !row.price || !row.quantity) {
-          failedRows.push({ row: i + 1, error: "Missing required fields" });
-          continue;
+          failedRows.push({ row: index + 1, error: "Missing required fields" });
+          return;
         }
-        try {
-          const newProduct = await GodownProduct.create({
-            name: row.name,
-            price: parseFloat(row.price),
-            quantity: parseInt(row.quantity),
-            location: row.location,
-            description: row.description,
-            userId: row.userId,
-          });
-          newProducts.push(newProduct);
-        } catch (error) {
-          failedRows.push({ row: i + 1, error: error.message });
-          console.error(`Error processing row ${i + 1}:`, error);
-        }
-      }
 
-      // Cleanup uploaded file
-      await fs.promises.unlink(filePath);
-
-      // Respond with result
-      if (failedRows.length > 0) {
-        return res.status(400).json({
-          message: "Some rows failed to upload",
-          failedRows,
-          successfulUploads: newProducts.length,
+        bulkOperations.push({
+          insertOne: {
+            document: {
+              name: row.name,
+              price: parseFloat(row.price),
+              quantity: parseInt(row.quantity, 10),
+              location: row.location || "",
+              description: row.description || "",
+            },
+          },
         });
-      }
-      res.status(201).json({
-        message: `${newProducts.length} products uploaded successfully`,
-        newProducts,
       });
+
+      // Step 3: Insert data into the database using bulkWrite
+      let successfulUploads = 0;
+      if (bulkOperations.length > 0) {
+        const result = await GodownProduct.bulkWrite(bulkOperations);
+        successfulUploads = result.insertedCount;
+      }
+
+      // Step 4: Respond with the result
+      const responseMessage = {
+        message: `${successfulUploads} products uploaded successfully`,
+        successfulUploads,
+      };
+
+      if (failedRows.length > 0) {
+        responseMessage.failedRows = failedRows;
+      }
+
+      res.status(201).json(responseMessage);
     } catch (error) {
+      console.error("Error processing file upload:", error);
       res.status(500).json({
         message: "Failed to process the Excel file",
         error: error.message,
@@ -129,8 +126,7 @@ router.post(
 router.post(
   "/orders",
   authenticate,
-  checkCategory(["godown", "admin", "employee"]),
-  checkPermissions(["createOrder"]),
+  checkCategory(["godown", "admin"]),
   createGodownOrder
 );
 
@@ -138,6 +134,7 @@ router.get(
   "/available-products",
   authenticate,
   checkCategory(["godown", "admin"]),
+  checkPermissions(["createOrder"]),
   getAvailableProducts
 );
 
@@ -215,13 +212,6 @@ router.post(
   checkCategory(["admin"]),
   checkPermissions(["transferInventory"]),
   transferInventory
-);
-
-router.get(
-  "/total-orders",
-  authenticate,
-  checkCategory(["admin"]),
-  getTotalCostByDate
 );
 
 module.exports = router;
