@@ -41,11 +41,13 @@ const upload = multer({
     );
     const mimetype = filetypes.test(file.mimetype);
 
-    if (extname && mimetype) {
-      return cb(null, true); // Accept the file
-    } else {
-      cb(new Error("Only image files are allowed"));
+    if (!extname || !mimetype) {
+      return cb(
+        new Error("Only image files (jpeg, jpg, png, gif) are allowed")
+      );
     }
+
+    cb(null, true); // Accept the file
   },
 });
 

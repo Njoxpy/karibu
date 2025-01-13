@@ -1,13 +1,15 @@
 const express = require("express");
 
 // controller
-const { 
-  createOrder, 
-  getPrintingOrders, 
-  getSinglePrintingOrder, 
-  updatePrintingOrder, 
-  deletePrintingOrder, 
-  updateOrderStatus 
+const {
+  createOrder,
+  getPrintingOrders,
+  getSinglePrintingOrder,
+  updatePrintingOrder,
+  deletePrintingOrder,
+  updateOrderStatus,
+  getRevenue,
+  getTotalCostByDate,
 } = require("../controllers/printing.controller");
 
 // router
@@ -22,17 +24,17 @@ const validatePrintingOrder = require("../middleware/printing/validatePrintingOr
 
 // create
 router.post(
-  "/orders", 
+  "/orders",
   authenticate,
   checkCategory(["printing", "admin"]),
   checkPermissions(["createOrder"]),
-  validatePrintingOrder, 
+  validatePrintingOrder,
   createOrder
 );
 
 // get all orders
 router.get(
-  "/orders", 
+  "/orders",
   authenticate,
   checkCategory(["printing", "admin"]),
   getPrintingOrders
@@ -40,41 +42,50 @@ router.get(
 
 // get single order
 router.get(
-  "/orders/:id", 
+  "/orders/:id",
   authenticate,
   checkCategory(["printing", "admin"]),
-  validateObjectId, 
+  validateObjectId,
   getSinglePrintingOrder
 );
 
 // update order
 router.patch(
-  "/orders/:id", 
+  "/orders/:id",
   authenticate,
   checkCategory(["admin"]),
   validateObjectId,
-  checkPermissions(["updateOrder"]), 
+  checkPermissions(["updateOrder"]),
   updatePrintingOrder
 );
 
 // delete order
 router.delete(
-  "/orders/:id", 
+  "/orders/:id",
   authenticate,
   checkCategory(["admin"]),
   validateObjectId,
-  checkPermissions(["deleteOrder"]), 
+  checkPermissions(["deleteOrder"]),
   deletePrintingOrder
 );
 
 // update order status
 router.put(
-  "/orders/:id/status", 
+  "/orders/:id/status",
   authenticate,
   checkCategory(["printing", "admin"]),
   checkPermissions(["updateOrderStatus"]),
   validateObjectId,
   updateOrderStatus
+);
+
+router.get("/revenue", authenticate, checkCategory(["admin"]), getRevenue);
+
+router.get(
+  "/total-orders",
+  authenticate,
+  checkCategory(["admin"]),
+  getTotalCostByDate
 );
 
 module.exports = router;

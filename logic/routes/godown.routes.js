@@ -214,4 +214,11 @@ router.post(
   transferInventory
 );
 
+router.get(
+  "/total-orders",
+  authenticate,
+  checkCategory(["admin"]), // Admin only
+  getTotalCostByDate
+);
+
 module.exports = router;
