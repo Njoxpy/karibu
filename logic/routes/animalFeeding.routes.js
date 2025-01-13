@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 
-
 const AnimalFeedingProduct = require("../models/animalFeeding/animalFeedingProductModel");
 
 const authenticate = require("../middleware/auth/authenticate");
@@ -28,7 +27,11 @@ const {
 const upload = require("../middleware/uploadAnimalFeeding");
 
 // Constants for HTTP status codes
-const { CREATED,  SERVER_ERROR, BAD_REQUEST } = require("../constants/responseStatusCode");
+const {
+  CREATED,
+  SERVER_ERROR,
+  BAD_REQUEST,
+} = require("../constants/responseStatusCode");
 const validateRequestBody = require("../middleware/animalFeeding/validateProductCreate");
 
 // Routes
@@ -64,10 +67,20 @@ router.post(
   upload.single("image"),
   async (req, res) => {
     try {
-      const { name, description, quantity, nutrients, price, userId } = req.body;
+      const { name, description, quantity, nutrients, price, userId } =
+        req.body;
 
-      if(!name || !description || !quantity || !nutrients ||  !price || !userId){
-        return res.status(BAD_REQUEST).json({message:"All fields are required"});
+      if (
+        !name ||
+        !description ||
+        !quantity ||
+        !nutrients ||
+        !price ||
+        !userId
+      ) {
+        return res
+          .status(BAD_REQUEST)
+          .json({ message: "All fields are required" });
       }
 
       const image = req.file ? req.file.path : null;

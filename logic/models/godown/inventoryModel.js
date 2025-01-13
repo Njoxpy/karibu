@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { v4: uuidv4 } = require("uuid");
 const GodownProduct = require("./godownProductModel");
 
 const inventoryMovementSchema = new mongoose.Schema(
@@ -39,20 +40,11 @@ const inventoryMovementSchema = new mongoose.Schema(
     transactionId: {
       type: String,
       unique: true,
-      default: () => `TRX-${Date.now()}`,
+      default: uuidv4,
     },
   },
-  { timestamps: true } // Automatically adds createdAt and updatedAt fields
+  { timestamps: true }
 );
-
-// Optional: Check stock availability before saving
-inventoryMovementSchema.pre("save", async function (next) {
-  const product = await GodownProduct.findById(this.product);
-  if (this.transferQuantity > product.quantity) {
-    throw new Error("Transfer quantity exceeds available stock.");
-  }
-  next();
-});
 
 const InventoryMovement = mongoose.model(
   "InventoryMovement",

@@ -20,6 +20,7 @@ const {
   getAvailableProducts,
   getRevenue,
   transferInventory,
+  getTotalCostByDate,
 } = require("../controllers/godown.controller");
 
 // Import middleware
@@ -42,12 +43,12 @@ const {
 // Multer setup
 const uploadExcell = multer({
   dest: "uploads/",
-  limits: { fileSize: 10 * 1024 * 1024 } // 10MB max file size
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max file size
 });
 
 // Create product route
 router.post(
-  "/products", 
+  "/products",
   authenticate,
   checkCategory(["admin"]),
   checkPermissions(["createProduct"]),
@@ -126,7 +127,7 @@ router.post(
 );
 
 router.post(
-  "/orders", 
+  "/orders",
   authenticate,
   checkCategory(["godown", "admin", "employee"]),
   checkPermissions(["createOrder"]),
@@ -140,12 +141,7 @@ router.get(
   getAvailableProducts
 );
 
-router.get(
-  "/revenue",
-  authenticate,
-  checkCategory(["admin"]),
-  getRevenue
-);
+router.get("/revenue", authenticate, checkCategory(["admin"]), getRevenue);
 
 router.get(
   "/products",
@@ -219,6 +215,13 @@ router.post(
   checkCategory(["admin"]),
   checkPermissions(["transferInventory"]),
   transferInventory
+);
+
+router.get(
+  "/total-orders",
+  authenticate,
+  checkCategory(["admin"]),
+  getTotalCostByDate
 );
 
 module.exports = router;
