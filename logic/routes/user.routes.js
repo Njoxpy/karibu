@@ -12,6 +12,7 @@ const {
 const authenticate = require("../middleware/auth/authenticate");
 const checkCategory = require("../middleware/auth/checkCategory");
 const checkPermissions = require("../middleware/auth/permissionMiddleware");
+const validateObjectId = require("../middleware/validateObjectId");
 
 const userRoutes = express.Router();
 
@@ -40,6 +41,7 @@ userRoutes.get(
   authenticate,
   checkCategory(["admin"]),
   checkPermissions(["viewUsers"]),
+  validateObjectId,
   getUserById
 );
 

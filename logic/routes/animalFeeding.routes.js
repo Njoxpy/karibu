@@ -8,6 +8,9 @@ const checkCategory = require("../middleware/auth/checkCategory");
 const checkPermissions = require("../middleware/auth/permissionMiddleware");
 const validateObjectId = require("../middleware/validateObjectId");
 
+const { getAnimalFeedingOrders } = require("../services/animalFeedingService");
+const { generateAnimalFeedingPDF } = require("../services/pdfService");
+
 const {
   createAnimalFeedingOrder,
   getAllAnimalFeedingProducts,
@@ -67,21 +70,16 @@ router.post(
   upload.single("image"),
   async (req, res) => {
     try {
-      const { name, description, quantity, nutrients, price, userId } =
-        req.body;
+      const { name, description, quantity, nutrients, price } = req.body;
 
-      if (
-        !name ||
-        !description ||
-        !quantity ||
-        !nutrients ||
-        !price ||
-        !userId
-      ) {
+      if (!name || !description || !quantity || !nutrients || !price) {
         return res
           .status(BAD_REQUEST)
-          .json({ message: "All fields are required" });
+          .json({ message: "All fields except userId are required" });
       }
+
+      // Automatically set userId from the authenticated user
+      const userId = req.user.id; // Adjust if your authentication sets it differently
 
       const image = req.file ? req.file.path : null;
       const newProduct = new AnimalFeedingProduct({
@@ -189,5 +187,39 @@ router.get(
   checkCategory(["admin"]), // Admin only
   getTotalCostByDate
 );
+
+// Admin middleware for authentication
+const adminMiddleware = (req, res, next) => {
+  const user = { role: "admin" }; // Replace with real authentication
+  if (user.role !== "admin") {
+    return res.status(403).json({ message: "Access denied" });
+  }
+  next();
+};
+
+// Generate Animal Feeding Report
+router.get("/reports", adminMiddleware, async (req, res) => {
+  try {
+    const { startDate, endDate } = req.query;
+
+    if (!startDate || !endDate) {
+      return res.status(400).json({ message: "Missing date range" });
+    }
+
+    const orders = await getAnimalFeedingOrders(startDate, endDate);
+
+    if (!orders.length) {
+      return res
+        .status(404)
+        .json({ message: "No orders found for the given period" });
+    }
+
+    // res.json({ success: true, orders }); // Placeholder response
+    generateAnimalFeedingPDF(orders, res);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error generating report" });
+  }
+});
 
 module.exports = router;

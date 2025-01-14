@@ -33,7 +33,11 @@ const {
 const FreshOilProduct = require("../models/freshOil/freshOilproductModel");
 
 // Response codes
-const { SERVER_ERROR, CREATED, BAD_REQUEST } = require("../constants/responseStatusCode");
+const {
+  SERVER_ERROR,
+  CREATED,
+  BAD_REQUEST,
+} = require("../constants/responseStatusCode");
 
 // Add pagination middleware
 const addPagination = (req, res, next) => {
