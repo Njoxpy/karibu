@@ -14,7 +14,7 @@ const userRoutes = require("./routes/user.routes");
 const printingRoutes = require("./routes/printing.routes");
 const hardwareRoutes = require("./routes/hardware.routes");
 const stationeryRoutes = require("./routes/stationery.routes");
-const reportsRoutes = require("./routes/reports/reports");
+const reportsRoutes = require("./routes/reports/reports.routes");
 
 // log
 const log = require("./logs/logger");

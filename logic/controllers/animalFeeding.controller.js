@@ -267,7 +267,6 @@ const updateAnimalFeedingProduct = async (req, res) => {
 // UPDATE ORDER
 // Update an order (Admin only)
 
-
 const updateAnimalFeedingOrder = async (req, res) => {
   const { id } = req.params;
   const { quantity } = req.body;
