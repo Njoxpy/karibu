@@ -3,8 +3,8 @@ const mongoose = require("mongoose");
 // CRUD
 const GodownProduct = require("../models/godown/godownProductModel");
 
-const Inventory = require("../models/godown/godownProductModel"); // Assuming Inventory model for locations
-const InventoryMovement = require("../models/godown/inventoryModel"); // Inventory Movement log model
+const Inventory = require("../models/godown/godownProductModel"); 
+const InventoryMovement = require("../models/godown/inventoryModel"); 
 const GodownOrder = require("../models/godown/godownOrderModel");
 
 // response code
