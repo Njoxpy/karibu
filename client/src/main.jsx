@@ -5,7 +5,7 @@ import "./index.css";
 
 // context
 import { AnimalFeedingContextProvider } from "./context/AnimalFeedingContext";
-import { FreshOilContextProvider } from "./context/FreshOilContext";  // Import FreshOilContext
+import { FreshOilContextProvider } from "./context/FreshOilContext"; // Import FreshOilContext
 import { HardwareContextProvider } from "./context/HardwareContext";
 import { PrintingContextProvider } from "./context/PrintingContext";
 import { StationeryContextProvider } from "./context/StationeryContext";
@@ -14,9 +14,9 @@ import { AuthProvider } from "./context/auth/AuthContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-      <AuthProvider>
+    <AuthProvider>
       <AnimalFeedingContextProvider>
-        <FreshOilContextProvider> 
+        <FreshOilContextProvider>
           <HardwareContextProvider>
             <PrintingContextProvider>
               <StationeryContextProvider>
@@ -28,6 +28,6 @@ createRoot(document.getElementById("root")).render(
           </HardwareContextProvider>
         </FreshOilContextProvider>
       </AnimalFeedingContextProvider>
-      </AuthProvider>
+    </AuthProvider>
   </StrictMode>
 );
