@@ -35,7 +35,6 @@ const {
   SERVER_ERROR,
   BAD_REQUEST,
 } = require("../constants/responseStatusCode");
-const validateRequestBody = require("../middleware/animalFeeding/validateProductCreate");
 
 // Routes
 
@@ -78,8 +77,11 @@ router.post(
           .json({ message: "All fields except userId are required" });
       }
 
-      // Automatically set userId from the authenticated user
-      const userId = req.user.id; // Adjust if your authentication sets it differently
+      if (description.length > 500) {
+        return res.status(400).json({message:"Description is too long"})
+      }
+
+      const userId = req.user.id; 
 
       const image = req.file ? req.file.path : null;
       const newProduct = new AnimalFeedingProduct({
