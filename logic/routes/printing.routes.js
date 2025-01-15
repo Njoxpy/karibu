@@ -25,9 +25,9 @@ const validatePrintingOrder = require("../middleware/printing/validatePrintingOr
 // create
 router.post(
   "/orders",
-  authenticate,
-  checkCategory(["printing", "admin"]),
-  checkPermissions(["createOrder"]),
+  // authenticate,
+  // checkCategory(["printing", "admin"]),
+  // checkPermissions(["createOrder"]),
   validatePrintingOrder,
   createOrder
 );
