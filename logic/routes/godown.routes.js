@@ -41,6 +41,10 @@ const {
   OK,
 } = require("../constants/responseStatusCode");
 
+// Import services
+const { generateGodownPDF } = require("../services/godown/pdfService");
+const { getGodownOrders } = require("../services/godown/godownService");
+
 // Create product route
 router.post(
   "/products",
@@ -220,5 +224,29 @@ router.get(
   checkCategory(["admin"]), // Admin only
   getTotalCostByDate
 );
+
+// Generate Godown Report
+router.get("/reports", authenticate, checkCategory(["admin"]), async (req, res) => {
+  try {
+    const { startDate, endDate } = req.query;
+
+    if (!startDate || !endDate) {
+      return res.status(400).json({ message: "Missing date range" });
+    }
+
+    const orders = await getGodownOrders(startDate, endDate);
+
+    if (!orders.length) {
+      return res.status(404).json({ 
+        message: "No godown records found for the given period" 
+      });
+    }
+
+    generateGodownPDF(orders, res);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error generating godown report" });
+  }
+});
 
 module.exports = router;
