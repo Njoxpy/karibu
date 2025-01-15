@@ -6,6 +6,7 @@ const stationeryProductSchema = new Schema({
     description: {
         type: String,
         trim: true, 
+        maxLength: [500, "Description is too long"]
     },
     image: {
         type: String,
@@ -27,6 +28,7 @@ const stationeryProductSchema = new Schema({
     },
     totalPrice: {
         type: Number,
+        min: [1, "Total price must be at least 1"],
     },
     userId: {
         type: Schema.Types.ObjectId,
