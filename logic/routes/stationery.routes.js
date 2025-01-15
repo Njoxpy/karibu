@@ -30,6 +30,12 @@ const upload = require("../middleware/stationery/uploadStationery");
 // Models
 const StationeryProduct = require("../models/stationery/stationeryProductModel");
 
+// doc
+const { generateStationeryPDF } = require("../services/stationery/pdfService");
+const {
+  getStationeryOrderss,
+} = require("../services/stationery/stationeryService");
+
 // Response codes
 const { BAD_REQUEST } = require("../constants/responseStatusCode");
 
@@ -42,15 +48,14 @@ router.post(
   upload.single("image"),
   async (req, res) => {
     try {
-      const { name, price, quantity, description, userId } = req.body;
+      const { name, price, quantity, description } = req.body;
 
       // Validate required fields
       if (
         !name ||
         price === undefined ||
         quantity === undefined ||
-        !description ||
-        !userId
+        !description
       ) {
         return res
           .status(BAD_REQUEST)
@@ -70,9 +75,9 @@ router.post(
           error: "Quantity and price must be greater than or equal to zero.",
         });
       }
-      
+
       if (description.length > 500) {
-        return res.status(400).json({message:"Description is too long"})
+        return res.status(400).json({ message: "Description is too long" });
       }
 
       // Validate userId
@@ -86,6 +91,7 @@ router.post(
       }
 
       const image = req.file.path; // Get the image path
+      const userId = req.user.id;
 
       // Create product in the database
       const newProduct = await StationeryProduct.create({
@@ -220,5 +226,33 @@ router.get(
 );
 
 router.get("/revenue", authenticate, checkCategory(["admin"]), getRevenue);
+
+router.get(
+  "/reports",
+  authenticate,
+  checkCategory(["admin"]),
+  async (req, res) => {
+    try {
+      const { startDate, endDate } = req.query;
+
+      if (!startDate || !endDate) {
+        return res.status(400).json({ message: "Missing date range" });
+      }
+
+      const orders = await getStationeryOrderss(startDate, endDate);
+
+      if (!orders.length) {
+        return res.status(404).json({
+          message: "No stationery orders found for the given period",
+        });
+      }
+
+      generateStationeryPDF(orders, res);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error generating stationery report" });
+    }
+  }
+);
 
 module.exports = router;

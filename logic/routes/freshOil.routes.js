@@ -29,15 +29,6 @@ const {
   getRevenue,
 } = require("../controllers/freshOil.controller");
 
-// Models
-const FreshOilProduct = require("../models/freshOil/freshOilproductModel");
-
-// Response codes
-const {
-  SERVER_ERROR,
-  CREATED,
-  BAD_REQUEST,
-} = require("../constants/responseStatusCode");
 const { getFreshOilOrders } = require("../services/freshOil/freshOilService");
 const { generateFreshOilPDF } = require("../services/freshOil/pdfService");
 
@@ -47,8 +38,6 @@ const addPagination = (req, res, next) => {
   req.query.limit = parseInt(req.query.limit) || 10;
   next();
 };
-
-// Routes
 
 // Product Routes
 router.get(
@@ -174,27 +163,32 @@ router.get(
 );
 
 // Generate Fresh Oil Report
-router.get("/reports", authenticate, checkCategory(["admin"]), async (req, res) => {
-  try {
-    const { startDate, endDate } = req.query;
+router.get(
+  "/reports",
+  authenticate,
+  checkCategory(["admin"]),
+  async (req, res) => {
+    try {
+      const { startDate, endDate } = req.query;
 
-    if (!startDate || !endDate) {
-      return res.status(400).json({ message: "Missing date range" });
+      if (!startDate || !endDate) {
+        return res.status(400).json({ message: "Missing date range" });
+      }
+
+      const orders = await getFreshOilOrders(startDate, endDate);
+
+      if (!orders.length) {
+        return res.status(404).json({
+          message: "No orders found for the given period",
+        });
+      }
+
+      generateFreshOilPDF(orders, res);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error generating report" });
     }
-
-    const orders = await getFreshOilOrders(startDate, endDate);
-
-    if (!orders.length) {
-      return res.status(404).json({ 
-        message: "No orders found for the given period" 
-      });
-    }
-
-    generateFreshOilPDF(orders, res);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error generating report" });
   }
-});
+);
 
 module.exports = router;
