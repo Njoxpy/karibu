@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const StationeryProduct = require('./stationeryProductModel'); // Import the product model
+const StationeryProduct = require('./stationeryProductModel'); 
 
 const stationeyOrderSchema = new Schema({
     orderId: {
@@ -25,7 +25,7 @@ const stationeyOrderSchema = new Schema({
     },
     total: {
         type: Number,
-        min: [0, "Total price cannot be negative"]
+        min: [1, "Total price must be at least 1"]
     },
     userId: {
         type: Schema.Types.ObjectId,
@@ -37,7 +37,6 @@ const stationeyOrderSchema = new Schema({
 // Pre-save hook to calculate total
 stationeyOrderSchema.pre('save', function (next) {
     if (!this.price) {
-        // Fetch the price from the product if not provided
         StationeryProduct.findById(this.productId, (err, product) => {
             if (err || !product) {
                 return next(new Error('Product not found'));

@@ -7,21 +7,21 @@ const inventoryMovementSchema = new mongoose.Schema(
     product: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "GodownProduct",
-      required: true,
+      required: [true, "Product ID is required"],
     },
     transferQuantity: {
       type: Number,
-      required: true,
-      min: 1,
+      required: [true, "Transfer qunatity is required"],
+      min: [1, "Transfer quantity should be minimum 1"],
     },
     origin: {
       type: String,
-      required: true,
+      required: [true, "Product origin loacation is required"],
       trim: true,
     },
     destination: {
       type: String,
-      required: true,
+      required: [true, 'Destination for the product is required'],
       trim: true,
     },
     transferDate: {
@@ -40,7 +40,7 @@ const inventoryMovementSchema = new mongoose.Schema(
     transactionId: {
       type: String,
       unique: true,
-      default: uuidv4,
+      default: `GODOWN-MOVEMENT-${uuidv4}`,
     },
   },
   { timestamps: true }

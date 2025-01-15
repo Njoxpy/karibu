@@ -187,7 +187,7 @@ const createAnimalFeedingOrder = async (req, res) => {
       quantity,
       price, // Ensure price is passed
       total: quantity * price,
-      userId,
+      userId: req.user._id,
     });
 
     // Update the product stock
@@ -266,7 +266,6 @@ const updateAnimalFeedingProduct = async (req, res) => {
 
 // UPDATE ORDER
 // Update an order (Admin only)
-
 
 const updateAnimalFeedingOrder = async (req, res) => {
   const { id } = req.params;

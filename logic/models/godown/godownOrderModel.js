@@ -19,7 +19,7 @@ const godownOrderSchema = new Schema(
             type: String,
             required: true,
             default: () => {
-                return `GODOWN-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+                return `ORDER-GODOWN-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
             }
         },
         userId: {

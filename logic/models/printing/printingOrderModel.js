@@ -5,20 +5,18 @@ const PrintingOrderSchema = new Schema(
     {
         orderId: {
             type: String,
-            required: true,
-            default: () => {
-                return `PRINTING-${Date.now()}`;
-            }
+            required: [true, "Order ID is required"],
+            default: () => `ORDER-PRINTING-${Date.now()}-${Math.floor(Math.random() * 1000)}`
         },
-
         description: {
             type: String,
-            required: [true, "Order description is required"]
+            required: [true, "Order description is required"],
+            maxLength: [500, "Description is too long"]
         },
         status: {
             type: String,
             enum: ["pending", "in progress", "completed"],
-            required: true,
+            required: [true, "Status is required: pending, in progress, completed, "],
             default: "pending",
         },
         category: {
@@ -29,17 +27,17 @@ const PrintingOrderSchema = new Schema(
         userId: {
             type: Schema.Types.ObjectId,
             ref: "User",
-            // required: [true, "User ID is required"],
+            required: [true, "User ID is required"],
         },
         price: {
             type: Number,
             required: [true, "Price is required"],
-            min: 0,
+            min: [0, 'Price cannot be negative'],
         },
         quantity: {
             type: Number,
             required: [true, "Quantity is required"],
-            min: 1,
+            min: [1, "Quantity cannot be below 1"],
         },
         contact: {
             type: String,
@@ -47,6 +45,7 @@ const PrintingOrderSchema = new Schema(
         },
         totalPrice: {
             type: Number,
+            min: [1, "Total price must be at least 1"]
         },
     },
     { timestamps: true }

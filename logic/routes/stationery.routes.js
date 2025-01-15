@@ -70,6 +70,10 @@ router.post(
           error: "Quantity and price must be greater than or equal to zero.",
         });
       }
+      
+      if (description.length > 500) {
+        return res.status(400).json({message:"Description is too long"})
+      }
 
       // Validate userId
       if (!mongoose.Types.ObjectId.isValid(userId)) {

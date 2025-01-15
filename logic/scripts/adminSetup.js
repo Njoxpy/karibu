@@ -29,3 +29,5 @@ const createFirstAdmin = async () => {
 
 // Call the function to ensure admin is created at startup or deployment
 createFirstAdmin();
+
+// http://localhost:5000/api/v1/animal-feeding/reports?startDate=2025-01-01&endDate=2025-01-31

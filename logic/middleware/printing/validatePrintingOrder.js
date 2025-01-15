@@ -16,7 +16,10 @@ const validatePrintingOrder = (req, res, next) => {
         return res.status(BAD_REQUEST).json({ message: "Price should be a positive number and postive" })
     }
 
-
+    if (description.length > 500) {
+        return res.status(400).json({message:"Description is too long"})
+      }
+      
     // quantity
     if (typeof quantity !== "number" || price == null || price <= 0) {
         return res.status(BAD_REQUEST).json({ message: "Price should be a positive number and postive" })

@@ -35,6 +35,10 @@ router.post(
         return res.status(400).json({ message: "All fields are required" });
       }
 
+      if (description.length > 500) {
+        return res.status(400).json({message:"Description is too long"})
+      }
+
       // Validate that price and quantity are numbers
       if (isNaN(quantity) || isNaN(price)) {
         return res

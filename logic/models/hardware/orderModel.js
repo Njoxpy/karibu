@@ -17,7 +17,7 @@ const hardwareOrderSchema = new Schema(
     },
     totalPrice: {
       type: Number,
-      min: [0, "Total price must be at least 0"]
+      min: [1, "Total price must be at least 1"]
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,

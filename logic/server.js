@@ -14,8 +14,6 @@ const userRoutes = require("./routes/user.routes");
 const printingRoutes = require("./routes/printing.routes");
 const hardwareRoutes = require("./routes/hardware.routes");
 const stationeryRoutes = require("./routes/stationery.routes");
-const reportsRoutes = require("./routes/reports/reports");
-
 // log
 const log = require("./logs/logger");
 
@@ -93,7 +91,6 @@ app.use("/api/v1/hardware", hardwareRoutes);
 app.use("/api/v1/printing", printingRoutes);
 app.use("/api/v1/stationery", stationeryRoutes);
 app.use("/api/v1/users", userRoutes);
-app.use("/api/v1/reports", reportsRoutes);
 
 // connect to DB
 connectDB();
