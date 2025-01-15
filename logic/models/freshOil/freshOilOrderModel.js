@@ -12,7 +12,7 @@ const freshOilOrderSchema = new Schema({
         type: String,
         required: true,
         unique: true,
-        default: () => `FRESH-OIL-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
+        default: () => `ORDER-FRESH-OIL-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
     },
     productId: {
         type: Schema.Types.ObjectId,
@@ -24,7 +24,6 @@ const freshOilOrderSchema = new Schema({
         required: [true, "Quantity is required"],
         min: [1, 'Quantity must be at least 1'],
     },
-    // price per item
     price: {
         type: Number,
         required: [true, "Price is required"],
@@ -32,6 +31,7 @@ const freshOilOrderSchema = new Schema({
     },
     total: {
         type: Number,
+        min: [1, "Total price must be at least 1"]
     },
 }, { timestamps: true });
 

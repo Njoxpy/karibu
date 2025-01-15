@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const AnimalFeedingProduct = require('./animalFeedingProductModel'); // Import the product model
+const AnimalFeedingProduct = require('./animalFeedingProductModel'); 
 
 const animalFeedingOrderSchema = new Schema({
     orderId: {
         type: String,
         unique: true,
-        default: () => `ANIMAL-FEEDING-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
+        default: () => `ORDER-ANIMAL-FEEDING-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
     },
     productId: {
         type: Schema.Types.ObjectId,
@@ -16,16 +16,16 @@ const animalFeedingOrderSchema = new Schema({
     quantity: {
         type: Number,
         required: [true, "Quantity is required"],
-        min: [1, 'Quantity must be at least 1'],
+        min: [1, "Quantity must be at least 1"],
     },
     price: {
         type: Number,
         required: [true, "Price is required"],
-        min: [0, 'Price cannot be negative'],
+        min: [0, "Price cannot be negative"],
     },
     total: {
         type: Number,
-        min: [0, "Total price cannot be negative"]
+        min: [1, "Total price must be at least 1"]
     },
     userId: {
         type: Schema.Types.ObjectId,
@@ -35,14 +35,14 @@ const animalFeedingOrderSchema = new Schema({
 }, { timestamps: true });
 
 // Pre-save hook to calculate total
-animalFeedingOrderSchema.pre('save', function (next) {
+animalFeedingOrderSchema.pre("save", function (next) {
     if (!this.price) {
         // Fetch the price from the product if not provided
         AnimalFeedingProduct.findById(this.productId, (err, product) => {
             if (err || !product) {
                 return next(new Error('Product not found'));
             }
-            this.price = product.price; // Assign the product price to the order
+            this.price = product.price; 
             this.total = this.quantity * this.price;
             next();
         });

@@ -15,6 +15,10 @@ const validateRequestBody = (req, res, next) => {
         return res.status(400).json({ error: "Description is required and must be a valid string" });
     }
 
+    if (description.length > 400) {
+        return res.status(400).json({error:"Description should not exceed 400 characters"})
+    }
+
    
     if (typeof quantity !== 'number' || quantity <= 0) {
         return res.status(400).json({ error: "Quantity must be a number greater than 0" });
