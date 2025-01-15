@@ -1,4 +1,4 @@
-const AnimalFeedingOrder = require("../models/animalFeeding/animalFeedingOrderModel");
+const AnimalFeedingOrder = require("../../models/animalFeeding/animalFeedingOrderModel");
 
 const getAnimalFeedingOrders = async (startDate, endDate) => {
   try {

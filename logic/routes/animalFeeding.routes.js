@@ -8,8 +8,12 @@ const checkCategory = require("../middleware/auth/checkCategory");
 const checkPermissions = require("../middleware/auth/permissionMiddleware");
 const validateObjectId = require("../middleware/validateObjectId");
 
-const { getAnimalFeedingOrders } = require("../services/animalFeedingService");
-const { generateAnimalFeedingPDF } = require("../services/pdfService");
+const {
+  getAnimalFeedingOrders,
+} = require("../services/animalFeeding/animalFeedingService");
+const {
+  generateAnimalFeedingPDF,
+} = require("../services/animalFeeding/pdfService");
 
 const {
   createAnimalFeedingOrder,
@@ -78,10 +82,10 @@ router.post(
       }
 
       if (description.length > 500) {
-        return res.status(400).json({message:"Description is too long"})
+        return res.status(400).json({ message: "Description is too long" });
       }
 
-      const userId = req.user.id; 
+      const userId = req.user.id;
 
       const image = req.file ? req.file.path : null;
       const newProduct = new AnimalFeedingProduct({

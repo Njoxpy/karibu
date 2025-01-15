@@ -38,6 +38,8 @@ const {
   CREATED,
   BAD_REQUEST,
 } = require("../constants/responseStatusCode");
+const { getFreshOilOrders } = require("../services/freshOil/freshOilService");
+const { generateFreshOilPDF } = require("../services/freshOil/pdfService");
 
 // Add pagination middleware
 const addPagination = (req, res, next) => {
@@ -170,5 +172,29 @@ router.get(
   checkCategory(["admin"]),
   getTotalCostByDate
 );
+
+// Generate Fresh Oil Report
+router.get("/reports", authenticate, checkCategory(["admin"]), async (req, res) => {
+  try {
+    const { startDate, endDate } = req.query;
+
+    if (!startDate || !endDate) {
+      return res.status(400).json({ message: "Missing date range" });
+    }
+
+    const orders = await getFreshOilOrders(startDate, endDate);
+
+    if (!orders.length) {
+      return res.status(404).json({ 
+        message: "No orders found for the given period" 
+      });
+    }
+
+    generateFreshOilPDF(orders, res);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error generating report" });
+  }
+});
 
 module.exports = router;
