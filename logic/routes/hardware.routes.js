@@ -11,6 +11,8 @@ const validateObjectId = require("../middleware/validateObjectId");
 const upload = require("../middleware/uploadAnimalFeeding");
 const HardwareProduct = require("../models/hardware/productModel");
 const { getRevenue } = require("../controllers/godown.controller");
+const { generateHardwarePDF } = require("../services/hardware/pdfService");
+const { getHardwareOrders } = require("../services/hardware/hardwareService");
 
 // file uploa
 // Product Routes
@@ -22,21 +24,20 @@ router.post(
   upload.single("image"),
   async (req, res) => {
     try {
-      const { name, price, quantity, description, userId } = req.body;
+      const { name, price, quantity, description } = req.body;
 
       // Validate required fields
       if (
         !name ||
         price === undefined ||
         quantity === undefined ||
-        !description ||
-        !userId
+        !description
       ) {
         return res.status(400).json({ message: "All fields are required" });
       }
 
       if (description.length > 500) {
-        return res.status(400).json({message:"Description is too long"})
+        return res.status(400).json({ message: "Description is too long" });
       }
 
       // Validate that price and quantity are numbers
@@ -61,6 +62,7 @@ router.post(
       }
 
       const image = req.file ? req.file.path : null;
+      const userId = req.user.id;
 
       // Create a new hardware product
       const newProduct = await HardwareProduct.create({
@@ -174,6 +176,35 @@ router.get(
   checkCategory(["hardware", "admin"]),
   checkPermissions(["createOrder"]),
   hardwareController.getAvailableProducts
+);
+
+// Generate Hardware Report
+router.get(
+  "/reports",
+  authenticate,
+  checkCategory(["admin"]),
+  async (req, res) => {
+    try {
+      const { startDate, endDate } = req.query;
+
+      if (!startDate || !endDate) {
+        return res.status(400).json({ message: "Missing date range" });
+      }
+
+      const orders = await getHardwareOrders(startDate, endDate);
+
+      if (!orders.length) {
+        return res.status(404).json({
+          message: "No hardware orders found for the given period",
+        });
+      }
+
+      generateHardwarePDF(orders, res);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error generating hardware report" });
+    }
+  }
 );
 
 module.exports = router;

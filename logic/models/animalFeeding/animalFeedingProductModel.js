@@ -1,50 +1,57 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const animalFeedingProductSchema = new Schema({
+const animalFeedingProductSchema = new Schema(
+  {
     name: {
-        type: String,
-        required: [true, "Product name is required"],
+      type: String,
+      required: [true, "Product name is required"],
     },
     description: {
-        type: String,
-        required: [true, "Product description is required"],
-        maxLength: [500, "Description is too long"]
+      type: String,
+      required: [true, "Product description is required"],
+      maxLength: [500, "Description is too long"],
     },
     quantity: {
-        type: Number,
-        required: [true, "Product quantity is required"],
-        min: [0, "Quantity must be a positive number"]
+      type: Number,
+      required: [true, "Product quantity is required"],
+      min: [0, "Quantity must be a positive number"],
     },
     price: {
-        type: Number,
-        required: [true, "Product price is required"],
-        min: [0, "Price must be a positive number"]
+      type: Number,
+      required: [true, "Product price is required"],
+      min: [0, "Price must be a positive number"],
     },
     image: {
-        type: String,
+      type: String,
+      required: [true, "Product image is required"],
     },
     userId: {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-        required: [true, "Admin user is required to create a product"]
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: [true, "Admin user is required to create a product"],
     },
     nutrients: {
-        type: String,
-        required: [true, "Nutrients are required"],
+      type: String,
+      required: [true, "Nutrients are required"],
     },
     total: {
-        type: Number,
+      type: Number,
     },
-}, { timestamps: true });
+  },
+  { timestamps: true }
+);
 
 // Pre-save hook to calculate the total price before saving
-animalFeedingProductSchema.pre('save', function (next) {
-    if (this.isModified('quantity') || this.isModified('price')) {
-        this.total = this.quantity * this.price;
-    }
-    next();
+animalFeedingProductSchema.pre("save", function (next) {
+  if (this.isModified("quantity") || this.isModified("price")) {
+    this.total = this.quantity * this.price;
+  }
+  next();
 });
 
-const AnimalFeedingProductProduct = mongoose.model('AnimalFeedingProduct', animalFeedingProductSchema);
+const AnimalFeedingProductProduct = mongoose.model(
+  "AnimalFeedingProduct",
+  animalFeedingProductSchema
+);
 module.exports = AnimalFeedingProductProduct;

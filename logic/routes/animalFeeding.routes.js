@@ -78,7 +78,7 @@ router.post(
       if (!name || !description || !quantity || !nutrients || !price) {
         return res
           .status(BAD_REQUEST)
-          .json({ message: "All fields except userId are required" });
+          .json({ message: "All fields are required" });
       }
 
       if (description.length > 500) {

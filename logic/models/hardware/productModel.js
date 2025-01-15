@@ -33,6 +33,7 @@ const hardwareProductSchema = new Schema(
     },
     image: {
       type: String,
+      required: [true, "Product image is required"],
     },
   },
   { timestamps: true }

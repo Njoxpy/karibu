@@ -1,7 +1,5 @@
 const express = require("express");
 const XLSX = require("xlsx");
-const fs = require("fs");
-const multer = require("multer");
 const { validationResult } = require("express-validator");
 const router = express.Router();
 
@@ -32,14 +30,6 @@ const validateObjectId = require("../middleware/validateObjectId");
 
 // Models
 const GodownProduct = require("../models/godown/godownProductModel");
-const Inventory = require("../models/godown/inventoryModel");
-
-// Response codes
-const {
-  SERVER_ERROR,
-  BAD_REQUEST,
-  OK,
-} = require("../constants/responseStatusCode");
 
 // Import services
 const { generateGodownPDF } = require("../services/godown/pdfService");
@@ -226,27 +216,32 @@ router.get(
 );
 
 // Generate Godown Report
-router.get("/reports", authenticate, checkCategory(["admin"]), async (req, res) => {
-  try {
-    const { startDate, endDate } = req.query;
+router.get(
+  "/reports",
+  authenticate,
+  checkCategory(["admin"]),
+  async (req, res) => {
+    try {
+      const { startDate, endDate } = req.query;
 
-    if (!startDate || !endDate) {
-      return res.status(400).json({ message: "Missing date range" });
+      if (!startDate || !endDate) {
+        return res.status(400).json({ message: "Missing date range" });
+      }
+
+      const orders = await getGodownOrders(startDate, endDate);
+
+      if (!orders.length) {
+        return res.status(404).json({
+          message: "No godown records found for the given period",
+        });
+      }
+
+      generateGodownPDF(orders, res);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error generating godown report" });
     }
-
-    const orders = await getGodownOrders(startDate, endDate);
-
-    if (!orders.length) {
-      return res.status(404).json({ 
-        message: "No godown records found for the given period" 
-      });
-    }
-
-    generateGodownPDF(orders, res);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error generating godown report" });
   }
-});
+);
 
 module.exports = router;
