@@ -187,7 +187,7 @@ const createAnimalFeedingOrder = async (req, res) => {
       quantity,
       price, // Ensure price is passed
       total: quantity * price,
-      userId,
+      userId: req.user._id,
     });
 
     // Update the product stock
