@@ -3,7 +3,6 @@ const PDFDocument = require("pdfkit");
 const generateAnimalFeedingPDF = (orders, res) => {
   const doc = new PDFDocument({ margin: 50 });
 
-  // Pipe the PDF stream to the response
   res.setHeader("Content-Type", "application/pdf");
   res.setHeader(
     "Content-Disposition",
@@ -11,21 +10,20 @@ const generateAnimalFeedingPDF = (orders, res) => {
   );
   doc.pipe(res);
 
-  // Title Section
+
   doc
-    .fillColor("blue") // Blue for the title
-    .fontSize(24)
+    .fillColor("blue")
+    .fontSize(30)
     .text("Animal Feeding Sales Report", { align: "center" });
   doc.moveDown(2);
 
   // Table Headers Section
   const tableTop = doc.y;
   const headerHeight = 20;
-  const columnWidths = [250, 100, 100]; // Adjusted column widths
+  const columnWidths = [250, 100, 100]; 
 
-  // Table Header Styling
   doc
-    .fillColor("green") // Green for table headers
+    .fillColor("green") 
     .fontSize(12)
     .text("Product Name", 50, tableTop)
     .text("Quantity", 300, tableTop)
