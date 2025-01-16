@@ -5,6 +5,9 @@ const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
+const swaggerJsdoc = require("swagger-jsdoc");
+const swaggerUi = require("swagger-ui-express");
+const timeout = require('connect-timeout'); // Import timeout middleware
 
 // ROUTES IMPORT
 const animalFeedingRoutes = require("./routes/animalFeeding.routes");
@@ -49,7 +52,37 @@ app.use(
 app.use(express.json());
 app.use(log);
 
+// Add timeout middleware (30 seconds timeout)
+app.use(timeout('30s')); // 30 seconds timeout
+app.use(haltOnTimeout); // Optional: handle timeout
+
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// Serve static files from the "uploads" folder
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Swagger setup
+const options = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Savarrah API",
+      version: "1.0.0",
+      description: "API documentation for Savarrah",
+    },
+    servers: [
+      {
+        url: "http://localhost:5000/api/v1",
+        description: "Development server",
+      },
+    ],
+  },
+  apis: ["./routes/*.js"],
+};
+
+const swaggerSpec = swaggerJsdoc(options);
+
+// Serve Swagger UI
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.get("/", (req, res) => {
   res.json("hello world from savarrah");
@@ -74,15 +107,6 @@ const limiter = rateLimit({
 app.use(morgan("dev"));
 app.use(limiter);
 
-app.use((err, req, res, next) => {
-  if (err instanceof multer.MulterError) {
-    return res.status(400).json({ message: err.message });
-  } else if (err) {
-    return res.status(400).json({ message: err.message });
-  }
-  next();
-});
-
 // register routes
 app.use("/api/v1/animal-feeding", animalFeedingRoutes);
 app.use("/api/v1/fresh-oil", freshOilRoutes);
@@ -99,3 +123,9 @@ connectDB();
 app.listen(process.env.PORT, () => {
   console.log(`Listening http://localhost:${process.env.PORT}/`);
 });
+
+// Helper function to handle timeouts
+function haltOnTimeout(req, res, next) {
+  if (!req.timedOut) next();
+  else res.status(408).json({ error: 'Request timed out' });
+}

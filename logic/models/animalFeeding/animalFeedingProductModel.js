@@ -24,7 +24,6 @@ const animalFeedingProductSchema = new Schema(
     },
     image: {
       type: String,
-      required: [true, "Product image is required"],
     },
     userId: {
       type: Schema.Types.ObjectId,
