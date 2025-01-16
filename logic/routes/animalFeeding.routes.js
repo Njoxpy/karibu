@@ -1,4 +1,8 @@
 const express = require("express");
+const sharp = require('sharp');
+const path = require('path');
+const fs = require('fs');
+
 const router = express.Router();
 
 const AnimalFeedingProduct = require("../models/animalFeeding/animalFeedingProductModel");
@@ -70,44 +74,78 @@ router.post(
   authenticate,
   checkCategory(["admin"]), // Admin only
   checkPermissions(["createProduct"]),
-  upload.single("image"),
+  upload.single("image"), // Upload a single image file
   async (req, res) => {
     try {
-      const { name, description, quantity, nutrients, price } = req.body;
+      // Extract product details from the request body
+      const { name, description, quantity, nutrients, price, userId } = req.body;
 
+      // Check if the required fields are present
       if (!name || !description || !quantity || !nutrients || !price) {
-        return res
-          .status(BAD_REQUEST)
-          .json({ message: "All fields are required" });
+        return res.status(400).json({ message: "All fields are required" });
       }
 
       if (description.length > 500) {
         return res.status(400).json({ message: "Description is too long" });
       }
 
-      const userId = req.user.id;
+      if (quantity <= 0) {
+        return res.status(400).json({ message: "Quantity cannot be negative or zero" });
+      }
 
-      const image = req.file ? req.file.path : null;
-      const newProduct = new AnimalFeedingProduct({
+      if (price <= 0) {
+        return res.status(400).json({ message: "Price cannot be negative or zero" });
+      }
+
+      // Check if an image was uploaded
+      if (!req.file) {
+        return res.status(400).json({ message: "Image is required" });
+      }
+
+      // Define the original image path
+      const imagePath = req.file.path;
+
+      // Define the path for the compressed image
+      // Define the path for the compressed image
+      const compressedImagePath = path.join(__dirname, "uploads", `compressed_${req.file.filename}.jpg`);
+
+      // Compress the image with sharp
+      await sharp(imagePath)
+        .resize(800) // Resize image to 800px width (adjustable)
+        .toFormat("jpeg")
+        .jpeg({ quality: 40 }) // Set quality to 40% for size reduction
+        .toFile(compressedImagePath);
+
+      // Asynchronous deletion of the original image
+      fs.unlink(imagePath, (err) => {
+        if (err) {
+          console.error("Failed to delete original image:", err);
+        } else {
+          console.log("Original image deleted successfully");
+        }
+      });
+
+      // Generate the relative path for the compressed image
+      const imageUrl = `/uploads/compressed_${req.file.filename}.jpg`;
+
+      // Create a new product object (you would save this to your database)
+      const newProduct = {
         name,
         description,
         quantity,
         nutrients,
-        image,
         price,
         userId,
-      });
+        image: imageUrl, // Save the relative image URL
+      };
 
-      await newProduct.save();
-      res.status(CREATED).json({
+      res.status(201).json({
         message: "Product created successfully",
         product: newProduct,
       });
     } catch (error) {
       console.error(error);
-      res
-        .status(SERVER_ERROR)
-        .json({ error: "Server error, please try again later." });
+      res.status(500).json({ error: "Server error, please try again later." });
     }
   }
 );
