@@ -79,10 +79,14 @@ router.post(
     try {
       // Extract product details from the request body
       const { name, description, quantity, nutrients, price, userId } = req.body;
-
+      
       // Check if the required fields are present
       if (!name || !description || !quantity || !nutrients || !price) {
         return res.status(400).json({ message: "All fields are required" });
+      }
+
+      if(typeof name !== "string" || typeof description !== "string" || typeof nutrients !== "string") {
+        return res.status(BAD_REQUEST).json({message:"Not a valid name"})
       }
 
       if (description.length > 500) {
