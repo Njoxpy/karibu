@@ -80,6 +80,8 @@ router.post(
         return res.status(400).json({ message: "Description is too long" });
       }
 
+      const userId = req.user && req.user._id;
+
       // Validate userId
       if (!mongoose.Types.ObjectId.isValid(userId)) {
         return res.status(BAD_REQUEST).json({ error: "Invalid userId." });
@@ -91,7 +93,6 @@ router.post(
       }
 
       const image = req.file.path; // Get the image path
-      const userId = req.user.id;
 
       // Create product in the database
       const newProduct = await StationeryProduct.create({
