@@ -3,6 +3,7 @@ const PDFDocument = require("pdfkit");
 const generateAnimalFeedingPDF = (orders, res) => {
   const doc = new PDFDocument({ margin: 50 });
 
+  // Set response headers
   res.setHeader("Content-Type", "application/pdf");
   res.setHeader(
     "Content-Disposition",
@@ -10,24 +11,40 @@ const generateAnimalFeedingPDF = (orders, res) => {
   );
   doc.pipe(res);
 
-
+  // Header Section
   doc
     .fillColor("blue")
-    .fontSize(30)
-    .text("Animal Feeding Sales Report", { align: "center" });
+    .fontSize(20)
+    .text("Savarrah", { align: "center" })
+    .moveDown(0.5)
+    .fontSize(16)
+    .text("Animal Feeding Sales Report", { align: "center" })
+    .moveDown(0.5)
+    .fontSize(12)
+    .fillColor("black")
+    .text(`Date Range: January 1–7, 2025`, { align: "center" });
   doc.moveDown(2);
 
   // Table Headers Section
   const tableTop = doc.y;
   const headerHeight = 20;
-  const columnWidths = [250, 100, 100]; 
+  const columnWidths = [250, 100, 100];
 
   doc
-    .fillColor("green") 
+    .fillColor("green")
     .fontSize(12)
-    .text("Product Name", 50, tableTop)
-    .text("Quantity", 300, tableTop)
-    .text("Total Price", 420, tableTop);
+    .text("Product Name", 50, tableTop, {
+      width: columnWidths[0],
+      align: "left",
+    })
+    .text("Quantity", 300, tableTop, {
+      width: columnWidths[1],
+      align: "center",
+    })
+    .text("Total Price", 420, tableTop, {
+      width: columnWidths[2],
+      align: "right",
+    });
 
   // Draw the horizontal line below the header
   doc
@@ -38,16 +55,13 @@ const generateAnimalFeedingPDF = (orders, res) => {
   // Table Data Rows
   let yPosition = tableTop + headerHeight + 5;
   orders.forEach((order) => {
-    // Check if we are approaching the bottom of the page and add a new page
-    // if necessary
     if (yPosition > 750) {
       doc.addPage();
       yPosition = 50; // Reset Y position after adding a new page
     }
 
-    // Draw row data with borders around cells
     doc
-      .fillColor("black") // Black for table data
+      .fillColor("black")
       .fontSize(12)
       .text(order.productId.name, 50, yPosition, {
         width: columnWidths[0],
@@ -72,11 +86,25 @@ const generateAnimalFeedingPDF = (orders, res) => {
 
   // Summary Section
   const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
+  const totalQuantity = orders.reduce((sum, order) => sum + order.quantity, 0);
+  const averagePricePerProduct =
+    orders.length > 0 ? totalRevenue / totalQuantity : 0;
+
   doc.moveDown(2);
   doc
-    .fillColor("green") // Green for the total revenue
+    .fillColor("black")
     .fontSize(14)
-    .text(`Total Revenue: Tsh ${totalRevenue.toFixed(2)}`, { align: "right" });
+    .text("Summary:", { underline: true })
+    .moveDown(0.5)
+    .fontSize(12)
+    .text(`Total Products Sold: ${totalQuantity}`, { indent: 20 })
+    .text(
+      `Average Price per Product: Tsh ${averagePricePerProduct.toFixed(2)}`,
+      {
+        indent: 20,
+      }
+    )
+    .text(`Total Revenue: Tsh ${totalRevenue.toFixed(2)}`, { indent: 20 });
 
   // Finalize the PDF and end the stream
   doc.end();

@@ -35,7 +35,6 @@ const upload = require("../middleware/uploadAnimalFeeding");
 
 // Constants for HTTP status codes
 const {
-  CREATED,
   SERVER_ERROR,
   BAD_REQUEST,
 } = require("../constants/responseStatusCode");
@@ -159,12 +158,6 @@ router.post(
   }
 );
 
-// Function to validate userId format (example for MongoDB ObjectId)
-function isValidUserId(userId) {
-  const ObjectId = require("mongodb").ObjectId;
-  return ObjectId.isValid(userId); // Adjust this validation if needed based on your database type
-}
-
 router.patch(
   "/products/:id",
   authenticate,
@@ -247,38 +240,34 @@ router.get(
   getTotalCostByDate
 );
 
-// Admin middleware for authentication
-const adminMiddleware = (req, res, next) => {
-  const user = { role: "admin" }; // Replace with real authentication
-  if (user.role !== "admin") {
-    return res.status(403).json({ message: "Access denied" });
-  }
-  next();
-};
-
 // Generate Animal Feeding Report
-router.get("/reports", adminMiddleware, async (req, res) => {
-  try {
-    const { startDate, endDate } = req.query;
+router.get(
+  "/reports",
+  // authenticate,
+  // checkCategory(["admin"]),
+  async (req, res) => {
+    try {
+      const { startDate, endDate } = req.query;
 
-    if (!startDate || !endDate) {
-      return res.status(BAD_REQUEST).json({ message: "Missing date range" });
+      if (!startDate || !endDate) {
+        return res.status(BAD_REQUEST).json({ message: "Missing date range" });
+      }
+
+      const orders = await getAnimalFeedingOrders(startDate, endDate);
+
+      if (!orders.length) {
+        return res
+          .status(404)
+          .json({ message: "No orders found for the given period" });
+      }
+
+      // res.json({ success: true, orders }); // Placeholder response
+      generateAnimalFeedingPDF(orders, res);
+    } catch (error) {
+      console.error(error);
+      res.status(SERVER_ERROR).json({ message: "Error generating report" });
     }
-
-    const orders = await getAnimalFeedingOrders(startDate, endDate);
-
-    if (!orders.length) {
-      return res
-        .status(404)
-        .json({ message: "No orders found for the given period" });
-    }
-
-    // res.json({ success: true, orders }); // Placeholder response
-    generateAnimalFeedingPDF(orders, res);
-  } catch (error) {
-    console.error(error);
-    res.status(SERVER_ERROR).json({ message: "Error generating report" });
   }
-});
+);
 
 module.exports = router;
