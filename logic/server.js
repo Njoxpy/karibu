@@ -7,7 +7,7 @@ const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
 const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
-const timeout = require('connect-timeout'); // Import timeout middleware
+const timeout = require("connect-timeout"); // Import timeout middleware
 
 // ROUTES IMPORT
 const animalFeedingRoutes = require("./routes/animalFeeding.routes");
@@ -53,12 +53,12 @@ app.use(express.json());
 app.use(log);
 
 // Add timeout middleware (30 seconds timeout)
-app.use(timeout('30s')); // 30 seconds timeout
+app.use(timeout("30s")); // 30 seconds timeout
 app.use(haltOnTimeout); // Optional: handle timeout
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // Serve static files from the "uploads" folder
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Swagger setup
 const options = {
@@ -116,6 +116,10 @@ app.use("/api/v1/printing", printingRoutes);
 app.use("/api/v1/stationery", stationeryRoutes);
 app.use("/api/v1/users", userRoutes);
 
+app.use("*", (req, res) => {
+  res.status(404).json({ message: "Route not found" });
+});
+
 // connect to DB
 connectDB();
 
@@ -127,5 +131,5 @@ app.listen(process.env.PORT, () => {
 // Helper function to handle timeouts
 function haltOnTimeout(req, res, next) {
   if (!req.timedOut) next();
-  else res.status(408).json({ error: 'Request timed out' });
+  else res.status(408).json({ error: "Request timed out" });
 }
