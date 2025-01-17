@@ -19,7 +19,7 @@ const generateStationeryPDF = (orders, res) => {
   // Add main heading
   doc
     .fontSize(24)
-    .text("stationery Sales Report", { align: "center" })
+    .text("Stationery Sales Report", { align: "center" })
     .moveDown(2);
 
   // Add date range
