@@ -9,9 +9,11 @@ const {
   NOT_FOUND,
   SERVER_ERROR,
   BAD_REQUEST,
+  CREATED,
 } = require("../constants/responseStatusCode");
 const AnimalFeedingProduct = require("../models/animalFeeding/animalFeedingProductModel");
 const AnimalFeedingOrder = require("../models/animalFeeding/animalFeedingOrderModel");
+const { default: mongoose } = require("mongoose");
 
 const searchAnimalFeedingProducts = async (req, res) => {
   const { name, description, minPrice, maxPrice } = req.query;
@@ -105,9 +107,14 @@ const getAllAnimalFeedingProducts = async (req, res) => {
 const getAnimalFeedingAllOrders = async (req, res) => {
   try {
     const orders = await AnimalFeedingOrder.find().sort({ createdAt: -1 });
-    res.status(200).json(orders);
+
+    if (orders.length === 0) {
+      return res.status(OK).json({ message: "There are no orders now" });
+    }
+
+    res.status(CREATED).json(orders);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(SERVER_ERROR).json({ error: error.message });
   }
 };
 
@@ -151,21 +158,43 @@ const getAnimalFeedingOrderById = async (req, res) => {
     if (!order) {
       return res.status(404).json({ error: "Order not found" });
     }
-    res.status(200).json(order);
+    res.status(CREATED).json(order);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(SERVER_ERROR).json({ error: error.message });
   }
 };
 
 const createAnimalFeedingOrder = async (req, res) => {
   try {
-    const { productId, quantity, userId } = req.body;
+    const { productId, quantity } = req.body;
+
+    const userId = req.user && req.user._id;
 
     // Check if all fields are provided
     if (!productId || !quantity || !userId) {
       return res
         .status(BAD_REQUEST)
         .json({ message: "All fields are required" });
+    }
+
+    if (typeof quantity !== "number") {
+      return res
+        .status(BAD_REQUEST)
+        .json({ message: "Quantity should be a number" });
+    }
+
+    if (quantity < 0) {
+      return res
+        .status(BAD_REQUEST)
+        .json({ message: "Quantity cannot be negative" });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(BAD_REQUEST).json({ message: "Invalid user ID" });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(BAD_REQUEST).json({ message: "Invalid product ID" });
     }
 
     // Fetch the product from the database
@@ -271,6 +300,12 @@ const updateAnimalFeedingOrder = async (req, res) => {
   const { id } = req.params;
   const { quantity } = req.body;
 
+  if (quantity < 0) {
+    return res
+      .status(BAD_REQUEST)
+      .json({ error: "Quantity should be greater than zero" });
+  }
+
   try {
     // Find the existing order
     const order = await AnimalFeedingOrder.findById(id);
@@ -287,7 +322,7 @@ const updateAnimalFeedingOrder = async (req, res) => {
     // Check if the new quantity is valid (considering the original quantity in stock)
     const updatedStock = product.quantity + order.quantity - quantity; // Adjust stock based on old order quantity
     if (updatedStock < 0) {
-      return res.status(400).json({ error: "Insufficient stock" });
+      return res.status(BAD_REQUEST).json({ error: "Insufficient stock" });
     }
 
     // Update the product stock
@@ -299,9 +334,9 @@ const updateAnimalFeedingOrder = async (req, res) => {
     order.total = quantity * product.price; // Recalculate the total based on the current product price
     await order.save();
 
-    res.status(200).json({ message: "Order updated successfully", order });
+    res.status(CREATED).json({ message: "Order updated successfully", order });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(SERVER_ERROR).json({ error: error.message });
   }
 };
 
@@ -402,7 +437,7 @@ const getTotalCostByDate = async (req, res) => {
     startDate = new Date(now.getFullYear(), now.getMonth(), 1); // First day of the current month
   } else {
     return res
-      .status(400)
+      .status(BAD_REQUEST)
       .json({ message: 'Invalid filter. Use "day", "week", or "month".' });
   }
 
@@ -422,15 +457,15 @@ const getTotalCostByDate = async (req, res) => {
     ]);
 
     if (totalCost.length === 0) {
-      return res.status(200).json({
+      return res.status(CREATED).json({
         totalCost: 0,
         message: "No orders found for the specified period",
       });
     }
 
-    res.status(200).json({ totalCost: totalCost[0].totalCost });
+    res.status(CREATED).json({ totalCost: totalCost[0].totalCost });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(SERVER_ERROR).json({ message: error.message });
   }
 };
 
@@ -445,12 +480,12 @@ const getAvailableProducts = async (req, res) => {
       return res.status(404).json({ message: "No products available." });
     }
 
-    res.status(200).json({
+    res.status(CREATED).json({
       message: "Available products fetched successfully.",
       products: availableProducts,
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(SERVER_ERROR).json({
       message: "Server error while fetching products.",
       details: error.message,
     });
@@ -512,14 +547,14 @@ const getRevenue = async (req, res) => {
         break;
       default:
         return res
-          .status(400)
+          .status(BAD_REQUEST)
           .json({ message: 'Invalid period. Use "day", "week", or "month".' });
     }
 
     // Get the revenue for the given period
     const revenue = await getRevenueByDateRange(startDate, endDate);
 
-    res.status(200).json({
+    res.status(CREATED).json({
       message: `${
         period.charAt(0).toUpperCase() + period.slice(1)
       } revenue fetched successfully.`,
@@ -529,7 +564,7 @@ const getRevenue = async (req, res) => {
       endDate: endDate,
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(SERVER_ERROR).json({
       message: "Server error while calculating revenue.",
       details: error.message,
     });

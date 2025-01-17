@@ -6,6 +6,7 @@ const {
 } = require("../constants/responseStatusCode");
 const User = require("../models/user/userModel");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 // Helper function to create a token (now includes category)
 const createToken = (_id, role, category) => {
@@ -112,41 +113,65 @@ const getUserById = async (req, res) => {
 
 // Update user details
 const updateUser = async (req, res) => {
-  const { userId } = req.params; // The user ID is expected in the URL parameters
+  const { id } = req.params; // The user ID is expected in the URL parameters
   const { email, password, role, category } = req.body;
 
   try {
     // Find the user by ID
-    const user = await User.findById(userId);
+    const user = await User.findById(id);
 
     // If user is not found, return 404
     if (!user) {
-      return res.status(NOT_FOUND).json({ message: "User not found" });
+      return res.status(404).json({ message: "User not found" });
     }
 
-    // Update the user with the new data
-    if (email) user.email = email;
-    if (password) user.password = password;
+    // Check for duplicate email if updating the email field
+    if (email && email !== user.email) {
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(400).json({ message: "Email is already in use." });
+      }
+      user.email = email;
+    }
+
+    // Update the password if provided (ensure it's hashed)
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10); // Assuming bcrypt is used for hashing
+      user.password = hashedPassword;
+    }
+
+    // Update other fields if provided
     if (role) user.role = role;
     if (category) user.category = category;
 
     // Save the updated user
     await user.save();
 
-    // Respond with the updated user
-    res.status(OK).json({ message: "User updated successfully", user });
+    // Respond with the updated user (omit sensitive fields like password)
+    const { password: _, ...updatedUser } = user.toObject(); // Exclude password
+    res
+      .status(200)
+      .json({ message: "User updated successfully", user: updatedUser });
   } catch (error) {
-    res.status(SERVER_ERROR).json({ error: error.message });
+    // Handle duplicate key error (E11000)
+    if (error.code === 11000) {
+      return res
+        .status(400)
+        .json({ message: "Duplicate value detected", error: error.keyValue });
+    }
+
+    // General error handling
+    res.status(500).json({ error: error.message });
   }
 };
 
 // Delete a user
 const deleteUser = async (req, res) => {
-  const { userId } = req.params; // The user ID is expected in the URL parameters
+  const { id } = req.params; // The user ID is expected in the URL parameters
 
   try {
     // Find and delete the user by ID
-    const user = await User.findByIdAndDelete(userId);
+    const user = await User.findByIdAndDelete(id);
 
     // If user is not found, return 404
     if (!user) {
@@ -160,6 +185,14 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const availableUserCount = async (req, res) => {
+  try {
+    const userCount = await User.countDocuments();
+    res.status(OK).json({ userCount });
+  } catch (error) {
+    res.status(SERVER_ERROR).json({ error: error.message });
+  }
+};
 module.exports = {
   loginUser,
   signupUser,
@@ -167,4 +200,5 @@ module.exports = {
   updateUser,
   deleteUser,
   getUserById,
+  availableUserCount,
 };

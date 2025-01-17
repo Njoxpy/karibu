@@ -16,6 +16,8 @@ const createOrder = async (req, res) => {
   const { description, totalPrice, price, quantity, contact, category } =
     req.body;
 
+  const userId = req.user && req.user._id;
+
   try {
     const submission = await PrintingOrder.create({
       description,
@@ -24,6 +26,7 @@ const createOrder = async (req, res) => {
       contact,
       category,
       totalPrice,
+      userId,
     });
 
     res.status(CREATED).json(submission);

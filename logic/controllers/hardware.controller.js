@@ -185,7 +185,9 @@ const deleteHardwareProductById = async (req, res) => {
 
 const createHardwareOrder = async (req, res) => {
   try {
-    const { productId, quantity, userId } = req.body;
+    const { productId, quantity } = req.body;
+
+    const userId = req.user && req.user._id;
 
     // Validate required fields
     if (!productId || quantity === undefined || !userId) {
@@ -397,6 +399,85 @@ const getAvailableProducts = async (req, res) => {
   }
 };
 
+const getHardwareRevenueByDateRange = async (startDate, endDate) => {
+  try {
+    const revenueData = await HardwareOrder.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gte: new Date(startDate),
+            $lt: new Date(endDate),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalRevenue: { $sum: "$total" },
+        },
+      },
+    ]);
+
+    return revenueData.length > 0 ? revenueData[0].totalRevenue : 0;
+  } catch (error) {
+    throw new Error("Error calculating revenue: " + error.message);
+  }
+};
+
+const getHardwareRevenue = async (req, res) => {
+  try {
+    const { period } = req.query; // Expecting 'day', 'week', or 'month'
+
+    let startDate, endDate;
+
+    // Calculate the start and end date based on the period
+    const now = new Date();
+    switch (period) {
+      case "day":
+        startDate = new Date(now.setHours(0, 0, 0, 0)); // Start of today
+        endDate = new Date(now.setHours(23, 59, 59, 999)); // End of today
+        break;
+      case "week":
+        startDate = new Date(now.setDate(now.getDate() - now.getDay())); // Start of this week (Sunday)
+        endDate = new Date(now.setDate(now.getDate() - now.getDay() + 6)); // End of this week (Saturday)
+        break;
+      case "month":
+        // Start of this month
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+        startDate.setHours(0, 0, 0, 0);
+
+        // End of this month (last day of the month)
+        endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        endDate.setHours(23, 59, 59, 999);
+        break;
+      default:
+        return res
+          .status(400) // BAD_REQUEST
+          .json({ message: 'Invalid period. Use "day", "week", or "month".' });
+    }
+
+    // Get the revenue for the given period (specific to the hardware page)
+    const revenue = await getHardwareRevenueByDateRange(startDate, endDate);
+
+    res.status(201).json({
+      // CREATED
+      message: `${
+        period.charAt(0).toUpperCase() + period.slice(1)
+      } revenue for hardware fetched successfully.`,
+      revenue: revenue,
+      period: period,
+      startDate: startDate,
+      endDate: endDate,
+    });
+  } catch (error) {
+    res.status(500).json({
+      // SERVER_ERROR
+      message: "Server error while calculating hardware revenue.",
+      details: error.message,
+    });
+  }
+};
+
 const getTotalCostByDate = async (req, res) => {
   const { filter } = req.query; // Expected values: 'day', 'week', 'month'
   const now = new Date();
@@ -456,4 +537,5 @@ module.exports = {
   deleteHardwareOrderById,
   getTotalCostByDate,
   getAvailableProducts,
+  getHardwareRevenue,
 };

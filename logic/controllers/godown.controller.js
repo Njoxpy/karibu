@@ -2,9 +2,7 @@ const mongoose = require("mongoose");
 
 // CRUD
 const GodownProduct = require("../models/godown/godownProductModel");
-
-const Inventory = require("../models/godown/godownProductModel"); 
-const InventoryMovement = require("../models/godown/inventoryModel"); 
+const InventoryMovement = require("../models/godown/inventoryModel");
 const GodownOrder = require("../models/godown/godownOrderModel");
 
 // response code
@@ -91,7 +89,9 @@ const bulkUploadGodownProducts = async (req, res) => {
 // Create product
 const createGodownProduct = async (req, res) => {
   try {
-    const { name, price, quantity, location, description, userId } = req.body;
+    const { name, price, quantity, location, description } = req.body;
+
+    const userId = req.user && req.user._id;
 
     if (!name || !price || !quantity || !location || !description || !userId) {
       return res
@@ -135,12 +135,24 @@ const createGodownProduct = async (req, res) => {
 // create order
 const createGodownOrder = async (req, res) => {
   try {
-    const { productId, quantity, userId } = req.body;
+    const { productId, quantity } = req.body;
+
+    const userId = req.user && req.user._id;
 
     if (quantity == null || !productId || !userId) {
       return res
         .status(BAD_REQUEST)
         .json({ message: "All fields are required" });
+    }
+
+    if (isNaN(quantity)) {
+      return res.status(BAD_REQUEST).json({
+        error: "Quantity must be a valid number.",
+      });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(BAD_REQUEST).json({ error: "Invalid productId." });
     }
 
     // fetch product
@@ -221,7 +233,9 @@ const getAllGodownProductById = async (req, res) => {
     }
     res.status(OK).json(product);
   } catch (error) {
-    res.status(SERVER_ERROR);
+    res
+      .status(SERVER_ERROR)
+      .json({ message: "failed to get product", error: error.message });
   }
 };
 
@@ -250,7 +264,7 @@ const updateGodownProductById = async (req, res) => {
   try {
     const { price, quantity } = req.body;
 
-    if (price <= 0) {
+    if (price < 0) {
       return res
         .status(BAD_REQUEST)
         .json({ message: "Price cannot be negative" });
@@ -293,56 +307,44 @@ const updateGodownProductById = async (req, res) => {
 // update order by id
 const updateGodownOrderById = async (req, res) => {
   const { id } = req.params;
-  const { quantity, productId } = req.body;
+  const { quantity } = req.body;
+
+  // Ensure quantity is a valid number
+  if (isNaN(quantity) || quantity <= 0) {
+    return res.status(400).json({ error: "Invalid quantity value" });
+  }
 
   try {
-    // Validate the input
-    if (quantity && quantity <= 0) {
-      return res
-        .status(BAD_REQUEST)
-        .json({ message: "Quantity must be greater than zero." });
-    }
-
     // Find the existing order
     const order = await GodownOrder.findById(id);
     if (!order) {
-      return res.status(NOT_FOUND).json({ message: "Order not found." });
+      return res.status(404).json({ error: "Order not found" });
     }
 
-    // If quantity is updated, ensure the product has enough stock
-    if (quantity && productId) {
-      const product = await GodownProduct.findById(productId);
-      if (!product) {
-        return res.status(NOT_FOUND).json({ message: "Product not found." });
-      }
-
-      const quantityDifference = quantity - order.quantity; // Difference between new and old quantities
-
-      if (quantityDifference > 0 && product.quantity < quantityDifference) {
-        return res
-          .status(BAD_REQUEST)
-          .json({ message: "Insufficient product quantity available." });
-      }
-
-      // Update product stock
-      product.quantity -= quantityDifference;
-      await product.save();
+    // Find the product associated with the order
+    const product = await GodownProduct.findById(order.productId);
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
     }
 
-    // Update order fields
-    Object.keys(req.body).forEach((key) => {
-      order[key] = req.body[key];
-    });
+    // Calculate the updated stock
+    const updatedStock = product.quantity + order.quantity - quantity; // Adjust stock based on old order quantity
+    if (updatedStock < 0) {
+      return res.status(400).json({ error: "Insufficient stock" });
+    }
 
+    // Update the product stock
+    product.quantity = updatedStock;
+    await product.save();
+
+    // Update order details
+    order.quantity = quantity;
+    order.total = quantity * product.price; // Recalculate the total based on the current product price
     await order.save();
 
-    res
-      .status(OK)
-      .json({ message: "Order updated successfully.", updatedOrder: order });
+    res.status(200).json({ message: "Order updated successfully", order });
   } catch (error) {
-    res
-      .status(SERVER_ERROR)
-      .json({ message: "Failed to update order.", error: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -386,103 +388,88 @@ const deleteGodownOrder = async (req, res) => {
 
 // Function to handle inventory movement
 const transferInventory = async (req, res) => {
-  const {
-    selectedItemId,
-    transferQuantity,
-    destination,
-    transferredBy,
-    reason,
-  } = req.body;
-
   try {
-    // Validate incoming request data
-    if (
-      !selectedItemId ||
-      !transferQuantity ||
-      !destination ||
-      !transferredBy
-    ) {
-      return res
-        .status(400) // BAD_REQUEST
-        .json({ message: "Please fill in all required fields." });
+    // Get request data
+    const { productId, transferQuantity, origin, destination, reason } =
+      req.body;
+    const transferredBy = req.user._id; // Assume the user making the transfer is in req.user
+
+    // Validate the request data
+    if (!productId || !transferQuantity || !origin || !destination) {
+      return res.status(400).json({ message: "All fields are required." });
     }
 
-    // Step 1: Fetch the product from the GodownProduct model
-    const product = await GodownProduct.findById(selectedItemId);
-    if (!product) {
-      return res.status(400).json({ message: "Product not found." });
-    }
-
-    // Ensure that `product` contains required fields
-    if (!product.quantity || !product.location) {
-      return res
-        .status(500) // SERVER_ERROR
-        .json({ message: "Product data is invalid or incomplete." });
-    }
-
-    // Step 2: Ensure the product has enough stock
-    if (transferQuantity > product.quantity) {
+    if (transferQuantity < 1) {
       return res
         .status(400)
-        .json({ message: "Transfer quantity exceeds available stock." });
+        .json({ message: "Transfer quantity must be at least 1." });
     }
 
-    // Step 3: Create an Inventory Movement log
-    const movementData = {
-      product: selectedItemId,
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(400).json({ message: "Invalid product ID." });
+    }
+
+    // Find the product in the origin location
+    const product = await GodownProduct.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found." });
+    }
+
+    // Check if the transfer quantity is valid (not more than available in the origin)
+    if (product.quantity < transferQuantity) {
+      return res.status(400).json({
+        message: "Not enough stock available in the origin location.",
+      });
+    }
+
+    // Start the inventory transfer
+    // Decrease the quantity in the origin
+    product.quantity -= transferQuantity;
+    // Increase the quantity in the destination (create or find the destination product)
+    let destinationProduct = await GodownProduct.findOne({
+      name: product.name,
+      location: destination,
+    });
+    if (!destinationProduct) {
+      // Create a new product entry in the destination location if it doesn't exist
+      destinationProduct = new GodownProduct({
+        name: product.name,
+        price: product.price,
+        quantity: transferQuantity,
+        location: destination,
+        description: product.description,
+        condition: product.condition,
+        userId: transferredBy,
+      });
+    } else {
+      destinationProduct.quantity += transferQuantity;
+    }
+
+    // Save the updated product details
+    await product.save();
+    await destinationProduct.save();
+
+    // Log the inventory movement
+    const movement = new InventoryMovement({
+      product: product._id,
       transferQuantity,
-      origin: product.location,
+      origin,
       destination,
       transferredBy,
       reason,
-    };
-
-    const newMovement = new InventoryMovement(movementData);
-    await newMovement.save();
-
-    // Step 4: Decrease the quantity at the origin location
-    product.quantity -= transferQuantity;
-    await product.save();
-
-    // Step 5: Check if the product exists in the destination location
-    let destinationInventory = await Inventory.findOne({
-      product: selectedItemId,
-      location: destination,
     });
+    await movement.save();
 
-    if (!destinationInventory) {
-      // If it doesn't exist, create a new entry in the destination location
-      destinationInventory = new Inventory({
-        product: selectedItemId,
-        location: destination,
-        quantity: transferQuantity,
-      });
-    } else {
-      // Otherwise, update the existing inventory
-      destinationInventory.quantity += transferQuantity;
-    }
-
-    await destinationInventory.save();
-
-    // Step 6: Respond with success
-    return res.status(200).json({
-      message: `Successfully transferred ${transferQuantity} units of ${product.name} from ${product.location} to ${destination}`,
-      data: {
-        product: product.name,
-        transferredQuantity: transferQuantity,
-        origin: product.location,
-        destination,
-        transferredBy,
-        reason,
-      },
+    // Return a success response
+    res.status(201).json({
+      message: "Inventory transfer successful.",
+      movement,
     });
   } catch (error) {
-    console.error("Error during inventory movement:", error);
-
-    // Send a detailed error response
-    return res.status(500).json({
-      error: "Error processing inventory movement.",
-      details: error.message,
+    console.error(error);
+    res.status(500).json({
+      message: "Error transferring inventory.",
+      error: error.message,
     });
   }
 };
@@ -608,6 +595,9 @@ const getTotalCostByDate = async (req, res) => {
   }
 
   try {
+    console.log("Start Date:", startDate);
+    console.log("End Date:", now);
+
     const totalCost = await GodownOrder.aggregate([
       {
         $match: {
@@ -631,6 +621,7 @@ const getTotalCostByDate = async (req, res) => {
 
     res.status(200).json({ totalCost: totalCost[0].totalCost });
   } catch (error) {
+    console.error("Error:", error);
     res.status(500).json({ message: error.message });
   }
 };

@@ -11,6 +11,7 @@ const {
 } = require("../constants/responseStatusCode");
 const StationeryProduct = require("../models/stationery/stationeryProductModel");
 const StationeryOrder = require("../models/stationery/stationerOrderModel");
+const { default: mongoose } = require("mongoose");
 
 const searchStationeryProducts = async (req, res) => {
   const { name, description, minPrice, maxPrice } = req.query;
@@ -144,13 +145,29 @@ const getStationeryOrder = async (req, res) => {
 // CREATE ORDER
 const createStationeryOrder = async (req, res) => {
   try {
-    const { productId, quantity, userId } = req.body;
+    const { productId, quantity } = req.body;
+
+    const userId = req.user && req.user._id;
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(BAD_REQUEST).json({ error: "Invalid userId." });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(BAD_REQUEST).json({ error: "Invalid product id." });
+    }
 
     // Check if all fields are provided
     if (!productId || !quantity || !userId) {
       return res
         .status(BAD_REQUEST)
         .json({ message: "All fields are required" });
+    }
+
+    if (quantity < 0) {
+      return res
+        .status(BAD_REQUEST)
+        .json({ message: "Quantity cannot be negative" });
     }
 
     if (!productId) {
@@ -216,7 +233,7 @@ const updateStationeryProduct = async (req, res) => {
     if (price <= 0) {
       return res
         .status(BAD_REQUEST)
-        .json({ message: "Price or should not be zero" });
+        .json({ message: "Price should not be negative or zero" });
     }
 
     if (quantity < 0) {

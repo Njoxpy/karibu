@@ -69,67 +69,37 @@ const searchFreshOilOrders = async (req, res) => {
   }
 };
 
-
-// create product
-const createFreshOilProduct = async (req, res) => {
-  try {
-    const { name, description, quantity, price, userId } = req.body;
-
-    if (!name || !description || !quantity || !price || !userId) {
-      return res
-        .status(BAD_REQUEST)
-        .json({ message: "All required fields must be provided." });
-    }
-
-    if (isNaN(quantity) || isNaN(price)) {
-      return res
-        .status(BAD_REQUEST)
-        .json({ message: "Quantity and price must be valid numbers." });
-    }
-
-    if (quantity <= 0 || price <= 0) {
-      return res
-        .status(BAD_REQUEST)
-        .json({ message: "Quantity and price must be greater than zero." });
-    }
-
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(BAD_REQUEST).json({ message: "Invalid userId." });
-    }
-
-    const image = req.file ? req.file.path : null;
-    const newProduct = new FreshOilProduct({
-      name,
-      description,
-      quantity,
-      price,
-      image,
-      userId,
-      total: quantity * price,
-    });
-
-    const savedProduct = await newProduct.save();
-    res.status(CREATED).json({
-      message: "Product created successfully",
-      product: savedProduct,
-    });
-  } catch (error) {
-    res.status(SERVER_ERROR).json({
-      message: "Error creating product",
-      details: error.message,
-    });
-  }
-};
-
 // create order
 const createFreshOilOrder = async (req, res) => {
   try {
-    const { productId, quantity, userId } = req.body;
+    const { productId, quantity } = req.body;
+
+    const userId = req.user && req.user._id;
 
     if (!productId || !quantity || !userId) {
       return res
         .status(BAD_REQUEST)
         .json({ message: "All fields are required" });
+    }
+
+    if (typeof quantity !== "number") {
+      return res
+        .status(BAD_REQUEST)
+        .json({ message: "Quantity should be a number" });
+    }
+
+    if (quantity < 0) {
+      return res
+        .status(BAD_REQUEST)
+        .json({ message: "Quantity cannot be negative" });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(BAD_REQUEST).json({ message: "Invalid user ID" });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(BAD_REQUEST).json({ message: "Invalid product  ID" });
     }
 
     const productDetails = await FreshOilProduct.findById(productId);
@@ -254,32 +224,55 @@ const updateFreshOilProduct = async (req, res) => {
     const { id } = req.params;
     const { price, quantity } = req.body;
 
-    if (price <= 0 || quantity <= 0) {
-      return res
-        .status(BAD_REQUEST)
-        .json({ message: "Price or quantity should not be zero" });
+    // Validate price and quantity
+    if (price <= 0 || quantity < 0) {
+      return res.status(BAD_REQUEST).json({
+        message:
+          "Price should be greater than zero, and quantity cannot be negative.",
+      });
     }
 
-    const updates = req.body;
+    if (typeof price !== "number" || typeof quantity !== "number") {
+      return res.status(BAD_REQUEST).json({
+        message: "Price and quantity should be valid numbers.",
+      });
+    }
 
+    // Get product to update
     const product = await FreshOilProduct.findById(id);
 
     if (!product) {
       return res.status(BAD_REQUEST).json({ message: "Product not found" });
     }
 
+    // Only update provided fields
+    const updates = {};
+    if (price !== undefined) updates.price = price;
+    if (quantity !== undefined) updates.quantity = quantity;
+
+    // Apply updates
     Object.keys(updates).forEach((key) => {
       product[key] = updates[key];
     });
 
+    // Calculate new total if price or quantity changed
+    if (updates.price || updates.quantity) {
+      product.total = product.price * product.quantity;
+    }
+
+    // Save the updated product
     await product.save();
 
-    res.status(OK).json({ message: "Updated sucessfully", product });
+    res.status(OK).json({
+      message: "Product updated successfully",
+      product,
+    });
   } catch (error) {
     if (!res.headersSent) {
-      return res
-        .status(SERVER_ERROR)
-        .json({ message: "Server error", details: error.message });
+      return res.status(SERVER_ERROR).json({
+        message: "Server error",
+        details: error.message,
+      });
     }
   }
 };
@@ -327,7 +320,6 @@ const updateFreshOilOrder = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
 
 // delete product
 const deleteFreshOilProduct = async (req, res) => {
@@ -528,7 +520,6 @@ const getRevenue = async (req, res) => {
 
 // exports
 module.exports = {
-  createFreshOilProduct,
   createFreshOilOrder,
   getAllFreshOilProducts,
   getAllFreshOilOrders,
