@@ -1,12 +1,7 @@
 const express = require("express");
-const sharp = require('sharp');
-const path = require('path');
-const fs = require('fs');
-
 const router = express.Router();
 
-const AnimalFeedingProduct = require("../models/animalFeeding/animalFeedingProductModel");
-
+// middleware
 const authenticate = require("../middleware/auth/authenticate");
 const checkCategory = require("../middleware/auth/checkCategory");
 const checkPermissions = require("../middleware/auth/permissionMiddleware");
@@ -33,6 +28,7 @@ const {
   getTotalCostByDate,
   getAvailableProducts,
   getRevenue,
+  searchAnimalFeedingOrders,
 } = require("../controllers/animalFeeding.controller");
 
 const upload = require("../middleware/uploadAnimalFeeding");
@@ -43,6 +39,7 @@ const {
   SERVER_ERROR,
   BAD_REQUEST,
 } = require("../constants/responseStatusCode");
+const AnimalFeedingProductProduct = require("../models/animalFeeding/animalFeedingProductModel");
 
 // Routes
 
@@ -62,6 +59,13 @@ router.get(
 ); // Employees and Admins can search products
 
 router.get(
+  "/orders/search",
+  authenticate,
+  checkCategory(["animal-feeding", "admin"]),
+  searchAnimalFeedingOrders
+); // Employees and Admins can search products
+
+router.get(
   "/products/:id",
   authenticate,
   checkCategory(["animal-feeding", "admin"]),
@@ -78,27 +82,46 @@ router.post(
   async (req, res) => {
     try {
       // Extract product details from the request body
-      const { name, description, quantity, nutrients, price, userId } = req.body;
-      
+      const { name, description, quantity, nutrients, price } = req.body;
+
+      // Get the userId from the authenticated user (set by `authenticate` middleware)
+      const userId = req.user && req.user._id; // Assuming `req.user` is populated by `authenticate`
+
       // Check if the required fields are present
       if (!name || !description || !quantity || !nutrients || !price) {
-        return res.status(400).json({ message: "All fields are required" });
+        return res
+          .status(400)
+          .json({ message: "All fields are required except userId" });
       }
 
-      if(typeof name !== "string" || typeof description !== "string" || typeof nutrients !== "string") {
-        return res.status(BAD_REQUEST).json({message:"Not a valid name"})
+      if (!userId) {
+        return res.status(403).json({ message: "User not authorized" });
+      }
+
+      if (
+        typeof name !== "string" ||
+        typeof description !== "string" ||
+        typeof nutrients !== "string"
+      ) {
+        return res.status(400).json({
+          message: "Name, description, and nutrients must be strings",
+        });
       }
 
       if (description.length > 500) {
         return res.status(400).json({ message: "Description is too long" });
       }
 
-      if (quantity <= 0) {
-        return res.status(400).json({ message: "Quantity cannot be negative or zero" });
+      if (isNaN(quantity) || quantity <= 0) {
+        return res
+          .status(400)
+          .json({ message: "Quantity must be a positive number" });
       }
 
-      if (price <= 0) {
-        return res.status(400).json({ message: "Price cannot be negative or zero" });
+      if (isNaN(price) || price <= 0) {
+        return res
+          .status(400)
+          .json({ message: "Price must be a positive number" });
       }
 
       // Check if an image was uploaded
@@ -106,33 +129,13 @@ router.post(
         return res.status(400).json({ message: "Image is required" });
       }
 
-      // Define the original image path
+      // Define the image path
       const imagePath = req.file.path;
 
-      // Define the path for the compressed image
-      // Define the path for the compressed image
-      const compressedImagePath = path.join(__dirname, "uploads", `compressed_${req.file.filename}.jpg`);
+      // Generate the relative path for the image
+      const imageUrl = `/uploads/${req.file.filename}`;
 
-      // Compress the image with sharp
-      await sharp(imagePath)
-        .resize(800) // Resize image to 800px width (adjustable)
-        .toFormat("jpeg")
-        .jpeg({ quality: 40 }) // Set quality to 40% for size reduction
-        .toFile(compressedImagePath);
-
-      // Asynchronous deletion of the original image
-      fs.unlink(imagePath, (err) => {
-        if (err) {
-          console.error("Failed to delete original image:", err);
-        } else {
-          console.log("Original image deleted successfully");
-        }
-      });
-
-      // Generate the relative path for the compressed image
-      const imageUrl = `/uploads/compressed_${req.file.filename}.jpg`;
-
-      // Create a new product object (you would save this to your database)
+      // Create a new product object (save this to your database)
       const newProduct = {
         name,
         description,
@@ -143,9 +146,11 @@ router.post(
         image: imageUrl, // Save the relative image URL
       };
 
+      const product = await AnimalFeedingProductProduct.create(newProduct);
+
       res.status(201).json({
         message: "Product created successfully",
-        product: newProduct,
+        product: product,
       });
     } catch (error) {
       console.error(error);
@@ -153,6 +158,12 @@ router.post(
     }
   }
 );
+
+// Function to validate userId format (example for MongoDB ObjectId)
+function isValidUserId(userId) {
+  const ObjectId = require("mongodb").ObjectId;
+  return ObjectId.isValid(userId); // Adjust this validation if needed based on your database type
+}
 
 router.patch(
   "/products/:id",
@@ -251,7 +262,7 @@ router.get("/reports", adminMiddleware, async (req, res) => {
     const { startDate, endDate } = req.query;
 
     if (!startDate || !endDate) {
-      return res.status(400).json({ message: "Missing date range" });
+      return res.status(BAD_REQUEST).json({ message: "Missing date range" });
     }
 
     const orders = await getAnimalFeedingOrders(startDate, endDate);
@@ -266,7 +277,7 @@ router.get("/reports", adminMiddleware, async (req, res) => {
     generateAnimalFeedingPDF(orders, res);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error generating report" });
+    res.status(SERVER_ERROR).json({ message: "Error generating report" });
   }
 });
 

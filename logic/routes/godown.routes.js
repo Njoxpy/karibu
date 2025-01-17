@@ -1,6 +1,5 @@
 const express = require("express");
-const XLSX = require("xlsx");
-const { validationResult } = require("express-validator");
+const xlsx = require("xlsx");
 const router = express.Router();
 
 // Import controllers
@@ -47,70 +46,101 @@ router.post(
 router.post(
   "/products/bulk-upload",
   authenticate,
-  checkCategory(["admin"]),
-  checkPermissions(["createProduct"]),
-  uploadExcel.single("file"),
+  checkCategory(["admin"]), // Admin only
+  checkPermissions(["createProduct"]), // Ensure user has permissions
+  uploadExcel.single("file"), // Upload a single Excel file
   async (req, res) => {
-    if (!req.file) {
-      return res.status(400).json({ message: "No file uploaded" });
-    }
-
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
+    console.log("Uploaded file:", req.file); // Log the file object for debugging
 
     try {
-      // Step 1: Read and parse the Excel file
-      const workbook = XLSX.read(req.file.buffer, { type: "buffer" });
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-      const jsonData = XLSX.utils.sheet_to_json(worksheet);
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
 
-      // Step 2: Prepare data for bulkWrite
-      const bulkOperations = [];
-      const failedRows = [];
-      jsonData.forEach((row, index) => {
-        if (!row.name || !row.price || !row.quantity) {
-          failedRows.push({ row: index + 1, error: "Missing required fields" });
-          return;
+      const fileBuffer = req.file.buffer; // Get the file buffer from memory
+      const workbook = xlsx.read(fileBuffer, { type: "buffer" });
+
+      const sheetNames = workbook.SheetNames;
+      const sheet = workbook.Sheets[sheetNames[0]]; // Assuming data is in the first sheet
+      const data = xlsx.utils.sheet_to_json(sheet);
+
+      // Validate Excel data
+      const validationErrors = [];
+      const products = data.map((item, index) => {
+        const errors = [];
+        const product = {
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          location: item.location,
+          description: item.description,
+          condition: item.condition || "new", // Default to "new" if no condition is specified
+          userId: req.user._id, // Assuming the authenticated user is an admin
+        };
+
+        // Validate fields
+        if (!product.name || typeof product.name !== "string") {
+          errors.push("Product name is required and must be a string.");
+        }
+        if (
+          !product.price ||
+          typeof product.price !== "number" ||
+          product.price <= 0
+        ) {
+          errors.push("Price is required and must be a positive number.");
+        }
+        if (
+          !product.quantity ||
+          typeof product.quantity !== "number" ||
+          product.quantity < 0
+        ) {
+          errors.push(
+            "Quantity is required and must be a non-negative number."
+          );
+        }
+        if (!product.location || typeof product.location !== "string") {
+          errors.push("Location is required and must be a string.");
+        }
+        if (
+          !product.description ||
+          typeof product.description !== "string" ||
+          product.description.length > 500
+        ) {
+          errors.push(
+            "Description is required and must be a string with a max length of 500 characters."
+          );
+        }
+        if (errors.length > 0) {
+          validationErrors.push({ row: index + 1, errors });
         }
 
-        bulkOperations.push({
-          insertOne: {
-            document: {
-              name: row.name,
-              price: parseFloat(row.price),
-              quantity: parseInt(row.quantity, 10),
-              location: row.location || "",
-              description: row.description || "",
-            },
-          },
-        });
+        return { ...product, errors };
       });
 
-      // Step 3: Insert data into the database using bulkWrite
-      let successfulUploads = 0;
-      if (bulkOperations.length > 0) {
-        const result = await GodownProduct.bulkWrite(bulkOperations);
-        successfulUploads = result.insertedCount;
+      if (validationErrors.length > 0) {
+        return res.status(400).json({
+          message: "Validation errors in uploaded data",
+          errors: validationErrors,
+        });
       }
 
-      // Step 4: Respond with the result
-      const responseMessage = {
-        message: `${successfulUploads} products uploaded successfully`,
-        successfulUploads,
-      };
+      // Filter out invalid products
+      const validProducts = products.filter(
+        (product) => product.errors.length === 0
+      );
 
-      if (failedRows.length > 0) {
-        responseMessage.failedRows = failedRows;
-      }
+      // Insert valid products into the database
+      const createdProducts = await GodownProduct.insertMany(validProducts);
 
-      res.status(201).json(responseMessage);
+      // Return a success response
+      res.status(201).json({
+        message: "Products uploaded successfully",
+        products: createdProducts,
+      });
     } catch (error) {
-      console.error("Error processing file upload:", error);
+      console.error(error);
       res.status(500).json({
-        message: "Failed to process the Excel file",
+        message: "Error processing the bulk upload",
         error: error.message,
       });
     }

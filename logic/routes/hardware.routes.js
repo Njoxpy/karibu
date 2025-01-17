@@ -19,69 +19,82 @@ const { getHardwareOrders } = require("../services/hardware/hardwareService");
 router.post(
   "/products",
   authenticate,
-  checkCategory(["admin"]),
+  checkCategory(["admin"]), // Admin only
   checkPermissions(["createProduct"]),
-  upload.single("image"),
+  upload.single("image"), // Upload a single image file
   async (req, res) => {
     try {
-      const { name, price, quantity, description } = req.body;
+      // Extract product details from the request body
+      const { name, description, quantity, price } = req.body;
 
-      // Validate required fields
-      if (
-        !name ||
-        price === undefined ||
-        quantity === undefined ||
-        !description
-      ) {
-        return res.status(400).json({ message: "All fields are required" });
+      // Get the userId from the authenticated user (set by `authenticate` middleware)
+      const userId = req.user && req.user._id; // Assuming `req.user` is populated by `authenticate`
+
+      // Check if the required fields are present
+      if (!name || !description || !quantity || !price) {
+        return res
+          .status(400)
+          .json({ message: "All fields are required except userId" });
+      }
+
+      if (!userId) {
+        return res.status(403).json({ message: "User not authorized" });
+      }
+
+      if (typeof name !== "string" || typeof description !== "string") {
+        return res
+          .status(400)
+          .json({ message: "Name and description must be strings" });
       }
 
       if (description.length > 500) {
         return res.status(400).json({ message: "Description is too long" });
       }
 
-      // Validate that price and quantity are numbers
-      if (isNaN(quantity) || isNaN(price)) {
+      if (isNaN(quantity) || quantity <= 0) {
         return res
           .status(400)
-          .json({ error: "Quantity and price must be valid numbers." });
+          .json({ message: "Quantity must be a positive number  or not zero" });
       }
 
-      // Validate that quantity and price are greater than or equal to zero
-      if (quantity < 0 || price < 0) {
-        return res.status(400).json({
-          error: "Quantity and price must be greater than or equal to zero.",
-        });
+      if (isNaN(price) || price <= 0) {
+        return res
+          .status(400)
+          .json({ message: "Price must be a positive number or not zero" });
       }
 
-      // Validate userId
-      if (!mongoose.Types.ObjectId.isValid(userId)) {
-        return res.status(400).json({
-          error: "Invalid userId. Please provide a valid MongoDB ObjectId.",
-        });
+      // Check if an image was uploaded
+      if (!req.file) {
+        return res.status(400).json({ message: "Image is required" });
       }
 
-      const image = req.file ? req.file.path : null;
-      const userId = req.user.id;
+      // Define the image path
+      const imagePath = req.file.path;
 
-      // Create a new hardware product
-      const newProduct = await HardwareProduct.create({
+      // Generate the relative path for the image
+      const imageUrl = `/uploads/${req.file.filename}`;
+
+      // Create a new product object (save this to your database)
+      const newProduct = {
         name,
-        price,
-        quantity,
         description,
+        quantity,
+        price,
         userId,
-        image,
-      });
+        image: imageUrl, // Save the relative image URL
+        total: quantity * price,
+      };
 
-      res
-        .status(201)
-        .json({ message: "Product created successfully", newProduct });
+      // Save the product to the database
+      const product = await HardwareProduct.create(newProduct);
+
+      res.status(201).json({
+        message: "Product created successfully",
+        product: product,
+      });
     } catch (error) {
-      console.error(error); // Log the error for debugging
-      res
-        .status(500)
-        .json({ message: "Failed to create product", error: error.message });
+      console.error(error);
+      res.status(500).json({ error: "Server error, please try again later." });
     }
   }
 );
@@ -161,7 +174,12 @@ router.delete(
   hardwareController.deleteHardwareOrderById
 );
 
-router.get("/revenue", authenticate, checkCategory(["admin"]), getRevenue);
+router.get(
+  "/revenue",
+  authenticate,
+  checkCategory(["admin"]),
+  hardwareController.getHardwareRevenue
+);
 
 router.get(
   "/total-orders",

@@ -1,6 +1,5 @@
 // Fresh Oil Routes
 const express = require("express");
-const mongoose = require("mongoose");
 const router = express.Router();
 
 // Middleware
@@ -25,12 +24,12 @@ const {
   searchFreshOilOrders,
   getTotalCostByDate,
   getAvailableProducts,
-  createFreshOilProduct,
   getRevenue,
 } = require("../controllers/freshOil.controller");
 
 const { getFreshOilOrders } = require("../services/freshOil/freshOilService");
 const { generateFreshOilPDF } = require("../services/freshOil/pdfService");
+const freshOilProduct = require("../models/freshOil/freshOilproductModel");
 
 // Add pagination middleware
 const addPagination = (req, res, next) => {
@@ -73,10 +72,84 @@ router.get(
 router.post(
   "/products",
   authenticate,
-  checkCategory(["admin"]),
+  checkCategory(["admin"]), // Admin only
   checkPermissions(["createProduct"]),
-  upload.single("image"),
-  createFreshOilProduct
+  upload.single("image"), // Upload a single image file
+  async (req, res) => {
+    try {
+      // Extract product details from the request body
+      const { name, description, quantity, price } = req.body;
+
+      // Get the userId from the authenticated user (set by `authenticate` middleware)
+      const userId = req.user && req.user._id; // Assuming `req.user` is populated by `authenticate`
+
+      // Check if the required fields are present
+      if (!name || !description || !quantity || !price) {
+        return res
+          .status(400)
+          .json({ message: "All fields are required except userId" });
+      }
+
+      if (!userId) {
+        return res.status(403).json({ message: "User not authorized" });
+      }
+
+      if (typeof name !== "string" || typeof description !== "string") {
+        return res
+          .status(400)
+          .json({ message: "Name and description must be strings" });
+      }
+
+      if (description.length > 500) {
+        return res.status(400).json({ message: "Description is too long" });
+      }
+
+      if (isNaN(quantity) || quantity <= 0) {
+        return res
+          .status(400)
+          .json({ message: "Quantity must be a positive number" });
+      }
+
+      if (isNaN(price) || price <= 0) {
+        return res
+          .status(400)
+          .json({ message: "Price must be a positive number" });
+      }
+
+      // Check if an image was uploaded
+      if (!req.file) {
+        return res.status(400).json({ message: "Image is required" });
+      }
+
+      // Define the image path
+      const imagePath = req.file.path;
+
+      // Generate the relative path for the image
+      const imageUrl = `/uploads/${req.file.filename}`;
+
+      // Create a new product object (save this to your database)
+      const newProduct = {
+        name,
+        description,
+        quantity,
+        price,
+        userId,
+        image: imageUrl, // Save the relative image URL
+        total: quantity * price,
+      };
+
+      // Save the product to the database
+      const product = await freshOilProduct.create(newProduct);
+
+      res.status(201).json({
+        message: "Product created successfully",
+        product: product,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Server error, please try again later." });
+    }
+  }
 );
 
 router.patch(
