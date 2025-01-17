@@ -6,6 +6,7 @@ const {
   getUserById,
   updateUser,
   deleteUser,
+  availableUserCount,
 } = require("../controllers/user.controller");
 
 // Import middleware
@@ -37,6 +38,14 @@ userRoutes.get(
 );
 
 userRoutes.get(
+  "/total-users",
+  authenticate,
+  checkCategory(["admin"]),
+  checkPermissions(["viewUsers"]),
+  availableUserCount
+);
+
+userRoutes.get(
   "/:id",
   authenticate,
   checkCategory(["admin"]),
@@ -45,7 +54,7 @@ userRoutes.get(
   getUserById
 );
 
-userRoutes.put(
+userRoutes.patch(
   "/:id",
   authenticate,
   checkCategory(["admin"]),
