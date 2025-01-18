@@ -1,34 +1,39 @@
-import { Link, NavLink, Outlet } from "react-router-dom";
-import { useState } from "react";
+import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import useLogout from "../hooks/auth/useLogout"; // Import the useLogout hook
 import logo from "../assets/images/logoWithName.png"; // Import your logo image
-import { useAuth } from "../hooks/auth/useAuth";
 
 const RootLayout = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const logout = useLogout(); // Use the useLogout hook
-  const { user } = useAuth();
+  const logout = useLogout(); // Use the useLogout hook for logging out
+  const navigate = useNavigate(); // Import useNavigate for redirection
+  const user = JSON.parse(localStorage.getItem("user")); // Get user data directly from localStorage or context
   const fallbackLogo = "Savarrah";
 
+  // Toggles the mobile menu
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  // Show confirmation modal when logout is clicked
   const handleLogoutClick = () => {
     setIsModalOpen(true); // Open the modal
   };
 
+  // Confirm logout
   const confirmLogout = () => {
     setIsModalOpen(false); // Close the modal
     logout(); // Call the logout function to log the user out
+    navigate("/login"); // Redirect to login page after logout
   };
 
+  // Cancel logout and close modal
   const cancelLogout = () => {
     setIsModalOpen(false); // Close the modal without logging out
   };
 
-  // Define menu items
+  // Define menu items based on user category
   const menuItems = [
     { name: "Home", path: "/" },
     { name: "Contact", path: "/contact" }, // Always visible for all users
@@ -58,8 +63,12 @@ const RootLayout = () => {
       : []),
   ];
 
-  // If user is admin, show all pages (Admin role can access all pages)
-  const isAdmin = user?.role === "admin"; // Check if the user is admin
+  // Ensure user is logged out and data is cleared when the component is mounted (e.g., page refresh)
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    }
+  }, [user, navigate]);
 
   return (
     <>
