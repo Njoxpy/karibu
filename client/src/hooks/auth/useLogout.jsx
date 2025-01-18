@@ -3,17 +3,19 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/auth/AuthContext";
 
 const useLogout = () => {
-  const { dispatch } = useContext(AuthContext); // Access the dispatch function from AuthContext
+  const { dispatch } = useContext(AuthContext);
   const navigate = useNavigate();
+  console.log("dispatch:", dispatch); // Check if dispatch is correctly passed
 
   const logout = () => {
     // Clear the authentication state
     dispatch({ type: "LOGOUT" });
 
-    // Optionally clear localStorage/sessionStorage
+    // Clear relevant data from localStorage
     localStorage.removeItem("authToken");
+    localStorage.removeItem("user"); // Clear the user data
 
-    // Redirect to the login page or landing page
+    // Redirect to the login page
     navigate("/login");
   };
 

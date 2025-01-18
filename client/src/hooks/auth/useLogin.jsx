@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom"; // For navigation
+
 export const useLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -36,31 +39,21 @@ export const useLogin = () => {
 
           console.log("Login successful! Token:", token);
 
-          // Optional: If you want to add automatic token authorization to your requests, here's how:
-
-          // Create a function to call protected API routes with the token
-          const fetchProtectedData = async () => {
-            const authToken = localStorage.getItem("authToken");
-
-            if (authToken) {
-              const response = await fetch(
-                "http://localhost:5000/api/v1/protected-route",
-                {
-                  method: "GET", // or POST depending on the route
-                  headers: {
-                    Authorization: `Bearer ${authToken}`, // Add the Bearer token
-                    "Content-Type": "application/json",
-                  },
-                }
-              );
-
-              const protectedData = await response.json();
-              console.log("Protected data:", protectedData);
-            }
-          };
-
-          // Fetch protected data after successful login (optional)
-          fetchProtectedData();
+          // Redirect based on user category
+          switch (category) {
+            case "printing":
+              navigate("/printing-dashboard"); // Redirect to specific category page
+              break;
+            case "godown":
+              navigate("/godown-dashboard");
+              break;
+            case "stationery":
+              navigate("/stationery-dashboard");
+              break;
+            default:
+              navigate("/default-dashboard");
+              break;
+          }
         } else {
           setError("Login failed, no token received.");
         }
