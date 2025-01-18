@@ -42,16 +42,25 @@ export const useLogin = () => {
           // Redirect based on user category
           switch (category) {
             case "printing":
-              navigate("/printing-dashboard"); // Redirect to specific category page
+              navigate("/printing"); // Redirect to printing page
+              break;
+            case "fresh-oil":
+              navigate("/fresh-oil"); // Redirect to fresh oil page
+              break;
+            case "hardware":
+              navigate("/hardware"); // Redirect to hardware page
+              break;
+            case "animal-feeding":
+              navigate("/animal-feeding"); // Redirect to animal feeding page
               break;
             case "godown":
-              navigate("/godown-dashboard");
+              navigate("/godown"); // Redirect to godown page
               break;
             case "stationery":
-              navigate("/stationery-dashboard");
+              navigate("/stationery"); // Redirect to stationery page
               break;
             default:
-              navigate("/default-dashboard");
+              navigate("/default"); // Redirect to default page if category is not recognized
               break;
           }
         } else {
@@ -61,6 +70,7 @@ export const useLogin = () => {
         setError(data.message || "Invalid login credentials");
       }
     } catch (err) {
+      console.error("Login error:", err);
       setError("An error occurred. Please try again later.");
     } finally {
       setIsLoading(false);
