@@ -36,27 +36,27 @@ const generatePrintingPDF = (orders, res) => {
   }
 
   // Define column positions
-  const productNameX = 50;
+  const orderNameX = 50;
   const quantityX = 400;
   const priceX = 500;
 
   // Add table headers
   doc.fontSize(12);
-  doc.text("Product Name", productNameX, doc.y);
+  doc.text("Order Name", orderNameX, doc.y); // Updated header for Order Name
   doc.text("Quantity", quantityX, doc.y - 12);
   doc.text("Total Price (Tsh)", priceX, doc.y - 12);
   doc.moveDown();
 
   // Add horizontal line
-  doc.moveTo(productNameX, doc.y).lineTo(550, doc.y).stroke();
+  doc.moveTo(orderNameX, doc.y).lineTo(550, doc.y).stroke();
   doc.moveDown();
 
   // Add orders data
   let totalRevenue = 0;
   orders.forEach((order) => {
     doc.fontSize(12);
-    // Product Name (will need to be populated from productId)
-    doc.text(order.productName || "N/A", productNameX, doc.y);
+    // Use order.name instead of product name
+    doc.text(order.name || "N/A", orderNameX, doc.y);
 
     // Quantity (right-aligned)
     doc.text(order.quantity?.toString() || "0", quantityX, doc.y - 12, {
@@ -76,7 +76,7 @@ const generatePrintingPDF = (orders, res) => {
   });
 
   // Add horizontal line
-  doc.moveTo(productNameX, doc.y).lineTo(550, doc.y).stroke();
+  doc.moveTo(orderNameX, doc.y).lineTo(550, doc.y).stroke();
   doc.moveDown();
 
   // Add total revenue (right-aligned)

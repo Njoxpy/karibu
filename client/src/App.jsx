@@ -33,7 +33,7 @@ import OrderSucessHardware from "./pages/Hardware/Components/OrderSuccessHardwar
 import ManageHardwareProducts from "./pages/Hardware/pages/ManageHardwareProducts";
 import HardwareOrders from "./pages/Hardware/pages/HardwareOrders";
 import Hardwares from "./pages/Hardware/pages/Hardwares";
-import HardwareBulkUpload from "./pages/Hardware/Components/BulkUploadHardware"
+import HardwareBulkUpload from "./pages/Hardware/Components/BulkUploadHardware";
 
 // harwdware layout
 import HardwareLayoutProducts from "./pages/Hardware/layouts/HardwareProductsLayout";
@@ -95,7 +95,7 @@ import StationeryBody from "./pages/Stationery/Pages/StationeryBody";
 import StationeryOrders from "./pages/Stationery/Pages/Orders";
 import AddItems from "./pages/Stationery/Components/StationeryItemsUpload";
 import OrderSucessStationery from "./pages/Stationery/Components/OrderSucessStationery";
-import BulkUploadStationery from "./pages/Stationery/Pages/BulkUploadStationery"
+import BulkUploadStationery from "./pages/Stationery/Pages/BulkUploadStationery";
 // stationery details
 import StationeryOrderDetails from "./pages/Stationery/Pages/StationeryOrderDetails";
 import StationeryItemsDetails from "./pages/Stationery/Pages/StationeryItemDetails";
@@ -104,7 +104,7 @@ import StationeryLayout from "./pages/Stationery/Layouts/StationeryLayout";
 import StationeryProductsLayout from "./pages/Stationery/Layouts/StationeryProductsLayout";
 // stationery error
 import StationeryOrderDetailsError from "./pages/Stationery/Error/StationeryOrderDetailsError";
-import StationeryItemsError from "./pages/Stationery/Error/StationeryItemsError"
+import StationeryItemsError from "./pages/Stationery/Error/StationeryItemsError";
 /* ANIMAl FEEDING */
 // LAYOUT ANIMAL FEEDING
 import AnimalFeedingLayout from "./pages/AnimalFeeding/Layouts/AnimalFeedingLayout";
@@ -125,7 +125,7 @@ import ManageStationeryProducts from "./pages/Stationery/Pages/ManageStationeryP
 import InventoryMovement from "./pages/Godown/Pages/InventoryMovement";
 import InventoryTable from "./pages/Godown/Pages/InventoryTable";
 import FoodsBody from "./pages/AnimalFeeding/Pages/FoodsBody";
-import AnimalFeedingProductsLayout from "./pages/AnimalFeeding/Layouts/AnimalFeedingProductsLayout"
+import AnimalFeedingProductsLayout from "./pages/AnimalFeeding/Layouts/AnimalFeedingProductsLayout";
 import BulkUpload from "./pages/AnimalFeeding/Components/BulkUpload";
 import BulkUploadGodown from "./pages/Godown/Components/BulkUploadGodown";
 import BulkUploadFreshOil from "./pages/FreshOil/Pages/BulkUploadFreshOil";
@@ -136,7 +136,7 @@ import OrderItemAnimalFeeding from "./pages/AnimalFeeding/Pages/OrderItemAnimalF
 import OrderItemHardware from "./pages/Hardware/pages/OrderItemHardware";
 import AnimalFeedingOrderDetailsError from "./pages/AnimalFeeding/Error/AnimalFeedingOrderDetailsError";
 // admin
-import DashboardLayout from "./pages/admin/layout/DashboardLayout"
+import DashboardLayout from "./pages/admin/layout/DashboardLayout";
 import DashboardHome from "./pages/admin/pages/DashboardHome";
 import ProductsPage from "./pages/admin/pages/ProductsPage";
 import OrdersPage from "./pages/admin/pages/OrdersPage";
@@ -145,7 +145,7 @@ import ReportsPage from "./pages/admin/pages/ReportsPage";
 import AddProduct from "./pages/admin/components/AddProduct";
 import OrderDetailsPage from "./pages/admin/order/OrderDetailsPage";
 import UserProfile from "./components/UserProfile";
-import Reports from "./pages/admin/pages/Reports"
+import Reports from "./pages/admin/pages/Reports";
 import AddUserPage from "./pages/admin/pages/UsersPage";
 
 import OilDetailsError from "./pages/FreshOil/Error/OilDetailsError";
@@ -189,7 +189,11 @@ export default function App() {
             </Route>
             <Route path="order-item" element={<OrderItemAnimalFeeding />} />
             <Route path="orders" element={<Orders />} />
-            <Route path="orders/:id" element={<OrderDetailsAnimal />} errorElement={<AnimalFeedingOrderDetailsError />} />
+            <Route
+              path="orders/:id"
+              element={<OrderDetailsAnimal />}
+              errorElement={<AnimalFeedingOrderDetailsError />}
+            />
             <Route path="order/sucess" element={<OrderSucess />} />
             <Route path="admin/bulk-upload" element={<BulkUpload />} />
             <Route path="admin/upload" element={<FoodUpload />} />
@@ -199,11 +203,15 @@ export default function App() {
           </Route>
 
           {/* fresh oil */}
-          <Route path="/freshOil" element={<OilLayouts />}>
+          <Route path="/fresh-oil" element={<OilLayouts />}>
             <Route index element={<OilList />} />
             <Route path="products" element={<OilLayoutProduct />}>
               <Route index element={<Oils />} />
-              <Route path=":id" element={<OilDetails />} errorElement={<OilDetailsError />} />
+              <Route
+                path=":id"
+                element={<OilDetails />}
+                errorElement={<OilDetailsError />}
+              />
             </Route>
             <Route path="orders" element={<FreshOilOrders />} />
             <Route
@@ -299,7 +307,10 @@ export default function App() {
             />
             <Route path="order-item" element={<OrderItemStationery />} />
             <Route path="admin/upload" element={<AddItems />} />
-            <Route path="admin/bulk-upload" element={<BulkUploadStationery />} />
+            <Route
+              path="admin/bulk-upload"
+              element={<BulkUploadStationery />}
+            />
             <Route path="order/sucess" element={<OrderSucessStationery />} />
             <Route path="admin/orders" element={<StationeryOrders />} />
             <Route path="admin/manage" element={<ManageStationeryProducts />} />
@@ -311,7 +322,7 @@ export default function App() {
   );
   return (
     <>
-      <RouterProvider router={router} ></RouterProvider>
+      <RouterProvider router={router}></RouterProvider>
     </>
   );
 }
