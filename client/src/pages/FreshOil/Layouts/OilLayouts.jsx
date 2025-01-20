@@ -30,32 +30,16 @@ function OilLayouts() {
           <nav className="hidden lg:flex space-x-6">
             <ul className="flex space-x-6">
               <li>
-                <Link
-                  to="/freshOil/admin/upload"
-                >
-                  Food Upload
-                </Link>
+                <Link to="/fresh-oil/admin/upload">Food Upload</Link>
               </li>
               <li>
-                <Link
-                  to="/freshOil/admin/bulk-upload"
-                >
-                  Bulk Upload
-                </Link>
+                <Link to="/fresh-oil/admin/bulk-upload">Bulk Upload</Link>
               </li>
               <li>
-                <Link
-                  to="/freshOil/order-item"
-                >
-                  Order Item
-                </Link>
+                <Link to="/fresh-oil/order-item">Order Item</Link>
               </li>
               <li>
-                <Link
-                  to="/freshOil/orders"
-                >
-                  Orders
-                </Link>
+                <Link to="/fresh-oil/orders">Orders</Link>
               </li>
             </ul>
           </nav>
@@ -67,7 +51,7 @@ function OilLayouts() {
             <ul className="flex flex-col space-y-4">
               <li>
                 <Link
-                  to="/freshOil/admin/upload"
+                  to="/fresh-oil/admin/upload"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Food Upload
@@ -75,7 +59,7 @@ function OilLayouts() {
               </li>
               <li>
                 <Link
-                  to="/freshOil/order-item"
+                  to="/fresh-oil/order-item"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Order Item
@@ -83,7 +67,7 @@ function OilLayouts() {
               </li>
               <li>
                 <Link
-                  to="/freshOil/search"
+                  to="/fresh-oil/search"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Search
@@ -91,7 +75,7 @@ function OilLayouts() {
               </li>
               <li>
                 <Link
-                  to="/freshOil/orders"
+                  to="/fresh-oil/orders"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Orders

@@ -1,8 +1,12 @@
+"use client";
+
 import { Link, NavLink, Outlet } from "react-router-dom";
 import { useState } from "react";
 import useLogout from "../hooks/auth/useLogout"; // Import the useLogout hook
 import logo from "../assets/images/logoWithName.png"; // Import your logo image
 import { useAuth } from "../hooks/auth/useAuth";
+import { Dialog } from "@headlessui/react"; // Import Dialog component
+import { ExclamationTriangleIcon } from "@heroicons/react/24/outline"; // Import Icon for the modal
 
 const RootLayout = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -149,12 +153,24 @@ const RootLayout = () => {
         </div>
       </nav>
 
-      {/* Modal Popup */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full">
-            <h2 className="text-xl font-semibold mb-4">Confirm Logout</h2>
-            <p className="mb-6">Are you sure you want to log out?</p>
+      {/* Modal Popup using Headless UI's Dialog */}
+      <Dialog
+        open={isModalOpen}
+        onClose={setIsModalOpen}
+        className="relative z-10"
+      >
+        <div className="fixed inset-0 bg-black bg-opacity-50" />
+        <div className="flex items-center justify-center fixed inset-0 z-50">
+          <Dialog.Panel className="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full">
+            <div className="flex items-start space-x-3">
+              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-red-100">
+                <ExclamationTriangleIcon className="h-6 w-6 text-red-600" />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold mb-4">Confirm Logout</h2>
+                <p className="mb-6">Are you sure you want to log out?</p>
+              </div>
+            </div>
             <div className="flex justify-end space-x-4">
               <button
                 onClick={cancelLogout}
@@ -169,9 +185,9 @@ const RootLayout = () => {
                 Logout
               </button>
             </div>
-          </div>
+          </Dialog.Panel>
         </div>
-      )}
+      </Dialog>
 
       {/* Nested Routes */}
       <Outlet />
