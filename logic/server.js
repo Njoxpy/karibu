@@ -18,7 +18,7 @@ const printingRoutes = require("./routes/printing.routes");
 const hardwareRoutes = require("./routes/hardware.routes");
 const stationeryRoutes = require("./routes/stationery.routes");
 // log
-const log = require("./logs/logger");
+// const log = require("./logs/logger");
 
 // database
 const connectDB = require("./config/DB");
@@ -50,7 +50,7 @@ app.use(
 );
 
 app.use(express.json());
-app.use(log);
+// app.use(log);
 
 // Add timeout middleware (30 seconds timeout)
 app.use(timeout("30s")); // 30 seconds timeout

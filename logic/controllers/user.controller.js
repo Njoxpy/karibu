@@ -41,7 +41,7 @@ const loginUser = async (req, res) => {
       token,
     });
   } catch (error) {
-    res.status(BAD_REQUEST).json({ error: error.message });
+    res.status(BAD_REQUEST).json({ error: "user not registered" });
   }
 };
 
