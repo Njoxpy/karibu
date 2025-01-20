@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import ProductsNotFound from "../../../components/ProductNotFound";
 
 function Hardwares() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -8,13 +9,36 @@ function Hardwares() {
   // Fetch hardware products from the API
   useEffect(() => {
     const fetchProducts = async () => {
+      const token = localStorage.getItem("authToken"); // Get the token from localStorage
+
+      if (!token) {
+        console.error("No authentication token found.");
+        setLoading(false);
+        return;
+      }
+
       try {
-        const response = await fetch("http://localhost:5000/api/v1/hardware/products");
+        const response = await fetch(
+          "http://localhost:5000/api/v1/hardware/products",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`, // Attach the token in the Authorization header
+              "Content-Type": "application/json",
+            },
+          }
+        );
         const data = await response.json();
-        setProducts(data);
+        if (Array.isArray(data)) {
+          setProducts(data);
+        } else {
+          console.error("Invalid data format:", data);
+          setProducts([]);
+        }
         setLoading(false);
       } catch (error) {
         console.error("Error fetching products:", error);
+        setProducts([]);
         setLoading(false);
       }
     };
@@ -30,6 +54,19 @@ function Hardwares() {
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentProducts = products.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Handle no products found
+  if (products.length === 0 && !loading) {
+    return <ProductsNotFound />;
+  }
+
+  // Filter products based on the search term
+  const filteredProducts = currentProducts.filter((product) => {
+    return (
+      product.name &&
+      product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
 
   // Handle previous page
   const handlePrevious = () => {
@@ -61,39 +98,29 @@ function Hardwares() {
         <p>Loading...</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {currentProducts
-            .filter((product) => {
-              return searchTerm.toLowerCase() === ""
-                ? product
-                : product.name.toLowerCase().includes(searchTerm.toLowerCase());
-            })
-            .map((product) => (
-              <div key={product._id} className="border rounded-lg shadow-md overflow-hidden">
-                <img
-                  src={product.image || "default-image.jpg"} // You can set a default image if needed
-                  alt={product.name}
-                  loading="lazy"
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-4">
-                  <h2 className="font-semibold text-lg">{product.name}</h2>
-                  <p className="text-gray-600">{product.description}</p>
-                  <p className="font-bold text-blue-700">Tsh {product.price}</p>
-                  <a
-                    href={`/hardware/products/${product._id}`}
-                    className="mt-4 inline-block bg-blue-500 text-white py-2 px-4 rounded"
-                  >
-                    Order Now
-                  </a>
-                  <a
-                    href={`/hardwares/product-detail?productId=${product._id}`}
-                    className="mt-4 inline-block bg-blue-500 text-white py-2 px-4 rounded ml-2"
-                  >
-                    View Details
-                  </a>
-                </div>
+          {filteredProducts.map((product) => (
+            <div
+              key={product._id}
+              className="border rounded-lg shadow-md overflow-hidden"
+            >
+              <img
+                src={product.image || "default-image.jpg"}
+                alt={product.name}
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-4">
+                <h2 className="font-semibold text-lg">{product.name}</h2>
+                <p className="text-gray-600">{product.description}</p>
+                <p className="font-bold text-blue-700">Tsh {product.price}</p>
+                <a
+                  href={`/hardware/products/${product._id}`}
+                  className="mt-4 inline-block bg-blue-500 text-white py-2 px-4 rounded"
+                >
+                  Order Now
+                </a>
               </div>
-            ))}
+            </div>
+          ))}
         </div>
       )}
 

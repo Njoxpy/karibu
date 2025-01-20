@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import Footer from '../../../components/Footer';
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import Footer from "../../../components/Footer";
 
 const OilDetails = () => {
   const { id } = useParams(); // Get the product ID from the URL params
@@ -8,27 +8,36 @@ const OilDetails = () => {
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [totalPrice, setTotalPrice] = useState(0);
-  const [loading, setLoading] = useState(true);  // To track loading state
-  const [error, setError] = useState(null);  // To handle any errors
+  const [loading, setLoading] = useState(true); // To track loading state
+  const [error, setError] = useState(null); // To handle any errors
 
   useEffect(() => {
     // Fetch the product data based on the ID
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:5000/api/v1/fresh-oil/products/${id}`);
+        const token = localStorage.getItem("authToken"); // Get the Bearer token from localStorage
+        const response = await fetch(
+          `http://localhost:5000/api/v1/fresh-oil/products/${id}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`, // Add the token to the Authorization header
+            },
+          }
+        );
         const data = await response.json();
 
         if (response.ok) {
-          setProduct(data);  // Set the fetched product data
-          setTotalPrice(data.price * quantity);  // Set initial total price based on quantity
+          setProduct(data); // Set the fetched product data
+          setTotalPrice(data.price * quantity); // Set initial total price based on quantity
         } else {
-          throw new Error('Product not found');
+          throw new Error("Product not found");
         }
       } catch (error) {
-        setError(error.message);  // Handle the error
+        setError(error.message); // Handle the error
       } finally {
-        setLoading(false);  // Set loading to false once fetch is complete
+        setLoading(false); // Set loading to false once fetch is complete
       }
     };
 
@@ -47,23 +56,23 @@ const OilDetails = () => {
     e.preventDefault();
     const orderData = {
       totalPrice,
-      status: 'pending',
+      status: "pending",
       orderId: Date.now(), // Generate a unique order ID
       userId: 4, // Example user ID, replace as needed
-      productName: product ? product.name : 'Unknown Product',
+      productName: product ? product.name : "Unknown Product",
       quantity,
-      category: product ? product.category : 'Unknown Category',
+      category: product ? product.category : "Unknown Category",
     };
-    console.log('Order submitted:', orderData);
+    console.log("Order submitted:", orderData);
     // Handle order submission, e.g., call an API to submit the order
   };
 
   if (loading) {
-    return <div>Loading...</div>;  // Show loading message while fetching data
+    return <div>Loading...</div>; // Show loading message while fetching data
   }
 
   if (error) {
-    return <div>{`Error: ${error}`}</div>;  // Show error message if there's an issue
+    return <div>{`Error: ${error}`}</div>; // Show error message if there's an issue
   }
 
   if (!product) {
@@ -73,12 +82,16 @@ const OilDetails = () => {
   return (
     <>
       <div className="max-w-md mx-auto bg-white p-8 rounded-xl shadow-lg mt-4">
-        <h2 className="text-2xl font-semibold mb-6 text-center">{product.name}</h2>
+        <h2 className="text-2xl font-semibold mb-6 text-center">
+          {product.name}
+        </h2>
 
         <form onSubmit={handleSubmit}>
           {/* Product Name */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Product Name</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Product Name
+            </label>
             <input
               type="text"
               value={product.name}
@@ -89,7 +102,9 @@ const OilDetails = () => {
 
           {/* Product Category */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Category</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Category
+            </label>
             <input
               type="text"
               value={product.category}
@@ -100,7 +115,12 @@ const OilDetails = () => {
 
           {/* Quantity Input */}
           <div className="mb-4">
-            <label htmlFor="quantity" className="block text-sm font-medium text-gray-700">Quantity</label>
+            <label
+              htmlFor="quantity"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Quantity
+            </label>
             <input
               type="number"
               id="quantity"
@@ -113,7 +133,12 @@ const OilDetails = () => {
 
           {/* Price */}
           <div className="mb-4">
-            <label htmlFor="price" className="block text-sm font-medium text-gray-700">Price per Item</label>
+            <label
+              htmlFor="price"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Price per Item
+            </label>
             <input
               type="text"
               id="price"
@@ -125,7 +150,12 @@ const OilDetails = () => {
 
           {/* Total Price */}
           <div className="mb-4">
-            <label htmlFor="totalPrice" className="block text-sm font-medium text-gray-700">Total Price</label>
+            <label
+              htmlFor="totalPrice"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Total Price
+            </label>
             <input
               type="text"
               id="totalPrice"

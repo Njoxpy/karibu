@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Footer from "../../../components/Footer";
+import OrdersNotFound from "../../../components/OrderNotFound";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
@@ -13,13 +14,28 @@ const Orders = () => {
   const itemsPerPage = 6;
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/v1/animal-feeding/orders/")
+    const token = localStorage.getItem("authToken");
+
+    fetch("http://localhost:5000/api/v1/animal-feeding/orders/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((response) => response.json())
       .then((data) => {
-        setOrders(data);
-        setFilteredOrders(data);
+        // Ensure the data is an array before setting the state
+        if (Array.isArray(data)) {
+          setOrders(data);
+          setFilteredOrders(data); // Ensure it's an array before setting
+        } else {
+          console.error("Expected an array of orders, but received:", data);
+        }
       })
-      .catch((error) => console.log(error.message));
+      .catch((error) => {
+        console.error("Error fetching orders:", error.message);
+      });
   }, []);
 
   const filterOrders = (filterType) => {
@@ -55,10 +71,16 @@ const Orders = () => {
   };
 
   const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+
   const paginateOrders = () => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    return filteredOrders.slice(startIndex, endIndex);
+    if (Array.isArray(filteredOrders)) {
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      return filteredOrders.slice(startIndex, endIndex);
+    } else {
+      console.error("filteredOrders is not an array:", filteredOrders);
+      return [];
+    }
   };
 
   const openEditModal = (order) => {
@@ -73,7 +95,11 @@ const Orders = () => {
     if (editOrder) {
       const updatedOrders = orders.map((order) =>
         order._id === editOrder._id
-          ? { ...order, quantity: editOrder.updatedQuantity, total: editOrder.updatedQuantity * order.price }
+          ? {
+              ...order,
+              quantity: editOrder.updatedQuantity,
+              total: editOrder.updatedQuantity * order.price,
+            }
           : order
       );
       setOrders(updatedOrders);
@@ -89,12 +115,18 @@ const Orders = () => {
 
   const handleDeleteOrder = () => {
     if (orderToDelete) {
-      const updatedOrders = orders.filter((order) => order._id !== orderToDelete._id);
+      const updatedOrders = orders.filter(
+        (order) => order._id !== orderToDelete._id
+      );
       setOrders(updatedOrders);
       setFilteredOrders(updatedOrders); // Also update filtered orders
       setIsDeleteModalOpen(false); // Close delete modal
     }
   };
+
+  if (orders.length === 0) {
+    return <OrdersNotFound />;
+  }
 
   return (
     <>
@@ -106,7 +138,9 @@ const Orders = () => {
           <button
             onClick={() => filterOrders("all")}
             className={`${
-              filter === "all" ? "bg-blue-500 text-white" : "bg-gray-300 text-gray-700"
+              filter === "all"
+                ? "bg-blue-500 text-white"
+                : "bg-gray-300 text-gray-700"
             } py-2 px-4 rounded-lg transition duration-300 hover:bg-blue-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400`}
           >
             All
@@ -114,7 +148,9 @@ const Orders = () => {
           <button
             onClick={() => filterOrders("day")}
             className={`${
-              filter === "day" ? "bg-blue-500 text-white" : "bg-gray-300 text-gray-700"
+              filter === "day"
+                ? "bg-blue-500 text-white"
+                : "bg-gray-300 text-gray-700"
             } py-2 px-4 rounded-lg transition duration-300 hover:bg-blue-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400`}
           >
             Today
@@ -122,7 +158,9 @@ const Orders = () => {
           <button
             onClick={() => filterOrders("week")}
             className={`${
-              filter === "week" ? "bg-blue-500 text-white" : "bg-gray-300 text-gray-700"
+              filter === "week"
+                ? "bg-blue-500 text-white"
+                : "bg-gray-300 text-gray-700"
             } py-2 px-4 rounded-lg transition duration-300 hover:bg-blue-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400`}
           >
             This Week
@@ -130,7 +168,9 @@ const Orders = () => {
           <button
             onClick={() => filterOrders("month")}
             className={`${
-              filter === "month" ? "bg-blue-500 text-white" : "bg-gray-300 text-gray-700"
+              filter === "month"
+                ? "bg-blue-500 text-white"
+                : "bg-gray-300 text-gray-700"
             } py-2 px-4 rounded-lg transition duration-300 hover:bg-blue-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400`}
           >
             This Month
@@ -144,20 +184,38 @@ const Orders = () => {
           <table className="min-w-full border border-gray-300">
             <thead>
               <tr className="bg-green-200">
-                <th className="border border-gray-300 px-4 py-2 text-left">Order ID</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">Product</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">Quantity</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">Total Price</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">Actions</th>
+                <th className="border border-gray-300 px-4 py-2 text-left">
+                  Order ID
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left">
+                  Product
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left">
+                  Quantity
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left">
+                  Total Price
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
               {paginateOrders().map((order) => (
                 <tr key={order._id} className="hover:bg-green-100">
-                  <td className="border border-gray-300 px-4 py-2">{order.orderId}</td>
-                  <td className="border border-gray-300 px-4 py-2">{order.name}</td>
-                  <td className="border border-gray-300 px-4 py-2">{order.quantity}</td>
-                  <td className="border border-gray-300 px-4 py-2">Tsh {order.total}</td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {order.orderId}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {order.name}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {order.quantity}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    Tsh {order.total}
+                  </td>
                   <td className="border border-gray-300 px-4 py-2 flex space-x-2">
                     <button
                       onClick={() => openEditModal(order)}
@@ -179,7 +237,7 @@ const Orders = () => {
         )}
 
         {/* Pagination Controls */}
-        <div className="flex justify-center mb-2">
+        <div className="flex justify-center m-2">
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2"
@@ -187,7 +245,9 @@ const Orders = () => {
             Previous
           </button>
           <button
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
             className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600"
           >
             Next
@@ -199,7 +259,9 @@ const Orders = () => {
       {isEditModalOpen && editOrder && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded p-6 shadow-lg w-full max-w-md mx-auto">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Edit Order Quantity</h2>
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">
+              Edit Order Quantity
+            </h2>
             <div className="mb-4">
               <label className="block text-gray-600">Quantity:</label>
               <input
@@ -237,7 +299,9 @@ const Orders = () => {
       {isDeleteModalOpen && orderToDelete && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded p-6 shadow-lg w-full max-w-md mx-auto">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Confirm Deletion</h2>
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">
+              Confirm Deletion
+            </h2>
             <p className="mb-4">Are you sure you want to delete this order?</p>
             <div className="flex justify-end space-x-4">
               <button

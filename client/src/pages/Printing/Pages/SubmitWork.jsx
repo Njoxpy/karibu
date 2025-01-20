@@ -16,6 +16,12 @@ function SubmitWork() {
   // State for storing receipts (if needed)
   const [receipts, setReceipts] = useState([]);
 
+  // State for modal visibility
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // State for storing the generated PDF data
+  const [pdfReceipt, setPdfReceipt] = useState(null);
+
   // Form submission handler
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,17 +33,30 @@ function SubmitWork() {
     }
 
     // Create the order data object
-    const orderData = { description, price: parseFloat(price), quantity: parseInt(quantity), contact, category };
+    const orderData = {
+      description,
+      price: parseFloat(price),
+      quantity: parseInt(quantity),
+      contact,
+      category,
+    };
 
     try {
-      // Send the order data to the backend API
-      const response = await fetch("http://localhost:5000/api/v1/printing/orders", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(orderData),
-      });
+      // Get the token from localStorage
+      const token = localStorage.getItem("authToken");
+
+      // Send the order data to the backend API with Bearer token in the headers
+      const response = await fetch(
+        "http://localhost:5000/api/v1/printing/orders",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Add Bearer token here
+          },
+          body: JSON.stringify(orderData),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to create order");
@@ -52,26 +71,28 @@ function SubmitWork() {
       const doc = new jsPDF();
       doc.setFont("tahoma", "normal");
 
-      // Title Section with brand blue color
-      doc.setFontSize(18);
-      doc.setTextColor(0, 123, 255); // Brand Blue color
-      doc.text("Order Submission Receipt", 20, 20);
+      // Title Section with Savarrah Printing brand blue color
+      doc.setFontSize(22);
+      doc.setTextColor(0, 123, 255); // Savarrah Blue color
+      doc.text("Savarrah Printing", 20, 20);
 
       // Line separator
       doc.setLineWidth(0.5);
       doc.setDrawColor(0, 123, 255);
       doc.line(20, 25, 190, 25);
 
-      // Section title with brand green color
-      doc.setTextColor(40, 167, 69); // Brand Green color
+      // Section title with white background and brand green color
+      doc.setTextColor(255, 255, 255); // White text on blue background
       doc.setFontSize(14);
-      doc.text("Order Details", 20, 40);
+      doc.setFillColor(0, 123, 255); // Brand Blue background for title
+      doc.rect(20, 30, 170, 10, "F");
+      doc.text("Order Details", 20, 37);
 
       // Background color for the order details section (white)
       doc.setFillColor(255, 255, 255);
-      doc.rect(20, 45, 170, 10, "F");
+      doc.rect(20, 40, 170, 10, "F");
 
-      // Reset text color for the order content (Brand Blue)
+      // Reset text color for the order content (Savarrah Blue)
       doc.setTextColor(0, 123, 255);
       doc.setFontSize(12);
 
@@ -81,25 +102,36 @@ function SubmitWork() {
       doc.text(`Quantity: ${quantity}`, 20, 75);
       doc.text(`Contact: ${contact}`, 20, 85);
       doc.text(`Category: ${category}`, 20, 95);
-      doc.text(`Total Price: Tsh ${price * quantity}`, 20, 95);
+      doc.text(`Total Price: Tsh ${price * quantity}`, 20, 105);
 
       // Line separator after order details
       doc.setDrawColor(0, 123, 255);
-      doc.line(20, 100, 190, 100);
+      doc.line(20, 110, 190, 110);
 
-      // Footer with brand green color
+      // Footer with Savarrah Green color
       doc.setFontSize(10);
-      doc.setTextColor(40, 167, 69);
-      doc.text("Thank you for your order!", 20, 110);
+      doc.setTextColor(40, 167, 69); // Savarrah Green
+      doc.text("Thank you for your order!", 20, 120);
 
-      // Save the PDF with a custom name
-      doc.save(`${description}_receipt.pdf`);
+      // Save the PDF in the state as a blob
+      const pdfOutput = doc.output("blob"); // Save the PDF as a blob
+      setPdfReceipt(pdfOutput); // Save the blob for later download
 
-      // Navigate to the orders page and pass the receipts state
-      navigate("/printing/orders", { state: { receipts } });
-
+      // Set the modal visibility to true
+      setIsModalOpen(true);
     } catch (error) {
       alert("Error creating order: " + error.message);
+    }
+  };
+
+  // Handle download PDF
+  const downloadReceipt = () => {
+    if (pdfReceipt) {
+      // Create a temporary anchor element to trigger the download
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(pdfReceipt); // Create an object URL for the PDF blob
+      link.download = `${description}_receipt.pdf`; // Set the filename
+      link.click(); // Trigger the download
     }
   };
 
@@ -113,10 +145,17 @@ function SubmitWork() {
     navigate("/printing"); // Redirect to the printing page
   };
 
+  // Close the modal
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <div className="p-4">
       <section className="submission">
-        <h1 className="font-bold text-center text-blue-600">Submit Your Work</h1>
+        <h1 className="font-bold text-center text-blue-600">
+          Submit Your Work
+        </h1>
         <form id="workSubmissionForm" onSubmit={handleSubmit}>
           <div className="p-2">
             <label
@@ -216,6 +255,37 @@ function SubmitWork() {
           </div>
         </form>
       </section>
+
+      {/* Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+            <h2 className="text-center text-xl font-bold text-blue-600">
+              Order Submitted Successfully!
+            </h2>
+            <p className="mt-4 text-center text-gray-700">
+              Your order has been submitted successfully. A receipt has been
+              generated.
+            </p>
+            <div className="mt-6 text-center">
+              <button
+                onClick={downloadReceipt}
+                className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
+              >
+                Download Receipt
+              </button>
+            </div>
+            <div className="mt-4 text-center">
+              <button
+                onClick={closeModal}
+                className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-700"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

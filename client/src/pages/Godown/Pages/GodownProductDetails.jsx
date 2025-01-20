@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import Footer from '../../../components/Footer';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import Footer from "../../../components/Footer";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const GodownProductDetails = () => {
   const { id } = useParams();
-  
+
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [totalPrice, setTotalPrice] = useState(0);
@@ -17,9 +17,11 @@ const GodownProductDetails = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/v1/godown/products/${id}`);
+        const response = await fetch(
+          `http://localhost:5000/api/v1/godown/products/${id}`
+        );
         if (!response.ok) {
-          throw new Error('Product not found');
+          throw new Error("Product not found");
         }
         const data = await response.json();
         setProduct(data);
@@ -54,23 +56,26 @@ const GodownProductDetails = () => {
         quantity,
         price: product.price,
         total: totalPrice,
-        status: 'pending'
+        status: "pending",
       };
 
-      const response = await fetch('http://localhost:5000/api/v1/godown/orders', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(orderData),
-      });
+      const response = await fetch(
+        "http://localhost:5000/api/v1/godown/orders",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(orderData),
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Failed to create order');
+        throw new Error("Failed to create order");
       }
 
       setOrderSuccess(true);
-      toast.success('Order successfully placed!', {
+      toast.success("Order successfully placed!", {
         position: "top-center",
         autoClose: 5000,
         hideProgressBar: false,
@@ -78,7 +83,7 @@ const GodownProductDetails = () => {
         pauseOnHover: true,
         draggable: true,
       });
-      
+
       // Reset form
       setQuantity(1);
       setTotalPrice(product.price);
@@ -101,7 +106,9 @@ const GodownProductDetails = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="bg-gray-50 p-4 rounded-lg">
-          <p className="text-gray-600 text-center font-medium">Product not found</p>
+          <p className="text-gray-600 text-center font-medium">
+            Product not found
+          </p>
         </div>
       </div>
     );
@@ -125,31 +132,49 @@ const GodownProductDetails = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
               <div className="space-y-4">
                 <div className="bg-gray-50 p-4 rounded-xl">
-                  <label className="text-sm text-gray-500 block mb-1">Product Code</label>
-                  <p className="text-lg font-semibold text-gray-700">{product._id}</p>
+                  <label className="text-sm text-gray-500 block mb-1">
+                    Product Code
+                  </label>
+                  <p className="text-lg font-semibold text-gray-700">
+                    {product._id}
+                  </p>
                 </div>
                 <div className="bg-gray-50 p-4 rounded-xl">
-                  <label className="text-sm text-gray-500 block mb-1">Available Stock</label>
-                  <p className={`text-lg font-semibold ${
-                    product.quantity > 20 ? 'text-green-600' : 'text-orange-500'
-                  }`}>
+                  <label className="text-sm text-gray-500 block mb-1">
+                    Available Stock
+                  </label>
+                  <p
+                    className={`text-lg font-semibold ${
+                      product.quantity > 20
+                        ? "text-green-600"
+                        : "text-orange-500"
+                    }`}
+                  >
                     {product.quantity} units
                   </p>
                 </div>
               </div>
               <div className="space-y-4">
                 <div className="bg-gray-50 p-4 rounded-xl">
-                  <label className="text-sm text-gray-500 block mb-1">Price per Unit</label>
+                  <label className="text-sm text-gray-500 block mb-1">
+                    Price per Unit
+                  </label>
                   <p className="text-lg font-semibold text-gray-700">
                     Tsh {product.price.toLocaleString()}
                   </p>
                 </div>
                 <div className="bg-gray-50 p-4 rounded-xl">
-                  <label className="text-sm text-gray-500 block mb-1">Status</label>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    product.quantity > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                  }`}>
-                    {product.quantity > 0 ? 'In Stock' : 'Out of Stock'}
+                  <label className="text-sm text-gray-500 block mb-1">
+                    Status
+                  </label>
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      product.quantity > 0
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                    }`}
+                  >
+                    {product.quantity > 0 ? "In Stock" : "Out of Stock"}
                   </span>
                 </div>
               </div>
@@ -192,21 +217,39 @@ const GodownProductDetails = () => {
                   className={`
                     w-full md:w-auto px-8 py-4 rounded-xl text-white font-medium
                     transition-all duration-200 transform hover:scale-105
-                    ${isSubmitting || quantity > product.quantity
-                      ? 'bg-gray-400 cursor-not-allowed'
-                      : 'bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 shadow-lg hover:shadow-xl'}
+                    ${
+                      isSubmitting || quantity > product.quantity
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : "bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 shadow-lg hover:shadow-xl"
+                    }
                   `}
                 >
                   {isSubmitting ? (
                     <span className="flex items-center justify-center">
-                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      <svg
+                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
                       </svg>
                       Processing...
                     </span>
                   ) : (
-                    'Place Order'
+                    "Place Order"
                   )}
                 </button>
               </div>
@@ -221,8 +264,18 @@ const GodownProductDetails = () => {
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all duration-300 scale-100">
             <div className="p-8">
               <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100">
-                <svg className="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                <svg
+                  className="h-8 w-8 text-green-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
               </div>
               <h3 className="mt-6 text-xl font-semibold text-gray-900 text-center">

@@ -12,7 +12,20 @@ function StationeryBody() {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const response = await fetch("http://localhost:5000/api/v1/stationery/products/");
+        // Retrieve the token from localStorage
+        const token = localStorage.getItem("authToken");
+
+        // Make the request with the Bearer token
+        const response = await fetch(
+          "http://localhost:5000/api/v1/stationery/products/",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`, // Include Bearer token in headers
+            },
+          }
+        );
+
         if (!response.ok) {
           throw new Error("Failed to fetch products");
         }
@@ -76,7 +89,9 @@ function StationeryBody() {
                   <div className="p-4">
                     <h2 className="font-semibold text-lg">{product.name}</h2>
                     <p className="text-gray-600">{product.description}</p>
-                    <p className="font-bold text-blue-700">Tsh {product.price}</p>
+                    <p className="font-bold text-blue-700">
+                      Tsh {product.price}
+                    </p>
                     <div className="flex justify-between">
                       <a
                         href={`/stationery/products/${product._id}`}
@@ -122,7 +137,9 @@ function StationeryBody() {
                 }
                 disabled={currentPage === totalPages}
                 className={`bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 ml-2 ${
-                  currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
+                  currentPage === totalPages
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
                 }`}
               >
                 Next

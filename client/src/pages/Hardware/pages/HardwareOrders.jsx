@@ -1,41 +1,51 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Footer from "../../../components/Footer";
 import { Link } from "react-router-dom";
 
 const HardwareOrders = () => {
-  // Local state for orders
-  const [orders, setOrders] = useState([
-    { productName: "Animal Feed A", quantity: 2, totalPrice: 4000, id: 1 },
-    { productName: "Animal Feed B", quantity: 1, totalPrice: 2440, id: 2 },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 6440, id: 3 },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 6300, id: 4 },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 60000, id: 5 },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 60000, id: 6 },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 6880, id: 7 },
-    { productName: "Animal Feed C", quantity: 3, totalPrice: 6880, id: 8 },
-  ]);
-
-  // Pagination state
+  const [orders, setOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const ordersPerPage = 5;
-
-  // State for modal visibility and editing order
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editOrder, setEditOrder] = useState({ index: null, quantity: 0 });
 
-  // Function to remove an order
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:5000/api/v1/hardware/orders/",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`, // Replace with your token logic
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setOrders(data);
+        } else {
+          console.error("Failed to fetch orders");
+        }
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
   const handleRemoveOrder = (index) => {
     const newOrders = orders.filter((_, i) => i !== index);
     setOrders(newOrders);
   };
 
-  // Function to open the edit modal
   const openEditModal = (index) => {
     setEditOrder({ index, quantity: orders[index].quantity });
     setIsEditModalOpen(true);
   };
 
-  // Function to confirm and apply order edits
   const handleSaveEdit = () => {
     const updatedOrders = [...orders];
     updatedOrders[editOrder.index].quantity = editOrder.quantity;
@@ -45,15 +55,13 @@ const HardwareOrders = () => {
     setIsEditModalOpen(false);
   };
 
-  // Calculate the index range for current page
   const indexOfLastOrder = currentPage * ordersPerPage;
   const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
   const currentOrders = orders.slice(indexOfFirstOrder, indexOfLastOrder);
 
-  // Function to handle page change
   const handlePageChange = (direction) => {
     setCurrentPage((prevPage) => {
-      if (direction === "next" && (currentPage * ordersPerPage) < orders.length) {
+      if (direction === "next" && currentPage * ordersPerPage < orders.length) {
         return prevPage + 1;
       } else if (direction === "prev" && currentPage > 1) {
         return prevPage - 1;
@@ -120,7 +128,6 @@ const HardwareOrders = () => {
         )}
       </div>
 
-      {/* Pagination Controls */}
       <div className="flex justify-center mb-2">
         <button
           onClick={() => handlePageChange("prev")}
@@ -138,7 +145,6 @@ const HardwareOrders = () => {
         </button>
       </div>
 
-      {/* Edit Order Modal */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded p-6 shadow-lg w-full max-w-md mx-auto">
