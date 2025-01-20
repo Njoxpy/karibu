@@ -31,7 +31,7 @@ router.post(
   "/orders",
   authenticate,
   checkCategory(["printing", "admin"]),
-  checkPermissions(["createOrder"]),
+  // checkPermissions(["createOrder"]),
   validatePrintingOrder,
   createOrder
 );
