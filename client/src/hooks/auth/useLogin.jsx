@@ -12,7 +12,6 @@ export const useLogin = () => {
     setError(null);
 
     try {
-      // Make the API call to validate the login credentials
       const response = await fetch("http://localhost:5000/api/v1/users/login", {
         method: "POST",
         headers: {
@@ -22,8 +21,11 @@ export const useLogin = () => {
       });
 
       const data = await response.json();
+
+      console.log("API Response:", data);
+
       if (response.ok && data) {
-        // Set the user data here
+        // Set the user in state
         setUser({
           email: data.email,
           category: data.category,
@@ -31,7 +33,17 @@ export const useLogin = () => {
           token: data.token,
         });
 
-        console.log("Category from backend response:", data.category);
+        // Persist user and token in localStorage
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            email: data.email,
+            category: data.category,
+            role: data.role,
+            token: data.token,
+          })
+        );
+        localStorage.setItem("authToken", data.token);
       } else {
         setError(data.message || "Invalid login credentials");
       }

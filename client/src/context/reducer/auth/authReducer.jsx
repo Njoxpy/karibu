@@ -1,7 +1,7 @@
 export const authReducer = (state, action) => {
   switch (action.type) {
     case "LOGIN":
-      // Store user and token in state and localStorage
+      // Store user and token in localStorage and update state
       localStorage.setItem("user", JSON.stringify(action.payload.user));
       localStorage.setItem("authToken", action.payload.token);
       return {

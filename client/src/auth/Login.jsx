@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useLogin } from "../hooks/auth/useLogin";
 import Logo from "../assets/images/logo.png";
 import Footer from "../components/Footer";
+import { useContext } from "react";
+import { AuthContext } from "../context/auth/AuthContext"; // Import the context
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -15,6 +17,7 @@ const Login = () => {
 
   const { login, isLoading, error, user } = useLogin(); // Access user from the hook
   const navigate = useNavigate();
+  const { logout } = useContext(AuthContext); // Get logout function from context
 
   const validate = () => {
     const newErrors = {};
@@ -52,9 +55,9 @@ const Login = () => {
 
   useEffect(() => {
     if (user) {
-      console.log("User data after login:", user); // Log to verify user data
-      console.log("Navigating to category:", user.category);
+      console.log("User data after login:", user);
 
+      // Navigate based on user category
       switch (user.category.toLowerCase()) {
         case "printing":
           navigate("/printing");
@@ -122,14 +125,12 @@ const Login = () => {
             </div>
 
             <div>
-              <div className="flex items-center justify-between">
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium text-gray-900"
-                >
-                  Password
-                </label>
-              </div>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-900"
+              >
+                Password
+              </label>
               <div className="mt-2">
                 <input
                   id="password"
@@ -156,6 +157,16 @@ const Login = () => {
               </button>
             </div>
           </form>
+
+          {/* Show logout button if user is logged in */}
+          {user && (
+            <button
+              onClick={logout}
+              className="mt-4 w-full rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold text-white"
+            >
+              Log out
+            </button>
+          )}
         </div>
       </div>
       <Footer />
