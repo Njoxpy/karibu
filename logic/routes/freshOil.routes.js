@@ -175,7 +175,6 @@ router.post(
   "/orders",
   authenticate,
   checkCategory(["fresh-oil", "admin"]),
-  checkPermissions(["createOrder"]),
   createFreshOilOrder
 );
 

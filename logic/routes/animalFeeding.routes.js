@@ -181,7 +181,6 @@ router.post(
   "/orders",
   authenticate,
   checkCategory(["animal-feeding", "admin"]),
-  checkPermissions(["createOrder"]), // Employees and Admins can create orders
   createAnimalFeedingOrder
 );
 

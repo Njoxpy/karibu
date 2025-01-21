@@ -137,7 +137,6 @@ router.post(
   "/orders",
   authenticate,
   checkCategory(["hardware", "admin"]),
-  checkPermissions(["createOrder"]),
   hardwareController.createHardwareOrder
 );
 
