@@ -12,8 +12,11 @@ function AnimalFeedingLayout() {
           <div className="flex justify-between items-center p-4">
             {/* Logo/Title */}
             <h2 className="text-3xl font-bold tracking-tight">
-              <Link to="/godown" className="hover:text-blue-200 transition-colors duration-200">
-                Savarrah Godown
+              <Link
+                to="/godown"
+                className="hover:text-blue-200 transition-colors duration-200"
+              >
+                Godown
               </Link>
             </h2>
 
@@ -31,7 +34,15 @@ function AnimalFeedingLayout() {
 
             {/* Navigation Links for Desktop */}
             <nav className="hidden lg:flex">
-              <ul className="flex items-center space-x-1">
+              <ul className="flex items-center space-x-1"> 
+                <li>
+                  <Link
+                    className="px-4 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200 flex items-center space-x-2"
+                    to="/godown/"
+                  >
+                    <span>Home</span>
+                  </Link>
+                </li>
                 <li>
                   <Link
                     className="px-4 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200 flex items-center space-x-2"
@@ -54,6 +65,14 @@ function AnimalFeedingLayout() {
                     to="/godown/order-item"
                   >
                     <span>Order Item</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className="hover:text-green-200 transition-colors duration-200"
+                    to="/godown/admin/manage"
+                  >
+                    Manage Godown
                   </Link>
                 </li>
                 <li>
@@ -81,6 +100,15 @@ function AnimalFeedingLayout() {
         {isMenuOpen && (
           <nav className="lg:hidden bg-blue-900 border-t border-blue-700">
             <ul className="flex flex-col p-4 space-y-2">
+            <li>
+                  <Link
+                    className="px-4 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200 flex items-center space-x-2"
+                    to="/godown/"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <span>Home</span>
+                  </Link>
+                </li>
               <li>
                 <Link
                   className="block px-4 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200"
@@ -126,13 +154,21 @@ function AnimalFeedingLayout() {
                   Move
                 </Link>
               </li>
+              <li>
+                <Link
+                  className="hover:text-green-200 transition-colors duration-200"
+                  to="/godown/admin/manage"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Manage Godown
+                </Link>
+              </li>
             </ul>
           </nav>
         )}
       </div>
-      <main className="container mx-auto px-4 py-8">
-        <Outlet />
-      </main>
+
+      <Outlet />
     </div>
   );
 }
