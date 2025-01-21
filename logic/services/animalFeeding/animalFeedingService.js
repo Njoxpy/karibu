@@ -6,6 +6,7 @@ const getAnimalFeedingOrders = async (startDate, endDate) => {
       createdAt: { $gte: new Date(startDate), $lte: new Date(endDate) },
     }).populate("productId", "name description price nutrients");
   } catch (error) {
+    console.log(error);
     throw new Error("Error fetching animal feeding orders");
   }
 };
