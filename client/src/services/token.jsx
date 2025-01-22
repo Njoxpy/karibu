@@ -1,9 +1,11 @@
-// get token
-
 export const getToken = () => {
     const token = localStorage.getItem("authToken");
-
+  
     if (!token) {
-        return "Token not found"
+      console.warn("Token not found"); // Optional: Log a warning
+      return null; // Return null to indicate no token exists
     }
-}
+  
+    return token; // Return the token if it exists
+  };
+  
