@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Footer from "../../../components/Footer";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const OrderItemGodown = () => {
   const [products, setProducts] = useState([]);
@@ -11,11 +11,21 @@ const OrderItemGodown = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
+  const token = localStorage.getItem("authToken");
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/v1/godown/products");
+        const response = await fetch(
+          "http://localhost:5000/api/v1/godown/products",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
         const data = await response.json();
         if (response.ok) {
           setProducts(data);
@@ -29,6 +39,7 @@ const OrderItemGodown = () => {
       } catch (error) {
         toast.error("Error fetching products");
         setIsLoading(false);
+        console.log(error);
       }
     };
 
@@ -54,15 +65,21 @@ const OrderItemGodown = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/v1/godown/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          productId: selectedProduct._id,
-          quantity,
-          totalPrice,
-        }),
-      });
+      const response = await fetch(
+        "http://localhost:5000/api/v1/godown/orders",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            productId: selectedProduct._id,
+            quantity,
+            totalPrice,
+          }),
+        }
+      );
 
       if (response.ok) {
         setOrderSuccess(true);
@@ -94,8 +111,12 @@ const OrderItemGodown = () => {
         <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
           {/* Header */}
           <div className="bg-gradient-to-r from-gray-700 to-gray-800 px-6 py-8">
-            <h2 className="text-3xl font-bold text-white text-center">Create New Order</h2>
-            <p className="text-gray-300 text-center mt-2">Select product and specify quantity</p>
+            <h2 className="text-3xl font-bold text-white text-center">
+              Create New Order
+            </h2>
+            <p className="text-gray-300 text-center mt-2">
+              Select product and specify quantity
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="p-8 space-y-8">
@@ -103,7 +124,9 @@ const OrderItemGodown = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-6">
                 <div className="bg-gray-50 p-6 rounded-2xl">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Select Product</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Select Product
+                  </label>
                   <select
                     value={selectedProduct?._id || ""}
                     onChange={handleProductChange}
@@ -118,13 +141,25 @@ const OrderItemGodown = () => {
                 </div>
 
                 <div className="bg-gray-50 p-6 rounded-2xl">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Product Details</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Product Details
+                  </label>
                   <div className="space-y-3">
-                    <p className="text-sm text-gray-500">Product ID: <span className="font-mono text-gray-700">{selectedProduct?._id}</span></p>
-                    <p className="text-sm text-gray-500">Available Stock: 
-                      <span className={`ml-2 px-2 py-1 rounded-full text-sm font-medium ${
-                        selectedProduct?.quantity > 20 ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                      }`}>
+                    <p className="text-sm text-gray-500">
+                      Product ID:{" "}
+                      <span className="font-mono text-gray-700">
+                        {selectedProduct?._id}
+                      </span>
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      Available Stock:
+                      <span
+                        className={`ml-2 px-2 py-1 rounded-full text-sm font-medium ${
+                          selectedProduct?.quantity > 20
+                            ? "bg-green-100 text-green-800"
+                            : "bg-yellow-100 text-yellow-800"
+                        }`}
+                      >
                         {selectedProduct?.quantity} units
                       </span>
                     </p>
@@ -134,7 +169,9 @@ const OrderItemGodown = () => {
 
               <div className="space-y-6">
                 <div className="bg-gray-50 p-6 rounded-2xl">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Quantity
+                  </label>
                   <input
                     type="number"
                     value={quantity}
@@ -144,16 +181,22 @@ const OrderItemGodown = () => {
                     className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-400 focus:border-transparent"
                   />
                   {quantity > selectedProduct?.quantity && (
-                    <p className="mt-2 text-sm text-red-500">Quantity exceeds available stock</p>
+                    <p className="mt-2 text-sm text-red-500">
+                      Quantity exceeds available stock
+                    </p>
                   )}
                 </div>
 
                 <div className="bg-gray-50 p-6 rounded-2xl">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Order Summary</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Order Summary
+                  </label>
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
                       <span className="text-gray-500">Price per unit</span>
-                      <span className="font-medium">Tsh {selectedProduct?.price.toLocaleString()}</span>
+                      <span className="font-medium">
+                        Tsh {selectedProduct?.price.toLocaleString()}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-500">Quantity</span>
@@ -161,8 +204,12 @@ const OrderItemGodown = () => {
                     </div>
                     <div className="pt-3 border-t border-gray-200">
                       <div className="flex justify-between items-center">
-                        <span className="text-lg font-medium text-gray-700">Total Amount</span>
-                        <span className="text-xl font-bold text-gray-900">Tsh {totalPrice.toLocaleString()}</span>
+                        <span className="text-lg font-medium text-gray-700">
+                          Total Amount
+                        </span>
+                        <span className="text-xl font-bold text-gray-900">
+                          Tsh {totalPrice.toLocaleString()}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -178,21 +225,39 @@ const OrderItemGodown = () => {
                 className={`
                   w-full md:w-auto px-8 py-4 rounded-xl text-white font-medium
                   transition-all duration-200 transform hover:scale-105
-                  ${isSubmitting || quantity > selectedProduct?.quantity
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 shadow-lg hover:shadow-xl'}
+                  ${
+                    isSubmitting || quantity > selectedProduct?.quantity
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 shadow-lg hover:shadow-xl"
+                  }
                 `}
               >
                 {isSubmitting ? (
                   <span className="flex items-center justify-center">
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <svg
+                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
                     </svg>
                     Processing...
                   </span>
                 ) : (
-                  'Place Order'
+                  "Place Order"
                 )}
               </button>
             </div>
@@ -206,12 +271,26 @@ const OrderItemGodown = () => {
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all duration-300">
             <div className="p-8">
               <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6">
-                <svg className="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                <svg
+                  className="h-8 w-8 text-green-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 text-center mb-4">Order Placed Successfully!</h3>
-              <p className="text-gray-500 text-center mb-6">Your order has been successfully placed and is being processed.</p>
+              <h3 className="text-xl font-semibold text-gray-900 text-center mb-4">
+                Order Placed Successfully!
+              </h3>
+              <p className="text-gray-500 text-center mb-6">
+                Your order has been successfully placed and is being processed.
+              </p>
               <button
                 onClick={() => setOrderSuccess(false)}
                 className="w-full px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-gray-700 to-gray-800 rounded-xl hover:from-gray-800 hover:to-gray-900 transition-all duration-200 transform hover:scale-105"

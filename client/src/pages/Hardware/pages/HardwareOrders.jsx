@@ -8,6 +8,11 @@ const HardwareOrders = () => {
   const ordersPerPage = 5;
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editOrder, setEditOrder] = useState({ index: null, quantity: 0 });
+  const token = localStorage.getItem("authToken");
+
+  if (!token) {
+    return "authorization not found";
+  }
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -17,7 +22,7 @@ const HardwareOrders = () => {
           {
             method: "GET",
             headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`, // Replace with your token logic
+              Authorization: `Bearer ${token}`, // Replace with your token logic
               "Content-Type": "application/json",
             },
           }

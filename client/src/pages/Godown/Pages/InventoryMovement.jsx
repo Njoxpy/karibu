@@ -11,10 +11,20 @@ const InventoryMovement = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+
+  // token
+  const token = localStorage.getItem("authToken");
+  
   useEffect(() => {
     const fetchInventory = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/v1/godown/products/");
+        const response = await fetch("http://localhost:5000/api/v1/godown/products/", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`, // Attach the token in the Authorization header
+            "Content-Type": "application/json",
+          }
+        });
         const data = await response.json();
         
         console.log("Fetched data:", data);
@@ -50,6 +60,7 @@ const InventoryMovement = () => {
         try {
           const response = await fetch("http://localhost:5000/api/v1/godown/inventory-movement", {
             method: "POST",
+            Authorization: `Bearer ${token}`,
             headers: {
               "Content-Type": "application/json",
             },

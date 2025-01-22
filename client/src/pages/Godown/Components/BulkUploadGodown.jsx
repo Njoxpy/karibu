@@ -100,6 +100,8 @@ const BulkUploadGodown = () => {
     parseFile(uploadedFile);
   };
 
+  const token = localStorage.getItem("authToken");
+
   const handleConfirmUpload = async () => {
     setIsUploading(true);
     try {
@@ -109,6 +111,9 @@ const BulkUploadGodown = () => {
         "http://localhost:5000/api/v1/godown/products/bulk-upload",
         {
           method: "POST",
+          headers: {
+            Authorization : `Bearer ${token}`
+          },
           body: formData,
         }
       );

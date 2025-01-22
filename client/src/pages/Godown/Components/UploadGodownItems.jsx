@@ -9,12 +9,15 @@ const UploadGodownItems = () => {
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
   const [location, setLocation] = useState("");
-  const [condition, setCondition] = useState("new");
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const godownId = "yourGodownId"; // Replace with actual logic to get godownId
+  const token = localStorage.getItem("authToken");
+
+  if (!token) {
+    return "token not found"
+  }
 
   const validateForm = () => {
     if (!name || !description || !price || !quantity || !location) {
@@ -41,23 +44,21 @@ const UploadGodownItems = () => {
     setIsLoading(true); // Show loading state
 
     const newProduct = {
-      godownId,
       name,
       code,
       price,
       quantity,
       location,
       description,
-      condition,
     };
 
     const URL = "http://localhost:5000/api/v1/godown/products";
-
     try {
       const response = await fetch(URL, {
         method: "POST",
         body: JSON.stringify(newProduct),
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
@@ -75,7 +76,6 @@ const UploadGodownItems = () => {
       setPrice("");
       setQuantity("");
       setLocation("");
-      setCondition("new");
       setError(null);
       setSuccess(true);
       setIsLoading(false); // Hide loading state
@@ -90,8 +90,13 @@ const UploadGodownItems = () => {
   return (
     <>
       <div className="flex flex-col items-center justify-center min-h-screen p-4">
-        <h1 className="text-3xl font-semibold mb-6 text-center text-white">Upload Godown Item</h1>
-        <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h1 className="text-3xl font-semibold mb-6 text-center">
+          Upload Godown Item
+        </h1>
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md"
+        >
           <InputField
             label="Product Name"
             type="text"
@@ -146,24 +151,10 @@ const UploadGodownItems = () => {
             required
           />
 
-          <div className="mb-6">
-            <label className="block mb-2 text-gray-700 font-medium" htmlFor="condition">
-              Condition
-            </label>
-            <select
-              id="condition"
-              value={condition}
-              onChange={(e) => setCondition(e.target.value)}
-              className="border border-gray-300 rounded w-full p-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="new">New</option>
-              <option value="low stock">Low stock</option>
-              <option value="out of stock">Out of stock</option>
-            </select>
-          </div>
-
           {error && (
-            <div className="mb-6 text-red-600 text-center font-medium">{error}</div>
+            <div className="mb-6 text-red-600 text-center font-medium">
+              {error}
+            </div>
           )}
 
           {success && (

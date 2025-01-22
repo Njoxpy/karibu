@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const GodownProductDetails = () => {
   const { id } = useParams();
-  const token = localStorage.getItem("token"); // Retrieve token from localStorage
+  const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
 
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
@@ -19,10 +19,12 @@ const GodownProductDetails = () => {
     const fetchProduct = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/v1/godown/products/${id}`,
+          `http://localhost:5000/api/v1/animal-feeding/products/${id}`,
           {
+            method: "GET",
             headers: {
               Authorization: `Bearer ${token}`, // Add bearer token in the request headers
+              "Content-Type": "application/json",
             },
           }
         );
@@ -40,7 +42,7 @@ const GodownProductDetails = () => {
     };
 
     fetchProduct();
-  }, [id, token]);
+  }, []);
 
   const handleQuantityChange = (e) => {
     const newQuantity = parseInt(e.target.value);
@@ -56,6 +58,7 @@ const GodownProductDetails = () => {
     setIsSubmitting(true);
 
     try {
+      // Prepare order data
       const orderData = {
         productId: product._id,
         name: product.name,
@@ -65,37 +68,50 @@ const GodownProductDetails = () => {
         status: "pending",
       };
 
+      // Send POST request to create order
       const response = await fetch(
-        "http://localhost:5000/api/v1/godown/orders",
+        "http://localhost:5000/api/v1/animal-feeding/orders",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Add bearer token in the request headers
+            Authorization: `Bearer ${token}`, // Include bearer token
           },
           body: JSON.stringify(orderData),
         }
       );
 
       if (!response.ok) {
-        throw new Error("Failed to create order");
+        const errorResponse = await response.json();
+        throw new Error(
+          errorResponse.message || "Failed to place the order. Try again."
+        );
       }
 
+      // Show success message and reset the state
       setOrderSuccess(true);
-      toast.success("Order successfully placed!", {
+      toast.success("Order placed successfully!", {
         position: "top-center",
-        autoClose: 5000,
+        autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
       });
 
-      // Reset form
+      // Reset order form state
       setQuantity(1);
       setTotalPrice(product.price);
     } catch (error) {
-      toast.error(`Error: ${error.message}`);
+      // Handle errors
+      toast.error(`Error: ${error.message}`, {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -148,6 +164,14 @@ const GodownProductDetails = () => {
                 </div>
                 <div className="bg-gray-50 p-4 rounded-xl">
                   <label className="text-sm text-gray-500 block mb-1">
+                    Nutrients
+                  </label>
+                  <p className="text-lg font-semibold text-gray-700">
+                    {product.nutrients}
+                  </p>
+                </div>
+                <div className="bg-gray-50 p-4 rounded-xl">
+                  <label className="text-sm text-gray-500 block mb-1">
                     Available Stock
                   </label>
                   <p
@@ -181,7 +205,7 @@ const GodownProductDetails = () => {
                         : "bg-red-100 text-red-800"
                     }`}
                   >
-                    {product.quantity > 0 ? "In Stock" : "Out of Stock"}
+                    {product.quantity > 2 ? "In Stock" : "Out of Stock"}
                   </span>
                 </div>
               </div>
@@ -296,7 +320,7 @@ const GodownProductDetails = () => {
                   onClick={() => setOrderSuccess(false)}
                   className="w-full px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-gray-700 to-gray-800 rounded-xl hover:from-gray-800 hover:to-gray-900 transition-all duration-200 transform hover:scale-105"
                 >
-                  Continue Shopping
+                  Continue Ordering
                 </button>
               </div>
             </div>

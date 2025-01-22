@@ -15,11 +15,21 @@ const OrderTable = () => {
   const [orderToEdit, setOrderToEdit] = useState(null);
   const [orderToDelete, setOrderToDelete] = useState(null);
   const [filter, setFilter] = useState("all"); // Default filter is "all"
+  const token = localStorage.getItem("authToken");
 
   // Fetch orders from API
   const fetchOrders = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/v1/printing/orders");
+      const response = await fetch(
+        "http://localhost:5000/api/v1/printing/orders",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       const data = await response.json();
       if (response.ok) {
         setOrders(data);
@@ -43,7 +53,10 @@ const OrderTable = () => {
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
-  const paginatedOrders = filteredOrders.slice(startIndex, startIndex + itemsPerPage);
+  const paginatedOrders = filteredOrders.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
 
   // Filter orders based on selected time range (all, day, week, month)
   const filterOrders = () => {
@@ -96,9 +109,12 @@ const OrderTable = () => {
   // Handle deleting an order
   const handleDeleteOrder = async (orderId) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/v1/printing/orders/${orderId}`, {
-        method: 'DELETE',
-      });
+      const response = await fetch(
+        `http://localhost:5000/api/v1/printing/orders/${orderId}`,
+        {
+          method: "DELETE",
+        }
+      );
       if (response.ok) {
         const updatedOrders = orders.filter((order) => order._id !== orderId);
         setOrders(updatedOrders);
@@ -115,13 +131,16 @@ const OrderTable = () => {
   // Handle editing an order
   const handleEditOrder = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/v1/printing/orders/${orderToEdit._id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(orderToEdit),
-      });
+      const response = await fetch(
+        `http://localhost:5000/api/v1/printing/orders/${orderToEdit._id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(orderToEdit),
+        }
+      );
 
       if (response.ok) {
         const updatedOrder = await response.json();
@@ -165,54 +184,82 @@ const OrderTable = () => {
   return (
     <>
       <div className="max-w-7xl mx-auto p-6 bg-white rounded-lg shadow-md">
-        <h1 className="text-3xl font-semibold mb-6 text-gray-800 text-center">Orders List</h1>
+        <h1 className="text-3xl font-semibold mb-6 text-gray-800 text-center">
+          Orders List
+        </h1>
 
         {/* Filter Options */}
         <div className="mb-6 text-center">
           <button
             onClick={() => handleFilterChange("all")}
-            className={`py-2 px-6 rounded-md mx-2 transition duration-300 ${filter === "all" ? "bg-indigo-600 text-white" : "bg-gray-200 text-gray-800 hover:bg-indigo-100"}`}
+            className={`py-2 px-6 rounded-md mx-2 transition duration-300 ${
+              filter === "all"
+                ? "bg-indigo-600 text-white"
+                : "bg-gray-200 text-gray-800 hover:bg-indigo-100"
+            }`}
           >
             All
           </button>
           <button
             onClick={() => handleFilterChange("day")}
-            className={`py-2 px-6 rounded-md mx-2 transition duration-300 ${filter === "day" ? "bg-indigo-600 text-white" : "bg-gray-200 text-gray-800 hover:bg-indigo-100"}`}
+            className={`py-2 px-6 rounded-md mx-2 transition duration-300 ${
+              filter === "day"
+                ? "bg-indigo-600 text-white"
+                : "bg-gray-200 text-gray-800 hover:bg-indigo-100"
+            }`}
           >
             Today
           </button>
           <button
             onClick={() => handleFilterChange("week")}
-            className={`py-2 px-6 rounded-md mx-2 transition duration-300 ${filter === "week" ? "bg-indigo-600 text-white" : "bg-gray-200 text-gray-800 hover:bg-indigo-100"}`}
+            className={`py-2 px-6 rounded-md mx-2 transition duration-300 ${
+              filter === "week"
+                ? "bg-indigo-600 text-white"
+                : "bg-gray-200 text-gray-800 hover:bg-indigo-100"
+            }`}
           >
             This Week
           </button>
           <button
             onClick={() => handleFilterChange("month")}
-            className={`py-2 px-6 rounded-md mx-2 transition duration-300 ${filter === "month" ? "bg-indigo-600 text-white" : "bg-gray-200 text-gray-800 hover:bg-indigo-100"}`}
+            className={`py-2 px-6 rounded-md mx-2 transition duration-300 ${
+              filter === "month"
+                ? "bg-indigo-600 text-white"
+                : "bg-gray-200 text-gray-800 hover:bg-indigo-100"
+            }`}
           >
             This Month
           </button>
         </div>
 
         {filteredOrders.length === 0 ? (
-          <p className="text-center text-gray-500">No orders found for the selected time period</p>
+          <p className="text-center text-gray-500">
+            No orders found for the selected time period
+          </p>
         ) : (
           <table className="min-w-full border border-gray-300">
             <thead>
               <tr className="bg-gray-100">
-                <th className="px-6 py-3 text-left text-gray-600">Description</th>
+                <th className="px-6 py-3 text-left text-gray-600">
+                  Description
+                </th>
                 <th className="px-6 py-3 text-left text-gray-600">Quantity</th>
-                <th className="px-6 py-3 text-left text-gray-600">Total Price</th>
+                <th className="px-6 py-3 text-left text-gray-600">
+                  Total Price
+                </th>
                 <th className="px-6 py-3 text-left text-gray-600">Actions</th>
               </tr>
             </thead>
             <tbody>
               {paginatedOrders.map((order) => (
                 <tr key={order._id} className="hover:bg-indigo-50">
-                  <td className="px-6 py-4 text-gray-800">{order.description}</td>
+                  <td className="px-6 py-4 text-gray-800">
+                    {order.description}
+                  </td>
                   <td className="px-6 py-4 text-gray-800">{order.quantity}</td>
-                  <td className="px-6 py-4 text-gray-800">Tsh {order.totalPrice}</td>
+                  <td className="px-6 py-4 text-gray-800">
+                    Tsh {order.totalPrice}
+                  </td>
                   <td className="px-6 py-4">
                     <div className="flex justify-start gap-2">
                       <button
@@ -228,7 +275,9 @@ const OrderTable = () => {
                         Edit
                       </button>
                       <button className="bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600 transition">
-                        <Link to={`/printing/orders/${order._id}`}>Details</Link>
+                        <Link to={`/printing/orders/${order._id}`}>
+                          Details
+                        </Link>
                       </button>
                     </div>
                   </td>
@@ -266,7 +315,9 @@ const OrderTable = () => {
               className="bg-white p-8 rounded-lg max-w-3xl w-full shadow-xl"
               onClick={(e) => e.stopPropagation()}
             >
-              <h2 className="text-2xl font-semibold mb-4 text-gray-800">Edit Order</h2>
+              <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+                Edit Order
+              </h2>
               <form>
                 <label className="block mb-4 text-gray-600">
                   Description:
@@ -274,7 +325,12 @@ const OrderTable = () => {
                     type="text"
                     className="w-full p-3 border border-gray-300 rounded-md"
                     value={orderToEdit?.description || ""}
-                    onChange={(e) => setOrderToEdit({ ...orderToEdit, description: e.target.value })}
+                    onChange={(e) =>
+                      setOrderToEdit({
+                        ...orderToEdit,
+                        description: e.target.value,
+                      })
+                    }
                   />
                 </label>
                 <label className="block mb-4 text-gray-600">
@@ -283,7 +339,12 @@ const OrderTable = () => {
                     type="number"
                     className="w-full p-3 border border-gray-300 rounded-md"
                     value={orderToEdit?.quantity || ""}
-                    onChange={(e) => setOrderToEdit({ ...orderToEdit, quantity: e.target.value })}
+                    onChange={(e) =>
+                      setOrderToEdit({
+                        ...orderToEdit,
+                        quantity: e.target.value,
+                      })
+                    }
                   />
                 </label>
                 <label className="block mb-4 text-gray-600">
@@ -292,7 +353,9 @@ const OrderTable = () => {
                     type="number"
                     className="w-full p-3 border border-gray-300 rounded-md"
                     value={orderToEdit?.price || ""}
-                    onChange={(e) => setOrderToEdit({ ...orderToEdit, price: e.target.value })}
+                    onChange={(e) =>
+                      setOrderToEdit({ ...orderToEdit, price: e.target.value })
+                    }
                   />
                 </label>
                 <div className="flex justify-end mt-4">
@@ -325,8 +388,12 @@ const OrderTable = () => {
               className="bg-white p-8 rounded-lg max-w-sm w-full shadow-xl"
               onClick={(e) => e.stopPropagation()}
             >
-              <h2 className="text-2xl font-semibold mb-4 text-gray-800">Confirm Delete</h2>
-              <p className="text-gray-600">Are you sure you want to delete this order?</p>
+              <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+                Confirm Delete
+              </h2>
+              <p className="text-gray-600">
+                Are you sure you want to delete this order?
+              </p>
               <div className="flex justify-end mt-6">
                 <button
                   onClick={() => handleDeleteOrder(orderToDelete)}

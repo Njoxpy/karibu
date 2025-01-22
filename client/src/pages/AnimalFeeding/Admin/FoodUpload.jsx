@@ -6,31 +6,53 @@ const FoodUpload = () => {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
-  const [userId, setUserId] = useState("");
   const [image, setImage] = useState(null);
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
 
   const URL = "http://localhost:4000/api/v1/animal-feeding/products";
+  const token = localStorage.getItem("authToken"); // Replace with your actual Bearer token
+
+  const validateInputs = () => {
+    if (!name.trim()) {
+      return "Product name is required.";
+    }
+    if (!description.trim()) {
+      return "Description is required.";
+    }
+    if (!price || isNaN(price) || Number(price) <= 0) {
+      return "Valid price is required.";
+    }
+    if (!quantity || isNaN(quantity) || Number(quantity) <= 0) {
+      return "Valid quantity is required.";
+    }
+    if (!image) {
+      return "Product image is required.";
+    }
+    return null;
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Image check (if not uploaded, send null or empty string)
-    if (!image) {
-      setError("Please upload an image.");
+    const validationError = validateInputs();
+    if (validationError) {
+      setError(validationError);
       return;
     }
 
     const formData = new FormData();
     formData.append("name", name);
     formData.append("description", description);
-    formData.append("quantity", quantity);
-    formData.append("userId", userId);
     formData.append("price", price);
+    formData.append("quantity", quantity);
     formData.append("image", image);
 
     fetch(URL, {
       method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
       body: formData,
     })
       .then((response) => {
@@ -40,17 +62,17 @@ const FoodUpload = () => {
         return response.json();
       })
       .then((data) => {
-        console.log("Product created successfully", data);
+        console.log("Product created successfully:", data);
         setName("");
         setDescription("");
-        setQuantity("");
-        setUserId("");
         setPrice("");
+        setQuantity("");
         setImage(null);
-        setError(null); // Clear any errors
+        setError(null);
+        setSuccess("Product created successfully!");
       })
       .catch((error) => {
-        console.log(error.message);
+        console.error(error.message);
         setError(error.message);
       });
   };
@@ -65,8 +87,6 @@ const FoodUpload = () => {
           onSubmit={handleSubmit}
           className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md"
         >
-          
-
           {/* Product Name */}
           <div className="mb-4">
             <label className="block mb-2 text-gray-700" htmlFor="product-name">
@@ -78,7 +98,7 @@ const FoodUpload = () => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="border border-gray-300 rounded w-full p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
-              placeholder="e.g. Premium Dog Food"
+              placeholder="e.g. Mashudu"
               required
             />
           </div>
@@ -98,22 +118,6 @@ const FoodUpload = () => {
             ></textarea>
           </div>
 
-          {/* User Id */}
-          <div className="mb-4">
-            <label className="block mb-2 text-gray-700" htmlFor="userId">
-              User Id
-            </label>
-            <input
-              id="userId"
-              type="text"
-              value={userId}
-              onChange={(e) => setUserId(e.target.value)}
-              className="border border-gray-300 rounded w-full p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
-              placeholder="Enter your user ID"
-              required
-            />
-          </div>
-
           {/* Product Price */}
           <div className="mb-4">
             <label className="block mb-2 text-gray-700" htmlFor="price">
@@ -125,7 +129,7 @@ const FoodUpload = () => {
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               className="border border-gray-300 rounded w-full p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
-              placeholder="e.g. 25.99"
+              placeholder="e.g. 2500"
               required
             />
           </div>
@@ -156,11 +160,13 @@ const FoodUpload = () => {
               id="image"
               onChange={(e) => setImage(e.target.files[0])}
               className="border border-gray-300 rounded w-full p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+              required
             />
           </div>
 
-          {error && <p className="text-red-600 mb-4">{error}</p>}
-          
+          {error && <p className="text-red-600 mb-4">{error.message}</p>}
+          {success && <p className="text-green-600 mb-4">{success}</p>}
+
           <button
             type="submit"
             className="bg-green-600 text-white py-3 px-6 rounded hover:bg-green-700 transition duration-200"

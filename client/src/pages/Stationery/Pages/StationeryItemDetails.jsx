@@ -1,215 +1,313 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Footer from "../../../components/Footer";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const StationeryItemDetails = () => {
-  // Get the id from the URL params
-  const { name } = useParams();
-
-  // State to manage product data and user input
+  const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [totalPrice, setTotalPrice] = useState(0);
-  const [loading, setLoading] = useState(true); // To track loading state
-  const [error, setError] = useState(null); // To handle any errors
-  const [orderStatus, setOrderStatus] = useState(null); // To track the order status
-  const [stockError, setStockError] = useState(""); // To track stock errors
+  const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [orderSuccess, setOrderSuccess] = useState(false);
+  const token = localStorage.getItem("authToken");
 
   useEffect(() => {
-    // Fetch the product data based on the ID
     const fetchProduct = async () => {
       try {
-        setLoading(true);
         const response = await fetch(
-          `http://localhost:5000/api/v1/stationery/products/${name}`
+          `http://localhost:5000/api/v1/stationery/products/${id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
-        const data = await response.json();
 
-        if (response.ok) {
-          setProduct(data); // Set the fetched product data
-          setTotalPrice(data.price * quantity); // Set initial total price based on quantity
-        } else {
+        if (!response.ok) {
           throw new Error("Product not found");
         }
+
+        const data = await response.json();
+        setProduct(data);
+        setTotalPrice(data.price * quantity);
+        setLoading(false);
       } catch (error) {
-        setError(error.message); // Handle the error
-      } finally {
-        setLoading(false); // Set loading to false once fetch is complete
+        toast.error(`Error: ${error.message}`);
+        setLoading(false);
       }
     };
 
     fetchProduct();
-  }, [name, quantity]); // Re-fetch when id or quantity changes
+  }, [id, quantity, token]);
 
   const handleQuantityChange = (e) => {
     const newQuantity = parseInt(e.target.value);
-
-    // Check if the new quantity exceeds available stock
-    if (product && newQuantity > product.stock) {
-      setStockError(`Only ${product.stock} items are available in stock.`);
-      setQuantity(product.stock); // Limit the quantity to available stock
-      setTotalPrice(product.price * product.stock); // Update total price based on available stock
-    } else {
-      setStockError("");
-      setQuantity(newQuantity);
-      if (product) {
-        setTotalPrice(product.price * newQuantity);
-      }
+    if (newQuantity < 1) return;
+    setQuantity(newQuantity);
+    if (product) {
+      setTotalPrice(product.price * newQuantity);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Prepare the data to be sent in the POST request
-    const orderData = {
-      createdBy: "67697f0560f383df632c6d6f", // Example user ID, replace as needed
-      product: product._id, // Use product's _id from the response
-      name: product.name,
-      quantity,
-      price: product.price,
-    };
+    setIsSubmitting(true);
 
     try {
-      // Make the POST request to create the order
+      const orderData = {
+        productId: product._id,
+        name: product.name,
+        quantity,
+        price: product.price,
+        total: totalPrice,
+        status: "pending",
+      };
+
       const response = await fetch(
         "http://localhost:5000/api/v1/stationery/orders",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(orderData),
         }
       );
 
-      const result = await response.json();
-
-      if (response.ok) {
-        setOrderStatus({
-          success: true,
-          message: "Order created successfully!",
-        });
-      } else {
-        setOrderStatus({
-          success: false,
-          message: result.message || "Error creating order.",
-        });
+      if (!response.ok) {
+        throw new Error("Failed to create order");
       }
+
+      setOrderSuccess(true);
+      toast.success("Order successfully placed!", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+
+      // Reset form
+      setQuantity(1);
+      setTotalPrice(product.price);
     } catch (error) {
-      setOrderStatus({ success: false, message: error.message });
+      toast.error(`Error: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   if (loading) {
-    return <div>Loading...</div>; // Show loading message while fetching data
-  }
-
-  if (error) {
-    return <div>{`Error: ${error}`}</div>; // Show error message if there's an issue
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-900"></div>
+      </div>
+    );
   }
 
   if (!product) {
-    return <div className="p-4 text-gray-500">Product not found.</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="bg-blue-50 p-4 rounded-lg">
+          <p className="text-blue-600 text-center font-medium">
+            Product not found
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <>
-      <div className="max-w-md mx-auto bg-white p-8 rounded-xl shadow-lg">
-        <h2 className="text-2xl font-semibold mb-6 text-center">
-          {product.name}
-        </h2>
-
-        <form onSubmit={handleSubmit}>
-          {/* Product Name */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Product Name
-            </label>
-            <input
-              type="text"
-              value={product.name}
-              readOnly
-              className="w-full p-2 border border-gray-300 rounded-md mt-1"
-            />
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
+      <ToastContainer />
+      <div className="max-w-4xl mx-auto px-4 py-12">
+        <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-blue-100">
+          {/* Header Section */}
+          <div className="bg-gradient-to-r from-blue-700 to-blue-800 px-6 py-8">
+            <h2 className="text-2xl md:text-3xl font-bold text-white text-center">
+              {product.name}
+            </h2>
+            <p className="text-blue-300 text-center mt-2">Product Details</p>
           </div>
 
-          {/* Quantity Input */}
-          <div className="mb-4">
-            <label
-              htmlFor="quantity"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Quantity
-            </label>
-            <input
-              type="number"
-              id="quantity"
-              value={quantity}
-              onChange={handleQuantityChange}
-              className="w-full p-2 border border-gray-300 rounded-md mt-1"
-              min="1"
-            />
-            {stockError && <p className="text-red-500 text-sm">{stockError}</p>}{" "}
-            {/* Show stock error */}
-          </div>
+          <div className="p-8">
+            {/* Product Info Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+              <div className="space-y-4">
+                <div className="bg-blue-50 p-4 rounded-xl">
+                  <label className="text-sm text-blue-500 block mb-1">
+                    Product Code
+                  </label>
+                  <p className="text-lg font-semibold text-blue-700">
+                    {product._id}
+                  </p>
+                </div>
+                <div className="bg-blue-50 p-4 rounded-xl">
+                  <label className="text-sm text-blue-500 block mb-1">
+                    Available Stock
+                  </label>
+                  <p
+                    className={`text-lg font-semibold ${
+                      product.quantity > 20
+                        ? "text-green-600"
+                        : "text-orange-500"
+                    }`}
+                  >
+                    {product.quantity} units
+                  </p>
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div className="bg-blue-50 p-4 rounded-xl">
+                  <label className="text-sm text-blue-500 block mb-1">
+                    Price per Unit
+                  </label>
+                  <p className="text-lg font-semibold text-blue-700">
+                    Tsh {product.price.toLocaleString()}
+                  </p>
+                </div>
+                <div className="bg-blue-50 p-4 rounded-xl">
+                  <label className="text-sm text-blue-500 block mb-1">
+                    Status
+                  </label>
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      product.quantity > 0
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                    }`}
+                  >
+                    {product.quantity > 0 ? "In Stock" : "Out of Stock"}
+                  </span>
+                </div>
+              </div>
+            </div>
 
-          {/* Price */}
-          <div className="mb-4">
-            <label
-              htmlFor="price"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Price per Item
-            </label>
-            <input
-              type="text"
-              id="price"
-              value={`Tsh ${product.price}`}
-              readOnly
-              className="w-full p-2 border border-gray-300 rounded-md mt-1"
-            />
-          </div>
+            {/* Order Form */}
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="bg-blue-50 p-6 rounded-xl">
+                <label className="block text-sm font-medium text-blue-700 mb-2">
+                  Order Quantity
+                </label>
+                <div className="flex items-center space-x-4">
+                  <input
+                    type="number"
+                    value={quantity}
+                    onChange={handleQuantityChange}
+                    min="1"
+                    max={product.quantity}
+                    className="flex-1 p-3 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200"
+                  />
+                  <div className="text-right">
+                    <p className="text-sm text-blue-500">Total Price</p>
+                    <p className="text-xl font-bold text-blue-700">
+                      Tsh {totalPrice.toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+                {quantity > product.quantity && (
+                  <p className="mt-2 text-sm text-red-500">
+                    Quantity exceeds available stock
+                  </p>
+                )}
+              </div>
 
-          {/* Total Price */}
-          <div className="mb-4">
-            <label
-              htmlFor="totalPrice"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Total Price
-            </label>
-            <input
-              type="text"
-              id="totalPrice"
-              value={`Tsh ${totalPrice}`}
-              readOnly
-              className="w-full p-2 border border-gray-300 rounded-md mt-1"
-            />
+              {/* Submit Button */}
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  disabled={isSubmitting || quantity > product.quantity}
+                  className={`
+                    w-full md:w-auto px-8 py-4 rounded-xl text-white font-medium
+                    transition-all duration-200 transform hover:scale-105
+                    ${
+                      isSubmitting || quantity > product.quantity
+                        ? "bg-blue-400 cursor-not-allowed"
+                        : "bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 shadow-lg hover:shadow-xl"
+                    }
+                  `}
+                >
+                  {isSubmitting ? (
+                    <span className="flex items-center justify-center">
+                      <svg
+                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Processing...
+                    </span>
+                  ) : (
+                    "Place Order"
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
-          
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700"
-            disabled={stockError}
-          >
-            Complete Order
-          </button>
-        </form>
-
-        {orderStatus && (
-          <div
-            className={`mt-4 p-2 ${
-              orderStatus.success ? "bg-green-500" : "bg-red-500"
-            } text-white text-center`}
-          >
-            {orderStatus.message}
-          </div>
-        )}
+        </div>
       </div>
+
+      {/* Success Modal */}
+      {orderSuccess && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all duration-300 scale-100">
+            <div className="p-8">
+              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100">
+                <svg
+                  className="h-8 w-8 text-green-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
+              <h3 className="mt-6 text-xl font-semibold text-blue-900 text-center">
+                Order Placed Successfully!
+              </h3>
+              <p className="mt-4 text-blue-500 text-center">
+                Your order has been successfully placed and is being processed.
+              </p>
+              <div className="mt-8">
+                <button
+                  onClick={() => setOrderSuccess(false)}
+                  className="w-full px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-blue-700 to-blue-800 rounded-xl hover:from-blue-800 hover:to-blue-900 transition-all duration-200 transform hover:scale-105"
+                >
+                  Continue Shopping
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <Footer />
-    </>
+    </div>
   );
 };
 

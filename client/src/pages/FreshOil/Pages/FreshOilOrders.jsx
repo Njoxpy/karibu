@@ -1,106 +1,233 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Footer from "../../../components/Footer";
-import { Link } from "react-router-dom";
+import OrdersNotFound from "../../../components/OrderNotFound";
 
 const FreshOilOrders = () => {
-  // Local state for orders
-  const [orders, setOrders] = useState([
-    { productName: "Olive Oil", quantity: 2, totalPrice: 4000, id: 1 },
-    { productName: "Coconut Oil", quantity: 1, totalPrice: 2440, id: 2 },
-    { productName: "Avocado Oil", quantity: 3, totalPrice: 6440, id: 3 },
-    { productName: "Sunflower Oil", quantity: 3, totalPrice: 6300, id: 4 },
-    { productName: "Peanut Oil", quantity: 3, totalPrice: 60000, id: 5 },
-    { productName: "Sesame Oil", quantity: 3, totalPrice: 60000, id: 6 },
-    { productName: "Pumpkin Oil", quantity: 3, totalPrice: 6880, id: 7 },
-    { productName: "Soybean Oil", quantity: 3, totalPrice: 6880, id: 8 },
-  ]);
-
-  // State for modal visibility and editing order
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editOrder, setEditOrder] = useState({ index: null, quantity: 0 });
-
-  // Pagination states
+  const [orders, setOrders] = useState([]);
+  const [filteredOrders, setFilteredOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [filter, setFilter] = useState("all");
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editOrder, setEditOrder] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [orderToDelete, setOrderToDelete] = useState(null); // Track the order to be deleted
   const itemsPerPage = 6;
 
-  // Filter orders based on the current page
-  const indexOfLastOrder = currentPage * itemsPerPage;
-  const indexOfFirstOrder = indexOfLastOrder - itemsPerPage;
-  const currentOrders = orders.slice(indexOfFirstOrder, indexOfLastOrder);
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
 
-  // Function to remove an order
-  const handleRemoveOrder = (index) => {
-    const newOrders = orders.filter((_, i) => i !== index);
-    setOrders(newOrders);
+    fetch("http://localhost:5000/api/v1/fresh-oil/orders/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // Ensure the data is an array before setting the state
+        if (Array.isArray(data)) {
+          setOrders(data);
+          setFilteredOrders(data); // Ensure it's an array before setting
+        } else {
+          console.error("Expected an array of orders, but received:", data);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching orders:", error.message);
+      });
+  }, []);
+
+  const filterOrders = (filterType) => {
+    let filtered = [...orders];
+    const now = new Date();
+
+    switch (filterType) {
+      case "day":
+        filtered = filtered.filter((order) => {
+          const orderDate = new Date(order.createdAt);
+          return orderDate.toDateString() === now.toDateString();
+        });
+        break;
+      case "week":
+        filtered = filtered.filter((order) => {
+          const orderDate = new Date(order.createdAt);
+          const weekStart = new Date(now.setDate(now.getDate() - now.getDay()));
+          return orderDate >= weekStart;
+        });
+        break;
+      case "month":
+        filtered = filtered.filter((order) => {
+          const orderDate = new Date(order.createdAt);
+          return orderDate.getMonth() === now.getMonth();
+        });
+        break;
+      default:
+        break;
+    }
+
+    setFilter(filterType);
+    setFilteredOrders(filtered);
   };
 
-  // Function to open the edit modal
-  const openEditModal = (index) => {
-    setEditOrder({ index, quantity: orders[index].quantity });
+  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+
+  const paginateOrders = () => {
+    if (Array.isArray(filteredOrders)) {
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      return filteredOrders.slice(startIndex, endIndex);
+    } else {
+      console.error("filteredOrders is not an array:", filteredOrders);
+      return [];
+    }
+  };
+
+  const openEditModal = (order) => {
+    setEditOrder({
+      ...order,
+      updatedQuantity: order.quantity,
+    });
     setIsEditModalOpen(true);
   };
 
-  // Function to confirm and apply order edits
   const handleSaveEdit = () => {
-    const updatedOrders = [...orders];
-    updatedOrders[editOrder.index].quantity = editOrder.quantity;
-    updatedOrders[editOrder.index].totalPrice = editOrder.quantity * 20; // Assuming $20 per item
-    setOrders(updatedOrders);
-    setIsEditModalOpen(false);
-  };
-
-  // Handle page changes for pagination
-  const handleNextPage = () => {
-    if (currentPage < Math.ceil(orders.length / itemsPerPage)) {
-      setCurrentPage(currentPage + 1);
+    if (editOrder) {
+      const updatedOrders = orders.map((order) =>
+        order._id === editOrder._id
+          ? {
+              ...order,
+              quantity: editOrder.updatedQuantity,
+              total: editOrder.updatedQuantity * order.price,
+            }
+          : order
+      );
+      setOrders(updatedOrders);
+      setFilteredOrders(updatedOrders);
+      setIsEditModalOpen(false);
     }
   };
 
-  const handlePreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
+  const openDeleteModal = (order) => {
+    setOrderToDelete(order); // Set the order to be deleted
+    setIsDeleteModalOpen(true); // Open the delete confirmation modal
+  };
+
+  const handleDeleteOrder = () => {
+    if (orderToDelete) {
+      const updatedOrders = orders.filter(
+        (order) => order._id !== orderToDelete._id
+      );
+      setOrders(updatedOrders);
+      setFilteredOrders(updatedOrders); // Also update filtered orders
+      setIsDeleteModalOpen(false); // Close delete modal
     }
   };
+
+  if (orders.length === 0) {
+    return <OrdersNotFound />;
+  }
 
   return (
     <>
       <div className="p-4">
         <h1 className="text-2xl font-bold mb-4 text-center">Orders List</h1>
-        {orders.length === 0 ? (
-          <p>No orders placed yet.</p>
+
+        {/* Filter Buttons */}
+        <div className="mb-4 flex flex-wrap justify-center gap-4">
+          <button
+            onClick={() => filterOrders("all")}
+            className={`${
+              filter === "all"
+                ? "bg-blue-500 text-white"
+                : "bg-gray-300 text-gray-700"
+            } py-2 px-4 rounded-lg transition duration-300 hover:bg-blue-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400`}
+          >
+            All
+          </button>
+          <button
+            onClick={() => filterOrders("day")}
+            className={`${
+              filter === "day"
+                ? "bg-blue-500 text-white"
+                : "bg-gray-300 text-gray-700"
+            } py-2 px-4 rounded-lg transition duration-300 hover:bg-blue-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400`}
+          >
+            Today
+          </button>
+          <button
+            onClick={() => filterOrders("week")}
+            className={`${
+              filter === "week"
+                ? "bg-blue-500 text-white"
+                : "bg-gray-300 text-gray-700"
+            } py-2 px-4 rounded-lg transition duration-300 hover:bg-blue-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400`}
+          >
+            This Week
+          </button>
+          <button
+            onClick={() => filterOrders("month")}
+            className={`${
+              filter === "month"
+                ? "bg-blue-500 text-white"
+                : "bg-gray-300 text-gray-700"
+            } py-2 px-4 rounded-lg transition duration-300 hover:bg-blue-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400`}
+          >
+            This Month
+          </button>
+        </div>
+
+        {/* Orders Table */}
+        {filteredOrders.length === 0 ? (
+          <p>No orders found for the selected filter.</p>
         ) : (
           <table className="min-w-full border border-gray-300">
             <thead>
-              <tr className="bg-blue-200">
-                <th className="border border-gray-300 px-4 py-2">Product Name</th>
-                <th className="border border-gray-300 px-4 py-2">Quantity</th>
-                <th className="border border-gray-300 px-4 py-2">Total Price</th>
-                <th className="border border-gray-300 px-4 py-2">Actions</th>
+              <tr className="bg-green-200">
+                <th className="border border-gray-300 px-4 py-2 text-left">
+                  Order ID
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left">
+                  Product
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left">
+                  Quantity
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left">
+                  Total Price
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-left">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
-              {currentOrders.map((order, index) => (
-                <tr key={order.id} className="hover:bg-blue-100">
-                  <td className="border border-gray-300 px-4 py-2">{order.productName}</td>
-                  <td className="border border-gray-300 px-4 py-2">{order.quantity}</td>
-                  <td className="border border-gray-300 px-4 py-2">Tsh {order.totalPrice}</td>
-                  <td className="border border-gray-300 px-4 py-2 flex justify-evenly">
+              {paginateOrders().map((order) => (
+                <tr key={order._id} className="hover:bg-green-100">
+                  <td className="border border-gray-300 px-4 py-2">
+                    {order.orderId}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {order.name}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {order.quantity}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    Tsh {order.total}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 flex space-x-2">
                     <button
-                      onClick={() => handleRemoveOrder(index)}
-                      className="bg-red-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-red-600 mr-2"
-                    >
-                      Remove
-                    </button>
-                    <button
-                      onClick={() => openEditModal(index)}
-                      className="bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-600 transition-all"
+                      onClick={() => openEditModal(order)}
+                      className="bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-600"
                     >
                       Edit
                     </button>
-                    <button className="bg-blue-500 text-white py-1 px-2 rounded">
-                      <Link to={`/godown/orders/${order.id}`}>
-                        Order Details
-                      </Link>
+                    <button
+                      onClick={() => openDeleteModal(order)}
+                      className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600"
+                    >
+                      Delete
                     </button>
                   </td>
                 </tr>
@@ -108,38 +235,42 @@ const FreshOilOrders = () => {
             </tbody>
           </table>
         )}
-      </div>
 
-      {/* Pagination Controls */}
-      <div className="flex justify-center mb-2">
-        <button
-          onClick={handlePreviousPage}
-          className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2"
-        >
-          Previous
-        </button>
-        <button
-          onClick={handleNextPage}
-          className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2"
-        >
-          Next
-        </button>
+        {/* Pagination Controls */}
+        <div className="flex justify-center m-2">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2"
+          >
+            Previous
+          </button>
+          <button
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
+            className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600"
+          >
+            Next
+          </button>
+        </div>
       </div>
 
       {/* Edit Order Modal */}
-      {isEditModalOpen && (
+      {isEditModalOpen && editOrder && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded p-6 shadow-lg w-full max-w-md mx-auto">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Edit Order Quantity</h2>
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">
+              Edit Order Quantity
+            </h2>
             <div className="mb-4">
               <label className="block text-gray-600">Quantity:</label>
               <input
                 type="number"
-                value={editOrder.quantity}
+                value={editOrder.updatedQuantity}
                 onChange={(e) =>
                   setEditOrder((prev) => ({
                     ...prev,
-                    quantity: e.target.valueAsNumber,
+                    updatedQuantity: e.target.valueAsNumber,
                   }))
                 }
                 className="w-full p-2 border rounded mt-1"
@@ -157,7 +288,33 @@ const FreshOilOrders = () => {
                 onClick={handleSaveEdit}
                 className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded"
               >
-                Save
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Order Modal */}
+      {isDeleteModalOpen && orderToDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded p-6 shadow-lg w-full max-w-md mx-auto">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">
+              Confirm Deletion
+            </h2>
+            <p className="mb-4">Are you sure you want to delete this order?</p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={() => setIsDeleteModalOpen(false)}
+                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-4 py-2 rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteOrder}
+                className="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded"
+              >
+                Confirm Delete
               </button>
             </div>
           </div>

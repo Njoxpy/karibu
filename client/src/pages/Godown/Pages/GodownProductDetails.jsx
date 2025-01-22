@@ -6,23 +6,32 @@ import "react-toastify/dist/ReactToastify.css";
 
 const GodownProductDetails = () => {
   const { id } = useParams();
-
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [totalPrice, setTotalPrice] = useState(0);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
+  const token = localStorage.getItem("authToken");
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/v1/godown/products/${id}`
+          `http://localhost:5000/api/v1/godown/products/${id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
+
         if (!response.ok) {
           throw new Error("Product not found");
         }
+
         const data = await response.json();
         setProduct(data);
         setTotalPrice(data.price * quantity);
@@ -34,7 +43,7 @@ const GodownProductDetails = () => {
     };
 
     fetchProduct();
-  }, [id]);
+  }, [id, quantity, token]);
 
   const handleQuantityChange = (e) => {
     const newQuantity = parseInt(e.target.value);
@@ -65,6 +74,7 @@ const GodownProductDetails = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(orderData),
         }
@@ -258,7 +268,7 @@ const GodownProductDetails = () => {
         </div>
       </div>
 
-      {/* Success Modal - Updated styling */}
+      {/* Success Modal */}
       {orderSuccess && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all duration-300 scale-100">

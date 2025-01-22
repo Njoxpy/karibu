@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
-import Filter from "../../../components/Filter";
 import Footer from "../../../components/Footer";
 import ConfirmDelete from "../Components/ConfirmDelete";
 import Pagination from "../../../components/Pagination";
-import EditModal from '../Components/EditModal';
+import EditModal from "../Components/EditModal";
 
 const ManageGodownItems = () => {
   const [products, setProducts] = useState([]);
@@ -13,7 +12,7 @@ const ManageGodownItems = () => {
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  
+
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10; // You can adjust this number
@@ -27,9 +26,25 @@ const ManageGodownItems = () => {
     fetchProducts();
   }, []);
 
+  const token = localStorage.getItem("authToken");
+
+  if (!token) {
+    console.error("No authentication token found.");
+    return;
+  }
+
   const fetchProducts = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/v1/godown/products");
+      const response = await fetch(
+        "http://localhost:5000/api/v1/godown/products",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`, // Attach the token in the Authorization header
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (!response.ok) throw new Error("Failed to fetch products");
       const data = await response.json();
       setProducts(data || []);
@@ -53,19 +68,25 @@ const ManageGodownItems = () => {
 
   const onDeleteConfirm = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/v1/godown/products/${selectedProductId}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      
+      const response = await fetch(
+        `http://localhost:5000/api/v1/godown/products/${selectedProductId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
       if (!response.ok) {
-        throw new Error('Failed to delete product');
+        throw new Error("Failed to delete product");
       }
 
       // Remove the deleted product from the state
-      setProducts(products.filter(product => product._id !== selectedProductId));
+      setProducts(
+        products.filter((product) => product._id !== selectedProductId)
+      );
       setShowDeleteModal(false);
       setSelectedProductId(null);
     } catch (err) {
@@ -75,14 +96,14 @@ const ManageGodownItems = () => {
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleSaveEdit = async (updatedProduct) => {
     // Update the products list with the edited product
-    setProducts(products.map(p => 
-      p._id === updatedProduct._id ? updatedProduct : p
-    ));
+    setProducts(
+      products.map((p) => (p._id === updatedProduct._id ? updatedProduct : p))
+    );
   };
 
   if (isLoading) {
@@ -108,9 +129,9 @@ const ManageGodownItems = () => {
       <div className="p-6 bg-gray-50 min-h-screen">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-3xl font-bold mb-8 text-gray-800">
-            Manage Animal Products
+            Manage Godown Products
           </h1>
-          
+
           {products.length === 0 ? (
             <div className="bg-white rounded-lg shadow-lg p-6 text-center">
               <p className="text-gray-500">No products found</p>
@@ -163,10 +184,16 @@ const ManageGodownItems = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                            ${product.condition === 'new' ? 'bg-green-100 text-green-800' : 
-                              product.condition === 'low stock' ? 'bg-yellow-100 text-yellow-800' : 
-                              'bg-red-100 text-red-800'}`}>
+                          <span
+                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                            ${
+                              product.condition === "new"
+                                ? "bg-green-100 text-green-800"
+                                : product.condition === "low stock"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : "bg-red-100 text-red-800"
+                            }`}
+                          >
                             {product.condition}
                           </span>
                         </td>
@@ -211,9 +238,9 @@ const ManageGodownItems = () => {
           </div>
         </div>
       </div>
-      
+
       <Footer />
-      
+
       {showDeleteModal && (
         <ConfirmDelete
           onConfirm={onDeleteConfirm}
@@ -223,7 +250,7 @@ const ManageGodownItems = () => {
           }}
         />
       )}
-      
+
       {showEditModal && selectedProduct && (
         <EditModal
           product={selectedProduct}

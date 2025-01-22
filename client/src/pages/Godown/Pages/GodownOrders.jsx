@@ -18,10 +18,19 @@ const GodownOrders = () => {
   const [orderToDelete, setOrderToDelete] = useState(null);
   const [filter, setFilter] = useState("all"); // Default filter is "all"
 
+  // token
+  const token = localStorage.getItem("authToken");
+
   // Fetch orders from API
   const fetchOrders = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/v1/godown/orders");
+      const response = await fetch("http://localhost:5000/api/v1/godown/orders", {
+        method: "GET",
+        headers: {
+          Authorization : `Bearer ${token}`,
+          "Content-Type": "application/json",
+        }
+      });
       const data = await response.json();
       if (response.ok) {
         setOrders(data);
@@ -100,6 +109,10 @@ const GodownOrders = () => {
     try {
       const response = await fetch(`http://localhost:5000/api/v1/godown/orders/${orderId}`, {
         method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        }
       });
       if (response.ok) {
         const updatedOrders = orders.filter((order) => order._id !== orderId);
@@ -120,6 +133,7 @@ const GodownOrders = () => {
       const response = await fetch(`http://localhost:5000/api/v1/godown/orders/${orderToEdit._id}`, {
         method: 'PUT',
         headers: {
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(orderToEdit),

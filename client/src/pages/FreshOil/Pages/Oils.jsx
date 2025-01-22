@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import FreshOil1 from "../../../assets/images/freshOil1.webp";
-import FreshOil2 from "../../../assets/images/avocado.png";
 
 function Oils() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -103,13 +102,13 @@ function Oils() {
                 {/* Action Buttons */}
                 <div className="flex justify-between">
                   <a
-                    href={`/freshOil/products/${product._id}`} // Use product._id
+                    href={`/fresh-oil/products/${product._id}`} // Use product._id
                     className="mt-4 inline-block bg-yellow-500 text-white py-2 px-4 rounded"
                   >
                     Order Now
                   </a>
                   <a
-                    href={`/freshOil/product-detail?productId=${product._id}`} // Use product._id
+                    href={`/fresh-oil/products/${product._id}`} // Use product._id
                     className="mt-4 inline-block bg-yellow-500 text-white py-2 px-4 rounded ml-2"
                   >
                     View Details

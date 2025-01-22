@@ -15,17 +15,20 @@ const InventoryTable = () => {
   const [itemToDelete, setItemToDelete] = useState(null);
   const [validationErrors, setValidationErrors] = useState({});
 
+  // token
+  const token = localStorage.getItem("authToken"); // Get the token from localStorage
+
+  if (!token) {
+    console.error("No authentication token found.");
+    return;
+  }
+  
   useEffect(() => {
     fetchInventoryData();
   }, []);
 
   const fetchInventoryData = async () => {
-    const token = localStorage.getItem("authToken"); // Get the token from localStorage
 
-    if (!token) {
-      console.error("No authentication token found.");
-      return;
-    }
 
     try {
       const response = await fetch(API_URL, {
@@ -371,7 +374,7 @@ const InventoryTable = () => {
                       setIsEditModalOpen(false);
                       setValidationErrors({});
                     }}
-                    className="bg-gray-500 hover:bg-gray-600 text-white py-1 px-4 rounded w-full md:w-auto"
+                    className="bg-red-500 hover:bg-red-600 text-white py-1 px-4 rounded w-full md:w-auto"
                   >
                     Cancel
                   </button>

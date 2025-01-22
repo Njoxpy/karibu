@@ -1,34 +1,87 @@
-import Animal2 from "../../../assets/images/animal2.jpg";
+import { useState, useEffect } from "react";
 import Footer from "../../../components/Footer";
 
 const AdminManage = () => {
-  const products = [
-    {
-      id: 1,
-      name: "Chakula Cha Paka",
-      price: 2_400,
-      image: "/images/dog-food.jpg",
-    },
-    {
-      id: 2,
-      name: "Chakula Cha Mbwa",
-      price: 2_233,
-      image: "/images/cat-food.jpg",
-    },
-    { id: 2, name: "Nyau Food", price: 1_500, image: "/images/cat-food.jpg" },
-    { id: 2, name: "Kuku Food", price: 7_000, image: "/images/cat-food.jpg" },
-    { id: 2, name: "Bata Food", price: 2_300, image: "/images/cat-food.jpg" },
-  ];
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const token = localStorage.getItem("authToken");
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:5000/api/v1/animal-feeding/products/",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch products.");
+        }
+
+        const data = await response.json();
+        setProducts(data); // Assuming API returns an array of products
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const handleEdit = (id) => {
-    // Redirect or open edit modal
-    console.log(id)
+    console.log(`Edit product with ID: ${id}`);
+    // Redirect to edit page or open modal
   };
 
-  const handleDelete = (id) => {
-    // Handle delete logic
-    console.log(id)
+  const handleDelete = async (id) => {
+    console.log(`Delete product with ID: ${id}`);
+    // Perform delete logic
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/v1/animal-feeding/products/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to delete the product.");
+      }
+      // Remove deleted product from the state
+      setProducts(products.filter((product) => product.id !== id));
+    } catch (err) {
+      setError(err.message);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="p-4 bg-green-50">
+        <h1 className="text-2xl font-bold mb-6 text-center">Loading...</h1>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-4 bg-green-50">
+        <h1 className="text-2xl font-bold mb-6 text-center">Error: {error}</h1>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -37,20 +90,20 @@ const AdminManage = () => {
           Manage Animal Products
         </h1>
         <table className="min-w-full bg-white border">
-          <thead className="text-center">
-            <tr className="text-center">
+          <thead>
+            <tr>
               <th className="border px-4 py-2">Image</th>
               <th className="border px-4 py-2">Product Name</th>
               <th className="border px-4 py-2">Price</th>
               <th className="border px-4 py-2">Actions</th>
             </tr>
           </thead>
-          <tbody className="text-center">
+          <tbody>
             {products.map((product) => (
               <tr key={product.id}>
                 <td className="border px-4 py-2">
                   <img
-                    src={Animal2}
+                    src={product.image || "/default-image.jpg"}
                     alt={product.name}
                     className="w-16 h-16 object-cover"
                   />

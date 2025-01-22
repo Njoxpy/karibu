@@ -92,7 +92,7 @@ function FoodsBody() {
       {isLoading && <p>Loading products...</p>}
 
       {/* Error handling */}
-      {error && <p className="text-red-500">{error}</p>}
+      {error && <p className="text-red-500">{error.message}</p>}
 
       {/* Display filtered products */}
       {filteredProducts.length === 0 ? (
@@ -112,6 +112,8 @@ function FoodsBody() {
               <div className="p-4">
                 <h2 className="font-semibold text-lg">{product.name}</h2>
                 <p className="text-gray-600">{product.description}</p>
+                <p className="text-gray-600">Idadi: {product.quantity}</p>
+                <p className="text-gray-600">Nutrients: {product.nutrients}</p>
                 <p className="font-bold text-green-700">Tsh {product.price}</p>
                 <div className="mt-4 flex justify-between">
                   <a
