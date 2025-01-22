@@ -111,6 +111,7 @@ function Hardwares() {
               <div className="p-4">
                 <h2 className="font-semibold text-lg">{product.name}</h2>
                 <p className="text-gray-600">{product.description}</p>
+                <p className="text-gray-600">Quantity: {product.quantity}</p>
                 <p className="font-bold text-blue-700">Tsh {product.price}</p>
                 <a
                   href={`/hardware/products/${product._id}`}
