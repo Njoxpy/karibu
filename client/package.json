@@ -33,6 +33,7 @@
     "react-router-dom": "^6.27.0",
     "react-to-print": "^3.0.2",
     "react-toastify": "^11.0.2",
+    "react-ui-cards": "^3.1.0",
     "swiper": "^11.1.15",
     "xlsx": "^0.18.5"
   },
