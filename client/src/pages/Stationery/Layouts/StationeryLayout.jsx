@@ -11,7 +11,7 @@ function StationeryLayout() {
         <header className="container mx-auto flex justify-between items-center p-4">
           {/* Logo/Title */}
           <h2 className="text-2xl font-semibold">
-            <Link to="/stationery">Savarrah Stationery</Link>
+            <Link to="/stationery">Stationery</Link>
           </h2>
 
           {/* Mobile Menu Button */}
@@ -40,14 +40,6 @@ function StationeryLayout() {
               <li>
                 <Link
                   className="hover:text-blue-200 transition-colors duration-200"
-                  to="/stationery/admin/bulk-upload"
-                >
-                  Bulk Upload
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="hover:text-blue-200 transition-colors duration-200"
                   to="/stationery/order-item"
                 >
                   Order Item
@@ -59,6 +51,14 @@ function StationeryLayout() {
                   to="/stationery/orders"
                 >
                   Orders
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="hover:text-blue-200 transition-colors duration-200"
+                  to="/stationery/admin/manage"
+                >
+                  Manage Items
                 </Link>
               </li>
             </ul>
@@ -81,15 +81,6 @@ function StationeryLayout() {
               <li>
                 <Link
                   className="hover:text-blue-200 transition-colors duration-200"
-                  to="/stationery/admin/bulk-upload"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Bulk Upload
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="hover:text-blue-200 transition-colors duration-200"
                   to="/stationery/order-item"
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -103,6 +94,15 @@ function StationeryLayout() {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Orders
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="hover:text-blue-200 transition-colors duration-200"
+                  to="/stationery/admin/manage"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Manage Items
                 </Link>
               </li>
             </ul>

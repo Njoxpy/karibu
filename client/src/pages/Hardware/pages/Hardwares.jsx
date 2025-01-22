@@ -1,124 +1,112 @@
 import { useState, useEffect } from "react";
-import ProductsNotFound from "../../../components/ProductNotFound";
+import FreshOil1 from "../../../assets/images/freshOil1.webp";
+import { getToken } from "../../../services/token";
 
 function Hardwares() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState([]); // State for fetched products
+  const [currentPage, setCurrentPage] = useState(1); // Current page number
+  const itemsPerPage = 6; // Items per page for pagination
+  const baseURL = "http://localhost:5000";
 
-  // Fetch hardware products from the API
   useEffect(() => {
-    const fetchProducts = async () => {
-      const token = localStorage.getItem("authToken"); // Get the token from localStorage
+    // Fetch fresh oil products from API with barrier token
+    const token = getToken();
 
-      if (!token) {
-        console.error("No authentication token found.");
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const response = await fetch(
-          "http://localhost:5000/api/v1/hardware/products",
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`, // Attach the token in the Authorization header
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        const data = await response.json();
+  
+    fetch("http://localhost:5000/api/v1/hardware/products", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`, // Attach the token in the Authorization header
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
         if (Array.isArray(data)) {
-          setProducts(data);
+          setProducts(data); // Only set products if data is an array
         } else {
           console.error("Invalid data format:", data);
-          setProducts([]);
         }
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-        setProducts([]);
-        setLoading(false);
-      }
-    };
+      })
+      .catch((error) => console.error("Error fetching products:", error));
+  }, []); // Empty dependency array ensures this runs only once on component mount
 
-    fetchProducts();
-  }, []);
+  // Filter products based on search term (check if products is an array)
+  const filteredProducts = Array.isArray(products)
+    ? products.filter((product) =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : [];
 
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  // Calculate the index of the first and last product on the current page
+  const indexOfLastProduct = currentPage * itemsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
 
-  // Get current items based on the page number
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentProducts = products.slice(indexOfFirstItem, indexOfLastItem);
+  // Get the current products to be displayed on the page
+  const currentProducts = filteredProducts.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
 
-  // Handle no products found
-  if (products.length === 0 && !loading) {
-    return <ProductsNotFound />;
-  }
+  // Handle page changes
+  const handleNextPage = () => {
+    if (currentPage < Math.ceil(filteredProducts.length / itemsPerPage)) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
 
-  // Filter products based on the search term
-  const filteredProducts = currentProducts.filter((product) => {
-    return (
-      product.name &&
-      product.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  });
-
-  // Handle previous page
-  const handlePrevious = () => {
+  const handlePreviousPage = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
     }
   };
 
-  // Handle next page
-  const handleNext = () => {
-    if (currentPage < Math.ceil(products.length / itemsPerPage)) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
-
   return (
     <div>
+      {/* Search Bar */}
       <div className="mb-4 submission">
         <input
           type="text"
-          placeholder="Search for hardware items ..."
+          placeholder="Search for Fresh Hardwares..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="border rounded p-2 w-full"
         />
       </div>
 
-      {loading ? (
-        <p>Loading...</p>
+      {/* Display Products or No Products Message */}
+      {filteredProducts.length === 0 ? (
+        <div className="text-center text-lg text-gray-500">
+          No products available.
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredProducts.map((product) => (
+          {currentProducts.map((product) => (
             <div
               key={product._id}
               className="border rounded-lg shadow-md overflow-hidden"
             >
-              <img
-                src={product.image || "default-image.jpg"}
-                alt={product.name}
-                className="w-full h-48 object-cover"
-              />
+               <img
+                              src={product.image ? `${baseURL}${product.image}` : FreshOil1}
+                              alt={product.name}
+                              className="w-full h-48 object-cover"
+                            />
               <div className="p-4">
                 <h2 className="font-semibold text-lg">{product.name}</h2>
                 <p className="text-gray-600">{product.description}</p>
-                <p className="text-gray-600">Quantity: {product.quantity}</p>
+                <p className="text-gray-600">Idadi {product.quantity}</p>
                 <p className="font-bold text-blue-700">Tsh {product.price}</p>
-                <a
-                  href={`/hardware/products/${product._id}`}
-                  className="mt-4 inline-block bg-blue-500 text-white py-2 px-4 rounded"
-                >
-                  Order Now
-                </a>
+
+                {/* Action Buttons */}
+                <div className="flex justify-between">
+                  <a
+                    href={`/hardware/products/${product._id}`} // Use product._id
+                    className="mt-4 inline-block bg-blue-500 text-white py-2 px-4 rounded"
+                  >
+                    Order Now
+                  </a>
+                </div>
               </div>
             </div>
           ))}
@@ -128,14 +116,14 @@ function Hardwares() {
       {/* Pagination Controls */}
       <div className="flex justify-center m-2">
         <button
-          onClick={handlePrevious}
+          onClick={handlePreviousPage}
           className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2"
         >
           Previous
         </button>
         <button
-          onClick={handleNext}
-          className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600"
+          onClick={handleNextPage}
+          className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2"
         >
           Next
         </button>

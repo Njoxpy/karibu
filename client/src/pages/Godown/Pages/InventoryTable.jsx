@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { getToken } from "../../../services/token";
 
 const ITEMS_PER_PAGE = 6;
 const API_URL = "http://localhost:5000/api/v1/godown/products";
@@ -16,20 +17,13 @@ const InventoryTable = () => {
   const [validationErrors, setValidationErrors] = useState({});
 
   // token
-  const token = localStorage.getItem("authToken"); // Get the token from localStorage
+  const token = getToken();
 
-  if (!token) {
-    console.error("No authentication token found.");
-    return;
-  }
-  
   useEffect(() => {
     fetchInventoryData();
   }, []);
 
   const fetchInventoryData = async () => {
-
-
     try {
       const response = await fetch(API_URL, {
         method: "GET",
@@ -75,6 +69,7 @@ const InventoryTable = () => {
       const response = await fetch(
         `http://localhost:5000/api/v1/godown/products/${itemToDelete}`,
         {
+          headers: `Authorization ${token}`,
           method: "DELETE",
         }
       );
@@ -129,6 +124,7 @@ const InventoryTable = () => {
         {
           method: "PATCH",
           headers: {
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify(editItem),

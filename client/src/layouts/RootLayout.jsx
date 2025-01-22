@@ -1,17 +1,15 @@
-"use client";
-
 import { Link, NavLink, Outlet } from "react-router-dom";
 import { useState } from "react";
-import useLogout from "../hooks/auth/useLogout"; // Import the useLogout hook
-import logo from "../assets/images/logoWithName.png"; // Import your logo image
+import useLogout from "../hooks/auth/useLogout";
+import logo from "../assets/images/logoWithName.png";
 import { useAuth } from "../hooks/auth/useAuth";
-import { Dialog } from "@headlessui/react"; // Import Dialog component
-import { ExclamationTriangleIcon } from "@heroicons/react/24/outline"; // Import Icon for the modal
+import { Dialog } from "@headlessui/react";
+import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
 const RootLayout = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const logout = useLogout(); // Use the useLogout hook
+  const logout = useLogout();
   const { user } = useAuth();
   const fallbackLogo = "Savarrah";
 
@@ -20,25 +18,27 @@ const RootLayout = () => {
   };
 
   const handleLogoutClick = () => {
-    setIsModalOpen(true); // Open the modal
+    setIsModalOpen(true);
   };
 
   const confirmLogout = () => {
-    setIsModalOpen(false); // Close the modal
-    logout(); // Call the logout function to log the user out
+    setIsModalOpen(false);
+    logout();
   };
 
   const cancelLogout = () => {
-    setIsModalOpen(false); // Close the modal without logging out
+    setIsModalOpen(false);
   };
 
-  // Define menu items
-  const menuItems = [
+  // Base menu items visible to all users
+  const baseMenuItems = [
     { name: "Home", path: "/" },
-    { name: "Contact", path: "/contact" }, // Always visible for all users
-    ...(user?.category === "godown"
-      ? [{ name: "Godown", path: "/godown" }]
-      : []),
+    { name: "Contact", path: "/contact" },
+  ];
+
+  // Role-specific menu items for non-admin users
+  const roleSpecificMenuItems = [
+    ...(user?.category === "godown" ? [{ name: "Godown", path: "/godown" }] : []),
     ...(user?.category === "stationery"
       ? [{ name: "Stationery", path: "/stationery" }]
       : []),
@@ -52,18 +52,25 @@ const RootLayout = () => {
       ? [{ name: "Printing", path: "/printing" }]
       : []),
     ...(user?.category === "freshOil"
-      ? [{ name: "FreshOil", path: "/freshOil" }]
-      : []),
-    ...(user?.category === "admin"
-      ? [
-          { name: "Admin", path: "/admin" },
-          { name: "Settings", path: "/settings" }, // Add more admin links as needed
-        ]
+      ? [{ name: "Fresh Oil", path: "/fresh-oil" }]
       : []),
   ];
 
-  // If user is admin, show all pages (Admin role can access all pages)
-  const isAdmin = user?.role === "admin"; // Check if the user is admin
+  // Admin-specific menu items
+  const adminMenuItems = [
+    { name: "Godown", path: "/godown" },
+    { name: "Stationery", path: "/stationery" },
+    { name: "Animal Feeding", path: "/animal-feeding" },
+    { name: "Hardware", path: "/hardware" },
+    { name: "Printing", path: "/printing" },
+    { name: "Fresh Oil", path: "/fresh-oil" },
+  ];
+
+  // Combine all menu items based on user role
+  const isAdmin = user?.role === "admin";
+  const menuItems = isAdmin
+    ? [...baseMenuItems, ...adminMenuItems]
+    : [...baseMenuItems, ...roleSpecificMenuItems];
 
   return (
     <>
@@ -135,7 +142,7 @@ const RootLayout = () => {
           ) : (
             <>
               <div>
-                <p className="text-white text-sm font-semibold">
+                <p className="text-white text-sm font-semibold p-2">
                   {user?.email}
                 </p>
               </div>
@@ -153,7 +160,7 @@ const RootLayout = () => {
         </div>
       </nav>
 
-      {/* Modal Popup using Headless UI's Dialog */}
+      {/* Logout Confirmation Modal */}
       <Dialog
         open={isModalOpen}
         onClose={setIsModalOpen}
@@ -189,7 +196,6 @@ const RootLayout = () => {
         </div>
       </Dialog>
 
-      {/* Nested Routes */}
       <Outlet />
     </>
   );

@@ -181,9 +181,7 @@ const createGodownOrder = async (req, res) => {
 
     res.status(CREATED).json(newOrder);
   } catch (error) {
-    res
-      .status(SERVER_ERROR)
-      .json({ message: "Failed to create order", error: error.message });
+    res.status(SERVER_ERROR).json({ error: error.message });
   }
 };
 

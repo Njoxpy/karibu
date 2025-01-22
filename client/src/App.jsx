@@ -5,6 +5,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
+import { useAuth } from "./hooks/auth/useAuth";
 // layout
 import RootLayout from "./layouts/RootLayout";
 import OrdersLayout from "./pages/Printing/Layouts/OrdersLayout";
@@ -15,7 +16,6 @@ import OrderDetailsError from "./pages/Printing/Error/OrderDetailsError";
 // pages
 import Home from "./Home/Home";
 import Login from "./auth/Login";
-import SubmitWork from "./pages/Printing/Pages/SubmitWork";
 import UserDashboard from "./pages/Printing/Pages/UserDashboard";
 import OrdersTable from "./pages/Printing/Orders/OrderTable";
 import Contact from "./pages/Contact";
@@ -79,8 +79,6 @@ import GodownOrderDetailsError from "./pages/Godown/Error/GodownOrderDetailsErro
 
 /*printing */
 // printing pages
-import OrderSucessPrinting from "./pages/Printing/Components/OrdersSucessPrinting";
-import ManagePrintingOrders from "./pages/Printing/Orders/ManagePrinitingOrders";
 import HomePrinting from "./pages/Printing/Pages/HomePrinting";
 import PrintingOrders from "./pages/Printing/Pages/PrintingOrders";
 // printing details
@@ -94,7 +92,6 @@ import StationeryBody from "./pages/Stationery/Pages/StationeryBody";
 import StationeryOrders from "./pages/Stationery/Pages/Orders";
 import AddItems from "./pages/Stationery/Components/StationeryItemsUpload";
 import OrderSucessStationery from "./pages/Stationery/Components/OrderSucessStationery";
-import BulkUploadStationery from "./pages/Stationery/Pages/BulkUploadStationery";
 // stationery details
 import StationeryOrderDetails from "./pages/Stationery/Pages/StationeryOrderDetails";
 import StationeryItemsDetails from "./pages/Stationery/Pages/StationeryItemDetails";
@@ -124,7 +121,6 @@ import InventoryTable from "./pages/Godown/Pages/InventoryTable";
 import FoodsBody from "./pages/AnimalFeeding/Pages/FoodsBody";
 import AnimalFeedingProductsLayout from "./pages/AnimalFeeding/Layouts/AnimalFeedingProductsLayout";
 import BulkUploadGodown from "./pages/Godown/Components/BulkUploadGodown";
-import BulkUploadFreshOil from "./pages/FreshOil/Pages/BulkUploadFreshOil";
 import OrderItem from "./pages/FreshOil/Components/OrderItem";
 import OrderItemGodown from "./pages/Godown/Pages/OrderItemGodown";
 import OrderItemStationery from "./pages/Stationery/Pages/OrderItemStationery";
@@ -148,6 +144,8 @@ import GodownItemsDetailsError from "./pages/Godown/Error/GodownItemsDetailsErro
 import ProductDetailsOils from "./pages/FreshOil/Pages/ProductDetailsOils";
 
 export default function App() {
+  const { user } = useAuth();
+  console.log(user);
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route>
@@ -204,7 +202,6 @@ export default function App() {
                 element={<OilDetails />}
                 errorElement={<OilDetailsError />}
               />
-              <Route path="details" element={<ProductDetailsOils />} />
             </Route>
             <Route path="orders" element={<FreshOilOrders />} />
             <Route
@@ -263,8 +260,6 @@ export default function App() {
           {/* printing */}
           <Route path="/printing" element={<PrintingLayout />}>
             <Route index element={<HomePrinting />} />
-            <Route path="submit" element={<SubmitWork />} />
-
             <Route path="orders" element={<OrdersLayout />}>
               <Route index element={<OrdersTable />} />
               <Route
@@ -273,9 +268,7 @@ export default function App() {
                 errorElement={<OrderDetailsError />}
               />
             </Route>
-            <Route path="order/sucess" element={<OrderSucessPrinting />} />
             <Route path="admin/orders" element={<PrintingOrders />} />
-            <Route path="admin/manage" element={<ManagePrintingOrders />} />
           </Route>
 
           {/* stationery */}

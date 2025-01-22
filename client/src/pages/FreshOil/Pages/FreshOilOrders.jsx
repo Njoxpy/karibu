@@ -1,328 +1,475 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import Footer from "../../../components/Footer";
-import OrdersNotFound from "../../../components/OrderNotFound";
+import { Link } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { getToken } from "../../../services/token";
+
+// Utility function to format date
+const formatDate = (date) => new Date(date).toLocaleDateString();
 
 const FreshOilOrders = () => {
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [filter, setFilter] = useState("all");
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editOrder, setEditOrder] = useState(null);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [orderToDelete, setOrderToDelete] = useState(null); // Track the order to be deleted
   const itemsPerPage = 6;
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [orderToEdit, setOrderToEdit] = useState(null);
+  const [orderToDelete, setOrderToDelete] = useState(null);
+  const [filter, setFilter] = useState("all"); // Default filter is "all"
 
-  useEffect(() => {
-    const token = localStorage.getItem("authToken");
+  // token
+  const token = getToken();
 
-    fetch("http://localhost:5000/api/v1/fresh-oil/orders/", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        // Ensure the data is an array before setting the state
-        if (Array.isArray(data)) {
-          setOrders(data);
-          setFilteredOrders(data); // Ensure it's an array before setting
-        } else {
-          console.error("Expected an array of orders, but received:", data);
+  // Fetch orders from API
+  const fetchOrders = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/v1/fresh-oil/orders",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
-      })
-      .catch((error) => {
-        console.error("Error fetching orders:", error.message);
-      });
-  }, []);
+      );
+      const data = await response.json();
+      if (response.ok) {
+        setOrders(data);
+        setFilteredOrders(data); // Initially set filtered orders as all fetched orders
+      } else {
+        console.error("Failed to fetch orders");
+      }
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+    }
+  };
 
-  const filterOrders = (filterType) => {
-    let filtered = [...orders];
+  // Handle pagination
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+  const paginatedOrders = filteredOrders.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
+
+  // Filter orders based on selected time range (all, day, week, month)
+  const filterOrders = () => {
     const now = new Date();
+    let filtered;
 
-    switch (filterType) {
-      case "day":
-        filtered = filtered.filter((order) => {
-          const orderDate = new Date(order.createdAt);
-          return orderDate.toDateString() === now.toDateString();
-        });
-        break;
-      case "week":
-        filtered = filtered.filter((order) => {
-          const orderDate = new Date(order.createdAt);
-          const weekStart = new Date(now.setDate(now.getDate() - now.getDay()));
-          return orderDate >= weekStart;
-        });
-        break;
-      case "month":
-        filtered = filtered.filter((order) => {
-          const orderDate = new Date(order.createdAt);
-          return orderDate.getMonth() === now.getMonth();
-        });
-        break;
-      default:
-        break;
+    if (filter === "all") {
+      filtered = orders; // No filtering, show all orders
+    } else if (filter === "day") {
+      filtered = orders.filter((order) => {
+        const orderDate = new Date(order.createdAt);
+        return orderDate.toDateString() === now.toDateString();
+      });
+    } else if (filter === "week") {
+      const weekStart = new Date(now);
+      weekStart.setDate(now.getDate() - now.getDay()); // Get the start of the current week (Sunday)
+      const weekEnd = new Date(now);
+      weekEnd.setDate(now.getDate() + (6 - now.getDay())); // Get the end of the current week (Saturday)
+
+      filtered = orders.filter((order) => {
+        const orderDate = new Date(order.createdAt);
+        return orderDate >= weekStart && orderDate <= weekEnd;
+      });
+    } else if (filter === "month") {
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1); // Get the first day of the current month
+      const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0); // Get the last day of the current month
+
+      filtered = orders.filter((order) => {
+        const orderDate = new Date(order.createdAt);
+        return orderDate >= monthStart && orderDate <= monthEnd;
+      });
     }
 
-    setFilter(filterType);
     setFilteredOrders(filtered);
   };
 
-  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+  // Handle filter change
+  const handleFilterChange = (newFilter) => {
+    setFilter(newFilter);
+  };
 
-  const paginateOrders = () => {
-    if (Array.isArray(filteredOrders)) {
-      const startIndex = (currentPage - 1) * itemsPerPage;
-      const endIndex = startIndex + itemsPerPage;
-      return filteredOrders.slice(startIndex, endIndex);
-    } else {
-      console.error("filteredOrders is not an array:", filteredOrders);
-      return [];
+  useEffect(() => {
+    fetchOrders(); // Fetch orders when the component mounts
+  }, []);
+
+  useEffect(() => {
+    filterOrders(); // Filter orders when the filter state or orders change
+  }, [filter, orders]);
+
+  // Handle deleting an order
+  const handleDeleteOrder = async (orderId) => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/v1/fresh-oil/orders/${orderId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        const updatedOrders = orders.filter((order) => order._id !== orderId);
+        setOrders(updatedOrders);
+        setFilteredOrders(updatedOrders);
+        setShowDeleteModal(false);
+      } else {
+        console.error("Failed to delete the order");
+      }
+    } catch (error) {
+      console.error("Error deleting order:", error);
     }
   };
 
+  // Handle editing an order
+  const handleEditOrder = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/v1/fresh-oil/orders/${orderToEdit._id}`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(orderToEdit),
+        }
+      );
+
+      if (response.ok) {
+        const updatedOrder = await response.json();
+        const updatedOrders = orders.map((order) =>
+          order._id === updatedOrder._id ? updatedOrder : order
+        );
+        setOrders(updatedOrders);
+        setFilteredOrders(updatedOrders);
+        setShowEditModal(false);
+        setOrderToEdit(null);
+      } else {
+        console.error("Failed to update the order");
+      }
+    } catch (error) {
+      console.error("Error updating order:", error);
+    }
+  };
+
+  // Handle Remove Order Modal
+  const openDeleteModal = (orderId) => {
+    setOrderToDelete(orderId);
+    setShowDeleteModal(true);
+  };
+
+  // Handle Edit Order Modal
   const openEditModal = (order) => {
-    setEditOrder({
-      ...order,
-      updatedQuantity: order.quantity,
-    });
-    setIsEditModalOpen(true);
+    setOrderToEdit(order);
+    setShowEditModal(true);
   };
 
-  const handleSaveEdit = () => {
-    if (editOrder) {
-      const updatedOrders = orders.map((order) =>
-        order._id === editOrder._id
-          ? {
-              ...order,
-              quantity: editOrder.updatedQuantity,
-              total: editOrder.updatedQuantity * order.price,
-            }
-          : order
-      );
-      setOrders(updatedOrders);
-      setFilteredOrders(updatedOrders);
-      setIsEditModalOpen(false);
-    }
+  const closeEditModal = () => {
+    setShowEditModal(false);
+    setOrderToEdit(null);
   };
 
-  const openDeleteModal = (order) => {
-    setOrderToDelete(order); // Set the order to be deleted
-    setIsDeleteModalOpen(true); // Open the delete confirmation modal
+  const closeDeleteModal = () => {
+    setShowDeleteModal(false);
+    setOrderToDelete(null);
   };
-
-  const handleDeleteOrder = () => {
-    if (orderToDelete) {
-      const updatedOrders = orders.filter(
-        (order) => order._id !== orderToDelete._id
-      );
-      setOrders(updatedOrders);
-      setFilteredOrders(updatedOrders); // Also update filtered orders
-      setIsDeleteModalOpen(false); // Close delete modal
-    }
-  };
-
-  if (orders.length === 0) {
-    return <OrdersNotFound />;
-  }
 
   return (
-    <>
-      <div className="p-4">
-        <h1 className="text-2xl font-bold mb-4 text-center">Orders List</h1>
+    <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-yellow-100">
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-yellow-100">
+          <div className="bg-gradient-to-r from-yellow-700 to-yellow-800 px-6 py-8">
+            <h1 className="text-3xl font-bold text-white text-center">
+              Orders Management
+            </h1>
+            <p className="text-yellow-300 text-center mt-2">
+              Track and manage your orders
+            </p>
+          </div>
 
-        {/* Filter Buttons */}
-        <div className="mb-4 flex flex-wrap justify-center gap-4">
-          <button
-            onClick={() => filterOrders("all")}
-            className={`${
-              filter === "all"
-                ? "bg-blue-500 text-white"
-                : "bg-gray-300 text-gray-700"
-            } py-2 px-4 rounded-lg transition duration-300 hover:bg-blue-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400`}
-          >
-            All
-          </button>
-          <button
-            onClick={() => filterOrders("day")}
-            className={`${
-              filter === "day"
-                ? "bg-blue-500 text-white"
-                : "bg-gray-300 text-gray-700"
-            } py-2 px-4 rounded-lg transition duration-300 hover:bg-blue-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400`}
-          >
-            Today
-          </button>
-          <button
-            onClick={() => filterOrders("week")}
-            className={`${
-              filter === "week"
-                ? "bg-blue-500 text-white"
-                : "bg-gray-300 text-gray-700"
-            } py-2 px-4 rounded-lg transition duration-300 hover:bg-blue-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400`}
-          >
-            This Week
-          </button>
-          <button
-            onClick={() => filterOrders("month")}
-            className={`${
-              filter === "month"
-                ? "bg-blue-500 text-white"
-                : "bg-gray-300 text-gray-700"
-            } py-2 px-4 rounded-lg transition duration-300 hover:bg-blue-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400`}
-          >
-            This Month
-          </button>
-        </div>
-
-        {/* Orders Table */}
-        {filteredOrders.length === 0 ? (
-          <p>No orders found for the selected filter.</p>
-        ) : (
-          <table className="min-w-full border border-gray-300">
-            <thead>
-              <tr className="bg-green-200">
-                <th className="border border-gray-300 px-4 py-2 text-left">
-                  Order ID
-                </th>
-                <th className="border border-gray-300 px-4 py-2 text-left">
-                  Product
-                </th>
-                <th className="border border-gray-300 px-4 py-2 text-left">
-                  Quantity
-                </th>
-                <th className="border border-gray-300 px-4 py-2 text-left">
-                  Total Price
-                </th>
-                <th className="border border-gray-300 px-4 py-2 text-left">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginateOrders().map((order) => (
-                <tr key={order._id} className="hover:bg-green-100">
-                  <td className="border border-gray-300 px-4 py-2">
-                    {order.orderId}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {order.name}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {order.quantity}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    Tsh {order.total}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2 flex space-x-2">
-                    <button
-                      onClick={() => openEditModal(order)}
-                      className="bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-600"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => openDeleteModal(order)}
-                      className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
+          {/* Filter Options */}
+          <div className="p-6">
+            <div className="flex flex-wrap justify-center gap-3 mb-8">
+              {["all", "day", "week", "month"].map((filterOption) => (
+                <button
+                  key={filterOption}
+                  onClick={() => handleFilterChange(filterOption)}
+                  className={`
+                    px-6 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
+                    ${
+                      filter === filterOption
+                        ? "bg-yellow-700 text-white shadow-lg transform scale-105"
+                        : "bg-yellow-100 text-yellow-600 hover:bg-yellow-200"
+                    }
+                  `}
+                >
+                  {filterOption === "all"
+                    ? "All Orders"
+                    : filterOption === "day"
+                    ? "Today"
+                    : filterOption === "week"
+                    ? "This Week"
+                    : "This Month"}
+                </button>
               ))}
-            </tbody>
-          </table>
-        )}
+            </div>
 
-        {/* Pagination Controls */}
-        <div className="flex justify-center m-2">
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2"
-          >
-            Previous
-          </button>
-          <button
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-            }
-            className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600"
-          >
-            Next
-          </button>
+            {filteredOrders.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="text-yellow-400 mb-4">
+                  <svg
+                    className="mx-auto h-12 w-12"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                    />
+                  </svg>
+                </div>
+                <p className="text-yellow-500 text-lg">
+                  No orders found for the selected time period
+                </p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-yellow-200">
+                  <thead>
+                    <tr className="bg-yellow-50">
+                      <th className="px-6 py-4 text-left text-xs font-medium text-yellow-500 uppercase tracking-wider">
+                        Product
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-yellow-500 uppercase tracking-wider">
+                        Quantity
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-yellow-500 uppercase tracking-wider">
+                        Total Price
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-yellow-500 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-yellow-200">
+                    {paginatedOrders.map((order) => (
+                      <tr
+                        key={order._id}
+                        className="hover:bg-yellow-50 transition-colors duration-200"
+                      >
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm font-medium text-yellow-900">
+                            {order.name}
+                          </div>
+                          <div className="text-sm text-yellow-500">
+                            ID: {order._id.slice(-6)}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                            {order.quantity} units
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-yellow-900">
+                          Tsh {order.total}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                          <button
+                            onClick={() => openEditModal(order)}
+                            className="text-yellow-700 hover:text-yellow-900 bg-yellow-100 hover:bg-yellow-200 px-3 py-1 rounded-lg transition-colors duration-200"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => openDeleteModal(order._id)}
+                            className="text-red-600 hover:text-red-900 bg-red-100 hover:bg-red-200 px-3 py-1 rounded-lg transition-colors duration-200"
+                          >
+                            Delete
+                          </button>
+                          <Link
+                            to={`/fresh-oil/orders/${order._id}`}
+                            className="text-yellow-700 hover:text-yellow-900 bg-yellow-100 hover:bg-yellow-200 px-3 py-1 rounded-lg transition-colors duration-200"
+                          >
+                            Details
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {/* Pagination Controls */}
+            <div className="flex justify-center items-center gap-4 mt-6">
+              <button
+                onClick={handlePrevPage}
+                disabled={currentPage === 1}
+                className={`
+                  px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200
+                  ${
+                    currentPage === 1
+                      ? "bg-yellow-100 text-yellow-400 cursor-not-allowed"
+                      : "bg-yellow-700 text-white hover:bg-yellow-800"
+                  }
+                `}
+              >
+                Previous
+              </button>
+              <span className="text-yellow-600">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+                className={`
+                  px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200
+                  ${
+                    currentPage === totalPages
+                      ? "bg-yellow-100 text-yellow-400 cursor-not-allowed"
+                      : "bg-yellow-700 text-white hover:bg-yellow-800"
+                  }
+                `}
+              >
+                Next
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Edit Order Modal */}
-      {isEditModalOpen && editOrder && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded p-6 shadow-lg w-full max-w-md mx-auto">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">
-              Edit Order Quantity
-            </h2>
-            <div className="mb-4">
-              <label className="block text-gray-600">Quantity:</label>
-              <input
-                type="number"
-                value={editOrder.updatedQuantity}
-                onChange={(e) =>
-                  setEditOrder((prev) => ({
-                    ...prev,
-                    updatedQuantity: e.target.valueAsNumber,
-                  }))
-                }
-                className="w-full p-2 border rounded mt-1"
-                min="1"
-              />
-            </div>
-            <div className="flex justify-end space-x-4">
-              <button
-                onClick={() => setIsEditModalOpen(false)}
-                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-4 py-2 rounded"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSaveEdit}
-                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded"
-              >
-                Save Changes
-              </button>
+      {/* Edit Modal */}
+      {showEditModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4">
+            <div className="p-6">
+              <h2 className="text-2xl font-bold text-yellow-900 mb-6">
+                Edit Order
+              </h2>
+              <form className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-yellow-700 mb-1">
+                    Quantity
+                  </label>
+                  <input
+                    type="number"
+                    value={orderToEdit?.quantity || ""}
+                    onChange={(e) =>
+                      setOrderToEdit({
+                        ...orderToEdit,
+                        quantity: e.target.value,
+                      })
+                    }
+                    className="w-full p-3 border border-yellow-300 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-yellow-700 mb-1">
+                    Total Price
+                  </label>
+                  <input
+                    type="number"
+                    value={orderToEdit?.totalPrice || ""}
+                    onChange={(e) =>
+                      setOrderToEdit({
+                        ...orderToEdit,
+                        totalPrice: e.target.value,
+                      })
+                    }
+                    className="w-full p-3 border border-yellow-300 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                  />
+                </div>
+                <div className="flex justify-end gap-3 mt-6">
+                  <button
+                    type="button"
+                    onClick={closeEditModal}
+                    className="px-4 py-2 text-yellow-700 bg-yellow-100 rounded-xl hover:bg-yellow-200 transition-colors duration-200"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleEditOrder}
+                    className="px-4 py-2 text-white bg-yellow-700 rounded-xl hover:bg-yellow-800 transition-colors duration-200"
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
       )}
 
-      {/* Delete Order Modal */}
-      {isDeleteModalOpen && orderToDelete && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded p-6 shadow-lg w-full max-w-md mx-auto">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">
-              Confirm Deletion
-            </h2>
-            <p className="mb-4">Are you sure you want to delete this order?</p>
-            <div className="flex justify-end space-x-4">
-              <button
-                onClick={() => setIsDeleteModalOpen(false)}
-                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-4 py-2 rounded"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDeleteOrder}
-                className="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded"
-              >
+      {/* Delete Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full mx-4">
+            <div className="p-6">
+              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
+                <svg
+                  className="h-8 w-8 text-red-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-yellow-900 text-center mb-4">
                 Confirm Delete
-              </button>
+              </h3>
+              <p className="text-yellow-500 text-center mb-6">
+                Are you sure you want to delete this order? This action cannot
+                be undone.
+              </p>
+              <div className="flex justify-center gap-3">
+                <button
+                  onClick={closeDeleteModal}
+                  className="px-4 py-2 text-yellow-700 bg-yellow-100 rounded-xl hover:bg-yellow-200 transition-colors duration-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleDeleteOrder(orderToDelete)}
+                  className="px-4 py-2 text-white bg-red-600 rounded-xl hover:bg-red-700 transition-colors duration-200"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
 
       <Footer />
-    </>
+      <ToastContainer />
+    </div>
   );
 };
 

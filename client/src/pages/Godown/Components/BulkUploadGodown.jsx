@@ -27,7 +27,7 @@ const FileUploadZone = ({ onFileUpload }) => {
   return (
     <div
       {...getRootProps()}
-      className={`border-2 border-dashed rounded-xl p-8 ${
+      className={`cursor-pointer border-2 border-dashed rounded-xl p-8 ${
         isDragActive ? "border-blue-500 bg-blue-50" : "border-gray-300 bg-white"
       }`}
     >
@@ -112,7 +112,7 @@ const BulkUploadGodown = () => {
         {
           method: "POST",
           headers: {
-            Authorization : `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
           body: formData,
         }
@@ -134,7 +134,7 @@ const BulkUploadGodown = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold">Bulk Upload Products</h1>
+      <h1 className="text-2xl font-bold mt-4 mb-4">Bulk Upload Products</h1>
       <FileUploadZone onFileUpload={handleFileUpload} />
       {errors.length > 0 && (
         <div className="bg-red-100 p-4 rounded mt-4 text-red-800">

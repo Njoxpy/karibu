@@ -4,7 +4,7 @@ const path = require("path");
 const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
-const rateLimit = require("express-rate-limit");
+// const rateLimit = require("express-rate-limit");
 const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const timeout = require("connect-timeout"); // Import timeout middleware
@@ -17,19 +17,33 @@ const userRoutes = require("./routes/user.routes");
 const printingRoutes = require("./routes/printing.routes");
 const hardwareRoutes = require("./routes/hardware.routes");
 const stationeryRoutes = require("./routes/stationery.routes");
-// log
-const log = require("./logs/logger");
+
+// Logger import
+const logger = require("./logs/logger"); // Update with the correct path
 
 // database
 const connectDB = require("./config/DB");
 
 // express app
 const app = express();
+
+// Use the logger middleware (logs each request)
+app.use(logger);
+
 app.use(cors());
 
 app.use(
   cors({
     origin: "http://localhost:5173", // Allow only frontend from localhost:5173
+  })
+);
+
+app.use(
+  "/uploads",
+  express.static(path.join(__dirname, "uploads"), {
+    setHeaders: (res, path) => {
+      res.set("Cross-Origin-Resource-Policy", "cross-origin");
+    },
   })
 );
 
@@ -94,16 +108,16 @@ app.use((err, req, res, next) => {
   });
 });
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  limit: 100,
-  standardHeaders: "draft-8",
-  legacyHeaders: false,
-});
+// const limiter = rateLimit({
+//   windowMs: 15 * 60 * 1000,
+//   limit: 100,
+//   standardHeaders: "draft-8",
+//   legacyHeaders: false,
+// });
 
 // middleware
 app.use(morgan("dev"));
-app.use(limiter);
+// app.use(limiter);
 
 // register routes
 app.use("/api/v1/animal-feeding", animalFeedingRoutes);
@@ -117,6 +131,8 @@ app.use("/api/v1/users", userRoutes);
 app.use("*", (req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
+
+// Logs will be written to logs/file-YYYY-MM-DD.log
 
 // connect to DB
 connectDB();

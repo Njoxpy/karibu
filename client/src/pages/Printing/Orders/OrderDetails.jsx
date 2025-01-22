@@ -1,17 +1,28 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { jsPDF } from "jspdf";
 import Footer from "../../../components/Footer";
+import { getToken } from "../../../services/token";
 
 function OrderDetails() {
   const { id } = useParams();
   const [order, setOrder] = useState(null);
+  const token = getToken();
+  const navigate = useNavigate();
 
   // Fetch order details from the backend using the order ID
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/v1/printing/orders/${id}`);
+        const response = await fetch(
+          `http://localhost:5000/api/v1/printing/orders/${id}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         const data = await response.json();
         if (response.ok) {
           setOrder(data);
@@ -27,10 +38,15 @@ function OrderDetails() {
   }, [id]);
 
   const handlePrint = () => {
-
     const doc = new jsPDF();
 
     doc.setFont("courier", "normal");
+    doc.setFont("tahoma", "normal");
+
+    // Title Section with Savarrah Printing brand blue color
+    doc.setFontSize(22);
+    doc.setTextColor(0, 123, 255); // Savarrah Blue color
+    doc.text("Savarrah Printing", 20, 20);
 
     // Title Section with brand blue color
     doc.setFontSize(18);
@@ -61,7 +77,7 @@ function OrderDetails() {
     doc.text(`Quantity: ${order.quantity}`, 20, 75);
     doc.text(`Contact: ${order.contact}`, 20, 85);
     doc.text(`Category: ${order.category}`, 20, 95);
-    doc.text(`Total Price: Tsh ${order.price * order.quantity}`, 20, 95);
+    doc.text(`Total Price: Tsh ${order.price * order.quantity}`, 20, 105);
 
     // Line separator after order details
     doc.setDrawColor(0, 123, 255);
@@ -74,7 +90,7 @@ function OrderDetails() {
 
     // Save the PDF with a custom name
     doc.save(`${order.description}_receipt.pdf`);
-  }
+  };
 
   // Render loading or error message if the order is not fetched
   if (!order) {
@@ -85,49 +101,127 @@ function OrderDetails() {
     );
   }
 
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleString();
+  };
+
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "TSH",
+    }).format(price);
+  };
+
   return (
     <>
-      <div className="bg-gray-800 min-h-screen py-16 px-4">
-        <div className="max-w-4xl mx-auto bg-gray-700 p-8 rounded-xl shadow-2xl">
-          <h3 className="text-4xl font-bold text-blue-500 text-center mb-8">Order Details</h3>
-          <div className="space-y-6">
-            <div className="text-white">
-              <h4 className="text-2xl font-semibold text-blue-400">Order ID</h4>
-              <p className="text-lg text-gray-300">{order._id}</p>
-            </div>
-            <div className="text-white">
-              <h4 className="text-2xl font-semibold text-blue-400">Product Name</h4>
-              <p className="text-lg text-gray-300">{order.description}</p>
-            </div>
-            <div className="text-white">
-              <h4 className="text-2xl font-semibold text-blue-400">Quantity Ordered</h4>
-              <p className="text-lg text-gray-300">{order.quantity}</p>
-            </div>
-            <div className="text-white">
-              <h4 className="text-2xl font-semibold text-blue-400">Price per Item</h4>
-              <p className="text-lg text-gray-300">{order.price}</p>
-            </div>
-            <div className="text-white">
-              <h4 className="text-2xl font-semibold text-blue-400">Contact</h4>
-              <p className="text-lg text-gray-300">{order.contact}</p>
-            </div>
-            <div className="text-white">
-              <h4 className="text-2xl font-semibold text-blue-400">Total Price</h4>
-              <p className="text-lg text-gray-300">Tsh {order.totalPrice}</p>
-            </div>
-          </div>
-          <div className="flex justify-center">
-            <button
-              type="submit"
-              className="bg-primary hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              onClick={handlePrint}
+      <>
+        <div className="container mx-auto px-4 py-8">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 mb-4 text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4 w-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
             >
-              Print Order
-            </button>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M19 12H5M12 19l-7-7 7-7"
+              />
+            </svg>
+            Back to Orders
+          </button>
+
+          <div className="bg-white rounded-lg shadow-md max-w-2xl mx-auto">
+            <div className="p-6 border-b border-gray-200">
+              <h1 className="text-2xl font-bold">Order Details</h1>
+              <p className="text-sm text-gray-500">Printing Order</p>
+            </div>
+
+            <div className="p-6 space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <h3 className="text-sm  text-gray-500 font-bold">
+                    Description
+                  </h3>
+                  <p className="mt-1 text-sm font-mono">{order.description}</p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-gray-500">Order ID</h3>
+                  <p className="mt-1 text-sm font-mono">{order.orderId}</p>
+                </div>
+
+                <div>
+                  <h3 className="text-sm font-bold text-gray-500">
+                    Order Date
+                  </h3>
+                  <p className="mt-1 text-sm">{formatDate(order.createdAt)}</p>
+                </div>
+
+                <div>
+                  <h3 className="text-sm font-bold text-gray-500">
+                    Customer Contact
+                  </h3>
+                  <p className="mt-1 text-sm font-mono">{order.contact}</p>
+                </div>
+
+                <div>
+                  <h3 className="text-sm font-bold text-gray-500">Quantity</h3>
+                  <p className="mt-1 text-sm">{order.quantity} unit(s)</p>
+                </div>
+
+                <div>
+                  <h3 className="text-sm font-bold text-gray-500">
+                    Unit Price
+                  </h3>
+                  <p className="mt-1 text-sm">
+                    {formatPrice(order.totalPrice)}
+                  </p>
+                </div>
+              </div>
+
+              <div className="border-t pt-4">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-bold">Total Amount</h3>
+                  <p className="text-lg font-bold">
+                    {formatPrice(order.totalPrice)}
+                  </p>
+                </div>
+              </div>
+
+              <div className="border-t pt-4 grid grid-cols-2 gap-4">
+                <div>
+                  <h3 className="text-sm font-bold text-gray-500">
+                    Created At
+                  </h3>
+                  <p className="mt-1 text-sm">{formatDate(order.createdAt)}</p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-gray-500">
+                    Last Updated
+                  </h3>
+                  <p className="mt-1 text-sm">{formatDate(order.updatedAt)}</p>
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-center m-4">
+              <button
+                type="submit"
+                className="bg-primary hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-2"
+                onClick={handlePrint}
+              >
+                Print Order
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-
+        <Footer />
+      </>
       <Footer />
     </>
   );

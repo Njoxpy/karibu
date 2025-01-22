@@ -7,11 +7,11 @@ function OilLayouts() {
 
   return (
     <>
-      <div className="bg-yellow-500 text-white shadow-md">
+      <div className="bg-gradient-to-r from-yellow-700 to-yellow-800 text-white shadow-md">
         <header className="container mx-auto flex justify-between items-center p-4">
           {/* Logo/Title */}
           <h2 className="text-2xl font-semibold">
-            <Link to="/freshOil">Savarrah Fresh Oil</Link>
+            <Link to="/fresh-oil">Fresh Oil</Link>
           </h2>
 
           {/* Mobile Menu Button */}
@@ -33,13 +33,18 @@ function OilLayouts() {
                 <Link to="/fresh-oil/admin/upload">Food Upload</Link>
               </li>
               <li>
-                <Link to="/fresh-oil/admin/bulk-upload">Bulk Upload</Link>
-              </li>
-              <li>
                 <Link to="/fresh-oil/order-item">Order Item</Link>
               </li>
               <li>
                 <Link to="/fresh-oil/orders">Orders</Link>
+              </li>
+              <li>
+                <Link
+                  className="hover:text-green-200 transition-colors duration-200"
+                  to="/fresh-oil/admin/manage"
+                >
+                  Manage Food
+                </Link>
               </li>
             </ul>
           </nav>
@@ -59,18 +64,18 @@ function OilLayouts() {
               </li>
               <li>
                 <Link
-                  to="/fresh-oil/order-item"
+                  to="/fresh-oil/admin/manage"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Order Item
+                  Manage Food
                 </Link>
               </li>
               <li>
                 <Link
-                  to="/fresh-oil/search"
+                  to="/fresh-oil/order-item"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Search
+                  Order Item
                 </Link>
               </li>
               <li>

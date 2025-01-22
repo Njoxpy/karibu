@@ -1,97 +1,148 @@
-import { useParams } from "react-router-dom";
-import Hen from "../../../assets/images/hen.jpg";
-import Footer from "../../../components/Footer";
-
-const products = [
-  {
-    id: 1,
-    name: "Cold Brew Bottle",
-    description:
-      "This glass bottle comes with a mesh insert for steeping tea or cold-brewing coffee. Pour from any angle and remove the top for easy cleaning.",
-    href: "#",
-    quantity: 1,
-    price: "Tsh 3200.00",
-    imageSrc: Hen,
-    imageAlt: "Glass bottle with black plastic pour top and mesh insert.",
-  },
-];
+import { useParams, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { getToken } from '../../../services/token';
+import Footer from '../../../components/Footer';
 
 const OrderDetails = () => {
   const { id } = useParams();
-  const token = localStorage.getItem("authToken");
+  const navigate = useNavigate();
+  const [order, setOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const token = getToken();
+
+  useEffect(() => {
+    const fetchOrder = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/API/v1/animal-feeding/orders/${id}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        if (!response.ok) {
+          throw new Error('Order not found');
+        }
+        const data = await response.json();
+        setOrder(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrder();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-500" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-red-500">Error: {error}</p>
+      </div>
+    );
+  }
+
+  if (!order) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-gray-500">No order found</p>
+      </div>
+    );
+  }
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleString();
+  };
+
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'TSH'
+    }).format(price);
+  };
 
   return (
     <>
-      <div className="bg-white">
-        <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
-          <div className="max-w-xl">
-            <h1 className="text-base font-medium text-indigo-600">
-              Thank you!
-            </h1>
-            <p className="mt-2 text-4xl font-bold tracking-tight sm:text-5xl">
-              It's on the way!
-            </p>
-            <p className="mt-2 text-base text-gray-500">
-              Your order has been created and will be added into orders list.
-            </p>
+    <div className="container mx-auto px-4 py-8">
+      <button 
+        onClick={() => navigate(-1)}
+        className="flex items-center gap-2 mb-4 text-gray-600 hover:text-gray-900 transition-colors"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 12H5M12 19l-7-7 7-7" />
+        </svg>
+        Back to Orders
+      </button>
+
+      <div className="bg-white rounded-lg shadow-md max-w-2xl mx-auto">
+        <div className="p-6 border-b border-gray-200">
+          <h1 className="text-2xl font-bold">Order Details</h1>
+          <p className="text-sm text-gray-500">Animal Feeding Order</p>
+        </div>
+
+        <div className="p-6 space-y-6">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <h3 className="text-sm font-medium text-gray-500">Order ID</h3>
+              <p className="mt-1 text-sm font-mono">{order.orderId}</p>
+            </div>
+            
+            <div>
+              <h3 className="text-sm font-medium text-gray-500">Order Date</h3>
+              <p className="mt-1 text-sm">{formatDate(order.createdAt)}</p>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-medium text-gray-500">Product ID</h3>
+              <p className="mt-1 text-sm font-mono">{order.productId}</p>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-medium text-gray-500">Customer ID</h3>
+              <p className="mt-1 text-sm font-mono">{order.userId}</p>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-medium text-gray-500">Quantity</h3>
+              <p className="mt-1 text-sm">{order.quantity} unit(s)</p>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-medium text-gray-500">Unit Price</h3>
+              <p className="mt-1 text-sm">{formatPrice(order.price)}</p>
+            </div>
           </div>
 
-          <div className="mt-10 border-t border-gray-200">
-            <h2 className="sr-only">Your order</h2>
+          <div className="border-t pt-4">
+            <div className="flex justify-between items-center">
+              <h3 className="text-lg font-medium">Total Amount</h3>
+              <p className="text-lg font-bold">{formatPrice(order.total)}</p>
+            </div>
+          </div>
 
-            <h3 className="sr-only">Items</h3>
-            {products.map((product) => (
-              <div
-                key={product.id}
-                className="flex space-x-6 border-b border-gray-200 py-10"
-              >
-                <img
-                  alt={product.imageAlt}
-                  src={product.imageSrc}
-                  className="h-20 w-20 flex-none rounded-lg bg-gray-100 object-cover object-center sm:h-40 sm:w-40"
-                />
-                <div className="flex flex-auto flex-col">
-                  <div>
-                    <h4 className="font-medium text-gray-900">
-                      <a href={product.href}>{product.name}</a>
-                    </h4>
-                    <p className="mt-2 text-sm text-gray-600">
-                      {product.description}
-                    </p>
-                  </div>
-                  <div className="mt-6 flex flex-1 items-end">
-                    <dl className="flex space-x-4 divide-x divide-gray-200 text-sm sm:space-x-6">
-                      <div className="flex">
-                        <dt className="font-medium text-gray-900">Quantity</dt>
-                        <dd className="ml-2 text-gray-700">
-                          {product.quantity}
-                        </dd>
-                      </div>
-                      <div className="flex pl-4 sm:pl-6">
-                        <dt className="font-medium text-gray-900">Price</dt>
-                        <dd className="ml-2 text-gray-700">{product.price}</dd>
-                      </div>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            ))}
-
-            <div className="sm:ml-40 sm:pl-6">
-              <h3 className="sr-only">Your information</h3>
-              <h3 className="sr-only">Summary</h3>
-
-              <dl className="space-y-6 border-t border-gray-200 pt-10 text-sm">
-                <div className="flex justify-between">
-                  <dt className="font-medium text-gray-900">Total</dt>
-                  <dd className="text-gray-900">Tsh 2300.00</dd>
-                </div>
-              </dl>
+          <div className="border-t pt-4 grid grid-cols-2 gap-4">
+            <div>
+              <h3 className="text-sm font-medium text-gray-500">Created At</h3>
+              <p className="mt-1 text-sm">{formatDate(order.createdAt)}</p>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-gray-500">Last Updated</h3>
+              <p className="mt-1 text-sm">{formatDate(order.updatedAt)}</p>
             </div>
           </div>
         </div>
       </div>
-      <Footer />
+    </div>
+    <Footer />
     </>
   );
 };

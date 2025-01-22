@@ -1,12 +1,15 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm } from "react-hook-form";
 
 const Contact = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
   const onSubmit = (data) => {
     // Here you can handle the form submission (e.g., send the data to the backend)
-    console.log('Form submitted', data);
+    console.log("Form submitted", data);
   };
 
   return (
@@ -14,54 +17,90 @@ const Contact = () => {
       <div className="grid sm:grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Fomu ya Mawasiliano */}
         <div className="bg-white p-8 rounded-lg shadow-lg">
-          <h2 className="text-2xl font-semibold text-gray-800">Wasiliana Nasi</h2>
+          <h2 className="text-2xl font-semibold text-gray-800">
+            Wasiliana Nasi
+          </h2>
           <p className="mt-2 text-gray-600">
-            Tunapenda kusikia kutoka kwako! Tafadhali jaza fomu iliyo hapa chini.
+            Tunapenda kusikia kutoka kwako! Tafadhali jaza fomu iliyo hapa
+            chini.
           </p>
 
           <form onSubmit={handleSubmit(onSubmit)} className="mt-6">
             <div className="space-y-4">
               <div>
-                <label htmlFor="name" className="block text-gray-700 font-medium">Jina Lako</label>
+                <label
+                  htmlFor="name"
+                  className="block text-gray-700 font-medium"
+                >
+                  Jina Lako
+                </label>
                 <input
                   type="text"
                   id="name"
                   name="name"
                   placeholder="Jaza Jina Lako"
                   {...register("name", { required: "Jina Lako ni la muhimu" })}
-                  className={`mt-1 p-3 w-full border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  className={`mt-1 p-3 w-full border ${
+                    errors.name ? "border-red-500" : "border-gray-300"
+                  } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 />
-                {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
+                {errors.name && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.name.message}
+                  </p>
+                )}
               </div>
               <div>
-                <label htmlFor="email" className="block text-gray-700 font-medium">Barua Pepe Yako</label>
+                <label
+                  htmlFor="email"
+                  className="block text-gray-700 font-medium"
+                >
+                  Barua Pepe Yako
+                </label>
                 <input
                   type="email"
                   id="email"
                   name="email"
                   placeholder="Jaza Barua Pepe Yako"
-                  {...register("email", { 
-                    required: "Barua pepe ni la muhimu", 
+                  {...register("email", {
+                    required: "Barua pepe ni la muhimu",
                     pattern: {
                       value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                      message: "Tafadhali weka barua pepe halali"
-                    }
+                      message: "Tafadhali weka barua pepe halali",
+                    },
                   })}
-                  className={`mt-1 p-3 w-full border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  className={`mt-1 p-3 w-full border ${
+                    errors.email ? "border-red-500" : "border-gray-300"
+                  } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 />
-                {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
+                {errors.email && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.email.message}
+                  </p>
+                )}
               </div>
               <div>
-                <label htmlFor="message" className="block text-gray-700 font-medium">Ujumbe Wako</label>
+                <label
+                  htmlFor="message"
+                  className="block text-gray-700 font-medium"
+                >
+                  Ujumbe Wako
+                </label>
                 <textarea
                   id="message"
                   name="message"
                   placeholder="Jaza Ujumbe Wako"
                   {...register("message", { required: "Ujumbe ni la muhimu" })}
                   rows="4"
-                  className={`mt-1 p-3 w-full border ${errors.message ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  className={`mt-1 p-3 w-full border ${
+                    errors.message ? "border-red-500" : "border-gray-300"
+                  } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 />
-                {errors.message && <p className="text-red-500 text-sm mt-1">{errors.message.message}</p>}
+                {errors.message && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.message.message}
+                  </p>
+                )}
               </div>
               <div>
                 <button

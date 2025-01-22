@@ -7,11 +7,11 @@ function AnimalFeedingLayout() {
 
   return (
     <>
-      <div className="bg-green-600 text-white shadow-md">
+      <div className="bg-gradient-to-r from-green-700 to-green-800 text-white shadow-md">
         <header className="container mx-auto flex justify-between items-center p-4">
           {/* Logo/Title */}
           <h2 className="text-2xl font-semibold">
-            <Link to="/animal-feeding">Savarrah Animal Feeding</Link>
+            <Link to="/animal-feeding">Animal Feeding</Link>
           </h2>
 
           {/* Mobile Menu Button */}
@@ -40,14 +40,6 @@ function AnimalFeedingLayout() {
               <li>
                 <Link
                   className="hover:text-green-200 transition-colors duration-200"
-                  to="/animal-feeding/admin/bulk-upload"
-                >
-                  Bulk Upload
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="hover:text-green-200 transition-colors duration-200"
                   to="/animal-feeding/order-item"
                 >
                   Order Item
@@ -59,6 +51,14 @@ function AnimalFeedingLayout() {
                   to="/animal-feeding/orders"
                 >
                   Orders
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="hover:text-green-200 transition-colors duration-200"
+                  to="/animal-feeding/admin/manage"
+                >
+                  Manage Food
                 </Link>
               </li>
             </ul>
@@ -81,15 +81,6 @@ function AnimalFeedingLayout() {
               <li>
                 <Link
                   className="hover:text-green-200 transition-colors duration-200"
-                  to="/animal-feeding/admin/bulk-upload"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Bulk Upload
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="hover:text-green-200 transition-colors duration-200"
                   to="/animal-feeding/order-item"
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -103,6 +94,15 @@ function AnimalFeedingLayout() {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Orders
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="hover:text-green-200 transition-colors duration-200"
+                  to="/animal-feeding/admin/manage"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Manage Food
                 </Link>
               </li>
             </ul>

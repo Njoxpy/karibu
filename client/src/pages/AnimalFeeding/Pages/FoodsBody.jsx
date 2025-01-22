@@ -1,111 +1,97 @@
 import { useState, useEffect } from "react";
-import Animal2 from "../../../assets/images/animal2.jpg"; // Default image
-import { useAnimalFeeding } from "../../../hooks/animalFeeding/useAnimalFeeding"; // Custom hook for fetching animal feeding data
+import Animal2 from "../../../assets/images/animal2.jpg";
+import { getToken } from "../../../services/token";
 
-function FoodsBody() {
-  const [searchTerm, setSearchTerm] = useState(""); // Local state for search term
-  const { products, isLoading, error, dispatch } = useAnimalFeeding(); // Using the custom hook for fetching data
-
-  // Pagination setup
-  const itemsPerPage = 6; // Number of items to display per page
+const FoodsBody = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
-  // Ensure products is always an array to prevent errors
-  const productsArray = Array.isArray(products) ? products : [];
+  const token = getToken();
 
-  // Calculate the total number of pages based on the products length
-  const totalPages = Math.ceil(productsArray.length / itemsPerPage);
-
-  // Slice the products for the current page
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentProducts = productsArray.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
+  const baseURL = "http://localhost:5000";
 
   useEffect(() => {
     const fetchProducts = async () => {
-      dispatch({ type: "SET_LOADING" }); // Dispatch loading action to the state
-
-      // Get the token from localStorage
-      const token = localStorage.getItem("authToken"); // Assuming the token is stored in localStorage under 'authToken'
-
-      if (!token) {
-        dispatch({
-          type: "SET_ERROR",
-          payload: "No authentication token found.",
-        });
-        return;
-      }
+      setLoading(true);
 
       try {
         const response = await fetch(
-          "http://localhost:5000/api/v1/animal-feeding/products",
+          `http://localhost:5000/api/v1/animal-feeding/products?name=${searchTerm}`,
           {
             method: "GET",
             headers: {
-              Authorization: `Bearer ${token}`, // Attach the token in the Authorization header
+              Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
           }
         );
 
         if (!response.ok) {
-          throw new Error("Failed to fetch products");
+          throw new Error("Network response was not ok");
         }
+
         const data = await response.json();
-        dispatch({ type: "SET_ANIMAL_FEEDING_PRODUCTS", payload: data }); // Store fetched data
-      } catch (err) {
-        dispatch({ type: "SET_ERROR", payload: err.message }); // Dispatch error action if failed
+        setProducts(data);
+        setLoading(false);
+      } catch (error) {
+        setError("Error fetching products");
+        setLoading(false);
+        console.log(error);
       }
     };
 
     fetchProducts();
-  }, [dispatch]); // Only trigger fetch when dispatch changes
+  }, [searchTerm]);
 
-  // Search logic (filter products based on search term)
-  const filteredProducts = currentProducts.filter((product) =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Get current items based on the page number
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentProducts = products.slice(indexOfFirstItem, indexOfLastItem);
 
-  // Handle pagination
-  const changePage = (page) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
+  // Handle previous page
+  const handlePrevious = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  // Handle next page
+  const handleNext = () => {
+    if (currentPage < Math.ceil(products.length / itemsPerPage)) {
+      setCurrentPage(currentPage + 1);
     }
   };
 
   return (
     <div>
-      {/* Search bar */}
-      <div className="mb-4">
+      <div className="mb-4 submission">
         <input
           type="text"
-          placeholder="Search for animal food..."
+          placeholder="Search for animal feeding products ..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="border rounded p-2 w-full"
         />
       </div>
 
-      {/* Loading state */}
-      {isLoading && <p>Loading products...</p>}
-
-      {/* Error handling */}
-      {error && <p className="text-red-500">{error.message}</p>}
-
-      {/* Display filtered products */}
-      {filteredProducts.length === 0 ? (
-        <p>No products found.</p>
+      {loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p>{error}</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredProducts.map((product) => (
+          {currentProducts.map((product) => (
             <div
               key={product._id}
               className="border rounded-lg shadow-md overflow-hidden"
             >
               <img
-                src={product.image || Animal2} // Default image if no image provided
+                src={product.image ? `${baseURL}${product.image}` : Animal2}
+                loading="lazy"
                 alt={product.name}
                 className="w-full h-48 object-cover"
               />
@@ -122,12 +108,6 @@ function FoodsBody() {
                   >
                     Order Now
                   </a>
-                  <a
-                    href={`/animal-feeding/product-detail?productId=${product._id}`}
-                    className="bg-green-500 text-white py-2 px-4 rounded"
-                  >
-                    View Details
-                  </a>
                 </div>
               </div>
             </div>
@@ -135,28 +115,28 @@ function FoodsBody() {
         </div>
       )}
 
-      {/* Pagination */}
-      <div className="mt-4 flex justify-center">
+      <div className="flex justify-center m-2">
         <button
-          onClick={() => changePage(currentPage - 1)}
+          onClick={handlePrevious}
           disabled={currentPage === 1}
-          className="bg-green-500 text-white px-4 py-2 rounded-l"
+          className="bg-green-500 text-white py-1 px-2 rounded transition duration-300"
         >
-          Prev
+          Previous
         </button>
-        <span className="px-4 py-2">
-          {currentPage} / {totalPages}
+        <span className="text-gray-700 px-4 py-2">
+          Page <strong>{currentPage}</strong> of{" "}
+          <strong>{Math.ceil(products.length / itemsPerPage)}</strong>
         </span>
         <button
-          onClick={() => changePage(currentPage + 1)}
-          disabled={currentPage === totalPages}
-          className="bg-green-500 text-white px-4 py-2 rounded-r"
+          onClick={handleNext}
+          disabled={currentPage === Math.ceil(products.length / itemsPerPage)}
+          className="bg-green-500 text-white py-1 px-2 rounded transition duration-300"
         >
           Next
         </button>
       </div>
     </div>
   );
-}
+};
 
 export default FoodsBody;

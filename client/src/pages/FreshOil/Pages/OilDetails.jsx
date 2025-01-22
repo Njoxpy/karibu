@@ -3,10 +3,11 @@ import { useParams } from "react-router-dom";
 import Footer from "../../../components/Footer";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { getToken } from "../../../services/token";
 
 const OilDetails = () => {
   const { id } = useParams();
-  const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
+  const token = getToken(); // Retrieve token from localStorage
 
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);

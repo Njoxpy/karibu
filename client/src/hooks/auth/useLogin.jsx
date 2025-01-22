@@ -1,11 +1,9 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // For navigation
 
 export const useLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null); // Track user data here
-  const navigate = useNavigate();
 
   const login = async (email, password) => {
     setIsLoading(true);

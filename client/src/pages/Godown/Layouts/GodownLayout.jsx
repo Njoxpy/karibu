@@ -22,7 +22,7 @@ function AnimalFeedingLayout() {
 
             {/* Mobile Menu Button */}
             <button
-              className="lg:hidden p-2 hover:bg-blue-700 rounded-lg transition-colors duration-200"
+              className="lg:hidden p-2 rounded-lg transition-colors duration-200"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               {isMenuOpen ? (
@@ -34,10 +34,10 @@ function AnimalFeedingLayout() {
 
             {/* Navigation Links for Desktop */}
             <nav className="hidden lg:flex">
-              <ul className="flex items-center space-x-1"> 
+              <ul className="flex items-center space-x-1">
                 <li>
                   <Link
-                    className="px-4 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200 flex items-center space-x-2"
+                    className="px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2"
                     to="/godown/"
                   >
                     <span>Home</span>
@@ -45,7 +45,7 @@ function AnimalFeedingLayout() {
                 </li>
                 <li>
                   <Link
-                    className="px-4 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200 flex items-center space-x-2"
+                    className="px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2"
                     to="/godown/admin/upload"
                   >
                     <span>Item Upload</span>
@@ -53,7 +53,7 @@ function AnimalFeedingLayout() {
                 </li>
                 <li>
                   <Link
-                    className="px-4 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200 flex items-center space-x-2"
+                    className="px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2"
                     to="/godown/admin/bulk-upload"
                   >
                     <span>Bulk Upload</span>
@@ -61,7 +61,7 @@ function AnimalFeedingLayout() {
                 </li>
                 <li>
                   <Link
-                    className="px-4 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200 flex items-center space-x-2"
+                    className="px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2"
                     to="/godown/order-item"
                   >
                     <span>Order Item</span>
@@ -77,7 +77,7 @@ function AnimalFeedingLayout() {
                 </li>
                 <li>
                   <Link
-                    className="px-4 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200 flex items-center space-x-2"
+                    className="px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2"
                     to="/godown/orders"
                   >
                     <span>Orders</span>
@@ -85,7 +85,7 @@ function AnimalFeedingLayout() {
                 </li>
                 <li>
                   <Link
-                    className="px-4 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200 flex items-center space-x-2"
+                    className="px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2"
                     to="/godown/admin/move"
                   >
                     <span>Move</span>
@@ -100,18 +100,18 @@ function AnimalFeedingLayout() {
         {isMenuOpen && (
           <nav className="lg:hidden bg-blue-900 border-t border-blue-700">
             <ul className="flex flex-col p-4 space-y-2">
-            <li>
-                  <Link
-                    className="px-4 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200 flex items-center space-x-2"
-                    to="/godown/"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <span>Home</span>
-                  </Link>
-                </li>
               <li>
                 <Link
-                  className="block px-4 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200"
+                  className="px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2"
+                  to="/godown/"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span>Home</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="block px-4 py-2 rounded-lg transition-all duration-200"
                   to="/godown/admin/upload"
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -120,7 +120,7 @@ function AnimalFeedingLayout() {
               </li>
               <li>
                 <Link
-                  className="block px-4 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200"
+                  className="block px-4 py-2 rounded-lg transition-all duration-200"
                   to="/godown/admin/bulk-upload"
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -129,7 +129,7 @@ function AnimalFeedingLayout() {
               </li>
               <li>
                 <Link
-                  className="block px-4 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200"
+                  className="block px-4 py-2 rounded-lg transition-all duration-200"
                   to="/godown/order-item"
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -138,7 +138,7 @@ function AnimalFeedingLayout() {
               </li>
               <li>
                 <Link
-                  className="block px-4 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200"
+                  className="block px-4 py-2 rounded-lg transition-all duration-200"
                   to="/godown/orders"
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -147,7 +147,7 @@ function AnimalFeedingLayout() {
               </li>
               <li>
                 <Link
-                  className="block px-4 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200"
+                  className="block px-4 py-2 rounded-lg transition-all duration-200"
                   to="/godown/admin/move"
                   onClick={() => setIsMenuOpen(false)}
                 >

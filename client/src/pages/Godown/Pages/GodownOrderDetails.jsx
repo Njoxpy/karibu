@@ -9,10 +9,25 @@ function GodownOrdersDetails() {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // tooken
+  const token = localStorage.getItem("authToken")
+
+  if (!token) {
+    return 'could not find the token'
+  }
+
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/v1/godown/orders/${id}`);
+        const response = await fetch(`http://localhost:5000/api/v1/godown/orders/${id}`,
+          {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            }
+          }
+        );
         const data = await response.json();
         if (response.ok) {
           setOrder(data);
@@ -47,7 +62,7 @@ function GodownOrdersDetails() {
             </svg>
           </div>
           <h3 className="text-xl font-semibold text-gray-900 mb-2">Order Not Found</h3>
-          <p className="text-gray-500">The order you're looking for doesn't exist or has been removed.</p>
+          <p className="text-gray-500">The order you&apos;re looking for doesn&apos;t exist or has been removed.</p>
         </div>
       </div>
     );

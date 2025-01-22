@@ -11,7 +11,7 @@ function HardwareLayout() {
         <header className="container mx-auto flex justify-between items-center p-4">
           {/* Logo/Title */}
           <h2 className="text-2xl font-semibold">
-            <Link to="/hardware">Savarrah Hardware</Link>
+            <Link to="/hardware">Hardware</Link>
           </h2>
 
           {/* Mobile Menu Button */}
@@ -40,14 +40,6 @@ function HardwareLayout() {
               <li>
                 <Link
                   className="hover:text-blue-200 transition-colors duration-200"
-                  to="/hardware/admin/bulk-upload"
-                >
-                  Bulk Upload
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="hover:text-blue-200 transition-colors duration-200"
                   to="/hardware/order-item"
                 >
                   Order Item
@@ -59,6 +51,14 @@ function HardwareLayout() {
                   to="/hardware/orders"
                 >
                   Orders
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="hover:text-blue-200 transition-colors duration-200"
+                  to="/hardware/admin/manage"
+                >
+                  Manage
                 </Link>
               </li>
             </ul>
@@ -81,15 +81,6 @@ function HardwareLayout() {
               <li>
                 <Link
                   className="hover:text-blue-200 transition-colors duration-200"
-                  to="/hardware/admin/bulk-upload"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Bulk Upload
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="hover:text-blue-200 transition-colors duration-200"
                   to="/hardware/order-item"
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -103,6 +94,15 @@ function HardwareLayout() {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Orders
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="hover:text-blue-200 transition-colors duration-200"
+                  to="/hardware/admin/manage"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Manage
                 </Link>
               </li>
             </ul>

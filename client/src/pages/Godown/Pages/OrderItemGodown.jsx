@@ -98,23 +98,23 @@ const OrderItemGodown = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-gray-900"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-900"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
       <ToastContainer />
       <div className="max-w-4xl mx-auto px-4 py-12">
-        <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
+        <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-blue-100">
           {/* Header */}
-          <div className="bg-gradient-to-r from-gray-700 to-gray-800 px-6 py-8">
+          <div className="bg-gradient-to-r from-blue-700 to-blue-800 px-6 py-8">
             <h2 className="text-3xl font-bold text-white text-center">
               Create New Order
             </h2>
-            <p className="text-gray-300 text-center mt-2">
+            <p className="text-blue-300 text-center mt-2">
               Select product and specify quantity
             </p>
           </div>
@@ -123,14 +123,14 @@ const OrderItemGodown = () => {
             {/* Product Selection */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-6">
-                <div className="bg-gray-50 p-6 rounded-2xl">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                <div className="bg-blue-50 p-6 rounded-2xl">
+                  <label className="block text-sm font-medium text-blue-700 mb-2">
                     Select Product
                   </label>
                   <select
                     value={selectedProduct?._id || ""}
                     onChange={handleProductChange}
-                    className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-400 focus:border-transparent"
+                    className="w-full p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent"
                   >
                     {products.map((product) => (
                       <option key={product._id} value={product._id}>
@@ -140,18 +140,18 @@ const OrderItemGodown = () => {
                   </select>
                 </div>
 
-                <div className="bg-gray-50 p-6 rounded-2xl">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                <div className="bg-blue-50 p-6 rounded-2xl">
+                  <label className="block text-sm font-medium text-blue-700 mb-2">
                     Product Details
                   </label>
                   <div className="space-y-3">
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-blue-500">
                       Product ID:{" "}
-                      <span className="font-mono text-gray-700">
+                      <span className="font-mono text-blue-700">
                         {selectedProduct?._id}
                       </span>
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-blue-500">
                       Available Stock:
                       <span
                         className={`ml-2 px-2 py-1 rounded-full text-sm font-medium ${
@@ -168,8 +168,8 @@ const OrderItemGodown = () => {
               </div>
 
               <div className="space-y-6">
-                <div className="bg-gray-50 p-6 rounded-2xl">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                <div className="bg-blue-50 p-6 rounded-2xl">
+                  <label className="block text-sm font-medium text-blue-700 mb-2">
                     Quantity
                   </label>
                   <input
@@ -178,7 +178,7 @@ const OrderItemGodown = () => {
                     onChange={handleQuantityChange}
                     min="1"
                     max={selectedProduct?.quantity}
-                    className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-400 focus:border-transparent"
+                    className="w-full p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent"
                   />
                   {quantity > selectedProduct?.quantity && (
                     <p className="mt-2 text-sm text-red-500">
@@ -187,27 +187,27 @@ const OrderItemGodown = () => {
                   )}
                 </div>
 
-                <div className="bg-gray-50 p-6 rounded-2xl">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                <div className="bg-blue-50 p-6 rounded-2xl">
+                  <label className="block text-sm font-medium text-blue-700 mb-2">
                     Order Summary
                   </label>
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-500">Price per unit</span>
+                      <span className="text-blue-500">Price per unit</span>
                       <span className="font-medium">
                         Tsh {selectedProduct?.price.toLocaleString()}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-500">Quantity</span>
+                      <span className="text-blue-500">Quantity</span>
                       <span className="font-medium">{quantity} units</span>
                     </div>
-                    <div className="pt-3 border-t border-gray-200">
+                    <div className="pt-3 border-t border-blue-200">
                       <div className="flex justify-between items-center">
-                        <span className="text-lg font-medium text-gray-700">
+                        <span className="text-lg font-medium text-blue-700">
                           Total Amount
                         </span>
-                        <span className="text-xl font-bold text-gray-900">
+                        <span className="text-xl font-bold text-blue-900">
                           Tsh {totalPrice.toLocaleString()}
                         </span>
                       </div>
@@ -227,8 +227,8 @@ const OrderItemGodown = () => {
                   transition-all duration-200 transform hover:scale-105
                   ${
                     isSubmitting || quantity > selectedProduct?.quantity
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 shadow-lg hover:shadow-xl"
+                      ? "bg-blue-400 cursor-not-allowed"
+                      : "bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 shadow-lg hover:shadow-xl"
                   }
                 `}
               >
@@ -285,15 +285,15 @@ const OrderItemGodown = () => {
                   />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 text-center mb-4">
+              <h3 className="text-xl font-semibold text-blue-900 text-center mb-4">
                 Order Placed Successfully!
               </h3>
-              <p className="text-gray-500 text-center mb-6">
+              <p className="text-blue-500 text-center mb-6">
                 Your order has been successfully placed and is being processed.
               </p>
               <button
                 onClick={() => setOrderSuccess(false)}
-                className="w-full px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-gray-700 to-gray-800 rounded-xl hover:from-gray-800 hover:to-gray-900 transition-all duration-200 transform hover:scale-105"
+                className="w-full px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-blue-700 to-blue-800 rounded-xl hover:from-blue-800 hover:to-blue-900 transition-all duration-200 transform hover:scale-105"
               >
                 Continue Shopping
               </button>

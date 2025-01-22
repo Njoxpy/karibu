@@ -1,20 +1,17 @@
 import { useState, useEffect } from "react";
 import FreshOil1 from "../../../assets/images/freshOil1.webp";
+import { getToken } from "../../../services/token";
 
 function Oils() {
   const [searchTerm, setSearchTerm] = useState("");
   const [products, setProducts] = useState([]); // State for fetched products
   const [currentPage, setCurrentPage] = useState(1); // Current page number
   const itemsPerPage = 6; // Items per page for pagination
+  const baseURL = "http://localhost:5000";
 
   useEffect(() => {
     // Fetch fresh oil products from API with barrier token
-    const token = localStorage.getItem("authToken"); // Get the token from localStorage
-
-    if (!token) {
-      console.error("No authentication token found.");
-      return;
-    }
+    const token = getToken();
 
     fetch("http://localhost:5000/api/v1/fresh-oil/products", {
       method: "GET",
@@ -90,13 +87,14 @@ function Oils() {
               className="border rounded-lg shadow-md overflow-hidden"
             >
               <img
-                src={product.image || FreshOil1} // Use the default image if no image is provided
+                src={product.image ? `${baseURL}${product.image}` : FreshOil1}
                 alt={product.name}
                 className="w-full h-48 object-cover"
               />
               <div className="p-4">
                 <h2 className="font-semibold text-lg">{product.name}</h2>
                 <p className="text-gray-600">{product.description}</p>
+                <p className="text-gray-600">Idadi: {product.quantity}</p>
                 <p className="font-bold text-yellow-700">Tsh {product.price}</p>
 
                 {/* Action Buttons */}
@@ -106,12 +104,6 @@ function Oils() {
                     className="mt-4 inline-block bg-yellow-500 text-white py-2 px-4 rounded"
                   >
                     Order Now
-                  </a>
-                  <a
-                    href={`/fresh-oil/products/${product._id}`} // Use product._id
-                    className="mt-4 inline-block bg-yellow-500 text-white py-2 px-4 rounded ml-2"
-                  >
-                    View Details
                   </a>
                 </div>
               </div>

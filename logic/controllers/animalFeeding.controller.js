@@ -1,7 +1,6 @@
 // models
 const Product = require("../models/animalFeeding/animalFeedingProductModel");
 const Order = require("../models/animalFeeding/animalFeedingOrderModel");
-const User = require("../models/user/userModel");
 
 // status code
 const {
