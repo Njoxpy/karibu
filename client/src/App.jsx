@@ -29,7 +29,6 @@ import OrderDetails from "./pages/Printing/Orders/OrderDetails";
 import Hardware from "./pages/Hardware/pages/Hardware";
 import HardWareDetails from "./pages/Hardware/pages/HardWareDetails";
 import HardwareItemsUpload from "./pages/Hardware/Components/HardwareItemsUpload";
-import OrderSucessHardware from "./pages/Hardware/Components/OrderSuccessHardware";
 import ManageHardwareProducts from "./pages/Hardware/pages/ManageHardwareProducts";
 import HardwareOrders from "./pages/Hardware/pages/HardwareOrders";
 import Hardwares from "./pages/Hardware/pages/Hardwares";
@@ -112,11 +111,9 @@ import AnimalFeedingLayout from "./pages/AnimalFeeding/Layouts/AnimalFeedingLayo
 // PAGES
 import AnimalFeeding from "./pages/AnimalFeeding/Pages/AnimalFeeding";
 import FoodUpload from "./pages/AnimalFeeding/Admin/FoodUpload";
-import OrderSucess from "./pages/AnimalFeeding/Pages/OrderSuccess";
 import ManageFood from "./pages/AnimalFeeding/Admin/AdminManage";
 import ProductDetail from "./pages/AnimalFeeding/Pages/ProductDetails";
 import Orders from "./pages/AnimalFeeding/Pages/Orders";
-import AdminOrders from "./pages/AnimalFeeding/Admin/AdminOrders";
 import OrderDetailsAnimal from "./pages/AnimalFeeding/Components/OrderDetails";
 
 // ERROR
@@ -126,7 +123,6 @@ import InventoryMovement from "./pages/Godown/Pages/InventoryMovement";
 import InventoryTable from "./pages/Godown/Pages/InventoryTable";
 import FoodsBody from "./pages/AnimalFeeding/Pages/FoodsBody";
 import AnimalFeedingProductsLayout from "./pages/AnimalFeeding/Layouts/AnimalFeedingProductsLayout";
-import BulkUpload from "./pages/AnimalFeeding/Components/BulkUpload";
 import BulkUploadGodown from "./pages/Godown/Components/BulkUploadGodown";
 import BulkUploadFreshOil from "./pages/FreshOil/Pages/BulkUploadFreshOil";
 import OrderItem from "./pages/FreshOil/Components/OrderItem";
@@ -145,11 +141,11 @@ import ReportsPage from "./pages/admin/pages/ReportsPage";
 import AddProduct from "./pages/admin/components/AddProduct";
 import OrderDetailsPage from "./pages/admin/order/OrderDetailsPage";
 import UserProfile from "./components/UserProfile";
-import Reports from "./pages/admin/pages/Reports";
 import AddUserPage from "./pages/admin/pages/UsersPage";
 
 import OilDetailsError from "./pages/FreshOil/Error/OilDetailsError";
 import GodownItemsDetailsError from "./pages/Godown/Error/GodownItemsDetailsError";
+import ProductDetailsOils from "./pages/FreshOil/Pages/ProductDetailsOils";
 
 export default function App() {
   const router = createBrowserRouter(
@@ -194,10 +190,6 @@ export default function App() {
               element={<OrderDetailsAnimal />}
               errorElement={<AnimalFeedingOrderDetailsError />}
             />
-            <Route path="order/sucess" element={<OrderSucess />} />
-            <Route path="admin/bulk-upload" element={<BulkUpload />} />
-            <Route path="admin/upload" element={<FoodUpload />} />
-            <Route path="admin/orders" element={<AdminOrders />} />
             <Route path="admin/upload" element={<FoodUpload />} />
             <Route path="admin/manage" element={<ManageFood />} />
           </Route>
@@ -212,6 +204,7 @@ export default function App() {
                 element={<OilDetails />}
                 errorElement={<OilDetailsError />}
               />
+              <Route path="details" element={<ProductDetailsOils />} />
             </Route>
             <Route path="orders" element={<FreshOilOrders />} />
             <Route
@@ -221,7 +214,6 @@ export default function App() {
             />
             <Route path="order-item" element={<OrderItem />} />
             <Route path="admin/upload" element={<UploadFreshOil />} />
-            <Route path="admin/bulk-upload" element={<BulkUploadFreshOil />} />
             <Route path="admin/manage" element={<ManagFreshOil />} />
           </Route>
 
@@ -265,8 +257,6 @@ export default function App() {
             <Route path="order-item" element={<OrderItemHardware />} />
             <Route path="admin/upload" element={<HardwareItemsUpload />} />
             <Route path="admin/bulk-upload" element={<HardwareBulkUpload />} />
-            <Route path="order/sucess" element={<OrderSucessHardware />} />
-            <Route path="admin/orders" element={<HardwareOrders />} />
             <Route path="admin/manage" element={<ManageHardwareProducts />} />
           </Route>
 
@@ -307,12 +297,7 @@ export default function App() {
             />
             <Route path="order-item" element={<OrderItemStationery />} />
             <Route path="admin/upload" element={<AddItems />} />
-            <Route
-              path="admin/bulk-upload"
-              element={<BulkUploadStationery />}
-            />
             <Route path="order/sucess" element={<OrderSucessStationery />} />
-            <Route path="admin/orders" element={<StationeryOrders />} />
             <Route path="admin/manage" element={<ManageStationeryProducts />} />
           </Route>
           <Route path="*" element={<NotFound />} />
