@@ -4,6 +4,7 @@ const path = require("path");
 const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
+const session = require("express-session");
 // const rateLimit = require("express-rate-limit");
 const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
@@ -96,10 +97,6 @@ const swaggerSpec = swaggerJsdoc(options);
 // Serve Swagger UI
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.get("/", (req, res) => {
-  res.json("hello world from savarrah");
-});
-
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(err.status || 500).json({
@@ -117,8 +114,23 @@ app.use((err, req, res, next) => {
 
 // middleware
 app.use(morgan("dev"));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    resave: false,
+    cookie: {
+      maxAge: 60000 * 60,
+    },
+  })
+);
 // app.use(limiter);
 
+app.get("/", (req, res) => {
+  res.json("hello world from savarrah");
+  console.log(req.session);
+});
 // register routes
 app.use("/api/v1/animal-feeding", animalFeedingRoutes);
 app.use("/api/v1/fresh-oil", freshOilRoutes);

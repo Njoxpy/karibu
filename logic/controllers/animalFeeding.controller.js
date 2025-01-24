@@ -12,7 +12,6 @@ const {
 } = require("../constants/responseStatusCode");
 const AnimalFeedingProduct = require("../models/animalFeeding/animalFeedingProductModel");
 const AnimalFeedingOrder = require("../models/animalFeeding/animalFeedingOrderModel");
-const { default: mongoose } = require("mongoose");
 
 const searchAnimalFeedingProducts = async (req, res) => {
   const { name, description, minPrice, maxPrice } = req.query;
@@ -105,13 +104,15 @@ const getAllAnimalFeedingProducts = async (req, res) => {
 // Get all orders
 const getAnimalFeedingAllOrders = async (req, res) => {
   try {
-    const orders = await AnimalFeedingOrder.find().sort({ createdAt: -1 });
+    const orders = await AnimalFeedingOrder.find()
+      .populate("productId", "name") // Include product name
+      .sort({ createdAt: -1 });
 
     if (orders.length === 0) {
       return res.status(OK).json({ message: "There are no orders now" });
     }
 
-    res.status(CREATED).json(orders);
+    res.status(OK).json(orders);
   } catch (error) {
     res.status(SERVER_ERROR).json({ error: error.message });
   }
@@ -165,76 +166,49 @@ const getAnimalFeedingOrderById = async (req, res) => {
 
 const createAnimalFeedingOrder = async (req, res) => {
   try {
-    const { productId, quantity } = req.body;
-
+    const { productId, productName, quantity } = req.body;
     const userId = req.user && req.user._id;
 
-    // Check if all fields are provided
-    if (!productId || !quantity || !userId) {
+    // Validate inputs
+    if (!productId || !productName || !quantity || !userId) {
       return res
         .status(BAD_REQUEST)
         .json({ message: "All fields are required" });
     }
 
-    if (typeof quantity !== "number") {
-      return res
-        .status(BAD_REQUEST)
-        .json({ message: "Quantity should be a number" });
-    }
-
-    if (quantity < 0) {
-      return res
-        .status(BAD_REQUEST)
-        .json({ message: "Quantity cannot be negative" });
-    }
-
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(BAD_REQUEST).json({ message: "Invalid user ID" });
-    }
-
-    if (!mongoose.Types.ObjectId.isValid(productId)) {
-      return res.status(BAD_REQUEST).json({ message: "Invalid product ID" });
-    }
-
-    // Fetch the product from the database
+    // Fetch the product
     const product = await AnimalFeedingProduct.findById(productId);
     if (!product) {
       return res.status(NOT_FOUND).json({ error: "Product not found" });
     }
 
-    // Check if there's enough stock
+    // Check stock
     if (product.quantity < quantity) {
       return res.status(BAD_REQUEST).json({ message: "Insufficient stock" });
     }
 
-    const price = product.price;
-
     // Create the order
     const order = await AnimalFeedingOrder.create({
       productId,
+      productName, // Include the product name
       quantity,
-      price, // Ensure price is passed
-      total: quantity * price,
-      userId: req.user._id,
+      price: product.price,
+      total: quantity * product.price,
+      userId,
     });
 
     // Update the product stock
     product.quantity -= quantity;
     await product.save();
 
-    // Return response
-    if (!res.headersSent) {
-      return res
-        .status(201)
-        .json({ message: "Order created successfully", order });
-    }
+    return res
+      .status(201)
+      .json({ message: "Order created successfully", order });
   } catch (error) {
-    if (!res.headersSent) {
-      return res.status(SERVER_ERROR).json({
-        message: "An error occurred while creating the order",
-        error: error.message,
-      });
-    }
+    return res.status(SERVER_ERROR).json({
+      message: "An error occurred while creating the order",
+      error: error.message,
+    });
   }
 };
 
