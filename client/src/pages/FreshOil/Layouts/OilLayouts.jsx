@@ -30,18 +30,33 @@ function OilLayouts() {
           <nav className="hidden lg:flex space-x-6">
             <ul className="flex space-x-6">
               <li>
-                <Link to="/fresh-oil/admin/upload">Food Upload</Link>
-              </li>
-              <li>
-                <Link to="/fresh-oil/order-item">Order Item</Link>
-              </li>
-              <li>
-                <Link to="/fresh-oil/orders">Orders</Link>
+                <Link
+                  to="/fresh-oil/admin/upload"
+                  className="hover:text-yellow-200 transition-colors duration-200"
+                >
+                  Food Upload
+                </Link>
               </li>
               <li>
                 <Link
-                  className="hover:text-green-200 transition-colors duration-200"
+                  to="/fresh-oil/order-item"
+                  className="hover:text-yellow-200 transition-colors duration-200"
+                >
+                  Order Item
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/fresh-oil/orders"
+                  className="hover:text-yellow-200 transition-colors duration-200"
+                >
+                  Orders
+                </Link>
+              </li>
+              <li>
+                <Link
                   to="/fresh-oil/admin/manage"
+                  className="hover:text-yellow-200 transition-colors duration-200"
                 >
                   Manage Food
                 </Link>
@@ -52,12 +67,13 @@ function OilLayouts() {
 
         {/* Mobile Navigation Links */}
         {isMenuOpen && (
-          <nav className="lg:hidden bg-yellow-500 p-4 space-y-4">
+          <nav className="lg:hidden bg-yellow-600 p-4 space-y-4">
             <ul className="flex flex-col space-y-4">
               <li>
                 <Link
                   to="/fresh-oil/admin/upload"
                   onClick={() => setIsMenuOpen(false)}
+                  className="block py-2 hover:bg-yellow-700 px-4 rounded transition-colors duration-200"
                 >
                   Food Upload
                 </Link>
@@ -66,6 +82,7 @@ function OilLayouts() {
                 <Link
                   to="/fresh-oil/admin/manage"
                   onClick={() => setIsMenuOpen(false)}
+                  className="block py-2 hover:bg-yellow-700 px-4 rounded transition-colors duration-200"
                 >
                   Manage Food
                 </Link>
@@ -74,6 +91,7 @@ function OilLayouts() {
                 <Link
                   to="/fresh-oil/order-item"
                   onClick={() => setIsMenuOpen(false)}
+                  className="block py-2 hover:bg-yellow-700 px-4 rounded transition-colors duration-200"
                 >
                   Order Item
                 </Link>
@@ -82,6 +100,7 @@ function OilLayouts() {
                 <Link
                   to="/fresh-oil/orders"
                   onClick={() => setIsMenuOpen(false)}
+                  className="block py-2 hover:bg-yellow-700 px-4 rounded transition-colors duration-200"
                 >
                   Orders
                 </Link>

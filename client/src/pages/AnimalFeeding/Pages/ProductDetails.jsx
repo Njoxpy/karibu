@@ -124,15 +124,6 @@ const GodownProductDetails = () => {
     }
   };
 
-  const handleAddToCart = () => {
-    // Dispatch the action to add the product to the cart in the context
-    dispatch({
-      type: "ADD_ANIMAL_FEEDING_PRODUCT",
-      payload: { ...product, quantity },
-    });
-    toast.success("Product added to cart");
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -301,12 +292,6 @@ const GodownProductDetails = () => {
                 </button>
               </div>
             </form>
-            <button
-              onClick={handleAddToCart}
-              className="w-full md:w-auto px-8 py-4 mt-4 rounded-xl text-white font-medium bg-gradient-to-r from-green-700 to-green-800 hover:from-green-800 hover:to-green-900 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
-            >
-              Add to Cart
-            </button>
           </div>
         </div>
       </div>

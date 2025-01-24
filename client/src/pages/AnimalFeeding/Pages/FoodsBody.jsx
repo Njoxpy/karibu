@@ -56,15 +56,27 @@ const FoodsBody = () => {
   );
 
   if (loading) {
-    return <div className="text-center py-12">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-green-50 to-green-100">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500" />
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="text-center py-12 text-red-600">Error: {error}</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-green-50 to-green-100">
+        <p className="text-red-500 text-lg font-medium">{error}</p>
+      </div>
+    );
   }
 
   if (filteredProducts.length === 0) {
-    return <div className="text-center py-12">No products found</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-green-50 to-green-100">
+        <p className="text-gray-500 text-lg font-medium">No products found</p>
+      </div>
+    );
   }
 
   const paginatedProducts = filteredProducts.slice(
@@ -73,76 +85,86 @@ const FoodsBody = () => {
   );
 
   return (
-    <div className="container mx-auto p-4">
-      {/* Search bar */}
-      <div className="mb-6 flex justify-center">
-        <input
-          type="text"
-          placeholder="Search for a product"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full sm:w-1/2 lg:w-1/3 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-        />
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 py-8">
+      <div className="container mx-auto px-4">
+        {/* Search bar */}
+        <div className="mb-8 flex justify-center">
+          <input
+            type="text"
+            placeholder="Search for a product..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full sm:w-1/2 lg:w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+          />
+        </div>
 
-      {/* Product Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {paginatedProducts.map((product) => (
-          <div
-            key={product._id}
-            className="border rounded-lg shadow-md overflow-hidden transform transition-all hover:scale-105"
-          >
-            <img
-              src={product.image ? `${baseURL}${product.image}` : Animal2}
-              loading="lazy"
-              alt={product.name}
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-4">
-              <h2 className="font-semibold text-lg text-gray-800">
-                {product.name}
-              </h2>
-              <p className="text-gray-600 mt-2">{product.description}</p>
-              <p className="text-gray-600 mt-1">Idadi: {product.quantity}</p>
-              <p className="text-gray-600 mt-1">
-                Nutrients: {product.nutrients}
-              </p>
-              <p className="font-bold text-green-700 mt-2">
-                Tsh {product.price}
-              </p>
-              <div className="mt-4 flex justify-between">
-                <a
-                  href={`/animal-feeding/products/${product._id}`}
-                  className="bg-green-500 text-white py-2 px-4 rounded transition duration-300 hover:bg-green-600"
-                >
-                  Order Now
-                </a>
+        {/* Product Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {paginatedProducts.map((product) => (
+            <div
+              key={product._id}
+              className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
+            >
+              <img
+                src={product.image ? `${baseURL}${product.image}` : Animal2}
+                loading="lazy"
+                alt={product.name}
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-6">
+                <h2 className="font-bold text-xl text-gray-800 mb-2">
+                  {product.name}
+                </h2>
+                <p className="text-gray-600 text-sm mb-4">
+                  {product.description}
+                </p>
+                <div className="space-y-2">
+                  <p className="text-gray-600 text-sm">
+                    <span className="font-medium">Quantity:</span>{" "}
+                    {product.quantity}
+                  </p>
+                  <p className="text-gray-600 text-sm">
+                    <span className="font-medium">Nutrients:</span>{" "}
+                    {product.nutrients}
+                  </p>
+                  <p className="font-bold text-green-700 text-lg">
+                    Tsh {product.price.toLocaleString()}
+                  </p>
+                </div>
+                <div className="mt-6">
+                  <a
+                    href={`/animal-feeding/products/${product._id}`}
+                    className="block w-full text-center bg-green-500 text-white py-2 px-4 rounded-lg transition-all duration-200 hover:bg-green-600"
+                  >
+                    Order Now
+                  </a>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      {/* Pagination */}
-      <div className="flex justify-center mt-6">
-        <button
-          onClick={() => setCurrentPage(currentPage - 1)}
-          disabled={currentPage === 1}
-          className="bg-green-500 text-white py-2 px-4 rounded transition duration-300 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Previous
-        </button>
-        <span className="text-gray-700 px-4 py-2">
-          Page <strong>{currentPage}</strong> of{" "}
-          <strong>{Math.ceil(filteredProducts.length / itemsPerPage)}</strong>
-        </span>
-        <button
-          onClick={() => setCurrentPage(currentPage + 1)}
-          disabled={currentPage * itemsPerPage >= filteredProducts.length}
-          className="bg-green-500 text-white py-2 px-4 rounded transition duration-300 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Next
-        </button>
+        {/* Pagination */}
+        <div className="flex justify-center mt-8">
+          <button
+            onClick={() => setCurrentPage(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="bg-green-500 text-white py-2 px-4 rounded-lg transition-all duration-200 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Previous
+          </button>
+          <span className="text-gray-700 px-4 py-2 mx-2">
+            Page <strong>{currentPage}</strong> of{" "}
+            <strong>{Math.ceil(filteredProducts.length / itemsPerPage)}</strong>
+          </span>
+          <button
+            onClick={() => setCurrentPage(currentPage + 1)}
+            disabled={currentPage * itemsPerPage >= filteredProducts.length}
+            className="bg-green-500 text-white py-2 px-4 rounded-lg transition-all duration-200 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
   );

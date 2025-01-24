@@ -189,16 +189,6 @@ const OrderItem = () => {
                       {selectedProduct.quantity} units
                     </span>
                   </p>
-                  <div className="text-sm text-yellow-500">
-                    <label className="block text-sm font-medium text-yellow-700 mb-2">
-                      Product Image
-                    </label>
-                    <img
-                      src={selectedProduct.image}
-                      alt={selectedProduct.name}
-                      className="w-full h-48 object-cover rounded-xl"
-                    />
-                  </div>
                 </div>
               </div>
             )}

@@ -4,6 +4,7 @@ import Footer from "../../../components/Footer";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getToken } from "../../../services/token";
+import { useAnimalFeeding } from "../../../hooks/animalFeeding/useAnimalFeeding";
 
 const OilDetails = () => {
   const { id } = useParams();
@@ -15,6 +16,9 @@ const OilDetails = () => {
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
+
+  // Get the dispatch function from the context
+  const { dispatch } = useAnimalFeeding();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -36,6 +40,8 @@ const OilDetails = () => {
         setProduct(data);
         setTotalPrice(data.price * quantity);
         setLoading(false);
+        // Dispatch the action to set the product in the context
+        dispatch({ type: "SET_ANIMAL_FEEDING_PRODUCTS", payload: [data] });
       } catch (error) {
         toast.error(`Error: ${error.message}`);
         setLoading(false);
@@ -43,7 +49,7 @@ const OilDetails = () => {
     };
 
     fetchProduct();
-  }, []);
+  }, [id, token, quantity, dispatch]);
 
   const handleQuantityChange = (e) => {
     const newQuantity = parseInt(e.target.value);
@@ -62,7 +68,7 @@ const OilDetails = () => {
       // Prepare order data
       const orderData = {
         productId: product._id,
-        name: product.name,
+        productName: product.name,
         quantity,
         price: product.price,
         total: totalPrice,
@@ -170,7 +176,7 @@ const OilDetails = () => {
                   <p
                     className={`text-lg font-semibold ${
                       product.quantity > 20
-                        ? "text-green-600"
+                        ? "text-yellow-600"
                         : "text-orange-500"
                     }`}
                   >
@@ -194,7 +200,7 @@ const OilDetails = () => {
                   <span
                     className={`px-3 py-1 rounded-full text-sm font-medium ${
                       product.quantity > 0
-                        ? "bg-green-100 text-green-800"
+                        ? "bg-yellow-100 text-yellow-800"
                         : "bg-red-100 text-red-800"
                     }`}
                   >
@@ -287,9 +293,9 @@ const OilDetails = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all duration-300 scale-100">
             <div className="p-8">
-              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100">
+              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-yellow-100">
                 <svg
-                  className="h-8 w-8 text-green-600"
+                  className="h-8 w-8 text-yellow-600"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"

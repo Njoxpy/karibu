@@ -2,12 +2,9 @@
 const FreshOilProduct = require("../models/freshOil/freshOilproductModel");
 const FreshOilOrder = require("../models/freshOil/freshOilOrderModel");
 
-const mongoose = require("mongoose");
-
 // middleware
 const {
   SERVER_ERROR,
-  CREATED,
   OK,
   NOT_FOUND,
   BAD_REQUEST,
@@ -72,73 +69,49 @@ const searchFreshOilOrders = async (req, res) => {
 // create order
 const createFreshOilOrder = async (req, res) => {
   try {
-    const { productId, quantity } = req.body;
-
+    const { productId, productName, quantity } = req.body;
     const userId = req.user && req.user._id;
 
-    if (!productId || !quantity || !userId) {
+    // Validate inputs
+    if (!productId || !productName || !quantity || !userId) {
       return res
         .status(BAD_REQUEST)
         .json({ message: "All fields are required" });
     }
 
-    if (typeof quantity !== "number") {
-      return res
-        .status(BAD_REQUEST)
-        .json({ message: "Quantity should be a number" });
+    // Fetch the product
+    const product = await FreshOilProduct.findById(productId);
+    if (!product) {
+      return res.status(NOT_FOUND).json({ error: "Product not found" });
     }
 
-    if (quantity < 0) {
-      return res
-        .status(BAD_REQUEST)
-        .json({ message: "Quantity cannot be negative" });
+    // Check stock
+    if (product.quantity < quantity) {
+      return res.status(BAD_REQUEST).json({ message: "Insufficient stock" });
     }
 
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(BAD_REQUEST).json({ message: "Invalid user ID" });
-    }
-
-    if (!mongoose.Types.ObjectId.isValid(productId)) {
-      return res.status(BAD_REQUEST).json({ message: "Invalid product  ID" });
-    }
-
-    const productDetails = await FreshOilProduct.findById(productId);
-
-    if (!productDetails) {
-      return res.status(NOT_FOUND).json({ message: "Product not found" });
-    }
-
-    if (productDetails.quantity < quantity) {
-      return res
-        .status(BAD_REQUEST)
-        .json({ message: "Insufficient product quantity available" });
-    }
-
-    const price = productDetails.price;
-
+    // Create the order
     const order = await FreshOilOrder.create({
-      userId,
       productId,
+      productName, // Include the product name
       quantity,
-      price,
-      total: quantity * price,
+      price: product.price,
+      total: quantity * product.price,
+      userId,
     });
 
-    productDetails.quantity -= quantity;
-    await productDetails.save();
+    // Update the product stock
+    product.quantity -= quantity;
+    await product.save();
 
-    if (!res.headersSent) {
-      return res
-        .status(201)
-        .json({ message: "Order created successfully", order });
-    }
+    return res
+      .status(201)
+      .json({ message: "Order created successfully", order });
   } catch (error) {
-    if (!res.headersSent) {
-      return res.status(SERVER_ERROR).json({
-        message: "An error occurred while creating the order",
-        error: error.message,
-      });
-    }
+    return res.status(SERVER_ERROR).json({
+      message: "An error occurred while creating the order",
+      error: error.message,
+    });
   }
 };
 
@@ -164,8 +137,9 @@ const getAllFreshOilProducts = async (req, res) => {
 // get all orders
 const getAllFreshOilOrders = async (req, res) => {
   try {
-    const orders = await FreshOilOrder.find().sort({ createdAt: -1 });
-
+    const orders = await FreshOilOrder.find()
+      .populate("productId", "name") // Include product name
+      .sort({ createdAt: -1 });
     if (orders.length === 0) {
       return res
         .status(NOT_FOUND)
