@@ -1,18 +1,19 @@
 import { useState, useEffect } from "react";
 import Animal2 from "../../../assets/images/animal2.jpg";
 import { getToken } from "../../../services/token";
+import { useAnimalFeeding } from "../../../hooks/animalFeeding/useAnimalFeeding";
 
 const FoodsBody = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 6;
 
   const token = getToken();
-
   const baseURL = "http://localhost:5000";
+
+  const { products, dispatch } = useAnimalFeeding();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -20,7 +21,7 @@ const FoodsBody = () => {
 
       try {
         const response = await fetch(
-          `http://localhost:5000/api/v1/animal-feeding/products?name=${searchTerm}`,
+          `${baseURL}/api/v1/animal-feeding/products?name=${searchTerm}`,
           {
             method: "GET",
             headers: {
@@ -35,91 +36,74 @@ const FoodsBody = () => {
         }
 
         const data = await response.json();
-        setProducts(data);
-        setLoading(false);
+        if (Array.isArray(data)) {
+          dispatch({ type: "SET_ANIMAL_FEEDING_PRODUCTS", payload: data });
+        }
       } catch (error) {
-        setError("Error fetching products");
+        setError(error.message);
+      } finally {
         setLoading(false);
-        console.log(error);
       }
     };
 
     fetchProducts();
-  }, [searchTerm]);
+  }, [searchTerm, token, dispatch]);
 
-  // Get current items based on the page number
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentProducts = products.slice(indexOfFirstItem, indexOfLastItem);
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
-  // Handle previous page
-  const handlePrevious = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
-  // Handle next page
-  const handleNext = () => {
-    if (currentPage < Math.ceil(products.length / itemsPerPage)) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
+  if (products.length === 0) {
+    return <div>No products found</div>;
+  }
+
+  const paginatedProducts = products.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
-    <div>
-      <div className="mb-4 submission">
-        <input
-          type="text"
-          placeholder="Search for animal feeding products ..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="border rounded p-2 w-full"
-        />
-      </div>
-
-      {loading ? (
-        <p>Loading...</p>
-      ) : error ? (
-        <p>{error}</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {currentProducts.map((product) => (
-            <div
-              key={product._id}
-              className="border rounded-lg shadow-md overflow-hidden"
-            >
-              <img
-                src={product.image ? `${baseURL}${product.image}` : Animal2}
-                loading="lazy"
-                alt={product.name}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-4">
-                <h2 className="font-semibold text-lg">{product.name}</h2>
-                <p className="text-gray-600">{product.description}</p>
-                <p className="text-gray-600">Idadi: {product.quantity}</p>
-                <p className="text-gray-600">Nutrients: {product.nutrients}</p>
-                <p className="font-bold text-green-700">Tsh {product.price}</p>
-                <div className="mt-4 flex justify-between">
-                  <a
-                    href={`/animal-feeding/products/${product._id}`}
-                    className="bg-green-500 text-white py-2 px-4 rounded"
-                  >
-                    Order Now
-                  </a>
-                </div>
+    <div className="container mx-auto p-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {paginatedProducts.map((product) => (
+          <div
+            key={product._id}
+            className="border rounded-lg shadow-md overflow-hidden"
+          >
+            <img
+              src={product.image ? `${baseURL}${product.image}` : Animal2}
+              loading="lazy"
+              alt={product.name}
+              className="w-full h-48 object-cover"
+            />
+            <div className="p-4">
+              <h2 className="font-semibold text-lg">{product.name}</h2>
+              <p className="text-gray-600">{product.description}</p>
+              <p className="text-gray-600">Idadi: {product.quantity}</p>
+              <p className="text-gray-600">Nutrients: {product.nutrients}</p>
+              <p className="font-bold text-green-700">Tsh {product.price}</p>
+              <div className="mt-4 flex justify-between">
+                <a
+                  href={`/animal-feeding/products/${product._id}`}
+                  className="bg-green-500 text-white py-2 px-4 rounded transition duration-300 hover:bg-green-600"
+                >
+                  Order Now
+                </a>
               </div>
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        ))}
+      </div>
 
-      <div className="flex justify-center m-2">
+      <div className="flex justify-center mt-6">
         <button
-          onClick={handlePrevious}
+          onClick={() => setCurrentPage(currentPage - 1)}
           disabled={currentPage === 1}
-          className="bg-green-500 text-white py-1 px-2 rounded transition duration-300"
+          className="bg-green-500 text-white py-2 px-4 rounded transition duration-300 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Previous
         </button>
@@ -128,9 +112,9 @@ const FoodsBody = () => {
           <strong>{Math.ceil(products.length / itemsPerPage)}</strong>
         </span>
         <button
-          onClick={handleNext}
-          disabled={currentPage === Math.ceil(products.length / itemsPerPage)}
-          className="bg-green-500 text-white py-1 px-2 rounded transition duration-300"
+          onClick={() => setCurrentPage(currentPage + 1)}
+          disabled={currentPage * itemsPerPage >= products.length}
+          className="bg-green-500 text-white py-2 px-4 rounded transition duration-300 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Next
         </button>

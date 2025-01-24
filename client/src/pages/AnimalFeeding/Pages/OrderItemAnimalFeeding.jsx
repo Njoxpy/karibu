@@ -63,37 +63,53 @@ const OrderItemAnimalFeeding = () => {
     }
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setIsSubmitting(true);
 
     try {
+      const orderData = {
+        productId: selectedProduct._id,
+        productName: selectedProduct.name,
+        quantity,
+        price: selectedProduct.price,
+        total: totalPrice,
+        status: "pending",
+      };
+
       const response = await fetch(
         "http://localhost:5000/api/v1/animal-feeding/orders",
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({
-            productId: selectedProduct._id,
-            quantity,
-            totalPrice,
-          }),
+          body: JSON.stringify(orderData),
         }
       );
 
-      if (response.ok) {
-        setOrderSuccess(true);
-        toast.success("Order placed successfully!");
-        setQuantity(1);
-        setTotalPrice(selectedProduct.price);
-      } else {
-        throw new Error("Failed to place order");
+      if (!response.ok) {
+        const errorResponse = await response.json();
+        throw new Error(
+          errorResponse.message || "Failed to place the order. Try again."
+        );
       }
+
+      setOrderSuccess(true);
+      toast.success("Order placed successfully!", {
+        position: "top-center",
+        autoClose: 3000,
+      });
+
+      // Reset form state
+      setQuantity(1);
+      setTotalPrice(selectedProduct.price);
     } catch (error) {
-      toast.error(error.message);
+      toast.error(`Error: ${error.message}`, {
+        position: "top-center",
+        autoClose: 3000,
+      });
     } finally {
       setIsSubmitting(false);
     }

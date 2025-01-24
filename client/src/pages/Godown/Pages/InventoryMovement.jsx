@@ -7,28 +7,31 @@ const InventoryMovement = () => {
   const [transferQuantity, setTransferQuantity] = useState(0);
   const [destination, setDestination] = useState("");
   const [origin, setOrigin] = useState("");
+  const [reason, setReason] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-
   // token
   const token = localStorage.getItem("authToken");
-  
+
   useEffect(() => {
     const fetchInventory = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/v1/godown/products/", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`, // Attach the token in the Authorization header
-            "Content-Type": "application/json",
+        const response = await fetch(
+          "http://localhost:5000/api/v1/godown/products/",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`, // Attach the token in the Authorization header
+              "Content-Type": "application/json",
+            },
           }
-        });
+        );
         const data = await response.json();
-        
+
         console.log("Fetched data:", data);
-        
+
         if (response.ok) {
           setInventory(data.products);
           console.log("Set inventory:", data.products);
@@ -58,19 +61,23 @@ const InventoryMovement = () => {
         alert("Transfer quantity exceeds available stock.");
       } else {
         try {
-          const response = await fetch("http://localhost:5000/api/v1/godown/inventory-movement", {
-            method: "POST",
-            Authorization: `Bearer ${token}`,
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              selectedItemId: selectedItem._id,
-              transferQuantity,
-              origin,
-              destination,
-            }),
-          });
+          const response = await fetch(
+            "http://localhost:5000/api/v1/godown/inventory-movement",
+            {
+              method: "POST",
+              Authorization: `Bearer ${token}`,
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                selectedItemId: selectedItem._id,
+                transferQuantity,
+                origin,
+                destination,
+                reason,
+              }),
+            }
+          );
 
           const data = await response.json();
 
@@ -123,17 +130,20 @@ const InventoryMovement = () => {
         <div className="max-w-xl mx-auto bg-white rounded-xl shadow-xl overflow-hidden">
           <div className="p-8 space-y-6">
             <div className="space-y-2">
-              <label className="text-gray-700 text-sm font-semibold uppercase tracking-wide">Select Item</label>
+              <label className="text-gray-700 text-sm font-semibold uppercase tracking-wide">
+                Select Item
+              </label>
               <select
                 onChange={handleItemChange}
                 className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
               >
                 <option value="">Choose an item...</option>
-                {inventory && inventory.map((item) => (
-                  <option key={item._id} value={item._id}>
-                    {item.name} - {item.quantity} available
-                  </option>
-                ))}
+                {inventory &&
+                  inventory.map((item) => (
+                    <option key={item._id} value={item._id}>
+                      {item.name} - {item.quantity} available
+                    </option>
+                  ))}
               </select>
             </div>
 
@@ -141,17 +151,23 @@ const InventoryMovement = () => {
               <div className="p-4 bg-gray-50 rounded-lg space-y-2">
                 <p className="text-gray-600">
                   Current Location:{" "}
-                  <span className="font-semibold text-gray-800">{selectedItem.location}</span>
+                  <span className="font-semibold text-gray-800">
+                    {selectedItem.location}
+                  </span>
                 </p>
                 <p className="text-gray-600">
                   Available Quantity:{" "}
-                  <span className="font-semibold text-gray-800">{selectedItem.quantity}</span>
+                  <span className="font-semibold text-gray-800">
+                    {selectedItem.quantity}
+                  </span>
                 </p>
               </div>
             )}
 
             <div className="space-y-2">
-              <label className="text-gray-700 text-sm font-semibold uppercase tracking-wide">Transfer Quantity</label>
+              <label className="text-gray-700 text-sm font-semibold uppercase tracking-wide">
+                Transfer Quantity
+              </label>
               <input
                 type="number"
                 min="1"
@@ -163,7 +179,22 @@ const InventoryMovement = () => {
             </div>
 
             <div className="space-y-2">
-              <label className="text-gray-700 text-sm font-semibold uppercase tracking-wide">Original Location</label>
+              <label className="text-gray-700 text-sm font-semibold uppercase tracking-wide">
+                Reason
+              </label>
+              <input
+                type="text"
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                placeholder="Enter reason for transfer"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-gray-700 text-sm font-semibold uppercase tracking-wide">
+                Original Location
+              </label>
               <input
                 type="text"
                 placeholder="Enter original location"
@@ -174,7 +205,9 @@ const InventoryMovement = () => {
             </div>
 
             <div className="space-y-2">
-              <label className="text-gray-700 text-sm font-semibold uppercase tracking-wide">Destination Location</label>
+              <label className="text-gray-700 text-sm font-semibold uppercase tracking-wide">
+                Destination Location
+              </label>
               <input
                 type="text"
                 placeholder="Enter destination location"

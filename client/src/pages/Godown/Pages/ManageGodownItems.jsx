@@ -3,6 +3,7 @@ import Footer from "../../../components/Footer";
 import ConfirmDelete from "../Components/ConfirmDelete";
 import Pagination from "../../../components/Pagination";
 import EditModal from "../Components/EditModal";
+import { getToken } from "../../../services/token";
 
 const ManageGodownItems = () => {
   const [products, setProducts] = useState([]);
@@ -12,6 +13,9 @@ const ManageGodownItems = () => {
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+
+  // token
+  const token = getToken();
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -25,13 +29,6 @@ const ManageGodownItems = () => {
   useEffect(() => {
     fetchProducts();
   }, []);
-
-  const token = localStorage.getItem("authToken");
-
-  if (!token) {
-    console.error("No authentication token found.");
-    return;
-  }
 
   const fetchProducts = async () => {
     try {

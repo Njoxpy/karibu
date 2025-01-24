@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Footer from "../../../components/Footer";
 import { getToken } from "../../../services/token";
+import { useAnimalFeeding } from "../../../hooks/animalFeeding/useAnimalFeeding";
 
 const FoodUpload = () => {
   const [name, setName] = useState("");
@@ -15,6 +16,8 @@ const FoodUpload = () => {
   const URL = "http://localhost:5000/api/v1/animal-feeding/products";
   const token = getToken();
 
+  const { dispatch } = useAnimalFeeding();
+
   const validateInputs = () => {
     if (!name.trim()) return "Product name is required.";
     if (!description.trim()) return "Description is required.";
@@ -27,7 +30,7 @@ const FoodUpload = () => {
     return null;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const validationError = validateInputs();
     if (validationError) {
@@ -38,36 +41,31 @@ const FoodUpload = () => {
     const formData = new FormData();
     formData.append("name", name);
     formData.append("description", description);
-    formData.append("nutrients", nutrients);
     formData.append("price", price);
     formData.append("quantity", quantity);
+    formData.append("nutrients", nutrients);
     formData.append("image", image);
 
-    fetch(URL, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    })
-      .then((response) => {
-        if (!response.ok) throw new Error("Failed to create product");
-        return response.json();
-      })
-      .then(() => {
-        setName("");
-        setDescription("");
-        setPrice("");
-        setQuantity("");
-        setNutrients("");
-        setImage(null);
-        setError(null);
-        setSuccess(true); // Show success modal
-      })
-      .catch((error) => {
-        setError(error.message);
-        setSuccess(false);
+    try {
+      const response = await fetch(URL, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
       });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+      dispatch({ type: "ADD_ANIMAL_FEEDING_PRODUCT", payload: data });
+      setSuccess(true);
+      setError(null);
+    } catch (error) {
+      setError(error.message);
+    }
   };
 
   return (

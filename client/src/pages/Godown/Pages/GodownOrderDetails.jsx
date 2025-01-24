@@ -1,152 +1,178 @@
+import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { getToken } from "../../../services/token";
 import Footer from "../../../components/Footer";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
-function GodownOrdersDetails() {
+const GodownOrdersDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  // tooken
-  const token = localStorage.getItem("authToken")
-
-  if (!token) {
-    return 'could not find the token'
-  }
+  const [error, setError] = useState(null);
+  const token = getToken();
 
   useEffect(() => {
-    const fetchOrderDetails = async () => {
+    const fetchOrder = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/v1/godown/orders/${id}`,
+        const response = await fetch(
+          `http://localhost:5000/API/v1/godown/orders/${id}`,
           {
-            method: 'GET',
+            method: "GET",
             headers: {
               Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            }
+            },
           }
         );
-        const data = await response.json();
-        if (response.ok) {
-          setOrder(data);
-        } else {
-          toast.error("Failed to fetch order details");
+        if (!response.ok) {
+          throw new Error("Order not found");
         }
-      } catch (error) {
-        toast.error("Error fetching order details");
+        const data = await response.json();
+        setOrder(data);
+      } catch (err) {
+        setError(err.message);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchOrderDetails();
+    fetchOrder();
   }, [id]);
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-gray-900"></div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-500" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-red-500">Error: {error}</p>
       </div>
     );
   }
 
   if (!order) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
-        <div className="bg-white p-8 rounded-2xl shadow-xl text-center max-w-md mx-4">
-          <div className="text-gray-400 mb-4">
-            <svg className="mx-auto h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
-          </div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">Order Not Found</h3>
-          <p className="text-gray-500">The order you&apos;re looking for doesn&apos;t exist or has been removed.</p>
-        </div>
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-gray-500">No order found</p>
       </div>
     );
   }
 
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleString();
+  };
+
+  const formatPrice = (totalPrice) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "TSH",
+    }).format(totalPrice);
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <ToastContainer />
-      <div className="max-w-4xl mx-auto px-4 py-12">
-        <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
-          {/* Header */}
-          <div className="bg-gradient-to-r from-gray-700 to-gray-800 px-6 py-8">
-            <h3 className="text-3xl font-bold text-white text-center">Order Details</h3>
-            <p className="text-gray-300 text-center mt-2">Order #{order._id.slice(-6)}</p>
+    <>
+      <div className="container mx-auto px-4 py-8">
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 mb-4 text-gray-600 hover:text-gray-900 transition-colors"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-4 w-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M19 12H5M12 19l-7-7 7-7"
+            />
+          </svg>
+          Back to Orders
+        </button>
+
+        <div className="bg-white rounded-lg shadow-md max-w-2xl mx-auto">
+          <div className="p-6 border-b border-gray-200">
+            <h1 className="text-2xl font-bold">Order Details</h1>
+            <p className="text-sm text-gray-500">Animal Feeding Order</p>
           </div>
 
-          {/* Order Information */}
-          <div className="p-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Left Column */}
-              <div className="space-y-6">
-                <div className="bg-gray-50 p-6 rounded-2xl">
-                  <h4 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">Product Information</h4>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm text-gray-500">Product Name</label>
-                      <p className="text-lg font-semibold text-gray-900">{order.name}</p>
-                    </div>
-                    <div>
-                      <label className="block text-sm text-gray-500">Product ID</label>
-                      <p className="text-gray-700 font-mono">{order.productId}</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-gray-50 p-6 rounded-2xl">
-                  <h4 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">Order Status</h4>
-                  <span className={`px-4 py-2 rounded-full text-sm font-medium ${
-                    order.status === 'completed' 
-                      ? 'bg-green-100 text-green-800'
-                      : order.status === 'pending'
-                      ? 'bg-yellow-100 text-yellow-800'
-                      : 'bg-gray-100 text-gray-800'
-                  }`}>
-                    {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                  </span>
-                </div>
+          <div className="p-6 space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <h3 className="text-sm font-medium text-gray-500">Order ID</h3>
+                <p className="mt-1 text-sm font-mono">{order.orderId}</p>
               </div>
 
-              {/* Right Column */}
-              <div className="space-y-6">
-                <div className="bg-gray-50 p-6 rounded-2xl">
-                  <h4 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">Order Details</h4>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm text-gray-500">Quantity</label>
-                      <p className="text-lg font-semibold text-gray-900">{order.quantity} units</p>
-                    </div>
-                    <div>
-                      <label className="block text-sm text-gray-500">Price per Unit</label>
-                      <p className="text-lg font-semibold text-gray-900">
-                        Tsh {(order.totalPrice / order.quantity).toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-                </div>
+              <div>
+                <h3 className="text-sm font-medium text-gray-500">
+                  Order Date
+                </h3>
+                <p className="mt-1 text-sm">{formatDate(order.createdAt)}</p>
+              </div>
 
-                <div className="bg-gray-50 p-6 rounded-2xl">
-                  <h4 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">Total Amount</h4>
-                  <p className="text-3xl font-bold text-gray-900">
-                    Tsh {order.totalPrice.toLocaleString()}
-                  </p>
-                  <p className="text-sm text-gray-500 mt-1">
-                    Order placed on {new Date(order.createdAt).toLocaleDateString()}
-                  </p>
-                </div>
+              <div>
+                <h3 className="text-sm font-medium text-gray-500">
+                  Product ID
+                </h3>
+                <p className="mt-1 text-sm font-mono">{order.productId}</p>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-medium text-gray-500">
+                  Customer ID
+                </h3>
+                <p className="mt-1 text-sm font-mono">{order.userId}</p>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-medium text-gray-500">Quantity</h3>
+                <p className="mt-1 text-sm">{order.quantity} unit(s)</p>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-medium text-gray-500">
+                  Unit Price
+                </h3>
+                <p className="mt-1 text-sm">{formatPrice(order.totalPrice)}</p>
+              </div>
+            </div>
+
+            <div className="border-t pt-4">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-medium">Total Amount</h3>
+                <p className="text-lg font-bold">
+                  {formatPrice(order.totalPrice)}
+                </p>
+              </div>
+            </div>
+
+            <div className="border-t pt-4 grid grid-cols-2 gap-4">
+              <div>
+                <h3 className="text-sm font-medium text-gray-500">
+                  Created At
+                </h3>
+                <p className="mt-1 text-sm">{formatDate(order.createdAt)}</p>
+              </div>
+              <div>
+                <h3 className="text-sm font-medium text-gray-500">
+                  Last Updated
+                </h3>
+                <p className="mt-1 text-sm">{formatDate(order.updatedAt)}</p>
               </div>
             </div>
           </div>
         </div>
       </div>
       <Footer />
-    </div>
+    </>
   );
-}
+};
 
 export default GodownOrdersDetails;

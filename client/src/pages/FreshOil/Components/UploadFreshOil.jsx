@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Footer from "../../../components/Footer";
+import { getToken } from "../../../services/token";
 
 const UploadFreshOil = () => {
   const [name, setName] = useState("");
@@ -11,13 +12,15 @@ const UploadFreshOil = () => {
   const [success, setSuccess] = useState(false);
 
   const URL = "http://localhost:5000/api/v1/fresh-oil/products";
-  const token = localStorage.getItem("authToken");
+  const token = getToken();
 
   const validateInputs = () => {
     if (!name.trim()) return "Product name is required.";
     if (!description.trim()) return "Description is required.";
-    if (!price || isNaN(price) || Number(price) <= 0) return "Valid price is required.";
-    if (!quantity || isNaN(quantity) || Number(quantity) <= 0) return "Valid quantity is required.";
+    if (!price || isNaN(price) || Number(price) <= 0)
+      return "Valid price is required.";
+    if (!quantity || isNaN(quantity) || Number(quantity) <= 0)
+      return "Valid quantity is required.";
     if (!image) return "Product image is required.";
     return null;
   };
@@ -146,9 +149,7 @@ const UploadFreshOil = () => {
           </div>
 
           {error && (
-            <p className="text-red-600 bg-red-100 p-2 rounded">
-              {error}
-            </p>
+            <p className="text-red-600 bg-red-100 p-2 rounded">{error}</p>
           )}
 
           <button

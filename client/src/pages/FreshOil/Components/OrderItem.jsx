@@ -37,60 +37,88 @@ const OrderItem = () => {
           setIsLoading(false);
         }
       } catch (error) {
-        toast.error("Error fetching products");
+        toast.error(`Error: ${error.message}`);
         setIsLoading(false);
-        console.log(error);
       }
     };
 
     fetchProducts();
-  }, []);
+  }, [token]);
 
-  const handleProductChange = (event) => {
-    const product = products.find((p) => p._id === event.target.value);
+  const handleProductChange = (e) => {
+    const productId = e.target.value;
+    const product = products.find((product) => product._id === productId);
     setSelectedProduct(product);
     setTotalPrice(product.price * quantity);
   };
 
-  const handleQuantityChange = (event) => {
-    const newQuantity = parseInt(event.target.value);
+  const handleQuantityChange = (e) => {
+    const newQuantity = parseInt(e.target.value);
+    if (newQuantity < 1) return;
     setQuantity(newQuantity);
     if (selectedProduct) {
       setTotalPrice(selectedProduct.price * newQuantity);
     }
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setIsSubmitting(true);
 
     try {
+      // Prepare order data
+      const orderData = {
+        productId: selectedProduct._id,
+        productName: selectedProduct.name, // Most probable
+        quantity,
+        price: selectedProduct.price,
+        total: totalPrice,
+      };
+
+      // Send POST request to create order
       const response = await fetch(
         "http://localhost:5000/api/v1/fresh-oil/orders",
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Include bearer token
           },
-          body: JSON.stringify({
-            productId: selectedProduct._id,
-            quantity,
-            totalPrice,
-          }),
+          body: JSON.stringify(orderData),
         }
       );
 
-      if (response.ok) {
-        setOrderSuccess(true);
-        toast.success("Order placed successfully!");
-        setQuantity(1);
-        setTotalPrice(selectedProduct.price);
-      } else {
-        throw new Error("Failed to place order");
+      if (!response.ok) {
+        const errorResponse = await response.json();
+        throw new Error(
+          errorResponse.message || "Failed to place the order. Try again."
+        );
       }
+
+      // Show success message and reset the state
+      setOrderSuccess(true);
+      toast.success("Order placed successfully!", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+
+      // Reset order form state
+      setQuantity(1);
+      setTotalPrice(selectedProduct.price);
     } catch (error) {
-      toast.error(error.message);
+      // Handle errors
+      toast.error(`Error: ${error.message}`, {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -98,8 +126,8 @@ const OrderItem = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-50 to-yellow-100">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-yellow-900"></div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-900"></div>
       </div>
     );
   }
@@ -109,168 +137,158 @@ const OrderItem = () => {
       <ToastContainer />
       <div className="max-w-4xl mx-auto px-4 py-12">
         <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-yellow-100">
-          {/* Header */}
+          {/* Header Section */}
           <div className="bg-gradient-to-r from-yellow-700 to-yellow-800 px-6 py-8">
-            <h2 className="text-3xl font-bold text-white text-center">
-              Create New Order
+            <h2 className="text-2xl md:text-3xl font-bold text-white text-center">
+              Order Product
             </h2>
-            <p className="text-yellow-300 text-center mt-2">
-              Select product and specify quantity
-            </p>
+            <p className="text-yellow-300 text-center mt-2">Product Details</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="p-8 space-y-8">
+          <div className="p-8">
             {/* Product Selection */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="space-y-6">
-                <div className="bg-yellow-50 p-6 rounded-2xl">
-                  <label className="block text-sm font-medium text-yellow-700 mb-2">
-                    Select Product
-                  </label>
-                  <select
-                    value={selectedProduct?._id || ""}
-                    onChange={handleProductChange}
-                    className="w-full p-3 border border-yellow-300 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
-                  >
-                    {products.map((product) => (
-                      <option key={product._id} value={product._id}>
-                        {product.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+            <div className="bg-yellow-50 p-6 rounded-2xl">
+              <label className="block text-sm font-medium text-yellow-700 mb-2">
+                Select Product
+              </label>
+              <select
+                value={selectedProduct?._id || ""}
+                onChange={handleProductChange}
+                className="w-full p-3 border border-yellow-300 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+              >
+                {products.map((product) => (
+                  <option key={product._id} value={product._id}>
+                    {product.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-                <div className="bg-yellow-50 p-6 rounded-2xl">
-                  <label className="block text-sm font-medium text-yellow-700 mb-2">
-                    Product Details
-                  </label>
-                  <div className="space-y-3">
-                    <p className="text-sm text-yellow-500">
-                      Product ID:{" "}
-                      <span className="font-mono text-yellow-700">
-                        {selectedProduct?._id}
-                      </span>
-                    </p>
-                    <p className="text-sm text-yellow-500">
-                      Available Stock:
-                      <span
-                        className={`ml-2 px-2 py-1 rounded-full text-sm font-medium ${
-                          selectedProduct?.quantity > 20
-                            ? "bg-yellow-100 text-yellow-800"
-                            : "bg-yellow-100 text-yellow-800"
-                        }`}
-                      >
-                        {selectedProduct?.quantity} units
-                      </span>
-                    </p>
+            {/* Product Details */}
+            {selectedProduct && (
+              <div className="bg-yellow-50 p-6 rounded-2xl mt-4">
+                <label className="block text-sm font-medium text-yellow-700 mb-2">
+                  Product Details
+                </label>
+                <div className="space-y-3">
+                  <p className="text-sm text-yellow-500">
+                    Product ID:{" "}
+                    <span className="font-mono text-yellow-700">
+                      {selectedProduct._id}
+                    </span>
+                  </p>
+                  <p className="text-sm text-yellow-500">
+                    Available Stock:
+                    <span
+                      className={`ml-2 px-2 py-1 rounded-full text-sm font-medium ${
+                        selectedProduct.quantity > 20
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-yellow-100 text-yellow-800"
+                      }`}
+                    >
+                      {selectedProduct.quantity} units
+                    </span>
+                  </p>
+                  <div className="text-sm text-yellow-500">
+                    <label className="block text-sm font-medium text-yellow-700 mb-2">
+                      Product Image
+                    </label>
+                    <img
+                      src={selectedProduct.image}
+                      alt={selectedProduct.name}
+                      className="w-full h-48 object-cover rounded-xl"
+                    />
                   </div>
                 </div>
               </div>
+            )}
 
-              <div className="space-y-6">
-                <div className="bg-yellow-50 p-6 rounded-2xl">
-                  <label className="block text-sm font-medium text-yellow-700 mb-2">
-                    Quantity
-                  </label>
+            {/* Order Form */}
+            <form onSubmit={handleSubmit} className="space-y-6 mt-4">
+              <div className="bg-yellow-50 p-6 rounded-2xl">
+                <label className="block text-sm font-medium text-yellow-700 mb-2">
+                  Order Quantity
+                </label>
+                <div className="flex items-center space-x-4">
                   <input
                     type="number"
                     value={quantity}
                     onChange={handleQuantityChange}
                     min="1"
-                    max={selectedProduct?.quantity}
-                    className="w-full p-3 border border-yellow-300 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                    max={selectedProduct?.quantity || 1}
+                    className="flex-1 p-3 border border-yellow-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all duration-200"
                   />
-                  {quantity > selectedProduct?.quantity && (
-                    <p className="mt-2 text-sm text-red-500">
-                      Quantity exceeds available stock
+                  <div className="text-right">
+                    <p className="text-sm text-yellow-500">Total Price</p>
+                    <p className="text-xl font-bold text-yellow-700">
+                      Tsh {totalPrice.toLocaleString()}
                     </p>
-                  )}
-                </div>
-
-                <div className="bg-yellow-50 p-6 rounded-2xl">
-                  <label className="block text-sm font-medium text-yellow-700 mb-2">
-                    Order Summary
-                  </label>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-yellow-500">Price per unit</span>
-                      <span className="font-medium">
-                        Tsh {selectedProduct?.price.toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-yellow-500">Quantity</span>
-                      <span className="font-medium">{quantity} units</span>
-                    </div>
-                    <div className="pt-3 border-t border-yellow-200">
-                      <div className="flex justify-between items-center">
-                        <span className="text-lg font-medium text-yellow-700">
-                          Total Amount
-                        </span>
-                        <span className="text-xl font-bold text-yellow-900">
-                          Tsh {totalPrice.toLocaleString()}
-                        </span>
-                      </div>
-                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-
-            {/* Submit Button */}
-            <div className="flex justify-end pt-6">
-              <button
-                type="submit"
-                disabled={isSubmitting || quantity > selectedProduct?.quantity}
-                className={`
-                  w-full md:w-auto px-8 py-4 rounded-xl text-white font-medium
-                  transition-all duration-200 transform hover:scale-105
-                  ${
-                    isSubmitting || quantity > selectedProduct?.quantity
-                      ? "bg-yellow-400 cursor-not-allowed"
-                      : "bg-gradient-to-r from-yellow-700 to-yellow-800 hover:from-yellow-800 hover:to-yellow-900 shadow-lg hover:shadow-xl"
-                  }
-                `}
-              >
-                {isSubmitting ? (
-                  <span className="flex items-center justify-center">
-                    <svg
-                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Processing...
-                  </span>
-                ) : (
-                  "Place Order"
+                {quantity > selectedProduct?.quantity && (
+                  <p className="mt-2 text-sm text-red-500">
+                    Quantity exceeds available stock
+                  </p>
                 )}
-              </button>
-            </div>
-          </form>
+              </div>
+
+              {/* Submit Button */}
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  disabled={
+                    isSubmitting || quantity > selectedProduct?.quantity
+                  }
+                  className={`
+                    w-full md:w-auto px-8 py-4 rounded-xl text-white font-medium
+                    transition-all duration-200 transform hover:scale-105
+                    ${
+                      isSubmitting || quantity > selectedProduct?.quantity
+                        ? "bg-yellow-400 cursor-not-allowed"
+                        : "bg-gradient-to-r from-yellow-700 to-yellow-800 hover:from-yellow-800 hover:to-yellow-900 shadow-lg hover:shadow-xl"
+                    }
+                  `}
+                >
+                  {isSubmitting ? (
+                    <span className="flex items-center justify-center">
+                      <svg
+                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Processing...
+                    </span>
+                  ) : (
+                    "Place Order"
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
 
       {/* Success Modal */}
       {orderSuccess && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all duration-300">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all duration-300 scale-100">
             <div className="p-8">
-              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-yellow-100 mb-6">
+              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-yellow-100">
                 <svg
                   className="h-8 w-8 text-yellow-600"
                   fill="none"
@@ -285,18 +303,20 @@ const OrderItem = () => {
                   />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-yellow-900 text-center mb-4">
+              <h3 className="mt-6 text-xl font-semibold text-yellow-900 text-center">
                 Order Placed Successfully!
               </h3>
-              <p className="text-yellow-500 text-center mb-6">
+              <p className="mt-4 text-yellow-500 text-center">
                 Your order has been successfully placed and is being processed.
               </p>
-              <button
-                onClick={() => setOrderSuccess(false)}
-                className="w-full px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-yellow-700 to-yellow-800 rounded-xl hover:from-yellow-800 hover:to-yellow-900 transition-all duration-200 transform hover:scale-105"
-              >
-                Continue Shopping
-              </button>
+              <div className="mt-8">
+                <button
+                  onClick={() => setOrderSuccess(false)}
+                  className="w-full px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-yellow-700 to-yellow-800 rounded-xl hover:from-yellow-800 hover:to-yellow-900 transition-all duration-200 transform hover:scale-105"
+                >
+                  Continue Ordering
+                </button>
+              </div>
             </div>
           </div>
         </div>

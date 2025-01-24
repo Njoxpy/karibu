@@ -1,8 +1,12 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Footer from "../../../components/Footer";
 import { getToken } from "../../../services/token";
 
 const AdminManage = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [quantityFilter, setQuantityFilter] = useState("");
+  const [sortOrder, setSortOrder] = useState(""); // New state for sorting order
+  const [currentItems, setCurrentItems] = useState([]);
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -10,14 +14,12 @@ const AdminManage = () => {
   const [isEditSuccessModalOpen, setIsEditSuccessModalOpen] = useState(false);
   const [isDeleteSuccessModalOpen, setIsDeleteSuccessModalOpen] =
     useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [editProduct, setEditProduct] = useState(null);
+  const [validationErrors, setValidationErrors] = useState({});
   const token = getToken();
   const baseURL = "http://localhost:5000";
 
-  const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10; // Adjust as needed
-  const [editProduct, setEditProduct] = useState(null);
-  const [validationErrors, setValidationErrors] = useState({});
 
   useEffect(() => {
     fetchProducts();
@@ -38,36 +40,50 @@ const AdminManage = () => {
       }
       const data = await response.json();
       setProducts(data);
+      setCurrentItems(data);
     } catch (error) {
       console.error("Error fetching products:", error);
     }
   };
 
-  const handleSearch = (event) => {
-    setSearchQuery(event.target.value);
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
+    filterProducts(e.target.value, quantityFilter, sortOrder);
   };
 
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredProducts.slice(
-    indexOfFirstItem,
-    indexOfLastItem
-  );
-
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  const openEditModal = (product) => {
-    setEditProduct(product);
-    setIsEditModalOpen(true);
+  const handleQuantityFilter = (e) => {
+    setQuantityFilter(e.target.value);
+    filterProducts(searchQuery, e.target.value, sortOrder);
   };
 
-  const openDeleteModal = (product) => {
-    setSelectedProduct(product);
-    setIsDeleteModalOpen(true);
+  const handleSortOrder = (e) => {
+    setSortOrder(e.target.value);
+    filterProducts(searchQuery, quantityFilter, e.target.value);
+  };
+
+  const filterProducts = (search, quantity, order) => {
+    let filteredProducts = products;
+    if (search) {
+      filteredProducts = filteredProducts.filter((product) =>
+        product.name.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+    if (quantity) {
+      filteredProducts = filteredProducts.filter(
+        (product) => product.quantity >= parseInt(quantity)
+      );
+    }
+    if (order) {
+      filteredProducts = filteredProducts.sort((a, b) => {
+        if (order === "asc") {
+          return a.quantity - b.quantity;
+        } else if (order === "desc") {
+          return b.quantity - a.quantity;
+        }
+        return 0;
+      });
+    }
+    setCurrentItems(filteredProducts);
   };
 
   const handleInputChange = (e) => {
@@ -142,6 +158,22 @@ const AdminManage = () => {
           onChange={handleSearch}
           className="border p-2 mb-4 w-full"
         />
+        <input
+          type="number"
+          placeholder="Filter by quantity..."
+          value={quantityFilter}
+          onChange={handleQuantityFilter}
+          className="border p-2 mb-4 w-full"
+        />
+        <select
+          value={sortOrder}
+          onChange={handleSortOrder}
+          className="border p-2 mb-4 w-full"
+        >
+          <option value="">Sort by quantity</option>
+          <option value="asc">Lowest to Highest</option>
+          <option value="desc">Highest to Lowest</option>
+        </select>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {currentItems.map((product) => (
             <div key={product._id} className="border p-4 rounded">
@@ -162,13 +194,19 @@ const AdminManage = () => {
               <div className="flex justify-between mt-4">
                 <button
                   className="bg-green-500 text-white px-4 py-2 rounded"
-                  onClick={() => openEditModal(product)}
+                  onClick={() => {
+                    setEditProduct(product);
+                    setIsEditModalOpen(true);
+                  }}
                 >
                   Edit
                 </button>
                 <button
                   className="bg-red-500 text-white px-4 py-2 rounded"
-                  onClick={() => openDeleteModal(product)}
+                  onClick={() => {
+                    setSelectedProduct(product);
+                    setIsDeleteModalOpen(true);
+                  }}
                 >
                   Delete
                 </button>
@@ -178,13 +216,23 @@ const AdminManage = () => {
         </div>
         <div className="flex justify-center mt-4">
           {Array.from(
-            { length: Math.ceil(filteredProducts.length / itemsPerPage) },
+            { length: Math.ceil(currentItems.length / itemsPerPage) },
             (_, index) => (
               <button
                 key={index}
-                onClick={() => paginate(index + 1)}
+                onClick={() =>
+                  setCurrentItems(
+                    currentItems.slice(
+                      index * itemsPerPage,
+                      (index + 1) * itemsPerPage
+                    )
+                  )
+                }
                 className={`px-4 py-2 mx-1 rounded ${
-                  currentPage === index + 1
+                  currentItems.slice(
+                    index * itemsPerPage,
+                    (index + 1) * itemsPerPage
+                  ).length === itemsPerPage
                     ? "bg-green-500 text-white"
                     : "bg-gray-200 hover:bg-gray-300"
                 }`}
@@ -220,16 +268,16 @@ const AdminManage = () => {
                   <label className="block text-gray-700">Description</label>
                   <input
                     type="text"
-                    name="name"
+                    name="description"
                     value={editProduct.description}
                     onChange={handleInputChange}
                     className={`border p-2 w-full rounded ${
-                      validationErrors.name ? "border-red-500" : ""
+                      validationErrors.description ? "border-red-500" : ""
                     }`}
                   />
-                  {validationErrors.name && (
+                  {validationErrors.description && (
                     <p className="text-red-500 text-sm mt-1">
-                      {validationErrors.name}
+                      {validationErrors.description}
                     </p>
                   )}
                 </div>

@@ -62,7 +62,7 @@ const GodownProductDetails = () => {
       // Prepare order data
       const orderData = {
         productId: product._id,
-        name: product.name,
+        productName: product.name,
         quantity,
         price: product.price,
         total: totalPrice,

@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
-import Footer from "../../../components/Footer";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import Footer from "../../../components/Footer";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getToken } from "../../../services/token";
+import { useAnimalFeeding } from "../../../hooks/animalFeeding/useAnimalFeeding";
 
 // Utility function to format date
 const formatDate = (date) => new Date(date).toLocaleDateString();
@@ -13,14 +14,19 @@ const Orders = () => {
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
+  const [totalPages, setTotalPages] = useState(1);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [orderToEdit, setOrderToEdit] = useState(null);
   const [orderToDelete, setOrderToDelete] = useState(null);
   const [filter, setFilter] = useState("all"); // Default filter is "all"
+  const [newQuantity, setNewQuantity] = useState(1);
 
   // token
   const token = getToken();
+
+  // Get the dispatch function from the context
+  const { orders: contextOrders, dispatch } = useAnimalFeeding();
 
   // Fetch orders from API
   const fetchOrders = async () => {
@@ -37,13 +43,23 @@ const Orders = () => {
       );
       const data = await response.json();
       if (response.ok) {
-        setOrders(data);
-        setFilteredOrders(data); // Initially set filtered orders as all fetched orders
+        if (Array.isArray(data)) {
+          setOrders(data);
+          setFilteredOrders(data); // Initially set filtered orders as all fetched orders
+          setTotalPages(Math.ceil(data.length / itemsPerPage)); // Assuming itemsPerPage orders per page
+          // Dispatch the action to set orders in the context
+          dispatch({ type: "SET_ANIMAL_FEEDING_ORDERS", payload: data });
+        } else {
+          console.error("API response is not an array");
+          setFilteredOrders([]); // Ensure filteredOrders is an array
+        }
       } else {
         console.error("Failed to fetch orders");
+        setFilteredOrders([]); // Ensure filteredOrders is an array
       }
     } catch (error) {
       console.error("Error fetching orders:", error);
+      setFilteredOrders([]); // Ensure filteredOrders is an array
     }
   };
 
@@ -57,7 +73,6 @@ const Orders = () => {
   };
 
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
   const paginatedOrders = filteredOrders.slice(
     startIndex,
     startIndex + itemsPerPage
@@ -129,6 +144,8 @@ const Orders = () => {
         setOrders(updatedOrders);
         setFilteredOrders(updatedOrders);
         setShowDeleteModal(false);
+        // Dispatch the action to delete the order in the context
+        dispatch({ type: "DELETE_ANIMAL_FEEDING_ORDER", payload: orderId });
       } else {
         console.error("Failed to delete the order");
       }
@@ -145,27 +162,34 @@ const Orders = () => {
         {
           method: "PATCH",
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(orderToEdit),
+          body: JSON.stringify({ quantity: newQuantity }),
         }
       );
 
-      if (response.ok) {
-        const updatedOrder = await response.json();
-        const updatedOrders = orders.map((order) =>
-          order._id === updatedOrder._id ? updatedOrder : order
-        );
-        setOrders(updatedOrders);
-        setFilteredOrders(updatedOrders);
-        setShowEditModal(false);
-        setOrderToEdit(null);
-      } else {
-        console.error("Failed to update the order");
+      if (!response.ok) {
+        throw new Error("Failed to update order");
       }
+
+      const updatedOrder = await response.json();
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order._id === updatedOrder._id ? updatedOrder : order
+        )
+      );
+      setFilteredOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order._id === updatedOrder._id ? updatedOrder : order
+        )
+      );
+      setShowEditModal(false);
+      // Dispatch the action to update the order in the context
+      dispatch({ type: "UPDATE_ANIMAL_FEEDING_ORDER", payload: updatedOrder });
+      toast.success("Order updated successfully");
     } catch (error) {
-      console.error("Error updating order:", error);
+      toast.error(`Error: ${error.message}`);
     }
   };
 
@@ -178,6 +202,7 @@ const Orders = () => {
   // Handle Edit Order Modal
   const openEditModal = (order) => {
     setOrderToEdit(order);
+    setNewQuantity(order.quantity);
     setShowEditModal(true);
   };
 
@@ -190,6 +215,10 @@ const Orders = () => {
     setShowDeleteModal(false);
     setOrderToDelete(null);
   };
+
+  if (filteredOrders.length === 0) {
+    return <div className="text-center py-12">No orders</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100">
@@ -278,12 +307,7 @@ const Orders = () => {
                         className="hover:bg-green-50 transition-colors duration-200"
                       >
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-green-900">
-                            {order.name}
-                          </div>
-                          <div className="text-sm text-green-500">
-                            ID: {order._id.slice(-6)}
-                          </div>
+                          {order.productId.name}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-green-100 text-green-800">
@@ -373,29 +397,9 @@ const Orders = () => {
                   </label>
                   <input
                     type="number"
-                    value={orderToEdit?.quantity || ""}
-                    onChange={(e) =>
-                      setOrderToEdit({
-                        ...orderToEdit,
-                        quantity: e.target.value,
-                      })
-                    }
-                    className="w-full p-3 border border-green-300 rounded-xl focus:ring-2 focus:ring-green-400 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-green-700 mb-1">
-                    Total Price
-                  </label>
-                  <input
-                    type="number"
-                    value={orderToEdit?.totalPrice || ""}
-                    onChange={(e) =>
-                      setOrderToEdit({
-                        ...orderToEdit,
-                        totalPrice: e.target.value,
-                      })
-                    }
+                    value={newQuantity}
+                    onChange={(e) => setNewQuantity(parseInt(e.target.value))}
+                    min="1"
                     className="w-full p-3 border border-green-300 rounded-xl focus:ring-2 focus:ring-green-400 focus:border-transparent"
                   />
                 </div>

@@ -144,8 +144,6 @@ import GodownItemsDetailsError from "./pages/Godown/Error/GodownItemsDetailsErro
 import ProductDetailsOils from "./pages/FreshOil/Pages/ProductDetailsOils";
 
 export default function App() {
-  const { user } = useAuth();
-  console.log(user);
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route>
