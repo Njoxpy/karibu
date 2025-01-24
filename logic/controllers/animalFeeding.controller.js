@@ -156,11 +156,15 @@ const getAnimalFeedingOrderById = async (req, res) => {
   try {
     const order = await AnimalFeedingOrder.findById(id);
     if (!order) {
+      // If the order is not found, return a 404 and exit early.
       return res.status(404).json({ error: "Order not found" });
     }
-    res.status(CREATED).json(order);
+
+    // If the order exists, return it with a 200 status code.
+    return res.status(200).json(order);
   } catch (error) {
-    res.status(SERVER_ERROR).json({ error: error.message });
+    // Handle any errors in a single response.
+    return res.status(500).json({ error: error.message });
   }
 };
 

@@ -23,6 +23,14 @@ export const animalFeedingReducer = (state, action) => {
         ),
       };
 
+    case "GET_ANIMAL_FEEDING_PRODUCT_BY_ID": // READ BY ID
+      return {
+        ...state,
+        selectedProduct: state.products.find(
+          (product) => product.id === action.payload
+        ),
+      };
+
     // --- Order Actions ---
     case "SET_ANIMAL_FEEDING_ORDERS": // READ
       return { ...state, orders: action.payload };
@@ -42,6 +50,14 @@ export const animalFeedingReducer = (state, action) => {
       return {
         ...state,
         orders: state.orders.filter((order) => order.id !== action.payload),
+      };
+
+    case "GET_ANIMAL_FEEDING_ORDER_BY_ID": // READ BY ID
+      return {
+        ...state,
+        selectedOrder: state.orders.find(
+          (order) => order.id === action.payload
+        ),
       };
 
     // Optional: Clear all products or orders

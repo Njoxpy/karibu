@@ -149,10 +149,6 @@ export default function App() {
       <Route>
         <Route path="admin/*" element={<DashboardLayout />}>
           <Route index element={<DashboardHome />} />
-          <Route path="products" element={<ProductsPage />} />
-          <Route path="products/add" element={<AddProduct />} />
-          <Route path="orders" element={<OrdersPage />} />
-          <Route path="orders/:id" element={<OrderDetailsPage />} />
           <Route path="users" element={<UsersPage />} />
           <Route path="users/create" element={<AddUserPage />} />
           <Route path="reports" element={<ReportsPage />} />

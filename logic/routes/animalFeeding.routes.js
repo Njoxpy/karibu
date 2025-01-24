@@ -260,8 +260,8 @@ router.get(
           .json({ message: "No orders found for the given period" });
       }
 
-      // res.json({ success: true, orders }); // Placeholder response
-      generateAnimalFeedingPDF(orders, res);
+      // Generate and send the PDF
+      generateAnimalFeedingPDF(orders, res, startDate, endDate);
     } catch (error) {
       console.error(error);
       res.status(SERVER_ERROR).json({ message: "Error generating report" });

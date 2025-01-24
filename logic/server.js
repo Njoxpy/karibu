@@ -64,6 +64,14 @@ app.use(
   })
 );
 
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Allow only this origin
+    methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
+    credentials: true, // Allow cookies and credentials
+  })
+);
+
 app.use(express.json());
 
 // Add timeout middleware (30 seconds timeout)

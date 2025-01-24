@@ -143,12 +143,14 @@ const GodownOrders = () => {
       const response = await fetch(
         `http://localhost:5000/api/v1/godown/orders/${orderToEdit._id}`,
         {
-          method: "PUT",
+          method: "PATCH",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(orderToEdit),
+          body: JSON.stringify({
+            quantity: orderToEdit.quantity, // Only send the quantity
+          }),
         }
       );
 
@@ -161,11 +163,14 @@ const GodownOrders = () => {
         setFilteredOrders(updatedOrders);
         setShowEditModal(false);
         setOrderToEdit(null);
+        toast.success("Order updated successfully!");
       } else {
         console.error("Failed to update the order");
+        toast.error("Failed to update the order");
       }
     } catch (error) {
       console.error("Error updating order:", error);
+      toast.error("Error updating order");
     }
   };
 
@@ -367,6 +372,7 @@ const GodownOrders = () => {
                 Edit Order
               </h2>
               <form className="space-y-4">
+                {/* Product Name (Read-only) */}
                 <div>
                   <label className="block text-sm font-medium text-indigo-700 mb-1">
                     Product Name
@@ -374,12 +380,12 @@ const GodownOrders = () => {
                   <input
                     type="text"
                     value={orderToEdit?.name || ""}
-                    onChange={(e) =>
-                      setOrderToEdit({ ...orderToEdit, name: e.target.value })
-                    }
-                    className="w-full p-3 border border-indigo-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-transparent"
+                    readOnly // Make the field read-only
+                    className="w-full p-3 border border-indigo-300 rounded-xl bg-gray-100 cursor-not-allowed"
                   />
                 </div>
+
+                {/* Quantity (Editable) */}
                 <div>
                   <label className="block text-sm font-medium text-indigo-700 mb-1">
                     Quantity
@@ -396,22 +402,23 @@ const GodownOrders = () => {
                     className="w-full p-3 border border-indigo-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-transparent"
                   />
                 </div>
+
+                {/* Total Price (Read-only) */}
                 <div>
                   <label className="block text-sm font-medium text-indigo-700 mb-1">
                     Total Price
                   </label>
                   <input
-                    type="number"
-                    value={orderToEdit?.totalPrice || ""}
-                    onChange={(e) =>
-                      setOrderToEdit({
-                        ...orderToEdit,
-                        totalPrice: e.target.value,
-                      })
-                    }
-                    className="w-full p-3 border border-indigo-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-transparent"
+                    type="text"
+                    value={`Tsh ${
+                      orderToEdit?.totalPrice?.toLocaleString() || ""
+                    }`}
+                    readOnly // Make the field read-only
+                    className="w-full p-3 border border-indigo-300 rounded-xl bg-gray-100 cursor-not-allowed"
                   />
                 </div>
+
+                {/* Action Buttons */}
                 <div className="flex justify-end gap-3 mt-6">
                   <button
                     type="button"
@@ -433,7 +440,6 @@ const GodownOrders = () => {
           </div>
         </div>
       )}
-
       {/* Delete Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">

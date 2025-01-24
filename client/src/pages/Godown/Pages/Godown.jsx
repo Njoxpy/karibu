@@ -4,18 +4,27 @@ import InventoryTable from "./InventoryTable";
 const Godown = () => {
   return (
     <>
-<div className="p-4 bg-green-50 min-h-screen flex flex-col">
-  <header className="mb-6">
-    <h1 className="text-4xl font-extrabold text-center text-gray-700">
-    Godown Items Available
-    </h1>
-  </header>
-  <main className="flex-grow">
-    <InventoryTable />
-  </main>
-</div>
-    <Footer />
-</>
+      <div className="p-4 min-h-screen flex flex-col">
+        {/* Header */}
+        <header className="mb-8 py-6 bg-white shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 className="text-4xl font-extrabold text-center text-gray-800">
+              Godown Items Available
+            </h1>
+          </div>
+        </header>
+
+        {/* Main Content */}
+        <main className="flex-grow">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <InventoryTable />
+          </div>
+        </main>
+      </div>
+
+      {/* Footer */}
+      <Footer />
+    </>
   );
 };
 

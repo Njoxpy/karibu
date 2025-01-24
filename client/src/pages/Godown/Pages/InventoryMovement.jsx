@@ -11,8 +11,9 @@ const InventoryMovement = () => {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isTransferring, setIsTransferring] = useState(false);
 
-  // token
+  // Token
   const token = localStorage.getItem("authToken");
 
   useEffect(() => {
@@ -23,89 +24,99 @@ const InventoryMovement = () => {
           {
             method: "GET",
             headers: {
-              Authorization: `Bearer ${token}`, // Attach the token in the Authorization header
+              Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
           }
         );
         const data = await response.json();
 
-        console.log("Fetched data:", data);
-
         if (response.ok) {
-          setInventory(data.products);
-          console.log("Set inventory:", data.products);
-          setLoading(false);
+          setInventory(data.products || []);
         } else {
-          setMessage(data.message || "Failed to fetch inventory.");
-          setLoading(false);
+          setError(data.message || "Failed to fetch inventory.");
         }
       } catch (error) {
-        console.error("Error fetching inventory:", error);
         setError("Failed to fetch inventory.");
+        console.error("Error fetching inventory:", error);
+      } finally {
         setLoading(false);
       }
     };
 
     fetchInventory();
-  }, []);
+  }, [token]);
 
   const handleItemChange = (e) => {
     const item = inventory.find((i) => i._id === e.target.value);
     setSelectedItem(item);
+    setTransferQuantity(0); // Reset transfer quantity when item changes
   };
 
   const handleTransfer = async () => {
-    if (selectedItem && transferQuantity > 0 && destination && origin) {
-      if (transferQuantity > selectedItem.quantity) {
-        alert("Transfer quantity exceeds available stock.");
-      } else {
-        try {
-          const response = await fetch(
-            "http://localhost:5000/api/v1/godown/inventory-movement",
-            {
-              method: "POST",
-              Authorization: `Bearer ${token}`,
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                selectedItemId: selectedItem._id,
-                transferQuantity,
-                origin,
-                destination,
-                reason,
-              }),
-            }
-          );
+    if (!selectedItem) {
+      setMessage("Please select an item.");
+      return;
+    }
+    if (transferQuantity <= 0) {
+      setMessage("Transfer quantity must be greater than 0.");
+      return;
+    }
+    if (transferQuantity > selectedItem.quantity) {
+      setMessage("Transfer quantity exceeds available stock.");
+      return;
+    }
+    if (!origin || !destination) {
+      setMessage("Please provide both origin and destination locations.");
+      return;
+    }
 
-          const data = await response.json();
+    setIsTransferring(true);
+    setMessage("");
 
-          if (response.ok) {
-            alert(data.message);
-            setSelectedItem(null);
-            setTransferQuantity(0);
-            setOrigin("");
-            setDestination("");
-          } else {
-            setMessage(data.message);
-          }
-        } catch (error) {
-          setMessage("An error occurred during the transfer.");
-          console.error(error);
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/v1/godown/inventory-movement",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            selectedItemId: selectedItem._id,
+            transferQuantity,
+            origin,
+            destination,
+            reason,
+          }),
         }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage("Transfer successful!");
+        setSelectedItem(null);
+        setTransferQuantity(0);
+        setOrigin("");
+        setDestination("");
+        setReason("");
+      } else {
+        setMessage(data.message || "Failed to process transfer.");
       }
-    } else {
-      setMessage("Please fill in all fields.");
+    } catch (error) {
+      setMessage("An error occurred during the transfer.");
+      console.error("Error during transfer:", error);
+    } finally {
+      setIsTransferring(false);
     }
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-        <div className="animate-pulse text-2xl text-gray-700 font-semibold">
-          Loading inventory...
-        </div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
       </div>
     );
   }
@@ -138,12 +149,11 @@ const InventoryMovement = () => {
                 className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
               >
                 <option value="">Choose an item...</option>
-                {inventory &&
-                  inventory.map((item) => (
-                    <option key={item._id} value={item._id}>
-                      {item.name} - {item.quantity} available
-                    </option>
-                  ))}
+                {inventory.map((item) => (
+                  <option key={item._id} value={item._id}>
+                    {item.name} - {item.quantity} available
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -218,16 +228,29 @@ const InventoryMovement = () => {
             </div>
 
             {message && (
-              <div className="bg-red-50 text-red-600 p-4 rounded-lg text-sm font-medium">
+              <div
+                className={`p-4 rounded-lg text-sm font-medium ${
+                  message.includes("success")
+                    ? "bg-green-50 text-green-600"
+                    : "bg-red-50 text-red-600"
+                }`}
+              >
                 {message}
               </div>
             )}
 
             <button
               onClick={handleTransfer}
-              className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
+              disabled={isTransferring}
+              className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Confirm Transfer
+              {isTransferring ? (
+                <div className="flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+                </div>
+              ) : (
+                "Confirm Transfer"
+              )}
             </button>
           </div>
         </div>

@@ -14,17 +14,16 @@ const ManageGodownItems = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  // token
+  // Search and filter states
+  const [searchTerm, setSearchTerm] = useState("");
+  const [quantityFilter, setQuantityFilter] = useState("");
+
+  // Token
   const token = getToken();
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10; // You can adjust this number
-
-  // Calculate pagination values
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = products.slice(indexOfFirstItem, indexOfLastItem);
 
   useEffect(() => {
     fetchProducts();
@@ -103,6 +102,25 @@ const ManageGodownItems = () => {
     );
   };
 
+  // Filter products based on search term and quantity filter
+  const filteredProducts = products.filter((product) => {
+    const matchesSearchTerm = product.name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesQuantityFilter = quantityFilter
+      ? product.quantity === parseInt(quantityFilter)
+      : true;
+    return matchesSearchTerm && matchesQuantityFilter;
+  });
+
+  // Calculate pagination values
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredProducts.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -129,7 +147,25 @@ const ManageGodownItems = () => {
             Manage Godown Products
           </h1>
 
-          {products.length === 0 ? (
+          {/* Search and Filter Section */}
+          <div className="mb-6 flex gap-4">
+            <input
+              type="text"
+              placeholder="Search by product name..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <input
+              type="number"
+              placeholder="Filter by quantity..."
+              value={quantityFilter}
+              onChange={(e) => setQuantityFilter(e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          {filteredProducts.length === 0 ? (
             <div className="bg-white rounded-lg shadow-lg p-6 text-center">
               <p className="text-gray-500">No products found</p>
             </div>
@@ -139,9 +175,6 @@ const ManageGodownItems = () => {
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Code
-                      </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Product Name
                       </th>
@@ -162,9 +195,6 @@ const ManageGodownItems = () => {
                   <tbody className="bg-white divide-y divide-gray-200">
                     {currentItems.map((product) => (
                       <tr key={product._id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {product.code}
-                        </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">
                             {product.name}
@@ -217,7 +247,7 @@ const ManageGodownItems = () => {
               <div className="mt-6">
                 <Pagination
                   currentPage={currentPage}
-                  totalItems={products.length}
+                  totalItems={filteredProducts.length}
                   itemsPerPage={itemsPerPage}
                   onPageChange={handlePageChange}
                 />

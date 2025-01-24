@@ -27,17 +27,17 @@ const FileUploadZone = ({ onFileUpload }) => {
   return (
     <div
       {...getRootProps()}
-      className={`cursor-pointer border-2 border-dashed rounded-xl p-8 ${
+      className={`cursor-pointer border-2 border-dashed rounded-xl p-8 text-center ${
         isDragActive ? "border-blue-500 bg-blue-50" : "border-gray-300 bg-white"
       }`}
     >
       <input {...getInputProps()} />
-      <p className="text-gray-600 text-center">
+      <p className="text-gray-600">
         {isDragActive
           ? "Drop your file here..."
           : "Drag & drop or click to upload a file"}
       </p>
-      <p className="text-sm text-gray-500">Supported formats: CSV, XLSX</p>
+      <p className="text-sm text-gray-500 mt-2">Supported formats: CSV, XLSX</p>
     </div>
   );
 };
@@ -46,37 +46,67 @@ FileUploadZone.propTypes = {
   onFileUpload: PropTypes.func.isRequired,
 };
 
+const SuccessModal = ({ isOpen, onClose }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+        <h2 className="text-xl font-bold mb-4">Success!</h2>
+        <p className="text-gray-700 mb-6">
+          The products have been uploaded successfully.
+        </p>
+        <button
+          onClick={onClose}
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  );
+};
+
+SuccessModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+};
+
 const BulkUploadGodown = () => {
   const [file, setFile] = useState(null);
   const [dataPreview, setDataPreview] = useState([]);
   const [errors, setErrors] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
   const parseFile = (file) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
         const binaryStr = e.target.result;
+        let parsedData = [];
+
         if (file.type === "text/csv") {
           const csvData = new TextDecoder().decode(binaryStr);
           const rows = csvData.split("\n").map((row) => row.split(","));
-          const parsedData = rows.slice(1).map((row) => ({
+          parsedData = rows.slice(1).map((row) => ({
             name: row[0]?.trim(),
             price: parseFloat(row[1]?.trim()),
             quantity: parseInt(row[2]?.trim()),
             location: row[3]?.trim(),
             description: row[4]?.trim(),
           }));
-          setDataPreview(parsedData);
         } else if (
           file.type ===
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         ) {
           const workbook = XLSX.read(binaryStr, { type: "binary" });
           const sheet = workbook.Sheets[workbook.SheetNames[0]];
-          const parsedData = XLSX.utils.sheet_to_json(sheet);
-          setDataPreview(parsedData);
+          parsedData = XLSX.utils.sheet_to_json(sheet);
         }
+
+        setDataPreview(parsedData);
+        setErrors([]);
       } catch (error) {
         setErrors([
           "Failed to parse the file. Ensure it is properly formatted.",
@@ -104,9 +134,12 @@ const BulkUploadGodown = () => {
 
   const handleConfirmUpload = async () => {
     setIsUploading(true);
+    setErrors([]);
+
     try {
       const formData = new FormData();
       formData.append("file", file);
+
       const response = await fetch(
         "http://localhost:5000/api/v1/godown/products/bulk-upload",
         {
@@ -119,12 +152,13 @@ const BulkUploadGodown = () => {
       );
 
       const result = await response.json();
-      if (!response.ok)
+      if (!response.ok) {
         throw new Error(result.message || "Failed to upload data");
+      }
 
+      setIsSuccessModalOpen(true); // Open success modal
       setFile(null);
       setDataPreview([]);
-      setErrors([]);
     } catch (err) {
       setErrors([err.message || "An unexpected error occurred"]);
     } finally {
@@ -134,8 +168,12 @@ const BulkUploadGodown = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mt-4 mb-4">Bulk Upload Products</h1>
+      <h1 className="text-2xl font-bold mb-6">Bulk Upload Products</h1>
+
+      {/* File Upload Zone */}
       <FileUploadZone onFileUpload={handleFileUpload} />
+
+      {/* Error Messages */}
       {errors.length > 0 && (
         <div className="bg-red-100 p-4 rounded mt-4 text-red-800">
           {errors.map((err, idx) => (
@@ -143,48 +181,67 @@ const BulkUploadGodown = () => {
           ))}
         </div>
       )}
+
+      {/* Data Preview */}
       {dataPreview.length > 0 && (
         <div className="mt-6">
-          <h2 className="text-xl font-semibold">Preview Data</h2>
-          <table className="table-auto w-full mt-4">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Location</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dataPreview.map((item, index) => (
-                <tr key={index}>
-                  <td>{item.name}</td>
-                  <td>{item.price}</td>
-                  <td>{item.quantity}</td>
-                  <td>{item.location}</td>
-                  <td>{item.description}</td>
+          <h2 className="text-xl font-semibold mb-4">Preview Data</h2>
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white shadow-lg rounded-lg">
+              <thead className="bg-blue-600 text-white">
+                <tr>
+                  <th className="px-4 py-2">Name</th>
+                  <th className="px-4 py-2">Price</th>
+                  <th className="px-4 py-2">Quantity</th>
+                  <th className="px-4 py-2">Location</th>
+                  <th className="px-4 py-2">Description</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-          <div className="mt-4">
+              </thead>
+              <tbody>
+                {dataPreview.map((item, index) => (
+                  <tr key={index} className="border-t hover:bg-gray-50">
+                    <td className="px-4 py-2">{item.name}</td>
+                    <td className="px-4 py-2">{item.price}</td>
+                    <td className="px-4 py-2">{item.quantity}</td>
+                    <td className="px-4 py-2">{item.location}</td>
+                    <td className="px-4 py-2">{item.description}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="mt-4 flex gap-4">
             <button
               onClick={handleConfirmUpload}
               disabled={isUploading}
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:bg-blue-300"
             >
-              {isUploading ? "Uploading..." : "Confirm Upload"}
+              {isUploading ? (
+                <div className="flex items-center">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Uploading...
+                </div>
+              ) : (
+                "Confirm Upload"
+              )}
             </button>
             <button
               onClick={() => setDataPreview([])}
-              className="ml-4 bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-500"
+              className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400"
             >
               Cancel
             </button>
           </div>
         </div>
       )}
+
+      {/* Success Modal */}
+      <SuccessModal
+        isOpen={isSuccessModalOpen}
+        onClose={() => setIsSuccessModalOpen(false)}
+      />
     </div>
   );
 };

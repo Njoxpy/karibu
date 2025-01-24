@@ -1,22 +1,21 @@
 import { useState } from "react";
 import Footer from "../../../components/Footer";
-import InputField from "./InputField"; // import the InputField component
+import InputField from "./InputField"; // Import the InputField component
 
 const UploadGodownItems = () => {
   const [name, setName] = useState("");
-  const [code, setCode] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
   const [location, setLocation] = useState("");
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
   const token = localStorage.getItem("authToken");
 
   if (!token) {
-    return "token not found"
+    return "Token not found";
   }
 
   const validateForm = () => {
@@ -42,10 +41,10 @@ const UploadGodownItems = () => {
     }
 
     setIsLoading(true); // Show loading state
+    setError(null);
 
     const newProduct = {
       name,
-      code,
       price,
       quantity,
       location,
@@ -66,24 +65,22 @@ const UploadGodownItems = () => {
       const json = await response.json();
 
       if (!response.ok) {
-        setError(json.error || "Failed to add product");
-        setIsLoading(false); // Hide loading state
-        return;
+        throw new Error(json.error || "Failed to add product");
       }
 
+      // Reset form fields
       setName("");
       setDescription("");
       setPrice("");
       setQuantity("");
       setLocation("");
-      setError(null);
-      setSuccess(true);
-      setIsLoading(false); // Hide loading state
-      console.log("New product added:", json);
+
+      // Show success modal
+      setIsSuccessModalOpen(true);
     } catch (err) {
-      setError("An unexpected error occurred");
+      setError(err.message || "An unexpected error occurred");
+    } finally {
       setIsLoading(false); // Hide loading state
-      console.error("Error:", err);
     }
   };
 
@@ -157,24 +154,40 @@ const UploadGodownItems = () => {
             </div>
           )}
 
-          {success && (
-            <div className="mb-6 text-green-600 text-center font-medium">
-              Product successfully uploaded!
-            </div>
-          )}
-
           <button
             type="submit"
             className="w-full py-3 px-6 bg-blue-600 text-white text-lg rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+            disabled={isLoading}
           >
             {isLoading ? (
-              <span className="animate-spin">Submitting...</span>
+              <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+              </div>
             ) : (
               "Upload Product"
             )}
           </button>
         </form>
       </div>
+
+      {/* Success Modal */}
+      {isSuccessModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-xl font-bold mb-4">Success!</h2>
+            <p className="text-gray-700 mb-6">
+              The product has been uploaded successfully.
+            </p>
+            <button
+              onClick={() => setIsSuccessModalOpen(false)}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
       <Footer />
     </>
   );

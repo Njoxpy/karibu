@@ -4,6 +4,7 @@ import Footer from "../../../components/Footer";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getToken } from "../../../services/token";
+import { useAnimalFeeding } from "../../../hooks/animalFeeding/useAnimalFeeding";
 
 const GodownProductDetails = () => {
   const { id } = useParams();
@@ -15,6 +16,9 @@ const GodownProductDetails = () => {
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
+
+  // Get the dispatch function from the context
+  const { dispatch } = useAnimalFeeding();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -36,6 +40,8 @@ const GodownProductDetails = () => {
         setProduct(data);
         setTotalPrice(data.price * quantity);
         setLoading(false);
+        // Dispatch the action to set the product in the context
+        dispatch({ type: "SET_ANIMAL_FEEDING_PRODUCTS", payload: [data] });
       } catch (error) {
         toast.error(`Error: ${error.message}`);
         setLoading(false);
@@ -43,7 +49,7 @@ const GodownProductDetails = () => {
     };
 
     fetchProduct();
-  }, []);
+  }, [id, token, quantity, dispatch]);
 
   const handleQuantityChange = (e) => {
     const newQuantity = parseInt(e.target.value);
@@ -116,6 +122,15 @@ const GodownProductDetails = () => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleAddToCart = () => {
+    // Dispatch the action to add the product to the cart in the context
+    dispatch({
+      type: "ADD_ANIMAL_FEEDING_PRODUCT",
+      payload: { ...product, quantity },
+    });
+    toast.success("Product added to cart");
   };
 
   if (loading) {
@@ -286,6 +301,12 @@ const GodownProductDetails = () => {
                 </button>
               </div>
             </form>
+            <button
+              onClick={handleAddToCart}
+              className="w-full md:w-auto px-8 py-4 mt-4 rounded-xl text-white font-medium bg-gradient-to-r from-green-700 to-green-800 hover:from-green-800 hover:to-green-900 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+            >
+              Add to Cart
+            </button>
           </div>
         </div>
       </div>
