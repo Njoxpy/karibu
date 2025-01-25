@@ -116,7 +116,7 @@ const FoodsBody = () => {
                   {product.name}
                 </h2>
                 <p className="text-gray-600 text-sm mb-4">
-                  {product.description}
+                  {product.description.substr(0, 50)}
                 </p>
                 <div className="space-y-2">
                   <p className="text-gray-600 text-sm">
