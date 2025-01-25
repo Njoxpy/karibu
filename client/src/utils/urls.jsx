@@ -9,6 +9,8 @@ export const PAGE_CATEGORIES = [
   "animal-feeding",
   "godown",
   "stationery",
+  "admin",
+  "users",
 ];
 
 export const getContext = (category) => {
