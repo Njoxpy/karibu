@@ -278,10 +278,7 @@ const OrdersTable = () => {
                       >
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-blue-900">
-                            {order.name}
-                          </div>
-                          <div className="text-sm text-blue-500">
-                            ID: {order._id.slice(-6)}
+                            {order.category}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">

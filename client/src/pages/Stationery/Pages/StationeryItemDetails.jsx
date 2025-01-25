@@ -3,16 +3,22 @@ import { useParams } from "react-router-dom";
 import Footer from "../../../components/Footer";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { getToken } from "../../../services/token";
+import { useAnimalFeeding } from "../../../hooks/animalFeeding/useAnimalFeeding";
 
 const StationeryItemDetails = () => {
   const { id } = useParams();
+  const token = getToken(); // Retrieve token from localStorage
+
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [totalPrice, setTotalPrice] = useState(0);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
-  const token = localStorage.getItem("authToken");
+
+  // Get the dispatch function from the context
+  const { dispatch } = useAnimalFeeding();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -22,20 +28,20 @@ const StationeryItemDetails = () => {
           {
             method: "GET",
             headers: {
+              Authorization: `Bearer ${token}`, // Add bearer token in the request headers
               "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
             },
           }
         );
-
         if (!response.ok) {
           throw new Error("Product not found");
         }
-
         const data = await response.json();
         setProduct(data);
         setTotalPrice(data.price * quantity);
         setLoading(false);
+        // Dispatch the action to set the product in the context
+        dispatch({ type: "SET_ANIMAL_FEEDING_PRODUCTS", payload: [data] });
       } catch (error) {
         toast.error(`Error: ${error.message}`);
         setLoading(false);
@@ -43,7 +49,7 @@ const StationeryItemDetails = () => {
     };
 
     fetchProduct();
-  }, [id, quantity, token]);
+  }, [id, token, quantity, dispatch]);
 
   const handleQuantityChange = (e) => {
     const newQuantity = parseInt(e.target.value);
@@ -59,46 +65,60 @@ const StationeryItemDetails = () => {
     setIsSubmitting(true);
 
     try {
+      // Prepare order data
       const orderData = {
         productId: product._id,
-        name: product.name,
+        productName: product.name,
         quantity,
         price: product.price,
         total: totalPrice,
         status: "pending",
       };
 
+      // Send POST request to create order
       const response = await fetch(
         "http://localhost:5000/api/v1/stationery/orders",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`, // Include bearer token
           },
           body: JSON.stringify(orderData),
         }
       );
 
       if (!response.ok) {
-        throw new Error("Failed to create order");
+        const errorResponse = await response.json();
+        throw new Error(
+          errorResponse.message || "Failed to place the order. Try again."
+        );
       }
 
+      // Show success message and reset the state
       setOrderSuccess(true);
-      toast.success("Order successfully placed!", {
+      toast.success("Order placed successfully!", {
         position: "top-center",
-        autoClose: 5000,
+        autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
       });
 
-      // Reset form
+      // Reset order form state
       setQuantity(1);
       setTotalPrice(product.price);
     } catch (error) {
-      toast.error(`Error: ${error.message}`);
+      // Handle errors
+      toast.error(`Error: ${error.message}`, {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -156,7 +176,7 @@ const StationeryItemDetails = () => {
                   <p
                     className={`text-lg font-semibold ${
                       product.quantity > 20
-                        ? "text-green-600"
+                        ? "text-blue-600"
                         : "text-orange-500"
                     }`}
                   >
@@ -180,11 +200,11 @@ const StationeryItemDetails = () => {
                   <span
                     className={`px-3 py-1 rounded-full text-sm font-medium ${
                       product.quantity > 0
-                        ? "bg-green-100 text-green-800"
+                        ? "bg-blue-100 text-blue-800"
                         : "bg-red-100 text-red-800"
                     }`}
                   >
-                    {product.quantity > 0 ? "In Stock" : "Out of Stock"}
+                    {product.quantity > 2 ? "In Stock" : "Out of Stock"}
                   </span>
                 </div>
               </div>
@@ -268,14 +288,14 @@ const StationeryItemDetails = () => {
         </div>
       </div>
 
-      {/* Success Modal */}
+      {/* Success Modal - Updated styling */}
       {orderSuccess && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all duration-300 scale-100">
             <div className="p-8">
-              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100">
+              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100">
                 <svg
-                  className="h-8 w-8 text-green-600"
+                  className="h-8 w-8 text-blue-600"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -299,7 +319,7 @@ const StationeryItemDetails = () => {
                   onClick={() => setOrderSuccess(false)}
                   className="w-full px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-blue-700 to-blue-800 rounded-xl hover:from-blue-800 hover:to-blue-900 transition-all duration-200 transform hover:scale-105"
                 >
-                  Continue Shopping
+                  Continue Ordering
                 </button>
               </div>
             </div>

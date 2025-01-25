@@ -17,8 +17,10 @@ const StationeryItemsUpload = () => {
   const validateInputs = () => {
     if (!name.trim()) return "Product name is required.";
     if (!description.trim()) return "Description is required.";
-    if (!price || isNaN(price) || Number(price) <= 0) return "Valid price is required.";
-    if (!quantity || isNaN(quantity) || Number(quantity) <= 0) return "Valid quantity is required.";
+    if (!price || isNaN(price) || Number(price) <= 0)
+      return "Valid price is required.";
+    if (!quantity || isNaN(quantity) || Number(quantity) <= 0)
+      return "Valid quantity is required.";
     if (!image) return "Product image is required.";
     return null;
   };
@@ -84,7 +86,7 @@ const StationeryItemsUpload = () => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="border border-gray-300 rounded w-full p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="e.g. Mashudu"
+              placeholder="e.g. Penseli"
               required
             />
           </div>
@@ -147,9 +149,7 @@ const StationeryItemsUpload = () => {
           </div>
 
           {error && (
-            <p className="text-red-600 bg-red-100 p-2 rounded">
-              {error}
-            </p>
+            <p className="text-red-600 bg-red-100 p-2 rounded">{error}</p>
           )}
 
           <button

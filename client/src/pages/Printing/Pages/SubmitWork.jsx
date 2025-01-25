@@ -13,22 +13,25 @@ function SubmitWork() {
   const [contact, setContact] = useState(0);
   const [category, setCategory] = useState("magazine");
 
-  // State for storing receipts (if needed)
-  const [receipts, setReceipts] = useState([]);
-
   // State for modal visibility
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // State for storing the generated PDF data
   const [pdfReceipt, setPdfReceipt] = useState(null);
 
+  // State for error messages
+  const [error, setError] = useState("");
+
   // Form submission handler
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Reset error message
+    setError("");
+
     // Simple validation: Check if required fields are filled and valid
     if (!description || price <= 0 || quantity <= 0 || contact <= 0) {
-      alert("Please fill in all fields with valid values.");
+      setError("Please fill in all fields with valid values.");
       return;
     }
 
@@ -64,9 +67,6 @@ function SubmitWork() {
 
       const data = await response.json();
 
-      // Add the order to the receipts array (if needed)
-      setReceipts((prevReceipts) => [...prevReceipts, data]);
-
       // Generate the PDF receipt using jsPDF
       const doc = new jsPDF();
       doc.setFont("tahoma", "normal");
@@ -87,10 +87,6 @@ function SubmitWork() {
       doc.setFillColor(0, 123, 255); // Brand Blue background for title
       doc.rect(20, 30, 170, 10, "F");
       doc.text("Order Details", 20, 37);
-
-      // Background color for the order details section (white)
-      doc.setFillColor(255, 255, 255);
-      doc.rect(20, 40, 170, 10, "F");
 
       // Reset text color for the order content (Savarrah Blue)
       doc.setTextColor(0, 123, 255);
@@ -120,7 +116,7 @@ function SubmitWork() {
       // Set the modal visibility to true
       setIsModalOpen(true);
     } catch (error) {
-      alert("Error creating order: " + error.message);
+      setError("Error creating order: " + error.message);
     }
   };
 
@@ -151,22 +147,29 @@ function SubmitWork() {
   };
 
   return (
-    <div className="p-4">
-      <section className="submission">
-        <h1 className="font-bold text-center text-blue-600">
+    <div className="p-4 max-w-4xl mx-auto">
+      <section className="submission bg-white p-6 rounded-lg shadow-md">
+        <h1 className="font-bold text-center text-2xl text-blue-600 mb-6">
           Submit Your Work
         </h1>
+        {/* Display error message if any */}
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+            {error}
+          </div>
+        )}
         <form id="workSubmissionForm" onSubmit={handleSubmit}>
-          <div className="p-2">
+          {/* Description Field */}
+          <div className="mb-4">
             <label
               htmlFor="description"
-              className="block text-sm font-bold text-gray-700"
+              className="block text-sm font-bold text-gray-700 mb-2"
             >
               Description
             </label>
             <textarea
               id="description"
-              className="mt-2 w-full rounded-lg align-top shadow-sm sm:text-sm border border-gray-400"
+              className="w-full p-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-200"
               rows="4"
               placeholder="Enter Description for The Order..."
               value={description}
@@ -174,8 +177,12 @@ function SubmitWork() {
             ></textarea>
           </div>
 
-          <div className="p-2">
-            <label htmlFor="price" className="font-bold text-gray-700">
+          {/* Price Field */}
+          <div className="mb-4">
+            <label
+              htmlFor="price"
+              className="block font-bold text-gray-700 mb-2"
+            >
               Price in Tsh Per Item:
             </label>
             <input
@@ -183,14 +190,18 @@ function SubmitWork() {
               id="price"
               name="price"
               required
-              className="border border-gray-400 rounded w-full p-2"
+              className="w-full p-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-200"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
             />
           </div>
 
-          <div className="p-2">
-            <label htmlFor="quantity" className="font-bold text-gray-700">
+          {/* Quantity Field */}
+          <div className="mb-4">
+            <label
+              htmlFor="quantity"
+              className="block font-bold text-gray-700 mb-2"
+            >
               Quantity
             </label>
             <input
@@ -198,14 +209,18 @@ function SubmitWork() {
               id="quantity"
               name="quantity"
               required
-              className="border border-gray-400 rounded w-full p-2"
+              className="w-full p-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-200"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
             />
           </div>
 
-          <div className="p-2">
-            <label htmlFor="contact" className="font-bold text-gray-700">
+          {/* Contact Field */}
+          <div className="mb-4">
+            <label
+              htmlFor="contact"
+              className="block font-bold text-gray-700 mb-2"
+            >
               Contact
             </label>
             <input
@@ -213,18 +228,22 @@ function SubmitWork() {
               id="contact"
               name="contact"
               required
-              className="border border-gray-400 rounded w-full p-2"
+              className="w-full p-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-200"
               value={contact}
               onChange={(e) => setContact(e.target.value)}
             />
           </div>
 
-          <div className="p-2">
-            <label htmlFor="category" className="font-bold text-gray-700">
+          {/* Category Field */}
+          <div className="mb-6">
+            <label
+              htmlFor="category"
+              className="block font-bold text-gray-700 mb-2"
+            >
               Category
             </label>
             <select
-              className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
+              className="w-full p-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-200"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
             >
@@ -238,19 +257,20 @@ function SubmitWork() {
             </select>
           </div>
 
-          <div className="flex justify-center space-x-4 mt-4">
+          {/* Buttons */}
+          <div className="flex justify-center space-x-4">
             <button
               type="submit"
-              className="bg-primary hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition duration-200"
             >
               Submit Work
             </button>
             <button
               type="button"
               onClick={handleCancel}
-              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+              className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg transition duration-200"
             >
-              Cancel Submission
+              Cancel
             </button>
           </div>
         </form>
@@ -260,25 +280,23 @@ function SubmitWork() {
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-            <h2 className="text-center text-xl font-bold text-blue-600">
+            <h2 className="text-center text-xl font-bold text-blue-600 mb-4">
               Order Submitted Successfully!
             </h2>
-            <p className="mt-4 text-center text-gray-700">
+            <p className="text-center text-gray-700 mb-6">
               Your order has been submitted successfully. A receipt has been
               generated.
             </p>
-            <div className="mt-6 text-center">
+            <div className="flex justify-center space-x-4">
               <button
                 onClick={downloadReceipt}
-                className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
+                className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition duration-200"
               >
                 Download Receipt
               </button>
-            </div>
-            <div className="mt-4 text-center">
               <button
                 onClick={closeModal}
-                className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-700"
+                className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg transition duration-200"
               >
                 Close
               </button>

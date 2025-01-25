@@ -247,7 +247,6 @@ export default function App() {
             />
             <Route path="order-item" element={<OrderItemHardware />} />
             <Route path="admin/upload" element={<HardwareItemsUpload />} />
-            <Route path="admin/bulk-upload" element={<HardwareBulkUpload />} />
             <Route path="admin/manage" element={<ManageHardwareProducts />} />
           </Route>
 
@@ -284,7 +283,6 @@ export default function App() {
             />
             <Route path="order-item" element={<OrderItemStationery />} />
             <Route path="admin/upload" element={<AddItems />} />
-            <Route path="order/sucess" element={<OrderSucessStationery />} />
             <Route path="admin/manage" element={<ManageStationeryProducts />} />
           </Route>
           <Route path="*" element={<NotFound />} />

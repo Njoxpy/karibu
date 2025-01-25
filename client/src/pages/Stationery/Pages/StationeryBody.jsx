@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import FreshOil1 from "../../../assets/images/freshOil1.webp";
 import { getToken } from "../../../services/token";
 
 function StationeryBody() {
@@ -6,10 +7,8 @@ function StationeryBody() {
   const [products, setProducts] = useState([]); // State for fetched products
   const [currentPage, setCurrentPage] = useState(1); // Current page number
   const itemsPerPage = 6; // Items per page for pagination
-  const baseURL = "http://localhost:5000";
 
   useEffect(() => {
-    // Fetch fresh oil products from API with barrier token
     const token = getToken();
 
     fetch("http://localhost:5000/api/v1/stationery/products", {
@@ -61,70 +60,111 @@ function StationeryBody() {
   };
 
   return (
-    <div>
-      {/* Search Bar */}
-      <div className="mb-4 submission">
-        <input
-          type="text"
-          placeholder="Search for Stationery Items..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="border rounded p-2 w-full"
-        />
-      </div>
-
-      {/* Display Products or No Products Message */}
-      {filteredProducts.length === 0 ? (
-        <div className="text-center text-lg text-gray-500">
-          No products available.
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 py-8">
+      <div className="container mx-auto px-4">
+        {/* Search Bar */}
+        <div className="mb-8 flex justify-center">
+          <input
+            type="text"
+            placeholder="Search for Stationery Item..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full sm:w-1/2 lg:w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+          />
         </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {currentProducts.map((product) => (
-            <div
-              key={product._id}
-              className="border rounded-lg shadow-md overflow-hidden"
-            >
-              <img
-                src={`${baseURL}${product.image}`}
-                alt={product.name}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-4">
-                <h2 className="font-semibold text-lg">{product.name}</h2>
-                <p className="text-gray-600">{product.description}</p>
-                <p className="text-gray-600">Idadi {product.quantity}</p>
-                <p className="font-bold text-blue-700">Tsh {product.price}</p>
 
-                {/* Action Buttons */}
-                <div className="flex justify-between">
-                  <a
-                    href={`/stationery/products/${product._id}`} // Use product._id
-                    className="mt-4 inline-block bg-blue-500 text-white py-2 px-4 rounded"
-                  >
-                    Order Now
-                  </a>
+        {/* Display Products or No Products Message */}
+        {filteredProducts.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="text-blue-400 mb-4">
+              <svg
+                className="mx-auto h-12 w-12"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                />
+              </svg>
+            </div>
+            <p className="text-blue-500 text-lg">No products found</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {currentProducts.map((product) => (
+              <div
+                key={product._id}
+                className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
+              >
+                <img
+                  src={
+                    product.image
+                      ? `http://localhost:5000/uploads/${product.image
+                          .split("\\")
+                          .pop()}`
+                      : FreshOil1
+                  }
+                  alt={product.name}
+                  className="w-full h-48 object-cover"
+                  onError={(e) => {
+                    e.target.src = FreshOil1; // Fallback to FreshOil1 if the image fails to load
+                  }}
+                />
+                <div className="p-6">
+                  <h2 className="font-bold text-xl text-gray-800 mb-2">
+                    {product.name}
+                  </h2>
+                  <p className="text-gray-600 text-sm mb-4">
+                    {product.description}
+                  </p>
+                  <div className="space-y-2">
+                    <p className="text-gray-600 text-sm">
+                      <span className="font-medium">Quantity:</span>{" "}
+                      {product.quantity}
+                    </p>
+                    <p className="font-bold text-blue-700 text-lg">
+                      Tsh {product.price.toLocaleString()}
+                    </p>
+                  </div>
+                  <div className="mt-6">
+                    <a
+                      href={`/stationery/products/${product._id}`}
+                      className="block w-full text-center bg-blue-500 text-white py-2 px-4 rounded-lg transition-all duration-200 hover:bg-blue-600"
+                    >
+                      Order Now
+                    </a>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
 
-      {/* Pagination Controls */}
-      <div className="flex justify-center m-2">
-        <button
-          onClick={handlePreviousPage}
-          className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2"
-        >
-          Previous
-        </button>
-        <button
-          onClick={handleNextPage}
-          className="bg-blue-500 text-white py-1 px-2 rounded transition duration-300 hover:bg-blue-600 mr-2"
-        >
-          Next
-        </button>
+        {/* Pagination Controls */}
+        <div className="flex justify-center mt-8">
+          <button
+            onClick={handlePreviousPage}
+            disabled={currentPage === 1}
+            className="bg-blue-500 text-white py-2 px-4 rounded-lg transition-all duration-200 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Previous
+          </button>
+          <span className="text-gray-700 px-4 py-2 mx-2">
+            Page <strong>{currentPage}</strong> of{" "}
+            <strong>{Math.ceil(filteredProducts.length / itemsPerPage)}</strong>
+          </span>
+          <button
+            onClick={handleNextPage}
+            disabled={currentPage * itemsPerPage >= filteredProducts.length}
+            className="bg-blue-500 text-white py-2 px-4 rounded-lg transition-all duration-200 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
   );
