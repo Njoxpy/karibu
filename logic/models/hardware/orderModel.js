@@ -8,54 +8,59 @@ const hardwareOrderSchema = new Schema(
     productId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "HardwareProduct",
-      required: [true, "Product is required"]
+      required: [true, "Product is required"],
+    },
+    productName: {
+      type: String, // Add this field
+      required: true,
     },
     quantity: {
       type: Number,
       required: [true, "Quantity is required"],
-      min: [1, "Quantity must be at least 1"]
+      min: [1, "Quantity must be at least 1"],
     },
     totalPrice: {
       type: Number,
-      min: [1, "Total price must be at least 1"]
+      min: [1, "Total price must be at least 1"],
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: [true, "User ID is required"]
+      required: [true, "User ID is required"],
     },
     orderId: {
       type: String,
       required: true,
       unique: true,
-      default: () => `ORDER-HARDWARE-${Date.now()}-${Math.floor(Math.random() * 1000)}`
+      default: () =>
+        `ORDER-HARDWARE-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
     },
   },
   { timestamps: true }
 );
 
-hardwareOrderSchema.pre('save', function (next) {
+hardwareOrderSchema.pre("save", function (next) {
   HardwareProduct.findById(this.productId)
-    .then(product => {
+    .then((product) => {
       if (!product) {
-        throw new Error('Product not found');
+        throw new Error("Product not found");
       }
       if (product.quantity < this.quantity) {
-        throw new Error('Insufficient stock available');
+        throw new Error("Insufficient stock available");
       }
       this.totalPrice = product.price * this.quantity;
       next();
     })
-    .catch(err => {
+    .catch((err) => {
       next(err);
     });
 });
 
-hardwareOrderSchema.post('save', async function (doc, next) {
+hardwareOrderSchema.post("save", async function (doc, next) {
   try {
     const product = await HardwareProduct.findById(doc.productId);
     if (product.quantity < doc.quantity) {
-      throw new Error('Not enough stock available');
+      throw new Error("Not enough stock available");
     }
     product.quantity -= doc.quantity;
 

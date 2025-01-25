@@ -45,7 +45,7 @@ freshOilProductSchema.pre("save", function (next) {
 });
 
 const freshOilProduct = mongoose.model(
-  "freshOilProduct",
+  "FreshOilProduct",
   freshOilProductSchema
 );
 module.exports = freshOilProduct;
