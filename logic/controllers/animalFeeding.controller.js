@@ -104,9 +104,9 @@ const getAllAnimalFeedingProducts = async (req, res) => {
 // Get all orders
 const getAnimalFeedingAllOrders = async (req, res) => {
   try {
-    const orders = await AnimalFeedingOrder.find();
-    // .populate("productId", "name") // Include product name
-    // .sort({ createdAt: -1 });
+    const orders = await AnimalFeedingOrder.find()
+      .populate("productId", "name") // Include product name
+      .sort({ createdAt: -1 });
 
     if (orders.length === 0) {
       return res.status(OK).json({ message: "There are no orders now" });

@@ -140,6 +140,7 @@ const getAllFreshOilOrders = async (req, res) => {
     const orders = await FreshOilOrder.find()
       .populate("productId", "name") // Include product name
       .sort({ createdAt: -1 });
+
     if (orders.length === 0) {
       return res
         .status(NOT_FOUND)

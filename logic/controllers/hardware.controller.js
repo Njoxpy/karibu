@@ -183,69 +183,52 @@ const deleteHardwareProductById = async (req, res) => {
   }
 };
 
+// create order
 const createHardwareOrder = async (req, res) => {
   try {
-    const { productId, quantity } = req.body;
-
+    const { productId, productName, quantity } = req.body;
     const userId = req.user && req.user._id;
 
-    // Validate required fields
-    if (!productId || quantity === undefined || !userId) {
+    // Validate inputs
+    if (!productId || !productName || !quantity || !userId) {
       return res
         .status(BAD_REQUEST)
         .json({ message: "All fields are required" });
     }
 
-    // Check if quantity is greater than 0
-    if (quantity <= 0) {
-      return res
-        .status(BAD_REQUEST)
-        .json({ message: "Quantity must be greater than 0" });
-    }
-
+    // Fetch the product
     const product = await HardwareProduct.findById(productId);
     if (!product) {
-      return res.status(NOT_FOUND).json({ message: "Product not found" });
+      return res.status(NOT_FOUND).json({ error: "Product not found" });
     }
 
-    // Check if enough stock is available
+    // Check stock
     if (product.quantity < quantity) {
-      return res
-        .status(BAD_REQUEST)
-        .json({ message: "Not enough stock available" });
+      return res.status(BAD_REQUEST).json({ message: "Insufficient stock" });
     }
 
-    // Create new hardware order
-    const newOrder = new HardwareOrder({
+    // Create the order
+    const order = await HardwareOrder.create({
       productId,
+      productName, // Include the product name
       quantity,
+      price: product.price,
+      total: quantity * product.price,
       userId,
-      totalPrice: product.price * quantity,
     });
 
-    await newOrder.save();
-
-    // Update product stock
+    // Update the product stock
     product.quantity -= quantity;
-
-    // Update product condition if stock changes
-    if (product.quantity === 0) {
-      product.condition = "out of stock";
-    } else if (product.quantity < 10) {
-      product.condition = "low stock";
-    } else {
-      product.condition = "new";
-    }
-
     await product.save();
 
-    res
-      .status(CREATED)
-      .json({ message: "Order created successfully", newOrder });
+    return res
+      .status(201)
+      .json({ message: "Order created successfully", order });
   } catch (error) {
-    res
-      .status(SERVER_ERROR)
-      .json({ message: "Failed to create order", error: error.message });
+    return res.status(SERVER_ERROR).json({
+      message: "An error occurred while creating the order",
+      error: error.message,
+    });
   }
 };
 
