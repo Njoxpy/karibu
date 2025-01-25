@@ -134,7 +134,7 @@ import AddUserPage from "./pages/admin/components/AddUserPage";
 
 import OilDetailsError from "./pages/FreshOil/Error/OilDetailsError";
 import GodownItemsDetailsError from "./pages/Godown/Error/GodownItemsDetailsError";
-
+import HardWareOrdersDetails from "./pages/Hardware/pages/HardWareOrdersDetails";
 export default function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
@@ -234,7 +234,7 @@ export default function App() {
             <Route path="orders" element={<HardwareOrders />} />
             <Route
               path="orders/:id"
-              element={<HardWareDetails />}
+              element={<HardWareOrdersDetails />}
               errorElement={<HardwareDetailsError />}
             />
             <Route path="order-item" element={<OrderItemHardware />} />

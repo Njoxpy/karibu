@@ -1,148 +1,152 @@
 import { useState, useEffect } from "react";
-import FreshOil1 from "../../../assets/images/freshOil1.webp";
+import Animal2 from "../../../assets/images/animal2.jpg";
 import { getToken } from "../../../services/token";
+import { useAnimalFeeding } from "../../../hooks/animalFeeding/useAnimalFeeding";
 
-function Hardwares() {
+const Hardwares = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [products, setProducts] = useState([]); // State for fetched products
-  const [currentPage, setCurrentPage] = useState(1); // Current page number
-  const itemsPerPage = 6; // Items per page for pagination
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
+
+  const token = getToken();
   const baseURL = "http://localhost:5000";
 
+  const { products, dispatch } = useAnimalFeeding();
+
+  // Fetch products initially
   useEffect(() => {
-    // Fetch fresh oil products from API with barrier token
-    const token = getToken();
+    const fetchProducts = async () => {
+      setLoading(true);
 
-    fetch("http://localhost:5000/api/v1/hardware/products", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`, // Attach the token in the Authorization header
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setProducts(data); // Only set products if data is an array
-        } else {
-          console.error("Invalid data format:", data);
+      try {
+        const response = await fetch(`${baseURL}/api/v1/hardware/products`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
         }
-      })
-      .catch((error) => console.error("Error fetching products:", error));
-  }, []); // Empty dependency array ensures this runs only once on component mount
 
-  // Filter products based on search term (check if products is an array)
-  const filteredProducts = Array.isArray(products)
-    ? products.filter((product) =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    : [];
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          dispatch({ type: "SET_ANIMAL_FEEDING_PRODUCTS", payload: data });
+        }
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // Calculate the index of the first and last product on the current page
-  const indexOfLastProduct = currentPage * itemsPerPage;
-  const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
+    fetchProducts();
+  }, [token, dispatch]);
 
-  // Get the current products to be displayed on the page
-  const currentProducts = filteredProducts.slice(
-    indexOfFirstProduct,
-    indexOfLastProduct
+  // Filter products based on search term
+  const filteredProducts = products.filter((product) =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Handle page changes
-  const handleNextPage = () => {
-    if (currentPage < Math.ceil(filteredProducts.length / itemsPerPage)) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-50 to-indigo-100">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500" />
+      </div>
+    );
+  }
 
-  const handlePreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-50 to-indigo-100">
+        <p className="text-red-500 text-lg font-medium">{error}</p>
+      </div>
+    );
+  }
+
+  if (filteredProducts.length === 0) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-50 to-indigo-100">
+        <p className="text-gray-500 text-lg font-medium">No products found</p>
+      </div>
+    );
+  }
+
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-indigo-100 py-8">
       <div className="container mx-auto px-4">
-        {/* Search Bar */}
+        {/* Search bar */}
         <div className="mb-8 flex justify-center">
           <input
             type="text"
-            placeholder="Search for Fresh Oils..."
+            placeholder="Search for a product..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full sm:w-1/2 lg:w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+            className="w-full sm:w-1/2 lg:w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
           />
         </div>
 
-        {/* Display Products or No Products Message */}
-        {filteredProducts.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-blue-400 mb-4">
-              <svg
-                className="mx-auto h-12 w-12"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                />
-              </svg>
-            </div>
-            <p className="text-blue-500 text-lg">No products found</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {currentProducts.map((product) => (
-              <div
-                key={product._id}
-                className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
-              >
-                <img
-                  src={product.image ? `${baseURL}${product.image}` : FreshOil1}
-                  alt={product.name}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-6">
-                  <h2 className="font-bold text-xl text-gray-800 mb-2">
-                    {product.name}
-                  </h2>
-                  <p className="text-gray-600 text-sm mb-4">
-                    {product.description}
+        {/* Product Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {paginatedProducts.map((product) => (
+            <div
+              key={product._id}
+              className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
+            >
+              <img
+                src={product.image ? `${baseURL}${product.image}` : Animal2}
+                loading="lazy"
+                alt={product.name}
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-6">
+                <h2 className="font-bold text-xl text-gray-800 mb-2">
+                  {product.name}
+                </h2>
+                <p className="text-gray-600 text-sm mb-4">
+                  {product.description.substr(0, 50)}
+                </p>
+                <div className="space-y-2">
+                  <p className="text-gray-600 text-sm">
+                    <span className="font-medium">Quantity:</span>{" "}
+                    {product.quantity}
                   </p>
-                  <div className="space-y-2">
-                    <p className="text-gray-600 text-sm">
-                      <span className="font-medium">Quantity:</span>{" "}
-                      {product.quantity}
-                    </p>
-                    <p className="font-bold text-blue-700 text-lg">
-                      Tsh {product.price.toLocaleString()}
-                    </p>
-                  </div>
-                  <div className="mt-6">
-                    <a
-                      href={`/hardware/products/${product._id}`}
-                      className="block w-full text-center bg-blue-500 text-white py-2 px-4 rounded-lg transition-all duration-200 hover:bg-blue-600"
-                    >
-                      Order Now
-                    </a>
-                  </div>
+                  <p className="text-gray-600 text-sm">
+                    <span className="font-medium">Nutrients:</span>{" "}
+                    {product.nutrients}
+                  </p>
+                  <p className="font-bold text-indigo-700 text-lg">
+                    Tsh {product.price.toLocaleString()}
+                  </p>
+                </div>
+                <div className="mt-6">
+                  <a
+                    href={`/hardware/products/${product._id}`}
+                    className="block w-full text-center bg-indigo-500 text-white py-2 px-4 rounded-lg transition-all duration-200 hover:bg-indigo-600"
+                  >
+                    Order Now
+                  </a>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
+            </div>
+          ))}
+        </div>
 
-        {/* Pagination Controls */}
+        {/* Pagination */}
         <div className="flex justify-center mt-8">
           <button
-            onClick={handlePreviousPage}
+            onClick={() => setCurrentPage(currentPage - 1)}
             disabled={currentPage === 1}
-            className="bg-blue-500 text-white py-2 px-4 rounded-lg transition-all duration-200 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-indigo-500 text-white py-2 px-4 rounded-lg transition-all duration-200 hover:bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Previous
           </button>
@@ -151,9 +155,9 @@ function Hardwares() {
             <strong>{Math.ceil(filteredProducts.length / itemsPerPage)}</strong>
           </span>
           <button
-            onClick={handleNextPage}
+            onClick={() => setCurrentPage(currentPage + 1)}
             disabled={currentPage * itemsPerPage >= filteredProducts.length}
-            className="bg-blue-500 text-white py-2 px-4 rounded-lg transition-all duration-200 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-indigo-500 text-white py-2 px-4 rounded-lg transition-all duration-200 hover:bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Next
           </button>
@@ -161,6 +165,6 @@ function Hardwares() {
       </div>
     </div>
   );
-}
+};
 
 export default Hardwares;

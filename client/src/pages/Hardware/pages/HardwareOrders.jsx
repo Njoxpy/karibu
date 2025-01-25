@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import Footer from "../../../components/Footer";
 import { Link } from "react-router-dom";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // Utility function to format date
 const formatDate = (date) => new Date(date).toLocaleDateString();
@@ -24,13 +24,16 @@ const HardwareOrders = () => {
   // Fetch orders from API
   const fetchOrders = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/v1/hardware/orders", {
-        method: "GET",
-        headers: {
-          Authorization : `Bearer ${token}`,
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "http://localhost:5000/api/v1/hardware/orders",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
-      });
+      );
       const data = await response.json();
       if (response.ok) {
         setOrders(data);
@@ -54,7 +57,10 @@ const HardwareOrders = () => {
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
-  const paginatedOrders = filteredOrders.slice(startIndex, startIndex + itemsPerPage);
+  const paginatedOrders = filteredOrders.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
 
   // Filter orders based on selected time range (all, day, week, month)
   const filterOrders = () => {
@@ -107,13 +113,16 @@ const HardwareOrders = () => {
   // Handle deleting an order
   const handleDeleteOrder = async (orderId) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/v1/hardware/orders/${orderId}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `http://localhost:5000/api/v1/hardware/orders/${orderId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
-      });
+      );
       if (response.ok) {
         const updatedOrders = orders.filter((order) => order._id !== orderId);
         setOrders(updatedOrders);
@@ -130,14 +139,17 @@ const HardwareOrders = () => {
   // Handle editing an order
   const handleEditOrder = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/v1/hardware/orders/${orderToEdit._id}`, {
-        method: 'PATCH',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(orderToEdit),
-      });
+      const response = await fetch(
+        `http://localhost:5000/api/v1/hardware/orders/${orderToEdit._id}`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(orderToEdit),
+        }
+      );
 
       if (response.ok) {
         const updatedOrder = await response.json();
@@ -183,27 +195,37 @@ const HardwareOrders = () => {
       <div className="max-w-7xl mx-auto p-6">
         <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-blue-100">
           <div className="bg-gradient-to-r from-blue-700 to-blue-800 px-6 py-8">
-            <h1 className="text-3xl font-bold text-white text-center">Orders Management</h1>
-            <p className="text-blue-300 text-center mt-2">Track and manage your orders</p>
+            <h1 className="text-3xl font-bold text-white text-center">
+              Orders Management
+            </h1>
+            <p className="text-blue-300 text-center mt-2">
+              Track and manage your orders
+            </p>
           </div>
 
           {/* Filter Options */}
           <div className="p-6">
             <div className="flex flex-wrap justify-center gap-3 mb-8">
-              {['all', 'day', 'week', 'month'].map((filterOption) => (
+              {["all", "day", "week", "month"].map((filterOption) => (
                 <button
                   key={filterOption}
                   onClick={() => handleFilterChange(filterOption)}
                   className={`
                     px-6 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
-                    ${filter === filterOption
-                      ? 'bg-blue-700 text-white shadow-lg transform scale-105'
-                      : 'bg-blue-100 text-blue-600 hover:bg-blue-200'}
+                    ${
+                      filter === filterOption
+                        ? "bg-blue-700 text-white shadow-lg transform scale-105"
+                        : "bg-blue-100 text-blue-600 hover:bg-blue-200"
+                    }
                   `}
                 >
-                  {filterOption === 'all' ? 'All Orders' :
-                   filterOption === 'day' ? 'Today' :
-                   filterOption === 'week' ? 'This Week' : 'This Month'}
+                  {filterOption === "all"
+                    ? "All Orders"
+                    : filterOption === "day"
+                    ? "Today"
+                    : filterOption === "week"
+                    ? "This Week"
+                    : "This Month"}
                 </button>
               ))}
             </div>
@@ -211,29 +233,56 @@ const HardwareOrders = () => {
             {filteredOrders.length === 0 ? (
               <div className="text-center py-12">
                 <div className="text-blue-400 mb-4">
-                  <svg className="mx-auto h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  <svg
+                    className="mx-auto h-12 w-12"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                    />
                   </svg>
                 </div>
-                <p className="text-blue-500 text-lg">No orders found for the selected time period</p>
+                <p className="text-blue-500 text-lg">
+                  No orders found for the selected time period
+                </p>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-blue-200">
                   <thead>
                     <tr className="bg-blue-50">
-                      <th className="px-6 py-4 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">Product</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">Quantity</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">Total Price</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">Actions</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
+                        Product
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
+                        Quantity
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
+                        Total Price
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
+                        Actions
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-blue-200">
                     {paginatedOrders.map((order) => (
-                      <tr key={order._id} className="hover:bg-blue-50 transition-colors duration-200">
+                      <tr
+                        key={order._id}
+                        className="hover:bg-blue-50 transition-colors duration-200"
+                      >
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-blue-900">{order.name}</div>
-                          <div className="text-sm text-blue-500">ID: {order._id.slice(-6)}</div>
+                          <div className="text-sm font-medium text-blue-900">
+                            {order.productName}
+                          </div>
+                          {/* <div className="text-sm text-blue-500">
+                            ID: {order._id.slice(-6)}
+                          </div> */}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
@@ -277,9 +326,11 @@ const HardwareOrders = () => {
                 disabled={currentPage === 1}
                 className={`
                   px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200
-                  ${currentPage === 1
-                    ? 'bg-blue-100 text-blue-400 cursor-not-allowed'
-                    : 'bg-blue-700 text-white hover:bg-blue-800'}
+                  ${
+                    currentPage === 1
+                      ? "bg-blue-100 text-blue-400 cursor-not-allowed"
+                      : "bg-blue-700 text-white hover:bg-blue-800"
+                  }
                 `}
               >
                 Previous
@@ -292,9 +343,11 @@ const HardwareOrders = () => {
                 disabled={currentPage === totalPages}
                 className={`
                   px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200
-                  ${currentPage === totalPages
-                    ? 'bg-blue-100 text-blue-400 cursor-not-allowed'
-                    : 'bg-blue-700 text-white hover:bg-blue-800'}
+                  ${
+                    currentPage === totalPages
+                      ? "bg-blue-100 text-blue-400 cursor-not-allowed"
+                      : "bg-blue-700 text-white hover:bg-blue-800"
+                  }
                 `}
               >
                 Next
@@ -309,23 +362,39 @@ const HardwareOrders = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4">
             <div className="p-6">
-              <h2 className="text-2xl font-bold text-blue-900 mb-6">Edit Order</h2>
+              <h2 className="text-2xl font-bold text-blue-900 mb-6">
+                Edit Order
+              </h2>
               <form className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-blue-700 mb-1">Quantity</label>
+                  <label className="block text-sm font-medium text-blue-700 mb-1">
+                    Quantity
+                  </label>
                   <input
                     type="number"
                     value={orderToEdit?.quantity || ""}
-                    onChange={(e) => setOrderToEdit({ ...orderToEdit, quantity: e.target.value })}
+                    onChange={(e) =>
+                      setOrderToEdit({
+                        ...orderToEdit,
+                        quantity: e.target.value,
+                      })
+                    }
                     className="w-full p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-blue-700 mb-1">Total Price</label>
+                  <label className="block text-sm font-medium text-blue-700 mb-1">
+                    Total Price
+                  </label>
                   <input
                     type="number"
                     value={orderToEdit?.totalPrice || ""}
-                    onChange={(e) => setOrderToEdit({ ...orderToEdit, totalPrice: e.target.value })}
+                    onChange={(e) =>
+                      setOrderToEdit({
+                        ...orderToEdit,
+                        totalPrice: e.target.value,
+                      })
+                    }
                     className="w-full p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent"
                   />
                 </div>
@@ -357,13 +426,26 @@ const HardwareOrders = () => {
           <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full mx-4">
             <div className="p-6">
               <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
-                <svg className="h-8 w-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="h-8 w-8 text-red-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-blue-900 text-center mb-4">Confirm Delete</h3>
+              <h3 className="text-xl font-bold text-blue-900 text-center mb-4">
+                Confirm Delete
+              </h3>
               <p className="text-blue-500 text-center mb-6">
-                Are you sure you want to delete this order? This action cannot be undone.
+                Are you sure you want to delete this order? This action cannot
+                be undone.
               </p>
               <div className="flex justify-center gap-3">
                 <button

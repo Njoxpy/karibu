@@ -152,6 +152,12 @@ const OrderItemHardware = () => {
                       </span>
                     </p>
                     <p className="text-sm text-blue-500">
+                      Product Description:{" "}
+                      <span className="font-mono text-blue-700">
+                        {selectedProduct?.description}
+                      </span>
+                    </p>
+                    <p className="text-sm text-blue-500">
                       Available Stock:
                       <span
                         className={`ml-2 px-2 py-1 rounded-full text-sm font-medium ${

@@ -83,8 +83,8 @@
               "name": "MongoJS"
             },
             {
-              "id": "JavaScript and TypeScript/Code style issues",
-              "name": "Code style issues",
+              "id": "JavaScript and TypeScript/General",
+              "name": "General",
               "relationships": [
                 {
                   "target": {
@@ -101,8 +101,8 @@
               ]
             },
             {
-              "id": "JavaScript and TypeScript/General",
-              "name": "General",
+              "id": "JavaScript and TypeScript/Code style issues",
+              "name": "Code style issues",
               "relationships": [
                 {
                   "target": {
@@ -185,10 +185,6 @@
               "name": "HTML"
             },
             {
-              "id": "Cucumber",
-              "name": "Cucumber"
-            },
-            {
               "id": "JavaScript and TypeScript/Unused symbols",
               "name": "Unused symbols",
               "relationships": [
@@ -205,6 +201,10 @@
                   ]
                 }
               ]
+            },
+            {
+              "id": "Cucumber",
+              "name": "Cucumber"
             },
             {
               "id": "JavaScript and TypeScript/Data flow",
@@ -341,10 +341,6 @@
               "name": "Docker-compose"
             },
             {
-              "id": "SQL",
-              "name": "SQL"
-            },
-            {
               "id": "JavaScript and TypeScript/Potentially confusing code constructs",
               "name": "Potentially confusing code constructs",
               "relationships": [
@@ -361,6 +357,10 @@
                   ]
                 }
               ]
+            },
+            {
+              "id": "SQL",
+              "name": "SQL"
             },
             {
               "id": "CSS",
@@ -818,40 +818,6 @@
                 ]
               },
               {
-                "id": "NonBlockStatementBodyJS",
-                "shortDescription": {
-                  "text": "Statement body without braces"
-                },
-                "fullDescription": {
-                  "text": "Reports a 'if', 'while', 'for', or 'with' statements whose body is not a block statement. Using code block in statement bodies is usually safer for downstream maintenance.",
-                  "markdown": "Reports a `if`, `while`, `for`, or `with` statements whose body is not a block statement. Using code block in statement bodies is usually safer for downstream maintenance."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
-                  "parameters": {
-                    "suppressToolId": "NonBlockStatementBodyJS",
-                    "ideaSeverity": "WARNING",
-                    "qodanaSeverity": "High",
-                    "codeQualityCategory": "Code Style"
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "JavaScript and TypeScript/Code style issues",
-                      "index": 11,
-                      "toolComponent": {
-                        "name": "WS"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "JSValidateJSDoc",
                 "shortDescription": {
                   "text": "Syntax errors and unresolved references in JSDoc"
@@ -874,6 +840,40 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/General",
+                      "index": 11,
+                      "toolComponent": {
+                        "name": "WS"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "NonBlockStatementBodyJS",
+                "shortDescription": {
+                  "text": "Statement body without braces"
+                },
+                "fullDescription": {
+                  "text": "Reports a 'if', 'while', 'for', or 'with' statements whose body is not a block statement. Using code block in statement bodies is usually safer for downstream maintenance.",
+                  "markdown": "Reports a `if`, `while`, `for`, or `with` statements whose body is not a block statement. Using code block in statement bodies is usually safer for downstream maintenance."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "warning",
+                  "parameters": {
+                    "suppressToolId": "NonBlockStatementBodyJS",
+                    "ideaSeverity": "WARNING",
+                    "qodanaSeverity": "High",
+                    "codeQualityCategory": "Code Style"
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "JavaScript and TypeScript/Code style issues",
                       "index": 12,
                       "toolComponent": {
                         "name": "WS"
@@ -1078,7 +1078,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/Unused symbols",
-                      "index": 20,
+                      "index": 19,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -1180,7 +1180,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/General",
-                      "index": 12,
+                      "index": 11,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -1384,7 +1384,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/Potentially confusing code constructs",
-                      "index": 31,
+                      "index": 30,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -1554,7 +1554,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/General",
-                      "index": 12,
+                      "index": 11,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -1588,7 +1588,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/Code style issues",
-                      "index": 11,
+                      "index": 12,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -1724,7 +1724,41 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/General",
-                      "index": 12,
+                      "index": 11,
+                      "toolComponent": {
+                        "name": "WS"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "ES6ShorthandObjectProperty",
+                "shortDescription": {
+                  "text": "Property can be replaced with shorthand"
+                },
+                "fullDescription": {
+                  "text": "Reports an object property that can be converted to ES6 shorthand style and provides a quick-fix to do it. Example: 'var obj = {foo:foo}' After applying the quick-fix the code looks as follows: 'var obj = {foo}'",
+                  "markdown": "Reports an object property that can be converted to ES6 shorthand style and provides a quick-fix to do it.\n\nExample:\n\n\n    var obj = {foo:foo}\n\nAfter applying the quick-fix the code looks as follows:\n\n\n    var obj = {foo}\n"
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "note",
+                  "parameters": {
+                    "suppressToolId": "ES6ShorthandObjectProperty",
+                    "ideaSeverity": "INFORMATION",
+                    "qodanaSeverity": "Info",
+                    "codeQualityCategory": "Code Style"
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "JavaScript and TypeScript/General",
+                      "index": 11,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -1759,40 +1793,6 @@
                     "target": {
                       "id": "JavaScript and TypeScript/Control flow issues",
                       "index": 1,
-                      "toolComponent": {
-                        "name": "WS"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
-                "id": "ES6ShorthandObjectProperty",
-                "shortDescription": {
-                  "text": "Property can be replaced with shorthand"
-                },
-                "fullDescription": {
-                  "text": "Reports an object property that can be converted to ES6 shorthand style and provides a quick-fix to do it. Example: 'var obj = {foo:foo}' After applying the quick-fix the code looks as follows: 'var obj = {foo}'",
-                  "markdown": "Reports an object property that can be converted to ES6 shorthand style and provides a quick-fix to do it.\n\nExample:\n\n\n    var obj = {foo:foo}\n\nAfter applying the quick-fix the code looks as follows:\n\n\n    var obj = {foo}\n"
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "note",
-                  "parameters": {
-                    "suppressToolId": "ES6ShorthandObjectProperty",
-                    "ideaSeverity": "INFORMATION",
-                    "qodanaSeverity": "Info",
-                    "codeQualityCategory": "Code Style"
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "JavaScript and TypeScript/General",
-                      "index": 12,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -1928,7 +1928,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/Potentially confusing code constructs",
-                      "index": 31,
+                      "index": 30,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -1996,7 +1996,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/General",
-                      "index": 12,
+                      "index": 11,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -2064,7 +2064,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/General",
-                      "index": 12,
+                      "index": 11,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -2166,7 +2166,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/General",
-                      "index": 12,
+                      "index": 11,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -2268,7 +2268,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/General",
-                      "index": 12,
+                      "index": 11,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -2336,7 +2336,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/Potentially confusing code constructs",
-                      "index": 31,
+                      "index": 30,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -2370,7 +2370,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/Potentially confusing code constructs",
-                      "index": 31,
+                      "index": 30,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -2472,7 +2472,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/Code style issues",
-                      "index": 11,
+                      "index": 12,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -2574,7 +2574,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/General",
-                      "index": 12,
+                      "index": 11,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -2688,40 +2688,6 @@
                 ]
               },
               {
-                "id": "UnusedCatchParameterJS",
-                "shortDescription": {
-                  "text": "Unused 'catch' parameter"
-                },
-                "fullDescription": {
-                  "text": "Reports a 'catch' parameter that is not used in the corresponding block. The 'catch' parameters named 'ignore' or 'ignored' are ignored. Use the checkbox below to disable this inspection for 'catch' blocks with comments.",
-                  "markdown": "Reports a `catch` parameter that is not used in the corresponding block. The `catch` parameters named `ignore` or `ignored` are ignored.\n\n\nUse the checkbox below to disable this inspection for `catch`\nblocks with comments."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
-                  "parameters": {
-                    "suppressToolId": "UnusedCatchParameterJS",
-                    "ideaSeverity": "WARNING",
-                    "qodanaSeverity": "High",
-                    "codeQualityCategory": "Code Style"
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "JavaScript and TypeScript/Try statement issues",
-                      "index": 36,
-                      "toolComponent": {
-                        "name": "WS"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "NpmUsedModulesInstalled",
                 "shortDescription": {
                   "text": "Missing module dependency"
@@ -2745,6 +2711,40 @@
                     "target": {
                       "id": "JavaScript and TypeScript/Imports and dependencies",
                       "index": 48,
+                      "toolComponent": {
+                        "name": "WS"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "UnusedCatchParameterJS",
+                "shortDescription": {
+                  "text": "Unused 'catch' parameter"
+                },
+                "fullDescription": {
+                  "text": "Reports a 'catch' parameter that is not used in the corresponding block. The 'catch' parameters named 'ignore' or 'ignored' are ignored. Use the checkbox below to disable this inspection for 'catch' blocks with comments.",
+                  "markdown": "Reports a `catch` parameter that is not used in the corresponding block. The `catch` parameters named `ignore` or `ignored` are ignored.\n\n\nUse the checkbox below to disable this inspection for `catch`\nblocks with comments."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "warning",
+                  "parameters": {
+                    "suppressToolId": "UnusedCatchParameterJS",
+                    "ideaSeverity": "WARNING",
+                    "qodanaSeverity": "High",
+                    "codeQualityCategory": "Code Style"
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "JavaScript and TypeScript/Try statement issues",
+                      "index": 36,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -2880,7 +2880,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/Potentially confusing code constructs",
-                      "index": 31,
+                      "index": 30,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -2948,7 +2948,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/General",
-                      "index": 12,
+                      "index": 11,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -2982,7 +2982,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/General",
-                      "index": 12,
+                      "index": 11,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -3118,7 +3118,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/Unused symbols",
-                      "index": 20,
+                      "index": 19,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -3254,7 +3254,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/Potentially confusing code constructs",
-                      "index": 31,
+                      "index": 30,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -3334,40 +3334,6 @@
                 ]
               },
               {
-                "id": "NestedConditionalExpressionJS",
-                "shortDescription": {
-                  "text": "Nested conditional expression"
-                },
-                "fullDescription": {
-                  "text": "Reports a ternary conditional expression within another ternary condition. Such nested conditionals may be extremely confusing, and best replaced by more explicit conditional logic.",
-                  "markdown": "Reports a ternary conditional expression within another ternary condition. Such nested conditionals may be extremely confusing, and best replaced by more explicit conditional logic."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
-                  "parameters": {
-                    "suppressToolId": "NestedConditionalExpressionJS",
-                    "ideaSeverity": "WARNING",
-                    "qodanaSeverity": "High",
-                    "codeQualityCategory": "Code Style"
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "JavaScript and TypeScript/Potentially confusing code constructs",
-                      "index": 31,
-                      "toolComponent": {
-                        "name": "WS"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "JSTypeOfValues",
                 "shortDescription": {
                   "text": "'typeof' comparison with non-standard value"
@@ -3391,6 +3357,40 @@
                     "target": {
                       "id": "JavaScript and TypeScript/Probable bugs",
                       "index": 17,
+                      "toolComponent": {
+                        "name": "WS"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "NestedConditionalExpressionJS",
+                "shortDescription": {
+                  "text": "Nested conditional expression"
+                },
+                "fullDescription": {
+                  "text": "Reports a ternary conditional expression within another ternary condition. Such nested conditionals may be extremely confusing, and best replaced by more explicit conditional logic.",
+                  "markdown": "Reports a ternary conditional expression within another ternary condition. Such nested conditionals may be extremely confusing, and best replaced by more explicit conditional logic."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "warning",
+                  "parameters": {
+                    "suppressToolId": "NestedConditionalExpressionJS",
+                    "ideaSeverity": "WARNING",
+                    "qodanaSeverity": "High",
+                    "codeQualityCategory": "Code Style"
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "JavaScript and TypeScript/Potentially confusing code constructs",
+                      "index": 30,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -3436,40 +3436,6 @@
                 ]
               },
               {
-                "id": "TextLabelInSwitchStatementJS",
-                "shortDescription": {
-                  "text": "Text label in 'switch' statement"
-                },
-                "fullDescription": {
-                  "text": "Reports a labeled statement inside a 'switch' statement, which often results from a typo. Example: 'switch(x)\n    {\n        case 1:\n        case2:   //typo!\n        case 3:\n            break;\n    }'",
-                  "markdown": "Reports a labeled statement inside a `switch` statement, which often results from a typo.\n\nExample:\n\n\n        switch(x)\n        {\n            case 1:\n            case2:   //typo!\n            case 3:\n                break;\n        }\n"
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
-                  "parameters": {
-                    "suppressToolId": "TextLabelInSwitchStatementJS",
-                    "ideaSeverity": "WARNING",
-                    "qodanaSeverity": "High",
-                    "codeQualityCategory": "Code Style"
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "JavaScript and TypeScript/Switch statement issues",
-                      "index": 52,
-                      "toolComponent": {
-                        "name": "WS"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "ES6PossiblyAsyncFunction",
                 "shortDescription": {
                   "text": "'await' in non-async function"
@@ -3493,6 +3459,40 @@
                     "target": {
                       "id": "JavaScript and TypeScript/Async code and promises",
                       "index": 54,
+                      "toolComponent": {
+                        "name": "WS"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "TextLabelInSwitchStatementJS",
+                "shortDescription": {
+                  "text": "Text label in 'switch' statement"
+                },
+                "fullDescription": {
+                  "text": "Reports a labeled statement inside a 'switch' statement, which often results from a typo. Example: 'switch(x)\n    {\n        case 1:\n        case2:   //typo!\n        case 3:\n            break;\n    }'",
+                  "markdown": "Reports a labeled statement inside a `switch` statement, which often results from a typo.\n\nExample:\n\n\n        switch(x)\n        {\n            case 1:\n            case2:   //typo!\n            case 3:\n                break;\n        }\n"
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "warning",
+                  "parameters": {
+                    "suppressToolId": "TextLabelInSwitchStatementJS",
+                    "ideaSeverity": "WARNING",
+                    "qodanaSeverity": "High",
+                    "codeQualityCategory": "Code Style"
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "JavaScript and TypeScript/Switch statement issues",
+                      "index": 52,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -3662,7 +3662,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/General",
-                      "index": 12,
+                      "index": 11,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -3900,7 +3900,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/General",
-                      "index": 12,
+                      "index": 11,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -4070,7 +4070,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/General",
-                      "index": 12,
+                      "index": 11,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -4104,7 +4104,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/General",
-                      "index": 12,
+                      "index": 11,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -4240,7 +4240,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/Code style issues",
-                      "index": 11,
+                      "index": 12,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -4308,7 +4308,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/General",
-                      "index": 12,
+                      "index": 11,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -4410,7 +4410,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/General",
-                      "index": 12,
+                      "index": 11,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -4512,7 +4512,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/Potentially confusing code constructs",
-                      "index": 31,
+                      "index": 30,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -4580,7 +4580,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/Potentially confusing code constructs",
-                      "index": 31,
+                      "index": 30,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -4716,7 +4716,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/General",
-                      "index": 12,
+                      "index": 11,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -4784,7 +4784,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/Potentially confusing code constructs",
-                      "index": 31,
+                      "index": 30,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -4966,40 +4966,6 @@
                 ]
               },
               {
-                "id": "JSUnfilteredForInLoop",
-                "shortDescription": {
-                  "text": "Unfiltered for..in loop"
-                },
-                "fullDescription": {
-                  "text": "Reports unfiltered 'for-in' loops. The use of this construct results in processing not only own properties of an object but properties from its prototype as well. It may be unexpected in some specific cases, for example, in utility methods that copy or modify all properties or when 'Object''s prototype may be incorrectly modified. For example, the following code will print 42 and myMethod: 'Object.prototype.myMethod = function myMethod() {};\nlet a = { foo: 42 };\nfor (let i in a) {\n  console.log(a[i]);\n}' Suggests replacing the whole loop with a 'Object.keys()' method or adding a 'hasOwnProperty()' check. After applying the quick-fix the code looks as follows: 'for (let i in a) {\n  if (a.hasOwnProperty(i)) {\n    console.log(a[i]);\n  }\n}'",
-                  "markdown": "Reports unfiltered `for-in` loops.   \n\nThe use of this construct results in processing not only own properties of an object but properties from its prototype as well. It may be unexpected in some specific cases, for example, in utility methods that copy or modify all properties or when `Object`'s prototype may be incorrectly modified. For example, the following code will print **42** and **myMethod** :   \n\n\n    Object.prototype.myMethod = function myMethod() {};\n    let a = { foo: 42 };\n    for (let i in a) {\n      console.log(a[i]);\n    }\n\nSuggests replacing the whole loop with a `Object.keys()` method or adding a `hasOwnProperty()` check. After applying the quick-fix the code looks as follows:\n\n\n    for (let i in a) {\n      if (a.hasOwnProperty(i)) {\n        console.log(a[i]);\n      }\n    }\n"
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
-                  "parameters": {
-                    "suppressToolId": "JSUnfilteredForInLoop",
-                    "ideaSeverity": "WARNING",
-                    "qodanaSeverity": "High",
-                    "codeQualityCategory": "Reliability"
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "JavaScript and TypeScript/General",
-                      "index": 12,
-                      "toolComponent": {
-                        "name": "WS"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "JSIncompatibleTypesComparison",
                 "shortDescription": {
                   "text": "Comparison of expressions having incompatible types"
@@ -5034,6 +5000,40 @@
                 ]
               },
               {
+                "id": "JSUnfilteredForInLoop",
+                "shortDescription": {
+                  "text": "Unfiltered for..in loop"
+                },
+                "fullDescription": {
+                  "text": "Reports unfiltered 'for-in' loops. The use of this construct results in processing not only own properties of an object but properties from its prototype as well. It may be unexpected in some specific cases, for example, in utility methods that copy or modify all properties or when 'Object''s prototype may be incorrectly modified. For example, the following code will print 42 and myMethod: 'Object.prototype.myMethod = function myMethod() {};\nlet a = { foo: 42 };\nfor (let i in a) {\n  console.log(a[i]);\n}' Suggests replacing the whole loop with a 'Object.keys()' method or adding a 'hasOwnProperty()' check. After applying the quick-fix the code looks as follows: 'for (let i in a) {\n  if (a.hasOwnProperty(i)) {\n    console.log(a[i]);\n  }\n}'",
+                  "markdown": "Reports unfiltered `for-in` loops.   \n\nThe use of this construct results in processing not only own properties of an object but properties from its prototype as well. It may be unexpected in some specific cases, for example, in utility methods that copy or modify all properties or when `Object`'s prototype may be incorrectly modified. For example, the following code will print **42** and **myMethod** :   \n\n\n    Object.prototype.myMethod = function myMethod() {};\n    let a = { foo: 42 };\n    for (let i in a) {\n      console.log(a[i]);\n    }\n\nSuggests replacing the whole loop with a `Object.keys()` method or adding a `hasOwnProperty()` check. After applying the quick-fix the code looks as follows:\n\n\n    for (let i in a) {\n      if (a.hasOwnProperty(i)) {\n        console.log(a[i]);\n      }\n    }\n"
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "warning",
+                  "parameters": {
+                    "suppressToolId": "JSUnfilteredForInLoop",
+                    "ideaSeverity": "WARNING",
+                    "qodanaSeverity": "High",
+                    "codeQualityCategory": "Reliability"
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "JavaScript and TypeScript/General",
+                      "index": 11,
+                      "toolComponent": {
+                        "name": "WS"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
                 "id": "JSAnnotator",
                 "shortDescription": {
                   "text": "ECMAScript specification is not followed"
@@ -5056,7 +5056,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/General",
-                      "index": 12,
+                      "index": 11,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -5090,7 +5090,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/General",
-                      "index": 12,
+                      "index": 11,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -5328,7 +5328,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/Code style issues",
-                      "index": 11,
+                      "index": 12,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -5532,7 +5532,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/Potentially confusing code constructs",
-                      "index": 31,
+                      "index": 30,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -5566,7 +5566,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/General",
-                      "index": 12,
+                      "index": 11,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -5668,7 +5668,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/General",
-                      "index": 12,
+                      "index": 11,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -5804,7 +5804,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/General",
-                      "index": 12,
+                      "index": 11,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -6008,7 +6008,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/Code style issues",
-                      "index": 11,
+                      "index": 12,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -6042,7 +6042,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/Potentially confusing code constructs",
-                      "index": 31,
+                      "index": 30,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -6076,7 +6076,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/Potentially confusing code constructs",
-                      "index": 31,
+                      "index": 30,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -6110,7 +6110,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/General",
-                      "index": 12,
+                      "index": 11,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -6246,7 +6246,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/Code style issues",
-                      "index": 11,
+                      "index": 12,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -6314,7 +6314,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/Code style issues",
-                      "index": 11,
+                      "index": 12,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -6450,7 +6450,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/General",
-                      "index": 12,
+                      "index": 11,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -6484,7 +6484,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/Code style issues",
-                      "index": 11,
+                      "index": 12,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -6586,7 +6586,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/Code style issues",
-                      "index": 11,
+                      "index": 12,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -6654,7 +6654,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/General",
-                      "index": 12,
+                      "index": 11,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -6790,7 +6790,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/General",
-                      "index": 12,
+                      "index": 11,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -6824,7 +6824,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/General",
-                      "index": 12,
+                      "index": 11,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -6926,7 +6926,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/Code style issues",
-                      "index": 11,
+                      "index": 12,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -7130,7 +7130,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/Potentially confusing code constructs",
-                      "index": 31,
+                      "index": 30,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -7504,7 +7504,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/General",
-                      "index": 12,
+                      "index": 11,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -7674,7 +7674,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/Potentially confusing code constructs",
-                      "index": 31,
+                      "index": 30,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -7720,40 +7720,6 @@
                 ]
               },
               {
-                "id": "JSUnusedLocalSymbols",
-                "shortDescription": {
-                  "text": "Unused local symbol"
-                },
-                "fullDescription": {
-                  "text": "Reports an unused locally accessible parameter, local variable, function, class, or private member declaration.",
-                  "markdown": "Reports an unused locally accessible parameter, local variable, function, class, or private member declaration."
-                },
-                "defaultConfiguration": {
-                  "enabled": true,
-                  "level": "warning",
-                  "parameters": {
-                    "suppressToolId": "JSUnusedLocalSymbols",
-                    "ideaSeverity": "WARNING",
-                    "qodanaSeverity": "High",
-                    "codeQualityCategory": "Code Style"
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "JavaScript and TypeScript/Unused symbols",
-                      "index": 20,
-                      "toolComponent": {
-                        "name": "WS"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "ReturnFromFinallyBlockJS",
                 "shortDescription": {
                   "text": "'return' inside 'finally' block"
@@ -7788,6 +7754,40 @@
                 ]
               },
               {
+                "id": "JSUnusedLocalSymbols",
+                "shortDescription": {
+                  "text": "Unused local symbol"
+                },
+                "fullDescription": {
+                  "text": "Reports an unused locally accessible parameter, local variable, function, class, or private member declaration.",
+                  "markdown": "Reports an unused locally accessible parameter, local variable, function, class, or private member declaration."
+                },
+                "defaultConfiguration": {
+                  "enabled": true,
+                  "level": "warning",
+                  "parameters": {
+                    "suppressToolId": "JSUnusedLocalSymbols",
+                    "ideaSeverity": "WARNING",
+                    "qodanaSeverity": "High",
+                    "codeQualityCategory": "Code Style"
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "JavaScript and TypeScript/Unused symbols",
+                      "index": 19,
+                      "toolComponent": {
+                        "name": "WS"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
                 "id": "JSValidateTypes",
                 "shortDescription": {
                   "text": "Type mismatch"
@@ -7810,7 +7810,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/General",
-                      "index": 12,
+                      "index": 11,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -11182,7 +11182,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -11216,7 +11216,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -11250,7 +11250,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -11284,7 +11284,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -11318,7 +11318,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -11352,7 +11352,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -11386,41 +11386,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
-                      "toolComponent": {
-                        "name": "WS"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
-                "id": "SqlSideEffectsInspection",
-                "shortDescription": {
-                  "text": "Statement with side effects"
-                },
-                "fullDescription": {
-                  "text": "Reports statements that might lead to modification of a database during a read-only connection. To enable read-only mode for a connection, right-click a data source in the Database tool window (View | Tool Windows | Database) and select Properties. In the Data Sources and Drivers dialog, click the Options tab and select the Read-only checkbox. Example (MySQL): 'CREATE TABLE foo(a INT);\nINSERT INTO foo VALUES (1);' As 'CREATE TABLE' and 'INSERT INTO' statements lead to a database modification, these statements will be highlighted in read-only connection mode.",
-                  "markdown": "Reports statements that might lead to modification of a database during a read-only connection.\n\nTo enable read-only mode for a\nconnection,\nright-click a data source in the **Database** tool window (**View \\| Tool Windows \\| Database** ) and select **Properties** .\nIn the **Data Sources and Drivers** dialog, click the **Options** tab and select the **Read-only** checkbox.\n\nExample (MySQL):\n\n    CREATE TABLE foo(a INT);\n    INSERT INTO foo VALUES (1);\n\nAs `CREATE TABLE` and `INSERT INTO` statements lead to a database modification, these statements will be highlighted\nin read-only connection mode."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
-                  "parameters": {
-                    "suppressToolId": "SqlSideEffects",
-                    "ideaSeverity": "WARNING",
-                    "qodanaSeverity": "High",
-                    "codeQualityCategory": "Security"
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -11454,7 +11420,41 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
+                      "toolComponent": {
+                        "name": "WS"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SqlSideEffectsInspection",
+                "shortDescription": {
+                  "text": "Statement with side effects"
+                },
+                "fullDescription": {
+                  "text": "Reports statements that might lead to modification of a database during a read-only connection. To enable read-only mode for a connection, right-click a data source in the Database tool window (View | Tool Windows | Database) and select Properties. In the Data Sources and Drivers dialog, click the Options tab and select the Read-only checkbox. Example (MySQL): 'CREATE TABLE foo(a INT);\nINSERT INTO foo VALUES (1);' As 'CREATE TABLE' and 'INSERT INTO' statements lead to a database modification, these statements will be highlighted in read-only connection mode.",
+                  "markdown": "Reports statements that might lead to modification of a database during a read-only connection.\n\nTo enable read-only mode for a\nconnection,\nright-click a data source in the **Database** tool window (**View \\| Tool Windows \\| Database** ) and select **Properties** .\nIn the **Data Sources and Drivers** dialog, click the **Options** tab and select the **Read-only** checkbox.\n\nExample (MySQL):\n\n    CREATE TABLE foo(a INT);\n    INSERT INTO foo VALUES (1);\n\nAs `CREATE TABLE` and `INSERT INTO` statements lead to a database modification, these statements will be highlighted\nin read-only connection mode."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "warning",
+                  "parameters": {
+                    "suppressToolId": "SqlSideEffects",
+                    "ideaSeverity": "WARNING",
+                    "qodanaSeverity": "High",
+                    "codeQualityCategory": "Security"
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "SQL",
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -11488,7 +11488,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -11522,7 +11522,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -11556,7 +11556,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -11590,7 +11590,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -11624,7 +11624,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -11658,7 +11658,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -11692,41 +11692,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
-                      "toolComponent": {
-                        "name": "WS"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
-                "id": "SqlCallNotationInspection",
-                "shortDescription": {
-                  "text": "Using of named and positional arguments"
-                },
-                "fullDescription": {
-                  "text": "Reports calls in which positional arguments go after the named ones. Works in PostgreSQL, Oracle, and Db2. Example (In PostgreSQL): 'CREATE FUNCTION foo(a int, b int, c int) RETURNS int\n    LANGUAGE plpgsql AS\n$$\nBEGIN\n    RETURN a + b + c;\nEND\n$$;\nSELECT foo(a => 1, b => 2, c => 3);\n  -- `3` goes after the named argument\nSELECT foo(1, b => 2, 3);\n  -- `1` and `3` go after the named argument\nSELECT foo(b => 2, 1, 3);'",
-                  "markdown": "Reports calls in which positional arguments go after the named ones. Works in PostgreSQL, Oracle, and Db2.\n\nExample (In PostgreSQL):\n\n    CREATE FUNCTION foo(a int, b int, c int) RETURNS int\n        LANGUAGE plpgsql AS\n    $$\n    BEGIN\n        RETURN a + b + c;\n    END\n    $$;\n    SELECT foo(a => 1, b => 2, c => 3);\n      -- `3` goes after the named argument\n    SELECT foo(1, b => 2, 3);\n      -- `1` and `3` go after the named argument\n    SELECT foo(b => 2, 1, 3);\n"
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "error",
-                  "parameters": {
-                    "suppressToolId": "SqlCallNotation",
-                    "ideaSeverity": "ERROR",
-                    "qodanaSeverity": "Critical",
-                    "codeQualityCategory": "Code Style"
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -11761,6 +11727,40 @@
                     "target": {
                       "id": "MySQL",
                       "index": 13,
+                      "toolComponent": {
+                        "name": "WS"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SqlCallNotationInspection",
+                "shortDescription": {
+                  "text": "Using of named and positional arguments"
+                },
+                "fullDescription": {
+                  "text": "Reports calls in which positional arguments go after the named ones. Works in PostgreSQL, Oracle, and Db2. Example (In PostgreSQL): 'CREATE FUNCTION foo(a int, b int, c int) RETURNS int\n    LANGUAGE plpgsql AS\n$$\nBEGIN\n    RETURN a + b + c;\nEND\n$$;\nSELECT foo(a => 1, b => 2, c => 3);\n  -- `3` goes after the named argument\nSELECT foo(1, b => 2, 3);\n  -- `1` and `3` go after the named argument\nSELECT foo(b => 2, 1, 3);'",
+                  "markdown": "Reports calls in which positional arguments go after the named ones. Works in PostgreSQL, Oracle, and Db2.\n\nExample (In PostgreSQL):\n\n    CREATE FUNCTION foo(a int, b int, c int) RETURNS int\n        LANGUAGE plpgsql AS\n    $$\n    BEGIN\n        RETURN a + b + c;\n    END\n    $$;\n    SELECT foo(a => 1, b => 2, c => 3);\n      -- `3` goes after the named argument\n    SELECT foo(1, b => 2, 3);\n      -- `1` and `3` go after the named argument\n    SELECT foo(b => 2, 1, 3);\n"
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "error",
+                  "parameters": {
+                    "suppressToolId": "SqlCallNotation",
+                    "ideaSeverity": "ERROR",
+                    "qodanaSeverity": "Critical",
+                    "codeQualityCategory": "Code Style"
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "SQL",
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -11828,7 +11828,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -11862,7 +11862,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -11930,7 +11930,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -11964,7 +11964,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -11998,7 +11998,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -12032,7 +12032,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -12066,7 +12066,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -12100,7 +12100,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -12168,7 +12168,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -12202,7 +12202,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -12236,7 +12236,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -12270,7 +12270,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -12304,7 +12304,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -12338,7 +12338,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -12406,41 +12406,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
-                      "toolComponent": {
-                        "name": "WS"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
-                "id": "SqlMultipleLimitClausesInspection",
-                "shortDescription": {
-                  "text": "Multiple row limiting/offset clauses in queries"
-                },
-                "fullDescription": {
-                  "text": "Reports usages of multiple row limiting clauses in a single query. Example (Microsoft SQL Server): 'create table foo(a int);\nselect top 1 * from foo order by a offset 10 rows fetch next 20 rows only;' The SELECT TOP clause is used to specify that only 1 record must be returned. The FETCH clause specifies the number of rows to return after the OFFSET clause has been processed. But as we already have the SELECT TOP limiting clause, the FETCH clause might be redundant.",
-                  "markdown": "Reports usages of multiple row limiting clauses in a single query.\n\nExample (Microsoft SQL Server):\n\n    create table foo(a int);\n    select top 1 * from foo order by a offset 10 rows fetch next 20 rows only;\n\nThe SELECT TOP clause is used to specify that only 1 record must be\nreturned. The FETCH clause specifies the number of rows to return after the OFFSET\nclause has been processed. But as we already have the SELECT TOP limiting clause, the FETCH clause might be redundant."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
-                  "parameters": {
-                    "suppressToolId": "SqlMultipleLimitClauses",
-                    "ideaSeverity": "WARNING",
-                    "qodanaSeverity": "High",
-                    "codeQualityCategory": "Performance"
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -12474,7 +12440,41 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
+                      "toolComponent": {
+                        "name": "WS"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "SqlMultipleLimitClausesInspection",
+                "shortDescription": {
+                  "text": "Multiple row limiting/offset clauses in queries"
+                },
+                "fullDescription": {
+                  "text": "Reports usages of multiple row limiting clauses in a single query. Example (Microsoft SQL Server): 'create table foo(a int);\nselect top 1 * from foo order by a offset 10 rows fetch next 20 rows only;' The SELECT TOP clause is used to specify that only 1 record must be returned. The FETCH clause specifies the number of rows to return after the OFFSET clause has been processed. But as we already have the SELECT TOP limiting clause, the FETCH clause might be redundant.",
+                  "markdown": "Reports usages of multiple row limiting clauses in a single query.\n\nExample (Microsoft SQL Server):\n\n    create table foo(a int);\n    select top 1 * from foo order by a offset 10 rows fetch next 20 rows only;\n\nThe SELECT TOP clause is used to specify that only 1 record must be\nreturned. The FETCH clause specifies the number of rows to return after the OFFSET\nclause has been processed. But as we already have the SELECT TOP limiting clause, the FETCH clause might be redundant."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "warning",
+                  "parameters": {
+                    "suppressToolId": "SqlMultipleLimitClauses",
+                    "ideaSeverity": "WARNING",
+                    "qodanaSeverity": "High",
+                    "codeQualityCategory": "Performance"
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "SQL",
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -12508,7 +12508,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -12542,7 +12542,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -12576,7 +12576,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -12610,7 +12610,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -12644,7 +12644,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -12678,7 +12678,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -12746,7 +12746,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -12780,7 +12780,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -12814,7 +12814,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -12848,7 +12848,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -12882,7 +12882,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -12916,7 +12916,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -12950,7 +12950,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -13120,7 +13120,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -13154,7 +13154,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -13188,7 +13188,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -13222,7 +13222,7 @@
                   {
                     "target": {
                       "id": "SQL",
-                      "index": 30,
+                      "index": 31,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -14958,40 +14958,6 @@
                 ]
               },
               {
-                "id": "XmlDeprecatedElement",
-                "shortDescription": {
-                  "text": "Deprecated symbol"
-                },
-                "fullDescription": {
-                  "text": "Reports a deprecated XML element or attribute. Symbols can be marked by XML comment or documentation tag with text 'deprecated'.",
-                  "markdown": "Reports a deprecated XML element or attribute.\n\nSymbols can be marked by XML comment or documentation tag with text 'deprecated'."
-                },
-                "defaultConfiguration": {
-                  "enabled": false,
-                  "level": "warning",
-                  "parameters": {
-                    "suppressToolId": "XmlDeprecatedElement",
-                    "ideaSeverity": "WARNING",
-                    "qodanaSeverity": "High",
-                    "codeQualityCategory": "Unspecified"
-                  }
-                },
-                "relationships": [
-                  {
-                    "target": {
-                      "id": "XML",
-                      "index": 40,
-                      "toolComponent": {
-                        "name": "WS"
-                      }
-                    },
-                    "kinds": [
-                      "superset"
-                    ]
-                  }
-                ]
-              },
-              {
                 "id": "RegExpRedundantNestedCharacterClass",
                 "shortDescription": {
                   "text": "Redundant nested character class"
@@ -15015,6 +14981,40 @@
                     "target": {
                       "id": "RegExp",
                       "index": 45,
+                      "toolComponent": {
+                        "name": "WS"
+                      }
+                    },
+                    "kinds": [
+                      "superset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "XmlDeprecatedElement",
+                "shortDescription": {
+                  "text": "Deprecated symbol"
+                },
+                "fullDescription": {
+                  "text": "Reports a deprecated XML element or attribute. Symbols can be marked by XML comment or documentation tag with text 'deprecated'.",
+                  "markdown": "Reports a deprecated XML element or attribute.\n\nSymbols can be marked by XML comment or documentation tag with text 'deprecated'."
+                },
+                "defaultConfiguration": {
+                  "enabled": false,
+                  "level": "warning",
+                  "parameters": {
+                    "suppressToolId": "XmlDeprecatedElement",
+                    "ideaSeverity": "WARNING",
+                    "qodanaSeverity": "High",
+                    "codeQualityCategory": "Unspecified"
+                  }
+                },
+                "relationships": [
+                  {
+                    "target": {
+                      "id": "XML",
+                      "index": 40,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -15366,19 +15366,19 @@
                 ]
               },
               {
-                "id": "RegExpDuplicateAlternationBranch",
+                "id": "RegExpRepeatedSpace",
                 "shortDescription": {
-                  "text": "Duplicate branch in alternation"
+                  "text": "Consecutive spaces"
                 },
                 "fullDescription": {
-                  "text": "Reports duplicate branches in a RegExp alternation. Duplicate branches slow down matching and obscure the intent of the expression. Example: '(alpha|bravo|charlie|alpha)' After the quick-fix is applied: '(alpha|bravo|charlie)' New in 2017.1",
-                  "markdown": "Reports duplicate branches in a RegExp alternation. Duplicate branches slow down matching and obscure the intent of the expression.\n\n**Example:**\n\n\n      (alpha|bravo|charlie|alpha)\n\nAfter the quick-fix is applied:\n\n\n      (alpha|bravo|charlie)\n\nNew in 2017.1"
+                  "text": "Reports multiple consecutive spaces in a RegExp. Because spaces are not visible by default, it can be hard to see how many spaces are required. The RegExp can be made more clear by replacing the consecutive spaces with a single space and a counted quantifier. Example: '(     )' After the quick-fix is applied: '( {5})' New in 2017.1",
+                  "markdown": "Reports multiple consecutive spaces in a RegExp. Because spaces are not visible by default, it can be hard to see how many spaces are required. The RegExp can be made more clear by replacing the consecutive spaces with a single space and a counted quantifier.\n\n**Example:**\n\n\n      (     )\n\nAfter the quick-fix is applied:\n\n\n      ( {5})\n\n\nNew in 2017.1"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
                   "level": "warning",
                   "parameters": {
-                    "suppressToolId": "RegExpDuplicateAlternationBranch",
+                    "suppressToolId": "RegExpRepeatedSpace",
                     "ideaSeverity": "WARNING",
                     "qodanaSeverity": "High",
                     "codeQualityCategory": "Unspecified"
@@ -15400,19 +15400,19 @@
                 ]
               },
               {
-                "id": "RegExpRepeatedSpace",
+                "id": "RegExpDuplicateAlternationBranch",
                 "shortDescription": {
-                  "text": "Consecutive spaces"
+                  "text": "Duplicate branch in alternation"
                 },
                 "fullDescription": {
-                  "text": "Reports multiple consecutive spaces in a RegExp. Because spaces are not visible by default, it can be hard to see how many spaces are required. The RegExp can be made more clear by replacing the consecutive spaces with a single space and a counted quantifier. Example: '(     )' After the quick-fix is applied: '( {5})' New in 2017.1",
-                  "markdown": "Reports multiple consecutive spaces in a RegExp. Because spaces are not visible by default, it can be hard to see how many spaces are required. The RegExp can be made more clear by replacing the consecutive spaces with a single space and a counted quantifier.\n\n**Example:**\n\n\n      (     )\n\nAfter the quick-fix is applied:\n\n\n      ( {5})\n\n\nNew in 2017.1"
+                  "text": "Reports duplicate branches in a RegExp alternation. Duplicate branches slow down matching and obscure the intent of the expression. Example: '(alpha|bravo|charlie|alpha)' After the quick-fix is applied: '(alpha|bravo|charlie)' New in 2017.1",
+                  "markdown": "Reports duplicate branches in a RegExp alternation. Duplicate branches slow down matching and obscure the intent of the expression.\n\n**Example:**\n\n\n      (alpha|bravo|charlie|alpha)\n\nAfter the quick-fix is applied:\n\n\n      (alpha|bravo|charlie)\n\nNew in 2017.1"
                 },
                 "defaultConfiguration": {
                   "enabled": true,
                   "level": "warning",
                   "parameters": {
-                    "suppressToolId": "RegExpRepeatedSpace",
+                    "suppressToolId": "RegExpDuplicateAlternationBranch",
                     "ideaSeverity": "WARNING",
                     "qodanaSeverity": "High",
                     "codeQualityCategory": "Unspecified"
@@ -15536,7 +15536,7 @@
                   {
                     "target": {
                       "id": "Cucumber",
-                      "index": 19,
+                      "index": 20,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -15570,7 +15570,7 @@
                   {
                     "target": {
                       "id": "Cucumber",
-                      "index": 19,
+                      "index": 20,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -15604,7 +15604,7 @@
                   {
                     "target": {
                       "id": "Cucumber",
-                      "index": 19,
+                      "index": 20,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -15638,7 +15638,7 @@
                   {
                     "target": {
                       "id": "Cucumber",
-                      "index": 19,
+                      "index": 20,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -15672,7 +15672,7 @@
                   {
                     "target": {
                       "id": "Cucumber",
-                      "index": 19,
+                      "index": 20,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -15706,7 +15706,7 @@
                   {
                     "target": {
                       "id": "Cucumber",
-                      "index": 19,
+                      "index": 20,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -15740,7 +15740,7 @@
                   {
                     "target": {
                       "id": "Cucumber",
-                      "index": 19,
+                      "index": 20,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -18844,7 +18844,7 @@
                   {
                     "target": {
                       "id": "JavaScript and TypeScript/General",
-                      "index": 12,
+                      "index": 11,
                       "toolComponent": {
                         "name": "WS"
                       }
@@ -19245,7 +19245,7 @@
       },
       "invocations": [
         {
-          "startTimeUtc": "2025-01-20T23:23:15.3542884Z",
+          "startTimeUtc": "2025-01-25T23:49:17.2254644Z",
           "exitCode": 0,
           "executionSuccessful": true
         }
@@ -19254,7 +19254,7 @@
       "versionControlProvenance": [
         {
           "repositoryUri": "ssh://git@github.com/Njoxpy/savarrah.git",
-          "revisionId": "f8b62b6b7b19b179c634e26cd7caa54944b58f24",
+          "revisionId": "5c7794636da497dc3d136a2375334f4b2a9f6cbe",
           "branch": "main",
           "properties": {
             "repoUrl": "",
@@ -19266,8 +19266,8 @@
       ],
       "results": [],
       "automationDetails": {
-        "id": "savarrah/qodana/2025-01-20",
-        "guid": "276f24e4-217a-4f80-84a6-80fcd3ad4862",
+        "id": "savarrah/qodana/2025-01-25",
+        "guid": "ec386f14-a04d-40bf-9267-27dc16541cc0",
         "properties": {
           "jobUrl": "",
           "analysisKind": "ide"
@@ -19281,15 +19281,15 @@
         "configProfile": "starter",
         "deviceId": "20012513d6303d2-d7a1-4beb-90c2-e8aba03de445",
         "qodanaNewResultSummary": {
-          "high": 81,
-          "critical": 89,
-          "moderate": 28,
-          "total": 198
+          "critical": 37,
+          "high": 22,
+          "moderate": 2,
+          "total": 61
         }
       }
     }
   ],
   "properties": {
-    "runTimestamp": "1737415426134"
+    "runTimestamp": "1737848989193"
   }
 }

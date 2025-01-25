@@ -179,6 +179,15 @@ const GodownProductDetails = () => {
                 </div>
                 <div className="bg-green-50 p-4 rounded-xl">
                   <label className="text-sm text-green-500 block mb-1">
+                    Description
+                  </label>
+                  <p className="mt-2 text-lg font-semibold text-green-700">
+                    {product.description}
+                    {/* Show first 50 characters */}
+                  </p>
+                </div>
+                <div className="bg-green-50 p-4 rounded-xl">
+                  <label className="text-sm text-green-500 block mb-1">
                     Available Stock
                   </label>
                   <p
