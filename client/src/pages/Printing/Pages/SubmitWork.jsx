@@ -152,12 +152,7 @@ function SubmitWork() {
         <h1 className="font-bold text-center text-2xl text-blue-600 mb-6">
           Submit Your Work
         </h1>
-        {/* Display error message if any */}
-        {error && (
-          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
-            {error}
-          </div>
-        )}
+
         <form id="workSubmissionForm" onSubmit={handleSubmit}>
           {/* Description Field */}
           <div className="mb-4">
@@ -256,6 +251,12 @@ function SubmitWork() {
               <option value="bags">Bags</option>
             </select>
           </div>
+          {/* Display error message if any */}
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+              {error}
+            </div>
+          )}
 
           {/* Buttons */}
           <div className="flex justify-center space-x-4">
