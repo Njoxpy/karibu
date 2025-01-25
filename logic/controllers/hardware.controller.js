@@ -235,7 +235,9 @@ const createHardwareOrder = async (req, res) => {
 // Get All Hardware Orders
 const getAllHardwareOrders = async (req, res) => {
   try {
-    const orders = await HardwareOrder.find();
+    const orders = await HardwareOrder.find()
+      .populate("productId", "name")
+      .sort({ createdAt: -1 });
 
     if (orders.length === 0) {
       return res.status(NOT_FOUND).json({ message: "No orders available" });
