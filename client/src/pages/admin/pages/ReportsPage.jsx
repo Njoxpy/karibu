@@ -1,170 +1,124 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { getToken } from "../../../services/token";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { Loader2, Download } from "lucide-react";
 
 const ReportsPage = () => {
-  const [reportType, setReportType] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [reportBlob, setReportBlob] = useState(null); // Store the generated report Blob
+
   const token = getToken();
+  const categories = [
+    "Animal Feeding",
+    "Printing",
+    "Fresh Oil",
+    "Hardware",
+    "Godown",
+    "Stationery",
+  ];
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   const handleGenerateReport = async () => {
-    setError("");
-    setReportBlob(null); // Reset the report Blob
-
-    if (!reportType || !startDate || !endDate) {
-      const errorMessage = "Please select all options to generate the report.";
-      setError(errorMessage);
-      toast.error(errorMessage);
+    if (!startDate || !endDate || !selectedCategory) {
+      alert("Please select all fields");
       return;
     }
 
     setLoading(true);
-
-    const apiUrl = `http://localhost:5000/api/v1/${reportType}/reports?startDate=${startDate}&endDate=${endDate}`;
-
     try {
-      const response = await fetch(apiUrl, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch report data.");
-      }
-
-      const blob = await response.blob();
-      setReportBlob(blob); // Store the Blob in state
-
-      toast.success(
-        `Report for ${reportType} from ${startDate} to ${endDate} generated successfully.`
+      const response = await fetch(
+        `http://localhost:5000/api/v1/${selectedCategory
+          .toLowerCase()
+          .replace(
+            " ",
+            "-"
+          )}/reports?startDate=${startDate}&endDate=${endDate}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/pdf",
+          },
+        }
       );
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${selectedCategory
+          .toLowerCase()
+          .replace(" ", "_")}_report.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      } else {
+        const errorData = await response.json();
+        alert(errorData.message);
+      }
     } catch (error) {
-      toast.error(`Error: ${error.message}`);
-      setError(`Error: ${error.message}`);
+      console.error("Report generation error:", error);
+      alert("Failed to generate report");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDownloadReport = () => {
-    if (!reportBlob) return;
-
-    const url = URL.createObjectURL(reportBlob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${reportType}-report-${startDate}-to-${endDate}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url); // Clean up the URL object
-  };
-
   return (
-    <div className="bg-gray-50 min-h-screen flex items-center justify-center px-4 py-12">
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar
-        newestOnTop
-        closeOnClick
-        pauseOnHover
-        className="z-50"
-      />
+    <div className="p-6 bg-blue-100 min-h-screen">
+      <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-2xl font-bold mb-6 text-center">Generate Report</h2>
 
-      <div className="w-full max-w-md bg-white shadow-xl rounded-xl border border-gray-200 p-8 space-y-6">
-        <h2 className="text-3xl font-semibold text-center text-gray-800 mb-6">
-          Generate Reports
-        </h2>
-
-        <div className="space-y-4">
-          {/* Report Type Selector */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Select Report Type
-            </label>
-            <select
-              value={reportType}
-              onChange={(e) => setReportType(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
-            >
-              <option value="">-- Select Report --</option>
-              <option value="printing">Printing</option>
-              <option value="fresh-oil">Fresh Oil</option>
-              <option value="hardware">Hardware</option>
-              <option value="animal-feeding">Animal Feeding</option>
-              <option value="godown">Godown</option>
-              <option value="stationery">Stationery</option>
-            </select>
-          </div>
-
-          {/* Date Selectors */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Start Date
-              </label>
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                End Date
-              </label>
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-
-          {/* Generate Report Button */}
-          <button
-            onClick={handleGenerateReport}
-            disabled={loading}
-            className="w-full py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-300 flex items-center justify-center disabled:opacity-50"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="mr-2 animate-spin" />
-                Generating...
-              </>
-            ) : (
-              "Generate Report"
-            )}
-          </button>
-
-          {/* Download Report Button */}
-          {reportBlob && (
+        {/* Category Selection */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+          {categories.map((category) => (
             <button
-              onClick={handleDownloadReport}
-              className="w-full py-3 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-300 flex items-center justify-center"
+              key={category}
+              onClick={() => setSelectedCategory(category)}
+              className={`p-4 rounded-lg transition-colors ${
+                selectedCategory === category
+                  ? "bg-blue-600 text-white"
+                  : "bg-blue-200 text-blue-700 hover:bg-blue-300"
+              }`}
             >
-              <Download className="mr-2" />
-              Download Report
+              {category}
             </button>
-          )}
+          ))}
         </div>
 
-        {/* Error Message */}
-        {error && (
-          <div className="bg-red-50 border border-red-300 text-red-800 px-4 py-3 rounded-md text-sm">
-            <p>{error}</p>
-          </div>
-        )}
+        {/* Date Range Inputs */}
+        <div className="mb-4">
+          <label className="block text-blue-700 mb-2">Start Date</label>
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            className="w-full p-2 border rounded-md"
+          />
+        </div>
+
+        <div className="mb-6">
+          <label className="block text-blue-700 mb-2">End Date</label>
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            className="w-full p-2 border rounded-md"
+          />
+        </div>
+
+        {/* Generate Report Button */}
+        <button
+          onClick={handleGenerateReport}
+          disabled={loading || !selectedCategory}
+          className={`w-full p-3 rounded-md transition-colors ${
+            selectedCategory && !loading
+              ? "bg-blue-600 text-white hover:bg-blue-700"
+              : "bg-blue-400 cursor-not-allowed"
+          }`}
+        >
+          {loading ? "Generating..." : "Generate Report"}
+        </button>
       </div>
     </div>
   );
