@@ -13,6 +13,8 @@ const DashboardLayout = () => {
     switch (location.pathname) {
       case "/admin/users":
         return "Users";
+      case "/admin/users/create":
+        return "Users";
       case "/admin/reports":
         return "Reports";
       default:
