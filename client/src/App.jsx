@@ -5,7 +5,6 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
-import { useAuth } from "./hooks/auth/useAuth";
 // layout
 import RootLayout from "./layouts/RootLayout";
 import OrdersLayout from "./pages/Printing/Layouts/OrdersLayout";
@@ -32,7 +31,6 @@ import HardwareItemsUpload from "./pages/Hardware/Components/HardwareItemsUpload
 import ManageHardwareProducts from "./pages/Hardware/pages/ManageHardwareProducts";
 import HardwareOrders from "./pages/Hardware/pages/HardwareOrders";
 import Hardwares from "./pages/Hardware/pages/Hardwares";
-import HardwareBulkUpload from "./pages/Hardware/Components/BulkUploadHardware";
 
 // harwdware layout
 import HardwareLayoutProducts from "./pages/Hardware/layouts/HardwareProductsLayout";
@@ -91,7 +89,6 @@ import StationeryItemsList from "./pages/Stationery/Pages/StationeryItemsList";
 import StationeryBody from "./pages/Stationery/Pages/StationeryBody";
 import StationeryOrders from "./pages/Stationery/Pages/Orders";
 import AddItems from "./pages/Stationery/Components/StationeryItemsUpload";
-import OrderSucessStationery from "./pages/Stationery/Components/OrderSucessStationery";
 // stationery details
 import StationeryOrderDetails from "./pages/Stationery/Pages/StationeryOrderDetails";
 import StationeryItemsDetails from "./pages/Stationery/Pages/StationeryItemDetails";
@@ -130,18 +127,13 @@ import AnimalFeedingOrderDetailsError from "./pages/AnimalFeeding/Error/AnimalFe
 // admin
 import DashboardLayout from "./pages/admin/layout/DashboardLayout";
 import DashboardHome from "./pages/admin/pages/DashboardHome";
-import ProductsPage from "./pages/admin/pages/ProductsPage";
-import OrdersPage from "./pages/admin/pages/OrdersPage";
 import UsersPage from "./pages/admin/pages/UsersPage";
 import ReportsPage from "./pages/admin/pages/ReportsPage";
-import AddProduct from "./pages/admin/components/AddProduct";
-import OrderDetailsPage from "./pages/admin/order/OrderDetailsPage";
 import UserProfile from "./components/UserProfile";
-import AddUserPage from "./pages/admin/pages/UsersPage";
+import AddUserPage from "./pages/admin/components/AddUserPage";
 
 import OilDetailsError from "./pages/FreshOil/Error/OilDetailsError";
 import GodownItemsDetailsError from "./pages/Godown/Error/GodownItemsDetailsError";
-import ProductDetailsOils from "./pages/FreshOil/Pages/ProductDetailsOils";
 
 export default function App() {
   const router = createBrowserRouter(
