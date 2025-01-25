@@ -135,53 +135,49 @@ const createGodownProduct = async (req, res) => {
 // create order
 const createGodownOrder = async (req, res) => {
   try {
-    const { productId, quantity } = req.body;
-
+    const { productId, productName, quantity } = req.body;
     const userId = req.user && req.user._id;
 
-    if (quantity == null || !productId || !userId) {
+    // Validate inputs
+    if (!productId || !productName || !quantity || !userId) {
       return res
         .status(BAD_REQUEST)
         .json({ message: "All fields are required" });
     }
 
-    if (isNaN(quantity)) {
-      return res.status(BAD_REQUEST).json({
-        error: "Quantity must be a valid number.",
-      });
+    // Fetch the product
+    const product = await GodownProduct.findById(productId);
+    if (!product) {
+      return res.status(NOT_FOUND).json({ error: "Product not found" });
     }
 
-    if (!mongoose.Types.ObjectId.isValid(productId)) {
-      return res.status(BAD_REQUEST).json({ error: "Invalid productId." });
+    // Check stock
+    if (product.quantity < quantity) {
+      return res.status(BAD_REQUEST).json({ message: "Insufficient stock" });
     }
 
-    // fetch product
-    const productDetails = await GodownProduct.findById(productId);
-    if (!productDetails) {
-      return res.status(NOT_FOUND).json({ message: "Product not found" });
-    }
-
-    if (productDetails.quantity < quantity) {
-      return res
-        .status(BAD_REQUEST)
-        .json({ message: "Insufficient product quantity available" });
-    }
-
-    productDetails.quantity -= quantity;
-    await productDetails.save();
-
-    const totalPrice = productDetails.price * quantity;
-
-    const newOrder = await GodownOrder.create({
+    // Create the order
+    const order = await GodownOrder.create({
       productId,
+      productName, // Include the product name
       quantity,
+      price: product.price,
+      totalPrice: quantity * product.price,
       userId,
-      totalPrice,
     });
 
-    res.status(CREATED).json(newOrder);
+    // Update the product stock
+    product.quantity -= quantity;
+    await product.save();
+
+    return res
+      .status(201)
+      .json({ message: "Order created successfully", order });
   } catch (error) {
-    res.status(SERVER_ERROR).json({ error: error.message });
+    return res.status(SERVER_ERROR).json({
+      message: "An error occurred while creating the order",
+      error: error.message,
+    });
   }
 };
 
@@ -204,7 +200,9 @@ const getAllGodownProducts = async (req, res) => {
 // get all orders
 const getAllGodownOrders = async (req, res) => {
   try {
-    const orders = await GodownOrder.find().sort({ createdAt: -1 });
+    const orders = await GodownOrder.find()
+      .populate("productId", "name")
+      .sort({ createdAt: -1 });
 
     if (orders.length === 0) {
       return res
