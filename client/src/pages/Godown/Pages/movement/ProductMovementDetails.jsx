@@ -1,0 +1,373 @@
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import Footer from "../../../../components/Footer";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { getToken } from "../../../../services/token";
+
+const ProductMovementDetails = () => {
+  const { id } = useParams();
+  const token = getToken(); // Retrieve token from localStorage
+
+  const [product, setProduct] = useState(null);
+  const [transferQuantity, setTransferQuantity] = useState(1);
+  const [origin, setOrigin] = useState("");
+  const [destination, setDestination] = useState("");
+  const [reason, setReason] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [transferSuccess, setTransferSuccess] = useState(false);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/api/v1/godown/products/${id}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`, // Add bearer token in the request headers
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        if (!response.ok) {
+          throw new Error("Product not found");
+        }
+        const data = await response.json();
+        setProduct(data);
+        setOrigin(data.location); // Pre-fill origin with the product's current location
+        setLoading(false);
+      } catch (error) {
+        toast.error(`Error: ${error.message}`);
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [id, token]);
+
+  const handleTransfer = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      // Validate inputs
+      if (!transferQuantity || transferQuantity < 1) {
+        throw new Error("Transfer quantity must be at least 1.");
+      }
+      if (!origin || !destination) {
+        throw new Error(
+          "Please provide both origin and destination locations."
+        );
+      }
+      if (transferQuantity > product.quantity) {
+        throw new Error("Transfer quantity exceeds available stock.");
+      }
+
+      // Prepare transfer data
+      const transferData = {
+        productId: product._id,
+        transferQuantity,
+        origin,
+        destination,
+        reason,
+      };
+
+      // Send POST request to transfer inventory
+      const response = await fetch(
+        "http://localhost:5000/api/v1/godown/inventory-movement",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Include bearer token
+          },
+          body: JSON.stringify(transferData),
+        }
+      );
+
+      if (!response.ok) {
+        const errorResponse = await response.json();
+        throw new Error(
+          errorResponse.message || "Failed to process the transfer. Try again."
+        );
+      }
+
+      // Show success message and reset the state
+      setTransferSuccess(true);
+      toast.success("Transfer successful!", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+
+      // Reset form state
+      setTransferQuantity(1);
+      setOrigin(product.location);
+      setDestination("");
+      setReason("");
+    } catch (error) {
+      // Handle errors
+      toast.error(`Error: ${error.message}`, {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-900"></div>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="bg-indigo-50 p-4 rounded-lg">
+          <p className="text-indigo-600 text-center font-medium">
+            Product not found
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-indigo-100">
+      <ToastContainer />
+      <div className="max-w-4xl mx-auto px-4 py-12">
+        <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-indigo-100">
+          {/* Header Section */}
+          <div className="bg-gradient-to-r from-indigo-700 to-indigo-800 px-6 py-8">
+            <h2 className="text-2xl md:text-3xl font-bold text-white text-center">
+              {product.name}
+            </h2>
+            <p className="text-indigo-300 text-center mt-2">Product Details</p>
+          </div>
+
+          <div className="p-8">
+            {/* Product Info Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+              <div className="space-y-4">
+                <div className="bg-indigo-50 p-4 rounded-xl">
+                  <label className="text-sm text-indigo-500 block mb-1">
+                    Product Code
+                  </label>
+                  <p className="text-lg font-semibold text-indigo-700">
+                    {product._id}
+                  </p>
+                </div>
+                <div className="bg-indigo-50 p-4 rounded-xl">
+                  <label className="text-sm text-indigo-500 block mb-1">
+                    Product Description
+                  </label>
+                  <p className="text-lg font-semibold text-indigo-700">
+                    {product.description}
+                  </p>
+                </div>
+                <div className="bg-indigo-50 p-4 rounded-xl">
+                  <label className="text-sm text-indigo-500 block mb-1">
+                    Available Stock
+                  </label>
+                  <p
+                    className={`text-lg font-semibold ${
+                      product.quantity > 20
+                        ? "text-indigo-600"
+                        : "text-orange-500"
+                    }`}
+                  >
+                    {product.quantity} units
+                  </p>
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div className="bg-indigo-50 p-4 rounded-xl">
+                  <label className="text-sm text-indigo-500 block mb-1">
+                    Price per Unit
+                  </label>
+                  <p className="text-lg font-semibold text-indigo-700">
+                    Tsh {product.price.toLocaleString()}
+                  </p>
+                </div>
+                <div className="bg-indigo-50 p-4 rounded-xl">
+                  <label className="text-sm text-indigo-500 block mb-1">
+                    Status
+                  </label>
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      product.quantity > 0
+                        ? "bg-indigo-100 text-indigo-800"
+                        : "bg-red-100 text-red-800"
+                    }`}
+                  >
+                    {product.quantity > 2 ? "In Stock" : "Out of Stock"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Transfer Form */}
+            <form onSubmit={handleTransfer} className="space-y-6">
+              <div className="bg-indigo-50 p-6 rounded-xl">
+                <label className="block text-sm font-medium text-indigo-700 mb-2">
+                  Transfer Quantity
+                </label>
+                <input
+                  type="number"
+                  value={transferQuantity}
+                  onChange={(e) => setTransferQuantity(Number(e.target.value))}
+                  min="1"
+                  max={product.quantity}
+                  className="w-full p-3 border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-200"
+                />
+                {transferQuantity > product.quantity && (
+                  <p className="mt-2 text-sm text-red-500">
+                    Quantity exceeds available stock
+                  </p>
+                )}
+              </div>
+
+              <div className="bg-indigo-50 p-6 rounded-xl">
+                <label className="block text-sm font-medium text-indigo-700 mb-2">
+                  Origin Location
+                </label>
+                <input
+                  type="text"
+                  value={origin}
+                  readOnly // Make the input read-only
+                  className="w-full p-3 border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-200 bg-gray-100 cursor-not-allowed" // Add bg-gray-100 and cursor-not-allowed for better UX
+                />
+              </div>
+
+              <div className="bg-indigo-50 p-6 rounded-xl">
+                <label className="block text-sm font-medium text-indigo-700 mb-2">
+                  Destination Location
+                </label>
+                <input
+                  type="text"
+                  value={destination}
+                  onChange={(e) => setDestination(e.target.value)}
+                  className="w-full p-3 border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-200"
+                  placeholder="Enter destination location"
+                />
+              </div>
+
+              <div className="bg-indigo-50 p-6 rounded-xl">
+                <label className="block text-sm font-medium text-indigo-700 mb-2">
+                  Reason for Transfer
+                </label>
+                <input
+                  type="text"
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  className="w-full p-3 border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-200"
+                  placeholder="Enter reason for transfer"
+                />
+              </div>
+
+              {/* Submit Button */}
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  disabled={isSubmitting || transferQuantity > product.quantity}
+                  className={`
+                    w-full md:w-auto px-8 py-4 rounded-xl text-white font-medium
+                    transition-all duration-200 transform hover:scale-105
+                    ${
+                      isSubmitting || transferQuantity > product.quantity
+                        ? "bg-indigo-400 cursor-not-allowed"
+                        : "bg-gradient-to-r from-indigo-700 to-indigo-800 hover:from-indigo-800 hover:to-indigo-900 shadow-lg hover:shadow-xl"
+                    }
+                  `}
+                >
+                  {isSubmitting ? (
+                    <span className="flex items-center justify-center">
+                      <svg
+                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Processing...
+                    </span>
+                  ) : (
+                    "Transfer Inventory"
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      {/* Success Modal */}
+      {transferSuccess && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all duration-300 scale-100">
+            <div className="p-8">
+              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-indigo-100">
+                <svg
+                  className="h-8 w-8 text-indigo-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
+              <h3 className="mt-6 text-xl font-semibold text-indigo-900 text-center">
+                Transfer Successful!
+              </h3>
+              <p className="mt-4 text-indigo-500 text-center">
+                The inventory has been successfully transferred.
+              </p>
+              <div className="mt-8">
+                <button
+                  onClick={() => setTransferSuccess(false)}
+                  className="w-full px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-indigo-700 to-indigo-800 rounded-xl hover:from-indigo-800 hover:to-indigo-900 transition-all duration-200 transform hover:scale-105"
+                >
+                  Continue
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      <Footer />
+    </div>
+  );
+};
+
+export default ProductMovementDetails;
