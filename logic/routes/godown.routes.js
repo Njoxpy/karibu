@@ -18,6 +18,7 @@ const {
   getRevenue,
   transferInventory,
   getTotalCostByDate,
+  getMovementLogs,
 } = require("../controllers/godown.controller");
 
 // Import middleware
@@ -210,6 +211,14 @@ router.patch(
   validateObjectId,
   checkPermissions(["updateOrder"]),
   updateGodownOrderById
+);
+
+router.get(
+  "/movement-logs",
+  authenticate,
+  checkCategory(["admin"]),
+  validateObjectId,
+  getMovementLogs
 );
 
 router.delete(
