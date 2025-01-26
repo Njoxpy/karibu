@@ -14,6 +14,20 @@ const {
   NOT_FOUND,
 } = require("../constants/responseStatusCode");
 
+const getMovementLogs = async (req, res) => {
+  try {
+    const movements = await InventoryMovement.find();
+    // .populate("productId", "name") // Populate product details
+    // .populate("transferredBy", "username"); // Populate user details
+    res.status(200).json(movements);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching movement logs.",
+      error: error.message,
+    });
+  }
+};
+
 const bulkUploadGodownProducts = async (req, res) => {
   try {
     const products = req.body;
@@ -638,4 +652,5 @@ module.exports = {
   getAvailableProducts,
   transferInventory,
   getTotalCostByDate,
+  getMovementLogs,
 };
