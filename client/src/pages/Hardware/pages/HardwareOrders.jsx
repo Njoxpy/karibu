@@ -278,11 +278,11 @@ const HardwareOrders = () => {
                       >
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-blue-900">
-                            {order.productName}
+                            {order.productame}
                           </div>
-                          {/* <div className="text-sm text-blue-500">
+                          <div className="text-sm text-blue-500">
                             ID: {order._id.slice(-6)}
-                          </div> */}
+                          </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
