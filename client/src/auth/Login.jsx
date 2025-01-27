@@ -147,6 +147,11 @@ const Login = () => {
               </div>
             </div>
 
+            {error && (
+              <div>
+                <p className="text-red-500">{error}</p>
+              </div>
+            )}
             <div>
               <button
                 type="submit"
