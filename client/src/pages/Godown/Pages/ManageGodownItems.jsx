@@ -25,10 +25,12 @@ const ManageGodownItems = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10; // You can adjust this number
 
+  // Fetch products on component mount
   useEffect(() => {
     fetchProducts();
   }, []);
 
+  // Fetch products from the API
   const fetchProducts = async () => {
     try {
       const response = await fetch(
@@ -41,7 +43,11 @@ const ManageGodownItems = () => {
           },
         }
       );
-      if (!response.ok) throw new Error("Failed to fetch products");
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch products");
+      }
+
       const data = await response.json();
       setProducts(data || []);
     } catch (err) {
@@ -52,16 +58,19 @@ const ManageGodownItems = () => {
     }
   };
 
+  // Handle edit button click
   const handleEdit = (product) => {
     setSelectedProduct(product);
     setShowEditModal(true);
   };
 
+  // Handle delete button click
   const handleDelete = (id) => {
     setSelectedProductId(id);
     setShowDeleteModal(true);
   };
 
+  // Handle delete confirmation
   const onDeleteConfirm = async () => {
     try {
       const response = await fetch(
@@ -90,16 +99,43 @@ const ManageGodownItems = () => {
     }
   };
 
+  // Handle page change for pagination
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  // Handle saving edited product
   const handleSaveEdit = async (updatedProduct) => {
-    // Update the products list with the edited product
-    setProducts(
-      products.map((p) => (p._id === updatedProduct._id ? updatedProduct : p))
-    );
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/v1/godown/products/${updatedProduct._id}`,
+        {
+          method: "PUT", // or "PATCH" depending on your API
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedProduct),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update product");
+      }
+
+      const data = await response.json();
+      console.log("Product updated successfully:", data);
+
+      // Update the products list with the edited product
+      setProducts(
+        products.map((p) => (p._id === updatedProduct._id ? updatedProduct : p))
+      );
+      setShowEditModal(false); // Close the modal
+    } catch (err) {
+      console.error("Error updating product:", err);
+      setError(err.message);
+    }
   };
 
   // Filter products based on search term and quantity filter
@@ -121,6 +157,7 @@ const ManageGodownItems = () => {
     indexOfLastItem
   );
 
+  // Loading state
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -129,6 +166,7 @@ const ManageGodownItems = () => {
     );
   }
 
+  // Error state
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -148,7 +186,7 @@ const ManageGodownItems = () => {
           </h1>
 
           {/* Search and Filter Section */}
-          <div className="mb-6 flex gap-4">
+          <div className="mb-6 flex flex-col md:flex-row gap-4">
             <input
               type="text"
               placeholder="Search by product name..."
@@ -171,23 +209,23 @@ const ManageGodownItems = () => {
             </div>
           ) : (
             <>
-              <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+              <div className="bg-white rounded-lg shadow-lg overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Product Name
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Price
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Quantity
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Condition
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Actions
                       </th>
                     </tr>
@@ -195,22 +233,22 @@ const ManageGodownItems = () => {
                   <tbody className="bg-white divide-y divide-gray-200">
                     {currentItems.map((product) => (
                       <tr key={product._id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-4 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">
                             {product.name}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-4 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-900">
                             Tsh {product.price.toLocaleString()}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-4 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-900">
                             {product.quantity}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-4 py-4 whitespace-nowrap">
                           <span
                             className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full
                             ${
@@ -224,7 +262,7 @@ const ManageGodownItems = () => {
                             {product.condition}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
                           <button
                             onClick={() => handleEdit(product)}
                             className="text-blue-600 hover:text-blue-900 mr-4"
@@ -268,6 +306,7 @@ const ManageGodownItems = () => {
 
       <Footer />
 
+      {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <ConfirmDelete
           onConfirm={onDeleteConfirm}
@@ -278,6 +317,7 @@ const ManageGodownItems = () => {
         />
       )}
 
+      {/* Edit Modal */}
       {showEditModal && selectedProduct && (
         <EditModal
           product={selectedProduct}
