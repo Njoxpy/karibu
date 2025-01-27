@@ -1,15 +1,39 @@
-import { useContext } from "react";
-import { Navigate } from "react-router-dom";
-import { AuthContext } from "../context/auth/AuthContext";
+import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "../hooks/auth/useAuth";
 
-const ProtectedRoute = ({ children }) => {
-  const { auth } = useContext(AuthContext);
+const ProtectedRoute = ({
+  allowedRoles,
+  allowedCategories,
+  categorySpecific = false,
+}) => {
+  const { user } = useAuth();
 
-  if (!auth) {
+  if (!user) {
+    // Redirect to login if the user is not logged in
     return <Navigate to="/login" />;
   }
 
-  return children;
+  const { role, category } = user;
+
+  // Admin has access to everything
+  if (role === "admin") {
+    return <Outlet />;
+  }
+
+  // Employees need to match specific categories if categorySpecific is true
+  if (role === "employee") {
+    if (
+      categorySpecific &&
+      allowedCategories &&
+      !allowedCategories.includes(category)
+    ) {
+      return <Navigate to="/403" />;
+    }
+    return <Outlet />;
+  }
+
+  // For any other cases, deny access
+  return <Navigate to="/403" />;
 };
 
 export default ProtectedRoute;

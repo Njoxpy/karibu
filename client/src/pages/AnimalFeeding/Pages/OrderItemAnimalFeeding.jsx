@@ -171,6 +171,12 @@ const OrderItemAnimalFeeding = () => {
                       </span>
                     </p>
                     <p className="text-sm text-green-500">
+                      Product Description:{" "}
+                      <span className="font-mono text-green-700">
+                        {selectedProduct?.description}
+                      </span>
+                    </p>
+                    <p className="text-sm text-green-500">
                       Available Stock:
                       <span
                         className={`ml-2 px-2 py-1 rounded-full text-sm font-medium ${

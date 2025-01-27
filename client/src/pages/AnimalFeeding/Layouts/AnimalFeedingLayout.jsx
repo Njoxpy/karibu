@@ -32,6 +32,14 @@ function AnimalFeedingLayout() {
               <li>
                 <Link
                   className="hover:text-green-200 transition-colors duration-200"
+                  to="/animal-feeding/"
+                >
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="hover:text-green-200 transition-colors duration-200"
                   to="/animal-feeding/admin/upload"
                 >
                   Food Upload
@@ -69,6 +77,15 @@ function AnimalFeedingLayout() {
         {isMenuOpen && (
           <nav className="lg:hidden bg-green-700 p-4 space-y-4">
             <ul className="flex flex-col space-y-4">
+              <li>
+                <Link
+                  className="hover:text-green-200 transition-colors duration-200"
+                  to="/animal-feeding/"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Home
+                </Link>
+              </li>
               <li>
                 <Link
                   className="hover:text-green-200 transition-colors duration-200"

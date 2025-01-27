@@ -125,7 +125,7 @@ const InventoryMovement = () => {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
         <div className="bg-red-50 p-6 rounded-lg shadow-lg">
-          <h1 className="text-2xl text-red-600 font-bold">{error.message}</h1>
+          <h1 className="text-2xl text-red-600 font-bold">{error}</h1>
         </div>
       </div>
     );

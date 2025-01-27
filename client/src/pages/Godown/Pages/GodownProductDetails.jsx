@@ -171,6 +171,14 @@ const GodownProductDetails = () => {
                 </div>
                 <div className="bg-indigo-50 p-4 rounded-xl">
                   <label className="text-sm text-indigo-500 block mb-1">
+                    Product Description
+                  </label>
+                  <p className="text-lg font-semibold text-indigo-700">
+                    {product.description}
+                  </p>
+                </div>
+                <div className="bg-indigo-50 p-4 rounded-xl">
+                  <label className="text-sm text-indigo-500 block mb-1">
                     Available Stock
                   </label>
                   <p

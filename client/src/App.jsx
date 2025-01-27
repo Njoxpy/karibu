@@ -15,7 +15,6 @@ import OrderDetailsError from "./pages/Printing/Error/OrderDetailsError";
 // pages
 import Home from "./Home/Home";
 import Login from "./auth/Login";
-import UserDashboard from "./pages/Printing/Pages/UserDashboard";
 import OrdersTable from "./pages/Printing/Orders/OrderTable";
 import Contact from "./pages/Contact";
 
@@ -113,7 +112,6 @@ import OrderDetailsAnimal from "./pages/AnimalFeeding/Components/OrderDetails";
 // ERROR
 import ErrorPage from "./pages/AnimalFeeding/Error/ErrorPage";
 import ManageStationeryProducts from "./pages/Stationery/Pages/ManageStationeryProducts";
-import InventoryMovement from "./pages/Godown/Pages/InventoryMovement";
 import InventoryTable from "./pages/Godown/Pages/InventoryTable";
 import FoodsBody from "./pages/AnimalFeeding/Pages/FoodsBody";
 import AnimalFeedingProductsLayout from "./pages/AnimalFeeding/Layouts/AnimalFeedingProductsLayout";
@@ -135,11 +133,24 @@ import AddUserPage from "./pages/admin/components/AddUserPage";
 import OilDetailsError from "./pages/FreshOil/Error/OilDetailsError";
 import GodownItemsDetailsError from "./pages/Godown/Error/GodownItemsDetailsError";
 import HardWareOrdersDetails from "./pages/Hardware/pages/HardWareOrdersDetails";
+import ProductsMovement from "./pages/Godown/Pages/movement/Product";
+import ProductsMovementDetails from "./pages/Godown/Pages/movement/ProductMovementDetails";
+import MovementLogs from "./pages/Godown/Pages/movement/MovementLogs";
+
+import ProtectedRoute from "./auth/ProtectedRoute";
+
 export default function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route>
-        <Route path="admin/*" element={<DashboardLayout />}>
+        <Route
+          path="admin/*"
+          element={
+            <ProtectedRoute roles={["admin"]}>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route index element={<DashboardHome />} />
           <Route path="users" element={<UsersPage />} />
           <Route path="users/create" element={<AddUserPage />} />
@@ -151,7 +162,6 @@ export default function App() {
 
           {/* admin */}
 
-          <Route path="/dashboard" element={<UserDashboard />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/profile" element={<UserProfile />} />
 
@@ -221,7 +231,11 @@ export default function App() {
             <Route path="admin/upload" element={<UploadGodownItems />} />
             <Route path="admin/bulk-upload" element={<BulkUploadGodown />} />
             <Route path="admin/manage" element={<ManageGodownItems />} />
-            <Route path="admin/move" element={<InventoryMovement />} />
+            <Route path="admin/movement-logs" element={<MovementLogs />} />
+            <Route path="admin/move">
+              <Route index element={<ProductsMovement />} />{" "}
+              <Route path=":id" element={<ProductsMovementDetails />} />{" "}
+            </Route>
           </Route>
 
           {/* hardware */}

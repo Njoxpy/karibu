@@ -43,6 +43,8 @@ const AdminManage = () => {
       setCurrentItems(data);
     } catch (error) {
       console.error("Error fetching products:", error);
+      setProducts([]); // Ensure products is an empty array on error
+      setCurrentItems([]); // Ensure currentItems is an empty array on error
     }
   };
 
@@ -177,61 +179,67 @@ const AdminManage = () => {
               <option value="desc">Highest to Lowest</option>
             </select>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {currentItems.map((product) => (
-              <div
-                key={product._id}
-                className="bg-white rounded-xl shadow-lg overflow-hidden"
-              >
-                <img
-                  src={
-                    product.image
-                      ? `${baseURL}${product.image}`
-                      : "https://via.placeholder.com/400x300"
-                  }
-                  alt={product.name}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-6">
-                  <h2 className="text-xl font-bold text-green-700">
-                    {product.name}
-                  </h2>
-                  <p className="text-gray-600 text-sm mt-2">
-                    {product.description}
-                  </p>
-                  <p className="text-gray-600 text-sm mt-2">
-                    Quantity: {product.quantity}
-                  </p>
-                  <p className="text-gray-600 text-sm mt-2">
-                    Price: Tsh {product.price.toLocaleString()}
-                  </p>
-                  <p className="text-gray-600 text-sm mt-2">
-                    Nutrients: {product.nutrients}
-                  </p>
-                  <div className="flex justify-between mt-6">
-                    <button
-                      className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-all duration-200"
-                      onClick={() => {
-                        setEditProduct(product);
-                        setIsEditModalOpen(true);
-                      }}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all duration-200"
-                      onClick={() => {
-                        setSelectedProduct(product);
-                        setIsDeleteModalOpen(true);
-                      }}
-                    >
-                      Delete
-                    </button>
+          {currentItems.length === 0 ? (
+            <div className="text-center text-gray-600">
+              <p>No products found.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {currentItems.map((product) => (
+                <div
+                  key={product._id}
+                  className="bg-white rounded-xl shadow-lg overflow-hidden"
+                >
+                  <img
+                    src={
+                      product.image
+                        ? `${baseURL}${product.image}`
+                        : "https://via.placeholder.com/400x300"
+                    }
+                    alt={product.name}
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="p-6">
+                    <h2 className="text-xl font-bold text-green-700">
+                      {product.name}
+                    </h2>
+                    <p className="text-gray-600 text-sm mt-2">
+                      {product.description}
+                    </p>
+                    <p className="text-gray-600 text-sm mt-2">
+                      Quantity: {product.quantity}
+                    </p>
+                    <p className="text-gray-600 text-sm mt-2">
+                      Price: Tsh {product.price.toLocaleString()}
+                    </p>
+                    <p className="text-gray-600 text-sm mt-2">
+                      Nutrients: {product.nutrients}
+                    </p>
+                    <div className="flex justify-between mt-6">
+                      <button
+                        className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-all duration-200"
+                        onClick={() => {
+                          setEditProduct(product);
+                          setIsEditModalOpen(true);
+                        }}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all duration-200"
+                        onClick={() => {
+                          setSelectedProduct(product);
+                          setIsDeleteModalOpen(true);
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
           <div className="flex justify-center mt-6">
             {Array.from(
               { length: Math.ceil(currentItems.length / itemsPerPage) },

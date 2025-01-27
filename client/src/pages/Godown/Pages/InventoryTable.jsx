@@ -106,16 +106,16 @@ const InventoryTable = () => {
       {/* Inventory Table */}
       {!loading && !error && (
         <>
-          <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+          <div className="bg-white shadow-lg rounded-lg overflow-x-auto">
             <table className="min-w-full">
               <thead className="bg-blue-600 text-white">
                 <tr>
-                  <th className="px-6 py-4 text-left">Item Name</th>
-                  <th className="px-6 py-4 text-left">Price</th>
-                  <th className="px-6 py-4 text-left">Quantity</th>
-                  <th className="px-6 py-4 text-left">Location</th>
-                  <th className="px-6 py-4 text-left">Condition</th>
-                  <th className="px-6 py-4 text-left">Actions</th>
+                  <th className="px-4 py-3 text-left">Item Name</th>
+                  <th className="px-4 py-3 text-left">Price</th>
+                  <th className="px-4 py-3 text-left">Quantity</th>
+                  <th className="px-4 py-3 text-left">Location</th>
+                  <th className="px-4 py-3 text-left">Condition</th>
+                  <th className="px-4 py-3 text-left">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -125,12 +125,12 @@ const InventoryTable = () => {
                       key={item.id}
                       className="hover:bg-gray-50 transition-colors"
                     >
-                      <td className="px-6 py-4 border-b">{item.name}</td>
-                      <td className="px-6 py-4 border-b">
+                      <td className="px-4 py-3 border-b">{item.name}</td>
+                      <td className="px-4 py-3 border-b">
                         {formatPrice(item.price)}
                       </td>
                       <td
-                        className={`px-6 py-4 border-b ${
+                        className={`px-4 py-3 border-b ${
                           item.quantity > 20
                             ? "text-green-600"
                             : "text-orange-500"
@@ -138,9 +138,9 @@ const InventoryTable = () => {
                       >
                         {item.quantity}
                       </td>
-                      <td className="px-6 py-4 border-b">{item.location}</td>
+                      <td className="px-4 py-3 border-b">{item.location}</td>
                       <td
-                        className={`px-6 py-4 border-b ${
+                        className={`px-4 py-3 border-b ${
                           item.quantity < 6
                             ? "text-red-500 font-bold"
                             : "text-green-600 font-bold"
@@ -148,7 +148,7 @@ const InventoryTable = () => {
                       >
                         {item.quantity < 6 ? "Out of Stock" : item.condition}
                       </td>
-                      <td className="px-6 py-4 border-b">
+                      <td className="px-4 py-3 border-b">
                         <Link
                           to={`/godown/products/${item.id}`}
                           className="inline-flex items-center justify-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
