@@ -61,6 +61,13 @@ const FoodUpload = () => {
 
       const data = await response.json();
       dispatch({ type: "ADD_ANIMAL_FEEDING_PRODUCT", payload: data });
+
+      setName("");
+      setDescription("");
+      setPrice("");
+      setQuantity("");
+      setNutrients("");
+      setImage(null);
       setSuccess(true);
       setError(null);
     } catch (error) {
@@ -180,6 +187,7 @@ const FoodUpload = () => {
               <input
                 type="file"
                 id="image"
+                accept=".png, .jpeg, .gif, .jpg"
                 onChange={(e) => setImage(e.target.files[0])}
                 className="mt-1 block w-full px-4 py-3 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
                 required
