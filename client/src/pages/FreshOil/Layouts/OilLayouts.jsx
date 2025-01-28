@@ -31,6 +31,14 @@ function OilLayouts() {
             <ul className="flex space-x-6">
               <li>
                 <Link
+                  to="/fresh-oil/"
+                  className="hover:text-yellow-200 transition-colors duration-200"
+                >
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link
                   to="/fresh-oil/admin/upload"
                   className="hover:text-yellow-200 transition-colors duration-200"
                 >
@@ -69,6 +77,15 @@ function OilLayouts() {
         {isMenuOpen && (
           <nav className="lg:hidden bg-yellow-600 p-4 space-y-4">
             <ul className="flex flex-col space-y-4">
+              <li>
+                <Link
+                  to="/fresh-oil/"
+                  className="hover:text-yellow-200 transition-colors duration-200"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Home
+                </Link>
+              </li>
               <li>
                 <Link
                   to="/fresh-oil/admin/upload"

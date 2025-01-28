@@ -143,14 +143,7 @@ export default function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route>
-        <Route
-          path="admin/*"
-          element={
-            <ProtectedRoute roles={["admin"]}>
-              <DashboardLayout />
-            </ProtectedRoute>
-          }
-        >
+        <Route path="admin/*" element={<DashboardLayout />}>
           <Route index element={<DashboardHome />} />
           <Route path="users" element={<UsersPage />} />
           <Route path="users/create" element={<AddUserPage />} />
@@ -267,7 +260,6 @@ export default function App() {
                 errorElement={<OrderDetailsError />}
               />
             </Route>
-            <Route path="admin/orders" element={<PrintingOrders />} />
           </Route>
 
           {/* stationery */}

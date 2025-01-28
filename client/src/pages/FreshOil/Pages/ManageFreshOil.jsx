@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Footer from "../../../components/Footer";
 import { getToken } from "../../../services/token";
 
@@ -15,7 +15,7 @@ const ManageFreshOil = () => {
   const [isDeleteSuccessModalOpen, setIsDeleteSuccessModalOpen] =
     useState(false);
   const [editProduct, setEditProduct] = useState(null);
-  const [error, setError] = useState(null);
+  const [validationErrors, setValidationErrors] = useState({});
   const token = getToken();
   const baseURL = "http://localhost:5000";
 
@@ -36,10 +36,21 @@ const ManageFreshOil = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      setProducts(data);
-      setCurrentItems(data);
+      console.log("API Response:", data); // Debugging line
+
+      // Ensure data is an array
+      if (Array.isArray(data)) {
+        setProducts(data);
+        setCurrentItems(data);
+      } else {
+        console.error("API response is not an array:", data);
+        setProducts([]);
+        setCurrentItems([]);
+      }
     } catch (error) {
       console.error("Error fetching products:", error);
+      setProducts([]);
+      setCurrentItems([]);
     }
   };
 
@@ -59,7 +70,7 @@ const ManageFreshOil = () => {
   };
 
   const filterProducts = (search, quantity, order) => {
-    let filteredProducts = products;
+    let filteredProducts = Array.isArray(products) ? products : [];
     if (search) {
       filteredProducts = filteredProducts.filter((product) =>
         product.name.toLowerCase().includes(search.toLowerCase())
@@ -90,40 +101,31 @@ const ManageFreshOil = () => {
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
-
-    // Convert price and quantity to numbers
-    const updatedProduct = {
-      ...editProduct,
-      price: Number(editProduct.price),
-      quantity: Number(editProduct.quantity),
-    };
-
     try {
       const response = await fetch(
-        `${baseURL}/api/v1/fresh-oil/products/${updatedProduct._id}`,
+        `${baseURL}/api/v1/fresh-oil/products/${editProduct._id}`,
         {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(updatedProduct),
+          body: JSON.stringify(editProduct),
         }
       );
-
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
-      const data = await response.json();
+      const updatedProduct = await response.json();
       setProducts(
-        products.map((product) => (product._id === data._id ? data : product))
+        products.map((product) =>
+          product._id === updatedProduct._id ? updatedProduct : product
+        )
       );
       setIsEditModalOpen(false);
       setIsEditSuccessModalOpen(true);
     } catch (error) {
       console.error("Error updating product:", error);
-      setError("Failed to update product. Please check the input values.");
     }
   };
 
@@ -153,7 +155,10 @@ const ManageFreshOil = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-yellow-100">
+      <div
+        className="min-h-screen bg-gradient-to-br from-yellow
+       -50 to-yellow-100"
+      >
         <div className="container mx-auto p-4">
           <h1 className="text-3xl font-bold mb-6 text-yellow-700">
             Manage Products
@@ -183,89 +188,100 @@ const ManageFreshOil = () => {
               <option value="desc">Highest to Lowest</option>
             </select>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {currentItems.map((product) => (
-              <div
-                key={product._id}
-                className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
-              >
-                <img
-                  src={
-                    product.image
-                      ? `${baseURL}${product.image}`
-                      : "https://via.placeholder.com/400x300"
-                  }
-                  alt={product.name}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-6">
-                  <h2 className="text-xl font-bold text-yellow-700">
-                    {product.name}
-                  </h2>
-                  <p className="text-gray-600 text-sm mt-2">
-                    {product.description}
-                  </p>
-                  <p className="text-gray-600 text-sm mt-2">
-                    Quantity: {product.quantity}
-                  </p>
-                  <p className="text-gray-600 text-sm mt-2">
-                    Price: Tsh {product.price.toLocaleString()}
-                  </p>
-
-                  <div className="flex justify-between mt-6">
-                    <button
-                      className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-all duration-200"
-                      onClick={() => {
-                        setEditProduct(product);
-                        setIsEditModalOpen(true);
-                      }}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all duration-200"
-                      onClick={() => {
-                        setSelectedProduct(product);
-                        setIsDeleteModalOpen(true);
-                      }}
-                    >
-                      Delete
-                    </button>
+          {!Array.isArray(currentItems) || currentItems.length === 0 ? (
+            <div className="text-center text-gray-600">
+              <p>No products found.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {currentItems.map((product) => (
+                <div
+                  key={product._id}
+                  className="bg-white rounded-xl shadow-lg overflow-hidden"
+                >
+                  <img
+                    src={
+                      product.image
+                        ? `${baseURL}${product.image}`
+                        : "https://via.placeholder.com/400x300"
+                    }
+                    alt={product.name}
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="p-6">
+                    <h2 className="text-xl font-bold text-yellow-700">
+                      {product.name}
+                    </h2>
+                    <p className="text-gray-600 text-sm mt-2">
+                      {product.description}
+                    </p>
+                    <p className="text-gray-600 text-sm mt-2">
+                      Quantity: {product.quantity}
+                    </p>
+                    <p className="text-gray-600 text-sm mt-2">
+                      Price: Tsh {product.price.toLocaleString()}
+                    </p>
+                    <p className="text-gray-600 text-sm mt-2">
+                      Nutrients: {product.nutrients}
+                    </p>
+                    <div className="flex justify-between mt-6">
+                      <button
+                        className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-all duration-200"
+                        onClick={() => {
+                          setEditProduct(product);
+                          setIsEditModalOpen(true);
+                        }}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all duration-200"
+                        onClick={() => {
+                          setSelectedProduct(product);
+                          setIsDeleteModalOpen(true);
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
           <div className="flex justify-center mt-6">
-            {Array.from(
-              { length: Math.ceil(currentItems.length / itemsPerPage) },
-              (_, index) => (
-                <button
-                  key={index}
-                  onClick={() =>
-                    setCurrentItems(
+            {Array.isArray(currentItems) &&
+              Array.from(
+                { length: Math.ceil(currentItems.length / itemsPerPage) },
+                (_, index) => (
+                  <button
+                    key={index}
+                    onClick={() =>
+                      setCurrentItems(
+                        currentItems.slice(
+                          index * itemsPerPage,
+                          (index + 1) * itemsPerPage
+                        )
+                      )
+                    }
+                    className={`px-4 py-2 mx-1 rounded-lg ${
                       currentItems.slice(
                         index * itemsPerPage,
                         (index + 1) * itemsPerPage
-                      )
-                    )
-                  }
-                  className={`px-4 py-2 mx-1 rounded-lg ${
-                    currentItems.slice(
-                      index * itemsPerPage,
-                      (index + 1) * itemsPerPage
-                    ).length === itemsPerPage
-                      ? "bg-yellow-500 text-white"
-                      : "bg-gray-200 hover:bg-gray-300"
-                  }`}
-                >
-                  {index + 1}
-                </button>
-              )
-            )}
+                      ).length === itemsPerPage
+                        ? "bg-yellow-500 text-white"
+                        : "bg-gray-200 hover:bg-gray-300"
+                    }`}
+                  >
+                    {index + 1}
+                  </button>
+                )
+              )}
           </div>
         </div>
 
+        {/* Modals (Edit, Delete, Success) */}
+        {/* ... (same as before) ... */}
         {/* Edit Modal */}
         {isEditModalOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -320,6 +336,18 @@ const ManageFreshOil = () => {
                         type="number"
                         name="quantity"
                         value={editProduct.quantity}
+                        onChange={handleInputChange}
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Nutrients
+                      </label>
+                      <input
+                        type="text"
+                        name="nutrients"
+                        value={editProduct.nutrients}
                         onChange={handleInputChange}
                         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                       />

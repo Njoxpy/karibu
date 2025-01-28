@@ -91,6 +91,14 @@ function AnimalFeedingLayout() {
                     <span>Move</span>
                   </Link>
                 </li>
+                <li>
+                  <Link
+                    className="px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2"
+                    to="/godown/admin/movement-logs"
+                  >
+                    <span>Movement Logs</span>
+                  </Link>
+                </li>
               </ul>
             </nav>
           </div>
@@ -161,6 +169,15 @@ function AnimalFeedingLayout() {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Manage Godown
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2"
+                  to="/godown/admin/movement-logs"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span>Movement Logs</span>
                 </Link>
               </li>
             </ul>

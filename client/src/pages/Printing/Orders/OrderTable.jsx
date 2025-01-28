@@ -24,6 +24,8 @@ const OrdersTable = () => {
   // Fetch orders from API
   const fetchOrders = async () => {
     try {
+      const token = localStorage.getItem("authToken"); // Ensure the token is retrieved from localStorage
+
       const response = await fetch(
         "http://localhost:5000/api/v1/printing/orders",
         {
@@ -34,9 +36,12 @@ const OrdersTable = () => {
           },
         }
       );
+
       const data = await response.json();
+
       if (response.ok) {
-        setOrders(data);
+        // Dispatch to set the fetched orders in the global state
+
         setFilteredOrders(data); // Initially set filtered orders as all fetched orders
       } else {
         console.error("Failed to fetch orders");
@@ -257,7 +262,7 @@ const OrdersTable = () => {
                   <thead>
                     <tr className="bg-blue-50">
                       <th className="px-6 py-4 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
-                        Product
+                        Order
                       </th>
                       <th className="px-6 py-4 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
                         Quantity
@@ -365,6 +370,22 @@ const OrdersTable = () => {
               <form className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-blue-700 mb-1">
+                    Description
+                  </label>
+                  <input
+                    type="text"
+                    value={orderToEdit?.description || ""}
+                    onChange={(e) =>
+                      setOrderToEdit({
+                        ...orderToEdit,
+                        description: e.target.value,
+                      })
+                    }
+                    className="w-full p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-blue-700 mb-1">
                     Quantity
                   </label>
                   <input
@@ -381,7 +402,7 @@ const OrdersTable = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-blue-700 mb-1">
-                    Total Price
+                    Price
                   </label>
                   <input
                     type="number"
@@ -390,6 +411,38 @@ const OrdersTable = () => {
                       setOrderToEdit({
                         ...orderToEdit,
                         totalPrice: e.target.value,
+                      })
+                    }
+                    className="w-full p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-blue-700 mb-1">
+                    Contact
+                  </label>
+                  <input
+                    type="text"
+                    value={orderToEdit?.contact || ""}
+                    onChange={(e) =>
+                      setOrderToEdit({
+                        ...orderToEdit,
+                        contact: e.target.value,
+                      })
+                    }
+                    className="w-full p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-blue-700 mb-1">
+                    Category
+                  </label>
+                  <input
+                    type="text"
+                    value={orderToEdit?.category || ""}
+                    onChange={(e) =>
+                      setOrderToEdit({
+                        ...orderToEdit,
+                        category: e.target.value,
                       })
                     }
                     className="w-full p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent"

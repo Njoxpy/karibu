@@ -193,12 +193,6 @@ const OrderItemGodown = () => {
                 </label>
                 <div className="space-y-3">
                   <p className="text-sm text-blue-500">
-                    Product ID:{" "}
-                    <span className="font-mono text-blue-700">
-                      {selectedProduct._id}
-                    </span>
-                  </p>
-                  <p className="text-sm text-blue-500">
                     Available Stock:
                     <span
                       className={`ml-2 px-2 py-1 rounded-full text-sm font-medium ${

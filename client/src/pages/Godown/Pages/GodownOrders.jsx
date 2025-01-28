@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getToken } from "../../../services/token";
+import { useGodown } from "../../../hooks/Godown/useGodown";
 
 // Utility function to format date
 const formatDate = (date) => new Date(date).toLocaleDateString();
@@ -18,7 +19,7 @@ const GodownOrders = () => {
   const [orderToEdit, setOrderToEdit] = useState(null);
   const [orderToDelete, setOrderToDelete] = useState(null);
   const [filter, setFilter] = useState("all"); // Default filter is "all"
-
+  const { dispatch } = useGodown();
   // token
   const token = getToken();
 
@@ -38,6 +39,7 @@ const GodownOrders = () => {
       const data = await response.json();
       if (response.ok) {
         setOrders(data);
+        dispatch({ type: "SET_GODOWN_ORDERS", payload: data });
         setFilteredOrders(data); // Initially set filtered orders as all fetched orders
       } else {
         console.error("Failed to fetch orders");
@@ -126,6 +128,7 @@ const GodownOrders = () => {
       );
       if (response.ok) {
         const updatedOrders = orders.filter((order) => order._id !== orderId);
+        dispatch({ type: "DELETE_GODOWN_ORDER", payload: orderId });
         setOrders(updatedOrders);
         setFilteredOrders(updatedOrders);
         setShowDeleteModal(false);

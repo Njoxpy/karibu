@@ -141,6 +141,7 @@ const StationeryItemsUpload = () => {
             </label>
             <input
               type="file"
+              accept=".png, .jpeg, .gif, .jpg"
               id="image"
               onChange={(e) => setImage(e.target.files[0])}
               className="border border-gray-300 rounded w-full p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"

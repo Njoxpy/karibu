@@ -14,17 +14,22 @@ const {
   NOT_FOUND,
 } = require("../constants/responseStatusCode");
 
+const NO_CONTENT = 204;
+
 const getMovementLogs = async (req, res) => {
   try {
-    const movements = await InventoryMovement.find();
-    // .populate("productId", "name") // Populate product details
-    // .populate("transferredBy", "username"); // Populate user details
-    res.status(200).json(movements);
+    const logs = await InventoryMovement.find().sort({ createdAt: -1 });
+
+    if (logs.length === 0) {
+      return res
+        .status(NO_CONTENT)
+        .json({ message: "There are no products for now" });
+    }
+
+    return res.status(OK).json(logs); // Added return statement
   } catch (error) {
-    res.status(500).json({
-      message: "Error fetching movement logs.",
-      error: error.message,
-    });
+    console.log(error);
+    return res.status(SERVER_ERROR).json({ error: error.message }); // Uncommented and added return
   }
 };
 
@@ -272,45 +277,57 @@ const updateGodownProductById = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const { price, quantity } = req.body;
+    const { price, quantity, ...otherUpdates } = req.body;
 
-    if (price < 0) {
+    // Validate the product exists first
+    const product = await GodownProduct.findById(id);
+    if (!product) {
+      return res.status(BAD_REQUEST).json({ message: "Product not found" });
+    }
+
+    // Validate price and quantity
+    if (price !== undefined && price < 0) {
       return res
         .status(BAD_REQUEST)
         .json({ message: "Price cannot be negative" });
     }
 
-    if (quantity < 0) {
+    if (quantity !== undefined && quantity < 0) {
       return res
         .status(BAD_REQUEST)
         .json({ message: "Quantity cannot be negative" });
     }
 
-    const updates = req.body;
-
-    const product = await GodownProduct.findById(id);
-
-    if (!product) {
-      return res.status(BAD_REQUEST).json({ message: "Product not found" });
-    }
-
+    // Update condition based on quantity
     if (quantity === 0) {
-      product.condition = "Out of Stock"; // or set an "out of stock" status field
+      otherUpdates.condition = "out of stock";
+    } else if (quantity <= 10) {
+      otherUpdates.condition = "low stock";
+    } else {
+      otherUpdates.condition = "new";
     }
 
-    Object.keys(updates).forEach((key) => {
-      product[key] = updates[key];
+    // Update the product with all fields
+    const updatedProduct = await GodownProduct.findByIdAndUpdate(
+      id,
+      {
+        ...otherUpdates,
+        price: price !== undefined ? price : product.price,
+        quantity: quantity !== undefined ? quantity : product.quantity,
+      },
+      { new: true, runValidators: true }
+    );
+
+    return res.status(OK).json({
+      message: "Updated successfully",
+      product: updatedProduct,
     });
-
-    await product.save();
-
-    res.status(OK).json({ message: "Updated successfully", product });
   } catch (error) {
-    if (!res.headersSent) {
-      return res
-        .status(SERVER_ERROR)
-        .json({ message: "Server error", details: error.message });
-    }
+    console.error("Update error:", error);
+    return res.status(SERVER_ERROR).json({
+      message: "Server error",
+      details: error.message,
+    });
   }
 };
 

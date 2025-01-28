@@ -4,7 +4,7 @@ import Footer from "../../../components/Footer";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getToken } from "../../../services/token";
-import { useAnimalFeeding } from "../../../hooks/animalFeeding/useAnimalFeeding";
+import { useGodown } from "../../../hooks/Godown/useGodown";
 
 const GodownProductDetails = () => {
   const { id } = useParams();
@@ -18,7 +18,7 @@ const GodownProductDetails = () => {
   const [orderSuccess, setOrderSuccess] = useState(false);
 
   // Get the dispatch function from the context
-  const { dispatch } = useAnimalFeeding();
+  const { dispatch } = useGodown();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -41,9 +41,10 @@ const GodownProductDetails = () => {
         setTotalPrice(data.price * quantity);
         setLoading(false);
         // Dispatch the action to set the product in the context
-        dispatch({ type: "SET_ANIMAL_FEEDING_PRODUCTS", payload: [data] });
+        dispatch({ type: "SET_GODOWN_PRODUCTS", payload: [data] });
       } catch (error) {
         toast.error(`Error: ${error.message}`);
+        // dispatch({ type: "SET_ERROR", payload: error.message });
         setLoading(false);
       }
     };
@@ -87,6 +88,8 @@ const GodownProductDetails = () => {
           body: JSON.stringify(orderData),
         }
       );
+
+      dispatch({ type: "ADD_GODOWN_ORDER", payload: response.data });
 
       if (!response.ok) {
         const errorResponse = await response.json();
@@ -161,14 +164,6 @@ const GodownProductDetails = () => {
             {/* Product Info Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
               <div className="space-y-4">
-                <div className="bg-indigo-50 p-4 rounded-xl">
-                  <label className="text-sm text-indigo-500 block mb-1">
-                    Product Code
-                  </label>
-                  <p className="text-lg font-semibold text-indigo-700">
-                    {product._id}
-                  </p>
-                </div>
                 <div className="bg-indigo-50 p-4 rounded-xl">
                   <label className="text-sm text-indigo-500 block mb-1">
                     Product Description

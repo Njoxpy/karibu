@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { useDropzone } from "react-dropzone";
 import * as XLSX from "xlsx";
 
+// FileUploadZone Component
 const FileUploadZone = ({ onFileUpload }) => {
   const onDrop = useCallback(
     (acceptedFiles) => {
@@ -46,6 +47,7 @@ FileUploadZone.propTypes = {
   onFileUpload: PropTypes.func.isRequired,
 };
 
+// SuccessModal Component
 const SuccessModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
@@ -72,13 +74,16 @@ SuccessModal.propTypes = {
   onClose: PropTypes.func.isRequired,
 };
 
+// BulkUploadGodown Component
 const BulkUploadGodown = () => {
   const [file, setFile] = useState(null);
   const [dataPreview, setDataPreview] = useState([]);
   const [errors, setErrors] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [isGuideVisible, setIsGuideVisible] = useState(false);
 
+  // Parse uploaded file
   const parseFile = (file) => {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -116,6 +121,7 @@ const BulkUploadGodown = () => {
     reader.readAsBinaryString(file);
   };
 
+  // Handle file upload
   const handleFileUpload = (uploadedFile) => {
     const allowedTypes = [
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -130,8 +136,7 @@ const BulkUploadGodown = () => {
     parseFile(uploadedFile);
   };
 
-  const token = localStorage.getItem("authToken");
-
+  // Handle confirm upload
   const handleConfirmUpload = async () => {
     setIsUploading(true);
     setErrors([]);
@@ -140,6 +145,7 @@ const BulkUploadGodown = () => {
       const formData = new FormData();
       formData.append("file", file);
 
+      const token = localStorage.getItem("authToken");
       const response = await fetch(
         "http://localhost:5000/api/v1/godown/products/bulk-upload",
         {
@@ -156,7 +162,7 @@ const BulkUploadGodown = () => {
         throw new Error(result.message || "Failed to upload data");
       }
 
-      setIsSuccessModalOpen(true); // Open success modal
+      setIsSuccessModalOpen(true);
       setFile(null);
       setDataPreview([]);
     } catch (err) {
@@ -169,6 +175,82 @@ const BulkUploadGodown = () => {
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6">Bulk Upload Products</h1>
+
+      {/* Guide Section */}
+      <div className="mb-6">
+        <button
+          onClick={() => setIsGuideVisible(!isGuideVisible)}
+          className="text-blue-500 hover:text-blue-700 font-semibold"
+        >
+          {isGuideVisible ? "Hide Guide" : "Show Guide"}
+        </button>
+        {isGuideVisible && (
+          <div className="mt-4 bg-gray-50 p-6 rounded-lg border border-gray-200">
+            <h2 className="text-xl font-semibold mb-4">
+              Jinsi ya Kupakia Bidhaa Kwa Wingi
+            </h2>
+            <p className="text-gray-700 mb-4">
+              Fuata hatua hizi kuandaa na kupakia data zako za bidhaa:
+            </p>
+            <ol className="list-decimal list-inside space-y-3">
+              <li>
+                <strong>Andaa Faili Yako:</strong>
+                <ul className="list-disc list-inside ml-6 mt-1">
+                  <li>
+                    Tumia umbizo la faili la <strong>.csv</strong> au{" "}
+                    <strong>.xlsx</strong>.
+                  </li>
+                  <li>
+                    Hakikisha faili lako lina safu zifuatazo kwa mpangilio:
+                    <ul className="list-disc list-inside ml-6 mt-1">
+                      <li>
+                        <code>Jina</code> (Jina la Bidhaa)
+                      </li>
+                      <li>
+                        <code>Bei</code> (Bei ya Bidhaa)
+                      </li>
+                      <li>
+                        <code>Kiasi</code> (Kiasi cha Bidhaa)
+                      </li>
+                      <li>
+                        <code>Mahali</code> (Mahali pa Bidhaa)
+                      </li>
+                      <li>
+                        <code>Maelezo</code> (Maelezo ya Bidhaa)
+                      </li>
+                    </ul>
+                  </li>
+                  <li>Usijumuisha vichwa vya safu katika faili.</li>
+                </ul>
+              </li>
+              <li>
+                <strong>Pakia Faili Yako:</strong>
+                <ul className="list-disc list-inside ml-6 mt-1">
+                  <li>
+                    Vuta na uache faili lako katika eneo la kupakia au bonyeza
+                    ili kuchagua.
+                  </li>
+                  <li>Hakikisha ukubwa wa faili hauzidi 5MB.</li>
+                </ul>
+              </li>
+              <li>
+                <strong>Kagua na Thibitisha:</strong>
+                <ul className="list-disc list-inside ml-6 mt-1">
+                  <li>Angalia data ili kuhakikisha ni sahihi.</li>
+                  <li>
+                    Bonyeza <strong>Thibitisha Kupakia</strong> kumaliza
+                    mchakato.
+                  </li>
+                </ul>
+              </li>
+            </ol>
+            <p className="text-gray-700 mt-4">
+              Ikiwa utapata matatizo, hakikisha faili lako linazingatia muundo
+              uliotajwa hapo juu na jaribu tena.
+            </p>
+          </div>
+        )}
+      </div>
 
       {/* File Upload Zone */}
       <FileUploadZone onFileUpload={handleFileUpload} />

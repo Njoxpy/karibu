@@ -144,6 +144,23 @@ const OrderItem = () => {
     );
   }
 
+  if (products.length === 0) {
+    return (
+      <>
+        <div className="flex flex-col items-center justify-center h-screen bg-gray-50">
+          <div className="text-center p-6 rounded-lg shadow-lg bg-white">
+            <h1 className="text-2xl font-semibold text-gray-800">
+              No Products
+            </h1>
+            <p className="mt-2 text-gray-600">
+              There are currently no products available!
+            </p>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-yellow-100">
       <ToastContainer />
@@ -184,12 +201,6 @@ const OrderItem = () => {
                   Product Details
                 </label>
                 <div className="space-y-3">
-                  <p className="text-sm text-yellow-500">
-                    Product ID:{" "}
-                    <span className="font-mono text-yellow-700">
-                      {selectedProduct._id}
-                    </span>
-                  </p>
                   <p className="text-sm text-yellow-500">
                     Available Stock:
                     <span

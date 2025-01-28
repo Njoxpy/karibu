@@ -135,9 +135,15 @@ const OrderItemStationery = () => {
   if (products.length === 0) {
     return (
       <>
-        <div>
-          <h1>No products</h1>
-          <p>There are current no products for now!</p>
+        <div className="flex flex-col items-center justify-center h-screen bg-gray-50">
+          <div className="text-center p-6 rounded-lg shadow-lg bg-white">
+            <h1 className="text-2xl font-semibold text-gray-800">
+              No Products
+            </h1>
+            <p className="mt-2 text-gray-600">
+              There are currently no products available!
+            </p>
+          </div>
         </div>
       </>
     );
@@ -182,12 +188,6 @@ const OrderItemStationery = () => {
                   Product Details
                 </label>
                 <div className="space-y-3">
-                  <p className="text-sm text-blue-500">
-                    Product ID:{" "}
-                    <span className="font-mono text-blue-700">
-                      {selectedProduct._id}
-                    </span>
-                  </p>
                   <p className="text-sm text-blue-500">
                     Available Stock:
                     <span

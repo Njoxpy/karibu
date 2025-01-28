@@ -2,9 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { jsPDF } from "jspdf";
 import "../../../styles/submitWork.css";
+import { usePrinting } from "../../../hooks/printing/usePrinting";
 
 function SubmitWork() {
   const navigate = useNavigate();
+  const { dispatch } = usePrinting();
 
   // State variables for form fields
   const [price, setPrice] = useState(0);
@@ -66,6 +68,9 @@ function SubmitWork() {
       }
 
       const data = await response.json();
+
+      // Dispatch to add the order to the state
+      dispatch({ type: "ADD_PRINTING_ORDER", payload: data }); // Add the order from response
 
       // Generate the PDF receipt using jsPDF
       const doc = new jsPDF();

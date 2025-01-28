@@ -161,7 +161,6 @@ const GodownProductDetails = () => {
             {/* Product Info Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
               <div className="space-y-4">
-                <div className="bg-green-50 p-4 rounded-xl"></div>
                 <div className="bg-green-50 p-4 rounded-xl">
                   <label className="text-sm text-green-500 block mb-1">
                     Nutrients

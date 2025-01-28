@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getToken } from "../../../services/token";
+import { useGodown } from "../../../hooks/Godown/useGodown";
 
 const ITEMS_PER_PAGE = 6;
 const API_URL = "http://localhost:5000/api/v1/godown/products";
@@ -14,6 +15,7 @@ const InventoryTable = () => {
 
   // Token
   const token = getToken();
+  const { products, dispatch } = useGodown();
 
   // Fetch inventory data
   useEffect(() => {
@@ -39,6 +41,8 @@ const InventoryTable = () => {
 
       const data = await response.json();
       setInventory(formatInventoryData(data));
+      dispatch({ type: "SET_GODOWN_PRODUCTS", payload: data });
+      // console.log(dispatch);
     } catch (error) {
       setError(error.message);
     } finally {
@@ -75,6 +79,22 @@ const InventoryTable = () => {
   };
 
   const { paginatedInventory, totalPages } = filterAndPaginate();
+
+  if (inventory.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[200px] bg-gray-100 p-6 rounded-lg shadow-md">
+        <p className="text-gray-700 text-lg font-medium text-center">
+          No products available for now.{" "}
+          <a
+            href="/godown/admin/upload"
+            className="text-blue-600 underline hover:text-blue-800 transition duration-200"
+          >
+            Upload a product.
+          </a>
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 bg-gray-100 min-h-screen">
