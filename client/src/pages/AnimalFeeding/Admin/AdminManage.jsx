@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Footer from "../../../components/Footer";
 import { getToken } from "../../../services/token";
 
 const AdminManage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [quantityFilter, setQuantityFilter] = useState("");
-  const [sortOrder, setSortOrder] = useState(""); // New state for sorting order
+  const [sortOrder, setSortOrder] = useState("");
   const [currentItems, setCurrentItems] = useState([]);
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -19,7 +19,7 @@ const AdminManage = () => {
   const token = getToken();
   const baseURL = "http://localhost:5000";
 
-  const itemsPerPage = 10; // Adjust as needed
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchProducts();
@@ -39,12 +39,21 @@ const AdminManage = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      setProducts(data);
-      setCurrentItems(data);
+      console.log("API Response:", data); // Debugging line
+
+      // Ensure data is an array
+      if (Array.isArray(data)) {
+        setProducts(data);
+        setCurrentItems(data);
+      } else {
+        console.error("API response is not an array:", data);
+        setProducts([]);
+        setCurrentItems([]);
+      }
     } catch (error) {
       console.error("Error fetching products:", error);
-      setProducts([]); // Ensure products is an empty array on error
-      setCurrentItems([]); // Ensure currentItems is an empty array on error
+      setProducts([]);
+      setCurrentItems([]);
     }
   };
 
@@ -64,7 +73,7 @@ const AdminManage = () => {
   };
 
   const filterProducts = (search, quantity, order) => {
-    let filteredProducts = products;
+    let filteredProducts = Array.isArray(products) ? products : [];
     if (search) {
       filteredProducts = filteredProducts.filter((product) =>
         product.name.toLowerCase().includes(search.toLowerCase())
@@ -179,7 +188,7 @@ const AdminManage = () => {
               <option value="desc">Highest to Lowest</option>
             </select>
           </div>
-          {currentItems.length === 0 ? (
+          {!Array.isArray(currentItems) || currentItems.length === 0 ? (
             <div className="text-center text-gray-600">
               <p>No products found.</p>
             </div>
@@ -241,35 +250,38 @@ const AdminManage = () => {
             </div>
           )}
           <div className="flex justify-center mt-6">
-            {Array.from(
-              { length: Math.ceil(currentItems.length / itemsPerPage) },
-              (_, index) => (
-                <button
-                  key={index}
-                  onClick={() =>
-                    setCurrentItems(
+            {Array.isArray(currentItems) &&
+              Array.from(
+                { length: Math.ceil(currentItems.length / itemsPerPage) },
+                (_, index) => (
+                  <button
+                    key={index}
+                    onClick={() =>
+                      setCurrentItems(
+                        currentItems.slice(
+                          index * itemsPerPage,
+                          (index + 1) * itemsPerPage
+                        )
+                      )
+                    }
+                    className={`px-4 py-2 mx-1 rounded-lg ${
                       currentItems.slice(
                         index * itemsPerPage,
                         (index + 1) * itemsPerPage
-                      )
-                    )
-                  }
-                  className={`px-4 py-2 mx-1 rounded-lg ${
-                    currentItems.slice(
-                      index * itemsPerPage,
-                      (index + 1) * itemsPerPage
-                    ).length === itemsPerPage
-                      ? "bg-green-500 text-white"
-                      : "bg-gray-200 hover:bg-gray-300"
-                  }`}
-                >
-                  {index + 1}
-                </button>
-              )
-            )}
+                      ).length === itemsPerPage
+                        ? "bg-green-500 text-white"
+                        : "bg-gray-200 hover:bg-gray-300"
+                    }`}
+                  >
+                    {index + 1}
+                  </button>
+                )
+              )}
           </div>
         </div>
 
+        {/* Modals (Edit, Delete, Success) */}
+        {/* ... (same as before) ... */}
         {/* Edit Modal */}
         {isEditModalOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
