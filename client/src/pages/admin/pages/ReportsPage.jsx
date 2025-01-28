@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { getToken } from "../../../services/token";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ReportsPage = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [loading, setLoading] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   const token = getToken();
   const categories = [
@@ -15,11 +18,13 @@ const ReportsPage = () => {
     "Godown",
     "Stationery",
   ];
-  const [selectedCategory, setSelectedCategory] = useState(null);
 
   const handleGenerateReport = async () => {
     if (!startDate || !endDate || !selectedCategory) {
-      alert("Please select all fields");
+      toast.error("Please select all fields", {
+        position: "top-center",
+        autoClose: 3000,
+      });
       return;
     }
 
@@ -41,83 +46,138 @@ const ReportsPage = () => {
         }
       );
 
-      if (response.ok) {
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `${selectedCategory
-          .toLowerCase()
-          .replace(" ", "_")}_report.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-      } else {
+      if (!response.ok) {
         const errorData = await response.json();
-        alert(errorData.message);
+        throw new Error(errorData.message || "Failed to generate report");
       }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${selectedCategory
+        .toLowerCase()
+        .replace(" ", "_")}_report.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      toast.success("Report generated successfully!", {
+        position: "top-center",
+        autoClose: 3000,
+      });
     } catch (error) {
       console.error("Report generation error:", error);
-      alert("Failed to generate report");
+      toast.error(
+        error.message ||
+          "Failed to generate report. Please check your network.",
+        {
+          position: "top-center",
+          autoClose: 3000,
+        }
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="p-6 bg-blue-100 min-h-screen">
-      <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-2xl font-bold mb-6 text-center">Generate Report</h2>
+    <div className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen">
+      <ToastContainer />
+      <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden p-8">
+        <h2 className="text-4xl font-extrabold text-center text-blue-700 mb-10">
+          Generate Report
+        </h2>
 
         {/* Category Selection */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              className={`p-4 rounded-lg transition-colors ${
-                selectedCategory === category
-                  ? "bg-blue-600 text-white"
-                  : "bg-blue-200 text-blue-700 hover:bg-blue-300"
-              }`}
-            >
-              {category}
-            </button>
-          ))}
+        <div className="mb-8">
+          <h3 className="text-lg font-semibold text-blue-700 mb-4">
+            Select Category
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                className={`p-4 rounded-lg transition-all transform hover:scale-105 ${
+                  selectedCategory === category
+                    ? "bg-blue-600 text-white shadow-lg"
+                    : "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Date Range Inputs */}
-        <div className="mb-4">
-          <label className="block text-blue-700 mb-2">Start Date</label>
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            className="w-full p-2 border rounded-md"
-          />
-        </div>
-
         <div className="mb-6">
-          <label className="block text-blue-700 mb-2">End Date</label>
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            className="w-full p-2 border rounded-md"
-          />
+          <h3 className="text-lg font-semibold text-blue-700 mb-4">
+            Select Date Range
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-blue-700 mb-2">
+                Start Date
+              </label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="w-full p-3 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-blue-700 mb-2">
+                End Date
+              </label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="w-full p-3 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
         </div>
 
         {/* Generate Report Button */}
         <button
           onClick={handleGenerateReport}
           disabled={loading || !selectedCategory}
-          className={`w-full p-3 rounded-md transition-colors ${
+          className={`w-full p-4 rounded-lg text-lg font-semibold transition-all ${
             selectedCategory && !loading
-              ? "bg-blue-600 text-white hover:bg-blue-700"
-              : "bg-blue-400 cursor-not-allowed"
+              ? "bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg"
+              : "bg-blue-300 cursor-not-allowed"
           }`}
         >
-          {loading ? "Generating..." : "Generate Report"}
+          {loading ? (
+            <span className="flex items-center justify-center">
+              <svg
+                className="animate-spin h-5 w-5 mr-3 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Generating...
+            </span>
+          ) : (
+            "Generate Report"
+          )}
         </button>
       </div>
     </div>

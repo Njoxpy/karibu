@@ -1,30 +1,56 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import OrdersPage from "./OrdersPage";
+import { AlertCircle, Loader2 } from "lucide-react";
+import { Bar } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+import { getToken } from "../../../services/token";
 
 const DashboardHome = () => {
-  const location = useLocation(); // Get the category from the URL
+  const location = useLocation();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const token = getToken();
 
-  // Get the category from the route (or set a fallback if needed)
-  const selectedCategory = location.pathname.split("/")[2] || "animal-feeding"; // Default to 'animal-feeding'
+  const selectedCategory = location.pathname.split("/")[2] || "animal-feeding";
 
-  // Fetch orders based on the selected category
   const fetchOrders = async () => {
     setLoading(true);
     setError(null);
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/${selectedCategory}/orders/`
+        `http://localhost:5000/api/v1/${selectedCategory}/orders/`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       if (!response.ok) {
-        throw new Error("Failed to fetch orders");
+        throw new Error(`Failed to fetch orders (Status: ${response.status})`);
       }
       const data = await response.json();
-      setOrders(data.orders || []); // Ensure data.orders exists before updating state
+      setOrders(data.orders || []);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -34,110 +60,95 @@ const DashboardHome = () => {
 
   useEffect(() => {
     fetchOrders();
-  }, [selectedCategory]); // Re-fetch orders when category changes
+  }, [selectedCategory]);
 
-  // Calculate Total Sales, Total Orders, and Total Products based on the orders
-  const totalSales = orders.reduce((acc, order) => {
-    return acc + (order.total || 0); // Sum up totalAmount of each order
-  }, 0);
+  const stats = {
+    totalSales: orders.reduce((acc, order) => acc + (order.total || 0), 0),
+    totalOrders: orders.length,
+    totalProducts: orders.reduce(
+      (acc, order) => acc + (order.quantity || 0),
+      0
+    ),
+  };
 
-  const totalOrders = orders.length; // Count of orders
+  const StatCard = ({ title, value, prefix = "" }) => (
+    <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+      <h3 className="text-gray-600 text-sm font-medium mb-2">{title}</h3>
+      <p className="text-2xl md:text-3xl font-bold text-gray-900">
+        {prefix && <span className="text-gray-600">{prefix} </span>}
+        {typeof value === "number" ? value.toLocaleString() : value}
+      </p>
+    </div>
+  );
 
-  const totalProducts = orders.reduce((acc, order) => {
-    return acc + order.quantity; // Sum up product quantities
-  }, 0);
+  // Chart Data
+  const chartData = {
+    labels: ["Total Sales", "Total Orders", "Total Products"],
+    datasets: [
+      {
+        label: "Metrics",
+        data: [stats.totalSales, stats.totalOrders, stats.totalProducts],
+        backgroundColor: [
+          "rgba(75, 192, 192, 0.8)", // Total Sales
+          "rgba(255, 159, 64, 0.8)", // Total Orders
+          "rgba(54, 162, 235, 0.8)", // Total Products
+        ],
+        borderColor: [
+          "rgba(75, 192, 192, 1)", // Total Sales
+          "rgba(255, 159, 64, 1)", // Total Orders
+          "rgba(54, 162, 235, 1)", // Total Products
+        ],
+        borderWidth: 1,
+      },
+    ],
+  };
 
-  // Function to determine the status color
-  const getStatusClass = (status) => {
-    switch (status) {
-      case "Completed":
-        return "text-green-600";
-      case "Pending":
-        return "text-yellow-600";
-      case "Processing":
-        return "text-blue-600";
-      case "Cancelled":
-        return "text-red-600";
-      default:
-        return "text-gray-600";
-    }
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      legend: { position: "top" },
+      title: { display: true, text: "Dashboard Metrics" },
+    },
   };
 
   return (
-    <div className="flex">
-      {/* Sidebar */}
-      {/* Main Content */}
-      <div className="flex-1 bg-gray-100 p-5">
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {/* Total Sales */}
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h3 className="text-lg font-semibold">Total Sales</h3>
-            <p className="text-3xl font-bold">
-              Tsh {totalSales.toLocaleString()}
-            </p>
-          </div>
-          {/* Total Orders */}
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h3 className="text-lg font-semibold">Total Orders</h3>
-            <p className="text-3xl font-bold">{totalOrders}</p>
-          </div>
-          {/* Total Products */}
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h3 className="text-lg font-semibold">Total Products</h3>
-            <p className="text-3xl font-bold">{totalProducts}</p>
-          </div>
-        </div>
-
-        {/* Loading Spinner */}
-        {loading && (
-          <div className="flex justify-center items-center mt-5">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          </div>
-        )}
-
-        {/* Error Handling */}
-        {error && <div className="text-red-500 text-center mt-5">{error}</div>}
-
-        {/* Orders List */}
-        {!loading && !error && orders.length > 0 && (
-          <div className="mt-5 overflow-x-auto">
-            <table className="min-w-full table-auto bg-white shadow-lg rounded-lg">
-              <thead className="bg-blue-600 text-white">
-                <tr>
-                  <th className="py-3 px-4 text-left">Order ID</th>
-                  <th className="py-3 px-4 text-left">Product Name</th>
-                  <th className="py-3 px-4 text-left">Quantity</th>
-                  <th className="py-3 px-4 text-left">Total Price</th>
-                  <th className="py-3 px-4 text-left">Status</th>
-                  <th className="py-3 px-4 text-left">Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orders.map((order) => (
-                  <tr key={order._id} className="border-t">
-                    <td className="py-3 px-4">{order.orderId}</td>
-                    <td className="py-3 px-4">{order.productName}</td>
-                    <td className="py-3 px-4">{order.quantity}</td>
-                    <td className="py-3 px-4">
-                      Tsh {order.total.toLocaleString()}
-                    </td>
-                    <td className={`py-3 px-4 ${getStatusClass(order.status)}`}>
-                      {order.status}
-                    </td>
-                    <td className="py-3 px-4">
-                      {new Date(order.createdAt).toLocaleDateString()}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        {/* OrdersPage Component */}
-        <OrdersPage orders={orders} />
+    <div className="flex flex-col space-y-6 p-4 md:p-6">
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <StatCard title="Total Sales" value={stats.totalSales} prefix="Tsh" />
+        <StatCard title="Total Orders" value={stats.totalOrders} />
+        <StatCard title="Total Products" value={stats.totalProducts} />
       </div>
+
+      {/* Chart Section */}
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        <h3 className="text-xl font-semibold text-gray-800 mb-4">
+          Sales, Orders, and Products
+        </h3>
+        <Bar data={chartData} options={chartOptions} />
+      </div>
+
+      {/* Loading State */}
+      {loading && (
+        <div className="flex justify-center items-center p-8">
+          <Loader2 className="animate-spin h-8 w-8 text-blue-600" />
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && (
+        <div className="flex items-center gap-2 p-4 text-red-600 bg-red-50 rounded-lg">
+          <AlertCircle className="h-5 w-5" />
+          <p>{error}</p>
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!loading && !error && orders.length === 0 && (
+        <div className="text-center py-8 text-gray-500">
+          No orders found for this category.
+        </div>
+      )}
     </div>
   );
 };

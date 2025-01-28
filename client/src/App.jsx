@@ -138,6 +138,9 @@ import ProductsMovementDetails from "./pages/Godown/Pages/movement/ProductMoveme
 import MovementLogs from "./pages/Godown/Pages/movement/MovementLogs";
 
 import ProtectedRoute from "./auth/ProtectedRoute";
+import RevenueDashboard from "./pages/admin/pages/RevenueDashboard";
+import AuditLogs from "./pages/admin/components/AuditLogs";
+import OrdersCostDashboard from "./pages/admin/pages/OrdersCostDashboard";
 
 export default function App() {
   const router = createBrowserRouter(
@@ -148,6 +151,9 @@ export default function App() {
           <Route path="users" element={<UsersPage />} />
           <Route path="users/create" element={<AddUserPage />} />
           <Route path="reports" element={<ReportsPage />} />
+          <Route path="revenue" element={<RevenueDashboard />} />
+          <Route path="logs" element={<AuditLogs />} />
+          <Route path="Orders-Cost" element={<OrdersCostDashboard />} />
         </Route>
         <Route path="/" element={<RootLayout />}>
           <Route index element={<Home />} />
