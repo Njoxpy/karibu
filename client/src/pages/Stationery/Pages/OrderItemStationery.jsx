@@ -132,6 +132,17 @@ const OrderItemStationery = () => {
     );
   }
 
+  if (products.length === 0) {
+    return (
+      <>
+        <div>
+          <h1>No products</h1>
+          <p>There are current no products for now!</p>
+        </div>
+      </>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
       <ToastContainer />

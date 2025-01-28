@@ -5,7 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { getToken } from "../../../services/token";
 
 const OrderItemAnimalFeeding = () => {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState([]); // Initialize as an empty array
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [totalPrice, setTotalPrice] = useState(0);
@@ -13,7 +13,7 @@ const OrderItemAnimalFeeding = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
 
-  // token
+  // Token
   const token = getToken();
 
   useEffect(() => {
@@ -29,25 +29,33 @@ const OrderItemAnimalFeeding = () => {
             },
           }
         );
+        if (!response.ok) {
+          throw new Error("Failed to fetch products");
+        }
         const data = await response.json();
-        if (response.ok) {
+        console.log("API Response:", data); // Debugging line
+
+        // Ensure data is an array
+        if (Array.isArray(data)) {
           setProducts(data);
-          setSelectedProduct(data[0]);
-          setTotalPrice(data[0]?.price || 0);
-          setIsLoading(false);
+          if (data.length === 0) {
+            toast.info("No products found");
+          }
         } else {
-          toast.error("Failed to fetch products");
-          setIsLoading(false);
+          console.error("API response is not an array:", data);
+          setProducts([]); // Fallback to empty array
+          toast.error("Invalid data format received from the server");
         }
       } catch (error) {
+        console.error("Error fetching products:", error);
         toast.error("Error fetching products");
+      } finally {
         setIsLoading(false);
-        console.log(error);
       }
     };
 
     fetchProducts();
-  }, []);
+  }, [token]);
 
   const handleProductChange = (event) => {
     const product = products.find((p) => p._id === event.target.value);
@@ -126,169 +134,177 @@ const OrderItemAnimalFeeding = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100">
       <ToastContainer />
-      <div className="max-w-4xl mx-auto px-4 py-12">
-        <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-green-100">
-          {/* Header */}
-          <div className="bg-gradient-to-r from-green-700 to-green-800 px-6 py-8">
-            <h2 className="text-3xl font-bold text-white text-center">
-              Create New Order
-            </h2>
-            <p className="text-green-300 text-center mt-2">
-              Select product and specify quantity
-            </p>
-          </div>
+      {!Array.isArray(products) || products.length === 0 ? (
+        <div className="text-center text-gray-600 py-12">
+          <p>No products available</p>
+        </div>
+      ) : (
+        <div className="max-w-4xl mx-auto px-4 py-12">
+          <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-green-100">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-green-700 to-green-800 px-6 py-8">
+              <h2 className="text-3xl font-bold text-white text-center">
+                Create New Order
+              </h2>
+              <p className="text-green-300 text-center mt-2">
+                Select product and specify quantity
+              </p>
+            </div>
 
-          <form onSubmit={handleSubmit} className="p-8 space-y-8">
-            {/* Product Selection */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="space-y-6">
-                <div className="bg-green-50 p-6 rounded-2xl">
-                  <label className="block text-sm font-medium text-green-700 mb-2">
-                    Select Product
-                  </label>
-                  <select
-                    value={selectedProduct?._id || ""}
-                    onChange={handleProductChange}
-                    className="w-full p-3 border border-green-300 rounded-xl focus:ring-2 focus:ring-green-400 focus:border-transparent"
-                  >
-                    {products.map((product) => (
-                      <option key={product._id} value={product._id}>
-                        {product.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+            <form onSubmit={handleSubmit} className="p-8 space-y-8">
+              {/* Product Selection */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-6">
+                  <div className="bg-green-50 p-6 rounded-2xl">
+                    <label className="block text-sm font-medium text-green-700 mb-2">
+                      Select Product
+                    </label>
+                    <select
+                      value={selectedProduct?._id || ""}
+                      onChange={handleProductChange}
+                      className="w-full p-3 border border-green-300 rounded-xl focus:ring-2 focus:ring-green-400 focus:border-transparent"
+                    >
+                      {products.map((product) => (
+                        <option key={product._id} value={product._id}>
+                          {product.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-                <div className="bg-green-50 p-6 rounded-2xl">
-                  <label className="block text-sm font-medium text-green-700 mb-2">
-                    Product Details
-                  </label>
-                  <div className="space-y-3">
-                    <p className="text-sm text-green-500">
-                      Product ID:{" "}
-                      <span className="font-mono text-green-700">
-                        {selectedProduct?._id}
-                      </span>
-                    </p>
-                    <p className="text-sm text-green-500">
-                      Product Description:{" "}
-                      <span className="font-mono text-green-700">
-                        {selectedProduct?.description}
-                      </span>
-                    </p>
-                    <p className="text-sm text-green-500">
-                      Available Stock:
-                      <span
-                        className={`ml-2 px-2 py-1 rounded-full text-sm font-medium ${
-                          selectedProduct?.quantity > 20
-                            ? "bg-green-100 text-green-800"
-                            : "bg-yellow-100 text-yellow-800"
-                        }`}
-                      >
-                        {selectedProduct?.quantity} units
-                      </span>
-                    </p>
+                  <div className="bg-green-50 p-6 rounded-2xl">
+                    <label className="block text-sm font-medium text-green-700 mb-2">
+                      Product Details
+                    </label>
+                    <div className="space-y-3">
+                      <p className="text-sm text-green-500">
+                        Product ID:{" "}
+                        <span className="font-mono text-green-700">
+                          {selectedProduct?._id}
+                        </span>
+                      </p>
+                      <p className="text-sm text-green-500">
+                        Product Description:{" "}
+                        <span className="font-mono text-green-700">
+                          {selectedProduct?.description}
+                        </span>
+                      </p>
+                      <p className="text-sm text-green-500">
+                        Available Stock:
+                        <span
+                          className={`ml-2 px-2 py-1 rounded-full text-sm font-medium ${
+                            selectedProduct?.quantity > 20
+                              ? "bg-green-100 text-green-800"
+                              : "bg-yellow-100 text-yellow-800"
+                          }`}
+                        >
+                          {selectedProduct?.quantity} units
+                        </span>
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="space-y-6">
-                <div className="bg-green-50 p-6 rounded-2xl">
-                  <label className="block text-sm font-medium text-green-700 mb-2">
-                    Quantity
-                  </label>
-                  <input
-                    type="number"
-                    value={quantity}
-                    onChange={handleQuantityChange}
-                    min="1"
-                    max={selectedProduct?.quantity}
-                    className="w-full p-3 border border-green-300 rounded-xl focus:ring-2 focus:ring-green-400 focus:border-transparent"
-                  />
-                  {quantity > selectedProduct?.quantity && (
-                    <p className="mt-2 text-sm text-red-500">
-                      Quantity exceeds available stock
-                    </p>
-                  )}
-                </div>
+                <div className="space-y-6">
+                  <div className="bg-green-50 p-6 rounded-2xl">
+                    <label className="block text-sm font-medium text-green-700 mb-2">
+                      Quantity
+                    </label>
+                    <input
+                      type="number"
+                      value={quantity}
+                      onChange={handleQuantityChange}
+                      min="1"
+                      max={selectedProduct?.quantity}
+                      className="w-full p-3 border border-green-300 rounded-xl focus:ring-2 focus:ring-green-400 focus:border-transparent"
+                    />
+                    {quantity > selectedProduct?.quantity && (
+                      <p className="mt-2 text-sm text-red-500">
+                        Quantity exceeds available stock
+                      </p>
+                    )}
+                  </div>
 
-                <div className="bg-green-50 p-6 rounded-2xl">
-                  <label className="block text-sm font-medium text-green-700 mb-2">
-                    Order Summary
-                  </label>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-green-500">Price per unit</span>
-                      <span className="font-medium">
-                        Tsh {selectedProduct?.price.toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-green-500">Quantity</span>
-                      <span className="font-medium">{quantity} units</span>
-                    </div>
-                    <div className="pt-3 border-t border-green-200">
+                  <div className="bg-green-50 p-6 rounded-2xl">
+                    <label className="block text-sm font-medium text-green-700 mb-2">
+                      Order Summary
+                    </label>
+                    <div className="space-y-3">
                       <div className="flex justify-between items-center">
-                        <span className="text-lg font-medium text-green-700">
-                          Total Amount
+                        <span className="text-green-500">Price per unit</span>
+                        <span className="font-medium">
+                          Tsh {selectedProduct?.price.toLocaleString()}
                         </span>
-                        <span className="text-xl font-bold text-green-900">
-                          Tsh {totalPrice.toLocaleString()}
-                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-green-500">Quantity</span>
+                        <span className="font-medium">{quantity} units</span>
+                      </div>
+                      <div className="pt-3 border-t border-green-200">
+                        <div className="flex justify-between items-center">
+                          <span className="text-lg font-medium text-green-700">
+                            Total Amount
+                          </span>
+                          <span className="text-xl font-bold text-green-900">
+                            Tsh {totalPrice.toLocaleString()}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Submit Button */}
-            <div className="flex justify-end pt-6">
-              <button
-                type="submit"
-                disabled={isSubmitting || quantity > selectedProduct?.quantity}
-                className={`
-                  w-full md:w-auto px-8 py-4 rounded-xl text-white font-medium
-                  transition-all duration-200 transform hover:scale-105
-                  ${
+              {/* Submit Button */}
+              <div className="flex justify-end pt-6">
+                <button
+                  type="submit"
+                  disabled={
                     isSubmitting || quantity > selectedProduct?.quantity
-                      ? "bg-green-400 cursor-not-allowed"
-                      : "bg-gradient-to-r from-green-700 to-green-800 hover:from-green-800 hover:to-green-900 shadow-lg hover:shadow-xl"
                   }
-                `}
-              >
-                {isSubmitting ? (
-                  <span className="flex items-center justify-center">
-                    <svg
-                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Processing...
-                  </span>
-                ) : (
-                  "Place Order"
-                )}
-              </button>
-            </div>
-          </form>
+                  className={`
+                    w-full md:w-auto px-8 py-4 rounded-xl text-white font-medium
+                    transition-all duration-200 transform hover:scale-105
+                    ${
+                      isSubmitting || quantity > selectedProduct?.quantity
+                        ? "bg-green-400 cursor-not-allowed"
+                        : "bg-gradient-to-r from-green-700 to-green-800 hover:from-green-800 hover:to-green-900 shadow-lg hover:shadow-xl"
+                    }
+                  `}
+                >
+                  {isSubmitting ? (
+                    <span className="flex items-center justify-center">
+                      <svg
+                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Processing...
+                    </span>
+                  ) : (
+                    "Place Order"
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Success Modal */}
       {orderSuccess && (

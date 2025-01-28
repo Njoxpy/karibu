@@ -115,15 +115,6 @@ const FreshOilOrdersDetails = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <h3 className="text-sm font-medium text-gray-500">
-                    Order ID
-                  </h3>
-                  <p className="mt-1 text-sm font-mono text-gray-900">
-                    {order.orderId}
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="text-sm font-medium text-gray-500">
                     Order Date
                   </h3>
                   <p className="mt-1 text-sm text-gray-900">
@@ -139,15 +130,6 @@ const FreshOilOrdersDetails = () => {
                     {order.productName}
                   </p>
                 </div>
-
-                {/* <div>
-                  <h3 className="text-sm font-medium text-gray-500">
-                    Customer ID
-                  </h3>
-                  <p className="mt-1 text-sm font-mono text-gray-900">
-                    {order.userId}
-                  </p>
-                </div> */}
 
                 <div>
                   <h3 className="text-sm font-medium text-gray-500">

@@ -4,7 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const OrderItem = () => {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState([]); // Initialize as an empty array
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [totalPrice, setTotalPrice] = useState(0);
@@ -26,18 +26,30 @@ const OrderItem = () => {
             },
           }
         );
+        if (!response.ok) {
+          throw new Error("Failed to fetch products");
+        }
         const data = await response.json();
-        if (response.ok) {
+        console.log("API Response:", data); // Debugging line
+
+        // Ensure data is an array
+        if (Array.isArray(data)) {
           setProducts(data);
-          setSelectedProduct(data[0]);
-          setTotalPrice(data[0]?.price || 0);
-          setIsLoading(false);
+          if (data.length > 0) {
+            setSelectedProduct(data[0]); // Set the first product as selected
+            setTotalPrice(data[0].price * quantity);
+          } else {
+            toast.info("No products found");
+          }
         } else {
-          toast.error("Failed to fetch products");
-          setIsLoading(false);
+          console.error("API response is not an array:", data);
+          setProducts([]); // Fallback to empty array
+          toast.error("Invalid data format received from the server");
         }
       } catch (error) {
+        console.error("Error fetching products:", error);
         toast.error(`Error: ${error.message}`);
+      } finally {
         setIsLoading(false);
       }
     };
@@ -69,7 +81,7 @@ const OrderItem = () => {
       // Prepare order data
       const orderData = {
         productId: selectedProduct._id,
-        productName: selectedProduct.name, // Most probable
+        productName: selectedProduct.name,
         quantity,
         price: selectedProduct.price,
         total: totalPrice,
@@ -82,7 +94,7 @@ const OrderItem = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Include bearer token
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(orderData),
         }
@@ -156,11 +168,12 @@ const OrderItem = () => {
                 onChange={handleProductChange}
                 className="w-full p-3 border border-yellow-300 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
               >
-                {products.map((product) => (
-                  <option key={product._id} value={product._id}>
-                    {product.name}
-                  </option>
-                ))}
+                {Array.isArray(products) &&
+                  products.map((product) => (
+                    <option key={product._id} value={product._id}>
+                      {product.name}
+                    </option>
+                  ))}
               </select>
             </div>
 

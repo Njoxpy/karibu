@@ -28,16 +28,21 @@ const OrderItemGodown = () => {
         );
         const data = await response.json();
         if (response.ok) {
-          setProducts(data);
-          setSelectedProduct(data[0]);
-          setTotalPrice(data[0]?.price || 0);
-          setIsLoading(false);
+          if (data.length === 0) {
+            toast.info("No products available");
+            setIsLoading(false);
+          } else {
+            setProducts(data);
+            setSelectedProduct(data[0]);
+            setTotalPrice(data[0]?.price || 0);
+            setIsLoading(false);
+          }
         } else {
           toast.error("Failed to fetch products");
           setIsLoading(false);
         }
       } catch (error) {
-        toast.error(`Error: ${error.message}`);
+        toast.error("An error occurred while fetching products");
         setIsLoading(false);
       }
     };
@@ -129,6 +134,22 @@ const OrderItemGodown = () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-900"></div>
       </div>
+    );
+  }
+  if (products.length === 0) {
+    return (
+      <>
+        <div className="flex flex-col items-center justify-center h-screen bg-gray-50">
+          <div className="text-center p-6 rounded-lg shadow-lg bg-white">
+            <h1 className="text-2xl font-semibold text-gray-800">
+              No Products
+            </h1>
+            <p className="mt-2 text-gray-600">
+              There are currently no products available!
+            </p>
+          </div>
+        </div>
+      </>
     );
   }
 

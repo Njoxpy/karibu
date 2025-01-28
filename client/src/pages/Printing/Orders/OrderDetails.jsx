@@ -214,7 +214,7 @@ function OrderDetails() {
 
                 <div>
                   <h3 className="text-sm font-bold text-gray-500">
-                    Unit Price
+                    Unit Price(Per Item)
                   </h3>
                   <p className="mt-1 text-sm text-gray-800">
                     {formatPrice(order.price)}

@@ -163,14 +163,6 @@ const OilDetails = () => {
               <div className="space-y-4">
                 <div className="bg-yellow-50 p-4 rounded-xl">
                   <label className="text-sm text-yellow-500 block mb-1">
-                    Product Code
-                  </label>
-                  <p className="text-lg font-semibold text-yellow-700">
-                    {product._id}
-                  </p>
-                </div>
-                <div className="bg-yellow-50 p-4 rounded-xl">
-                  <label className="text-sm text-yellow-500 block mb-1">
                     Description
                   </label>
                   <p className="text-lg font-semibold text-yellow-700">
