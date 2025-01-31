@@ -64,10 +64,6 @@ const DashboardLayout = () => {
         return "Analytics Reports";
       case "/admin/revenue":
         return "Revenue Analytics";
-      case "/admin/logs":
-        return "System Logs";
-      case "/admin/orders-cost":
-        return "Orders & Costs";
       case "/admin/settings":
         return "System Settings";
       default:
@@ -124,22 +120,12 @@ const DashboardLayout = () => {
           label: "Revenue",
           icon: <DollarSign size={20} />,
         },
-        {
-          path: "/admin/orders-cost",
-          label: "Orders & Costs",
-          icon: <ShoppingCart size={20} />,
-        },
       ],
     },
     // System Section
     {
       group: "System",
       items: [
-        {
-          path: "/admin/logs",
-          label: "System Logs",
-          icon: <ActivitySquare size={20} />,
-        },
         {
           path: "/admin/settings",
           label: "Settings",

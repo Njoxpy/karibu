@@ -398,7 +398,7 @@ const getHardwareRevenueByDateRange = async (startDate, endDate) => {
       {
         $group: {
           _id: null,
-          totalRevenue: { $sum: "$total" },
+          totalRevenue: { $sum: "$totalPrice" },
         },
       },
     ]);
@@ -491,7 +491,7 @@ const getTotalCostByDate = async (req, res) => {
       {
         $group: {
           _id: null, // Group all matching documents together
-          totalCost: { $sum: "$total" }, // Sum up the `total` field
+          totalCost: { $sum: "$totalPrice" }, // Sum up the `total` field
         },
       },
     ]);

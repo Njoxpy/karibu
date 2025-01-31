@@ -2,25 +2,18 @@ const PrintingOrder = require("../../models/printing/printingOrderModel");
 
 const getPrintingOrderss = async (startDate, endDate) => {
   try {
-    const orders = await PrintingOrder.find({
-      createdAt: {
-        $gte: new Date(startDate),
-        $lte: new Date(endDate),
-      },
-    })
-      .populate({
-        path: "productId",
-        select: "name",
-        options: { strictPopulate: false },
-      })
-      .sort({ createdAt: 1 });
+    const start = new Date(startDate);
+    start.setUTCHours(0, 0, 0, 0); // Ensure it starts at midnight UTC
 
-    return orders.map((order) => ({
-      ...order.toObject(),
-      productName: order.productId?.name || "N/A",
-    }));
+    const end = new Date(endDate);
+    end.setUTCHours(23, 59, 59, 999); // Ensure it includes the whole day
+
+    return await PrintingOrder.find({
+      createdAt: { $gte: start, $lte: end },
+    });
   } catch (error) {
-    throw new Error("Error fetching printing orders: " + error.message);
+    console.log(error);
+    throw new Error("Error fetching animal feeding orders");
   }
 };
 

@@ -2,24 +2,21 @@ const HardwareOrder = require("../../models/hardware/orderModel");
 
 const getHardwareOrders = async (startDate, endDate) => {
   try {
-    const orders = await HardwareOrder.find({
-      createdAt: {
-        $gte: new Date(startDate),
-        $lte: new Date(endDate)
-      }
-    })
-    .populate('productId', 'name')
-    .sort({ createdAt: 1 });
+    const start = new Date(startDate);
+    start.setUTCHours(0, 0, 0, 0); // Ensure it starts at midnight UTC
 
-    return orders.map(order => ({
-      ...order.toObject(),
-      productName: order.productId?.name || 'N/A'
-    }));
+    const end = new Date(endDate);
+    end.setUTCHours(23, 59, 59, 999); // Ensure it includes the whole day
+
+    return await HardwareOrder.find({
+      createdAt: { $gte: start, $lte: end },
+    });
   } catch (error) {
-    throw new Error("Error fetching hardware orders: " + error.message);
+    console.log(error);
+    throw new Error("Error fetching animal feeding orders");
   }
 };
 
 module.exports = {
-  getHardwareOrders
-}; 
+  getHardwareOrders,
+};
