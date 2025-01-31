@@ -10,6 +10,8 @@ const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const timeout = require("connect-timeout"); // Import timeout middleware
 
+const admin = require("./scripts/adminSetup");
+
 // ROUTES IMPORT
 const animalFeedingRoutes = require("./routes/animalFeeding.routes");
 const freshOilRoutes = require("./routes/freshOil.routes");
@@ -79,7 +81,6 @@ app.use(timeout("30s")); // 30 seconds timeout
 app.use(haltOnTimeout); // Optional: handle timeout
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-// Serve static files from the "uploads" folder
 
 // Swagger setup
 const options = {

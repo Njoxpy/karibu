@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import useLogout from "../../../hooks/auth/useLogout";
 import { useAuth } from "../../../hooks/auth/useAuth";
+import { FaFirstOrder, FaFirstOrderAlt, FaProductHunt } from "react-icons/fa";
 
 const DashboardLayout = () => {
   const [open, setOpen] = useState(false);
@@ -108,6 +109,7 @@ const DashboardLayout = () => {
         },
       ],
     },
+
     // Analytics & Reports Section
     {
       group: "Analytics & Reports",
@@ -247,7 +249,7 @@ const DashboardLayout = () => {
               >
                 {open ? <X size={24} /> : <Menu size={24} />}
               </button>
-              <h1 className="text-xl font-semibold text-gray-800">
+              <h1 className="text-xl font-semibold text-blue-600">
                 {getTitle()}
               </h1>
             </div>

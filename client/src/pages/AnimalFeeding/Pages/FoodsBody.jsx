@@ -74,7 +74,9 @@ const FoodsBody = () => {
   if (filteredProducts.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-green-50 to-green-100">
-        <p className="text-gray-500 text-lg font-medium">No products found</p>
+        <p className="text-gray-500 text-lg font-medium shadow-lg p-4 rounded-lg bg-white">
+          No products found
+        </p>
       </div>
     );
   }

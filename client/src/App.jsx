@@ -143,10 +143,14 @@ import OrdersCostDashboard from "./pages/admin/pages/OrdersCostDashboard";
 import Support from "./pages/admin/pages/Support";
 import AuditLogs from "./pages/admin/components/AuditLogs";
 import Settings from "./pages/admin/pages/Settings";
+import { useAuth } from "./hooks/auth/useAuth";
 
 // auth
 
 export default function App() {
+  const { user } = useAuth();
+
+  console.log(user);
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route>

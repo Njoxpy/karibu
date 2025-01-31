@@ -15,6 +15,7 @@ import {
   Tags,
 } from "lucide-react";
 import "react-toastify/dist/ReactToastify.css";
+import Pagination from "../../../components/Pagination"; // Import the Pagination component
 
 // Reusable components
 const Modal = ({ isOpen, onClose, title, children }) => {
@@ -140,6 +141,9 @@ const UsersPage = () => {
     category: "",
   });
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   const token = getToken();
 
   const categories = [
@@ -232,9 +236,17 @@ const UsersPage = () => {
     }
   };
 
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
   const filteredUsers = users.filter((user) =>
     Object.values(user).join(" ").toLowerCase().includes(search.toLowerCase())
   );
+
+  const indexOfLastUser = currentPage * itemsPerPage;
+  const indexOfFirstUser = indexOfLastUser - itemsPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
 
   return (
     <div className="p-4 md:p-6 space-y-6">
@@ -245,7 +257,7 @@ const UsersPage = () => {
             <h2 className="text-3xl font-extrabold text-gray-900">
               Manage Users
             </h2>
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-gray-600 pt-2">
               Total Users:{" "}
               <span className="font-semibold text-gray-800">
                 {users.length}
@@ -300,7 +312,7 @@ const UsersPage = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredUsers.map((user) => (
+                {currentUsers.map((user) => (
                   <tr key={user._id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       {user.email}
@@ -416,6 +428,13 @@ const UsersPage = () => {
           </Button>
         </div>
       </Modal>
+
+      <Pagination
+        currentPage={currentPage}
+        totalItems={filteredUsers.length}
+        itemsPerPage={itemsPerPage}
+        onPageChange={handlePageChange}
+      />
 
       <ToastContainer
         position="bottom-right"

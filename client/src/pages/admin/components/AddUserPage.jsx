@@ -132,7 +132,7 @@ const AddUserPage = () => {
       <div className="max-w-md mx-auto">
         <button
           onClick={() => navigate("/admin/users")}
-          className="flex items-center text-gray-600 hover:text-gray-800 mb-6 group transition-colors"
+          className="flex items-center text-blue-600 hover:text-blue-800 mb-6 group transition-colors"
         >
           <ArrowLeft className="h-5 w-5 mr-2 transition-transform group-hover:-translate-x-1" />
           Back to Users

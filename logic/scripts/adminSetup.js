@@ -1,30 +1,30 @@
-const User = require("../models/user/userModel");  // Path to your User model
+const User = require("../models/user/userModel"); // Path to your User model
 const bcrypt = require("bcrypt");
 
 // Check if admin exists, create one if not
 const createFirstAdmin = async () => {
-    try {
-        // Check if there is already an admin
-        const adminExists = await User.findOne({ role: "admin" });
+  try {
+    // Check if there is already an admin
+    const adminExists = await User.findOne({ role: "admin" });
 
-        if (!adminExists) {
-            // Create the first admin user
-            const hashedPassword = await bcrypt.hash("adminpassword", 10);  // Password hash
-            const firstAdmin = new User({
-                email: "admin@example.com",
-                password: hashedPassword,
-                role: "admin",
-                category: "admin-category" // Set the category for the admin
-            });
+    if (!adminExists) {
+      // Create the first admin user
+      const hashedPassword = await bcrypt.hash("adminpassword", 10); // Password hash
+      const firstAdmin = new User({
+        email: "admin@gmail.com",
+        password: hashedPassword,
+        role: "admin",
+        category: "printing", // Set the category for the admin
+      });
 
-            await firstAdmin.save();
-            console.log("First admin created successfully.");
-        } else {
-            console.log("Admin already exists.");
-        }
-    } catch (error) {
-        console.error("Error creating admin:", error);
+      await firstAdmin.save();
+      console.log("First admin created successfully.");
+    } else {
+      console.log("Admin already exists.");
     }
+  } catch (error) {
+    console.error("Error creating admin:", error);
+  }
 };
 
 // Call the function to ensure admin is created at startup or deployment

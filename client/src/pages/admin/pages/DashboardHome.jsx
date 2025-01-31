@@ -1,6 +1,15 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { AlertCircle, Loader2 } from "lucide-react";
+import {
+  Users,
+  DollarSign,
+  ShoppingCart,
+  Package,
+  Loader2,
+  AlertCircle,
+  ArrowUpRight,
+  ArrowDownRight,
+} from "lucide-react";
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -22,27 +31,83 @@ ChartJS.register(
 );
 
 import { getToken } from "../../../services/token";
+// StatCard Component
+const StatCard = ({ title, value, prefix = "", isDrop, Icon }) => (
+  <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-200">
+    <div className="flex items-center justify-between mb-4">
+      <div className="bg-blue-50 p-3 rounded-lg">
+        <Icon className="text-blue-600 h-6 w-6" />
+      </div>
+      {isDrop !== undefined && (
+        <div
+          className={`${
+            isDrop ? "text-red-500" : "text-green-500"
+          } flex items-center gap-1 text-sm font-medium`}
+        >
+          {isDrop ? (
+            <>
+              <ArrowDownRight className="h-4 w-4" />
+              <span>Decrease</span>
+            </>
+          ) : (
+            <>
+              <ArrowUpRight className="h-4 w-4" />
+              <span>Increase</span>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+    <h3 className="text-gray-600 text-sm font-medium mb-2">{title}</h3>
+    <p className="text-2xl font-bold text-gray-900">
+      {prefix && <span className="text-gray-600 mr-1">{prefix}</span>}
+      {typeof value === "number" ? value.toLocaleString() : value}
+    </p>
+  </div>
+);
+
+// Chart Component
+const MetricsChart = ({ data, options }) => (
+  <div className="bg-white p-6 rounded-lg shadow-md">
+    <h3 className="text-xl font-semibold text-gray-900 mb-4">
+      Dashboard Metrics
+    </h3>
+    <div className="h-96">
+      <Bar data={data} options={options} />
+    </div>
+  </div>
+);
+
+// Error Message Component
+const ErrorMessage = ({ message }) => (
+  <div className="flex items-center gap-2 p-4 text-red-600 bg-red-50 rounded-lg shadow-sm">
+    <AlertCircle className="h-5 w-5" />
+    <p>{message}</p>
+  </div>
+);
 
 const DashboardHome = () => {
   const location = useLocation();
   const [orders, setOrders] = useState([]);
   const [totalOrdersCount, setTotalOrdersCount] = useState(null);
   const [totalSales, setTotalSales] = useState(null);
-  const [salesError, setSalesError] = useState(null);
   const [totalProductsCount, setTotalProductsCount] = useState(null);
+  const [totalUsers, setTotalUsers] = useState(null);
+  const [previousOrdersCount, setPreviousOrdersCount] = useState(null);
+  const [previousSales, setPreviousSales] = useState(null);
+  const [previousProductsCount, setPreviousProductsCount] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [countError, setCountError] = useState(null);
+  const [salesError, setSalesError] = useState(null);
   const [productsError, setProductsError] = useState(null);
   const token = getToken();
 
   const selectedCategory = location.pathname.split("/")[2] || "animal-feeding";
 
-  // Fetch orders for the selected category
   const fetchOrders = async () => {
     setLoading(true);
     setError(null);
-
     try {
       const response = await fetch(
         `http://localhost:5000/api/v1/${selectedCategory}/orders/`,
@@ -65,7 +130,6 @@ const DashboardHome = () => {
     }
   };
 
-  // Fetch total orders count across all categories
   const fetchTotalOrdersCount = async () => {
     setCountError(null);
     try {
@@ -84,6 +148,7 @@ const DashboardHome = () => {
         );
       }
       const data = await response.json();
+      setPreviousOrdersCount(totalOrdersCount);
       setTotalOrdersCount(data.totalCount || 0);
     } catch (err) {
       setCountError(err.message);
@@ -102,21 +167,19 @@ const DashboardHome = () => {
           },
         }
       );
-
       if (!response.ok) {
         throw new Error(
           `Failed to fetch total sales (Status: ${response.status})`
         );
       }
-
       const data = await response.json();
+      setPreviousSales(totalSales);
       setTotalSales(data.totalSales || 0);
     } catch (err) {
       setSalesError(err.message);
     }
   };
 
-  // Fetch total products count
   const fetchTotalProductsCount = async () => {
     setProductsError(null);
     try {
@@ -135,12 +198,28 @@ const DashboardHome = () => {
         );
       }
       const data = await response.json();
-
-      // Use the totalProducts field directly from the API response
-      const totalProducts = data.totalProducts || 0;
-      setTotalProductsCount(totalProducts);
+      setPreviousProductsCount(totalProductsCount);
+      setTotalProductsCount(data.totalProducts || 0);
     } catch (err) {
       setProductsError(err.message);
+    }
+  };
+
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch("http://localhost:5000/api/v1/users", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setTotalUsers(data.length);
+    } catch (error) {
+      toast.error("Failed to fetch users: " + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -149,38 +228,24 @@ const DashboardHome = () => {
     fetchTotalOrdersCount();
     fetchTotalProductsCount();
     fetchTotalSales();
+    fetchUsers();
   }, [selectedCategory]);
 
-  const stats = {
-    totalSales: orders.reduce((acc, order) => acc + (order.total || 0), 0),
-  };
-
-  const StatCard = ({ title, value, prefix = "" }) => (
-    <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-      <h3 className="text-gray-600 text-sm font-medium mb-2">{title}</h3>
-      <p className="text-2xl md:text-3xl font-bold text-gray-900">
-        {prefix && <span className="text-gray-600">{prefix} </span>}
-        {typeof value === "number" ? value.toLocaleString() : value}
-      </p>
-    </div>
-  );
-
-  // Chart Data
   const chartData = {
     labels: ["Total Sales", "Total Orders", "Total Products"],
     datasets: [
       {
         label: "Metrics",
-        data: [stats.totalSales, totalOrdersCount, totalProductsCount],
+        data: [totalSales, totalOrdersCount, totalProductsCount],
         backgroundColor: [
-          "rgba(75, 192, 192, 0.8)", // Total Sales
-          "rgba(255, 159, 64, 0.8)", // Total Orders
-          "rgba(54, 162, 235, 0.8)", // Total Products
+          "rgba(59, 130, 246, 0.8)", // Blue
+          "rgba(16, 185, 129, 0.8)", // Green
+          "rgba(245, 158, 11, 0.8)", // Orange
         ],
         borderColor: [
-          "rgba(75, 192, 192, 1)", // Total Sales
-          "rgba(255, 159, 64, 1)", // Total Orders
-          "rgba(54, 162, 235, 1)", // Total Products
+          "rgba(59, 130, 246, 1)",
+          "rgba(16, 185, 129, 1)",
+          "rgba(245, 158, 11, 1)",
         ],
         borderWidth: 1,
       },
@@ -189,31 +254,71 @@ const DashboardHome = () => {
 
   const chartOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
-      legend: { position: "top" },
-      title: { display: true, text: "Dashboard Metrics" },
+      legend: {
+        position: "top",
+        labels: {
+          padding: 20,
+          font: {
+            size: 12,
+            weight: 500,
+          },
+        },
+      },
+      title: {
+        display: false,
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: {
+          drawBorder: false,
+        },
+      },
+      x: {
+        grid: {
+          display: false,
+        },
+      },
     },
   };
 
   return (
-    <div className="flex flex-col space-y-6 p-4 md:p-6">
+    <div className="space-y-6 p-4 md:p-6 bg-gray-50">
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          title="Total Orders (All Categories)"
+          title="Total Orders"
           value={totalOrdersCount}
+          isDrop={
+            previousOrdersCount !== null &&
+            totalOrdersCount < previousOrdersCount
+          }
+          Icon={ShoppingCart}
         />
-        <StatCard title="Total Sales" value={totalSales} prefix="Tsh" />
-        <StatCard title="Total Products" value={totalProductsCount} />
+        <StatCard
+          title="Total Sales"
+          value={totalSales}
+          prefix="Tsh"
+          isDrop={previousSales !== null && totalSales < previousSales}
+          Icon={DollarSign}
+        />
+        <StatCard
+          title="Total Products"
+          value={totalProductsCount}
+          isDrop={
+            previousProductsCount !== null &&
+            totalProductsCount < previousProductsCount
+          }
+          Icon={Package}
+        />
+        <StatCard title="Total Users" value={totalUsers} Icon={Users} />
       </div>
 
       {/* Chart Section */}
-      <div className="bg-white p-6 rounded-lg shadow-md">
-        <h3 className="text-xl font-semibold text-gray-800 mb-4">
-          Sales, Orders, and Products
-        </h3>
-        <Bar data={chartData} options={chartOptions} />
-      </div>
+      <MetricsChart data={chartData} options={chartOptions} />
 
       {/* Loading State */}
       {loading && (
@@ -222,30 +327,18 @@ const DashboardHome = () => {
         </div>
       )}
 
-      {/* Error State */}
-      {error && (
-        <div className="flex items-center gap-2 p-4 text-red-600 bg-red-50 rounded-lg">
-          <AlertCircle className="h-5 w-5" />
-          <p>{error}</p>
-        </div>
-      )}
-      {countError && (
-        <div className="flex items-center gap-2 p-4 text-red-600 bg-red-50 rounded-lg">
-          <AlertCircle className="h-5 w-5" />
-          <p>{countError}</p>
-        </div>
-      )}
-      {productsError && (
-        <div className="flex items-center gap-2 p-4 text-red-600 bg-red-50 rounded-lg">
-          <AlertCircle className="h-5 w-5" />
-          <p>{productsError}</p>
-        </div>
-      )}
+      {/* Error States */}
+      <div className="space-y-2">
+        {error && <ErrorMessage message={error} />}
+        {countError && <ErrorMessage message={countError} />}
+        {salesError && <ErrorMessage message={salesError} />}
+        {productsError && <ErrorMessage message={productsError} />}
+      </div>
 
       {/* Empty State */}
       {!loading && !error && orders.length === 0 && (
-        <div className="text-center py-8 text-gray-500">
-          No orders found for this category.
+        <div className="bg-white rounded-lg shadow-md p-8 text-center">
+          <p className="text-gray-500">No orders found for this category.</p>
         </div>
       )}
     </div>
