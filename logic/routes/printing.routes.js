@@ -108,14 +108,14 @@ router.get(
 
       if (!orders.length) {
         return res.status(404).json({
-          message: "No hardware orders found for the given period",
+          message: "No printing orders found for the given period",
         });
       }
 
       generatePrintingPDF(orders, res);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Error generating hardware report" });
+      res.status(500).json({ message: "Error generating printing report" });
     }
   }
 );

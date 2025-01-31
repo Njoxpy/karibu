@@ -25,6 +25,7 @@ const {
   getTotalCostByDate,
   getAvailableProducts,
   getRevenue,
+  getTotalOrders,
 } = require("../controllers/freshOil.controller");
 
 const { getFreshOilOrders } = require("../services/freshOil/freshOilService");
@@ -262,5 +263,96 @@ router.get(
     }
   }
 );
+
+router.get("/orders-count", getTotalOrders);
+
+const FreshOilProduct = require("../models/freshOil/freshOilproductModel");
+const AnimalFeedingProduct = require("../models/animalFeeding/animalFeedingProductModel");
+const GodownProduct = require("../models/godown/godownProductModel");
+const HardwareProduct = require("../models/hardware/productModel");
+const StationeryProduct = require("../models/stationery/stationeryProductModel");
+const FreshOilOrder = require("../models/freshOil/freshOilOrderModel");
+const AnimalFeedingOrder = require("../models/animalFeeding/animalFeedingOrderModel");
+const GodownOrder = require("../models/godown/godownOrderModel");
+const HardwareOrder = require("../models/hardware/orderModel");
+const PrintingOrder = require("../models/printing/printingOrderModel");
+const StationeryOrder = require("../models/stationery/stationerOrderModel");
+
+const getTotalProducts = async (req, res) => {
+  try {
+    // Fetch and sum product quantities for each category
+    const totalProductsFresh = await FreshOilProduct.aggregate([
+      { $group: { _id: null, totalQuantity: { $sum: "$quantity" } } },
+    ]);
+
+    const totalProductsAnimal = await AnimalFeedingProduct.aggregate([
+      { $group: { _id: null, totalQuantity: { $sum: "$quantity" } } },
+    ]);
+
+    const totalProductsGodown = await GodownProduct.aggregate([
+      { $group: { _id: null, totalQuantity: { $sum: "$quantity" } } },
+    ]);
+
+    const totalProductsHardware = await HardwareProduct.aggregate([
+      { $group: { _id: null, totalQuantity: { $sum: "$quantity" } } },
+    ]);
+
+    const totalProductsStationery = await StationeryProduct.aggregate([
+      { $group: { _id: null, totalQuantity: { $sum: "$quantity" } } },
+    ]);
+
+    // Calculate total products
+    const totalProducts =
+      (totalProductsFresh[0]?.totalQuantity || 0) +
+      (totalProductsAnimal[0]?.totalQuantity || 0) +
+      (totalProductsGodown[0]?.totalQuantity || 0) +
+      (totalProductsHardware[0]?.totalQuantity || 0) +
+      (totalProductsStationery[0]?.totalQuantity || 0);
+
+    res.status(200).json({ totalProducts });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const getTotalSales = async (req, res) => {
+  try {
+    const totalSalesFresh = await FreshOilOrder.aggregate([
+      { $group: { _id: null, totalSales: { $sum: "$total" } } },
+    ]);
+    const totalSalesAnimal = await AnimalFeedingOrder.aggregate([
+      { $group: { _id: null, totalSales: { $sum: "$total" } } },
+    ]);
+    const totalSalesGodown = await GodownOrder.aggregate([
+      { $group: { _id: null, totalSales: { $sum: "$total" } } },
+    ]);
+    const totalSalesHardware = await HardwareOrder.aggregate([
+      { $group: { _id: null, totalSales: { $sum: "$total" } } },
+    ]);
+    const totalSalesPrinting = await PrintingOrder.aggregate([
+      { $group: { _id: null, totalSales: { $sum: "$total" } } },
+    ]);
+    const totalSalesStationery = await StationeryOrder.aggregate([
+      { $group: { _id: null, totalSales: { $sum: "$total" } } },
+    ]);
+
+    // Calculate the total sales across all categories
+    const totalSales =
+      (totalSalesFresh[0]?.totalSales || 0) +
+      (totalSalesAnimal[0]?.totalSales || 0) +
+      (totalSalesGodown[0]?.totalSales || 0) +
+      (totalSalesHardware[0]?.totalSales || 0) +
+      (totalSalesPrinting[0]?.totalSales || 0) +
+      (totalSalesStationery[0]?.totalSales || 0);
+
+    res.status(200).json({ totalSales });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+router.get("/products-count", getTotalProducts);
+
+router.get("/sales-total", getTotalSales);
 
 module.exports = router;
