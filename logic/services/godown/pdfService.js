@@ -64,7 +64,7 @@ const generateGodownPDF = (orders, res) => {
   // Add Orders Data
   let totalRevenue = 0;
   orders.forEach((order) => {
-    const orderId = order.orderId || "N/A";
+    const orderId = order.productName || "N/A";
     const quantity = order.quantity || 0;
     const totalPrice = order.totalPrice || 0;
 

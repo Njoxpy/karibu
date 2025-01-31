@@ -56,7 +56,7 @@ const generatePrintingPDF = (orders, res) => {
   orders.forEach((order) => {
     doc.fontSize(12);
     // Use order.name instead of product name
-    doc.text(order.name || "N/A", orderNameX, doc.y);
+    doc.text(order.description || "N/A", orderNameX, doc.y);
 
     // Quantity (right-aligned)
     doc.text(order.quantity?.toString() || "0", quantityX, doc.y - 12, {
