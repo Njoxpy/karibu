@@ -103,7 +103,7 @@ const OrdersCostDashboard = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-5xl font-extrabold text-center text-gray-900 mb-12">
+      <h1 className="text-5xl font-extrabold text-center text-blue-700 mb-12">
         Total Orders Cost Dashboard
       </h1>
 

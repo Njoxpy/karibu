@@ -1,21 +1,48 @@
-import { ChevronDown, Menu, User, X } from "lucide-react";
-import { useEffect, useState } from "react";
-import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import {
+  ChevronDown,
+  Menu,
+  User,
+  X,
+  Home,
+  Users,
+  FileText,
+  DollarSign,
+  AlertCircle,
+  ShoppingCart,
+  BarChart3,
+  Settings,
+  Bell,
+  Mail,
+  HelpCircle,
+  Shield,
+  PlusCircle,
+  ActivitySquare,
+} from "lucide-react";
+import useLogout from "../../../hooks/auth/useLogout";
+import { useAuth } from "../../../hooks/auth/useAuth";
 
 const DashboardLayout = () => {
   const [open, setOpen] = useState(false);
   const [openProfileDropdown, setOpenProfileDropdown] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const profileDropdownRef = useRef(null);
+  const logout = useLogout();
+  const { user } = useAuth();
 
-  // Close sidebar on mobile when route changes
   useEffect(() => {
     setOpen(false);
   }, [location]);
 
-  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (openProfileDropdown && !event.target.closest(".profile-dropdown")) {
+      if (
+        openProfileDropdown &&
+        profileDropdownRef.current &&
+        !profileDropdownRef.current.contains(event.target)
+      ) {
         setOpenProfileDropdown(false);
       }
     };
@@ -26,34 +53,99 @@ const DashboardLayout = () => {
 
   const getTitle = () => {
     switch (location.pathname) {
+      case "/admin/dashboard":
+        return "Dashboard Overview";
       case "/admin/users":
+        return "User Management";
       case "/admin/users/create":
-        return "Users";
+        return "Create New User";
       case "/admin/reports":
-        return "Reports";
+        return "Analytics Reports";
       case "/admin/revenue":
-        return "Revenue";
+        return "Revenue Analytics";
       case "/admin/logs":
-        return "Logs";
+        return "System Logs";
       case "/admin/orders-cost":
-        return "Orders-Cost";
+        return "Orders & Costs";
+      case "/admin/settings":
+        return "System Settings";
       default:
         return "Dashboard";
     }
   };
 
   const handleLogout = () => {
-    // Clear session, tokens, etc.
-    console.log("Logging out...");
+    console.log("bomboclat!");
+    logout();
   };
 
+  // Enhanced navigation structure with grouping
   const navLinks = [
-    { path: "/admin/users", label: "Users" },
-    { path: "/admin/users/create", label: "Add User" },
-    { path: "/admin/reports", label: "Reports" },
-    { path: "/admin/revenue", label: "Revenue" },
-    { path: "/admin/logs", label: "Logs" },
-    { path: "/admin/orders-cost", label: "Orders-Cost" },
+    // Overview Section
+    {
+      group: "Overview",
+      items: [
+        {
+          path: "/admin/dashboard",
+          label: "Dashboard",
+          icon: <Home size={20} />,
+        },
+      ],
+    },
+    // User Management Section
+    {
+      group: "User Management",
+      items: [
+        {
+          path: "/admin/users",
+          label: "Users List",
+          icon: <Users size={20} />,
+        },
+        {
+          path: "/admin/users/create",
+          label: "Add User",
+          icon: <PlusCircle size={20} />,
+        },
+      ],
+    },
+    // Analytics & Reports Section
+    {
+      group: "Analytics & Reports",
+      items: [
+        {
+          path: "/admin/reports",
+          label: "Reports",
+          icon: <FileText size={20} />,
+        },
+        {
+          path: "/admin/revenue",
+          label: "Revenue",
+          icon: <DollarSign size={20} />,
+        },
+        {
+          path: "/admin/orders-cost",
+          label: "Orders & Costs",
+          icon: <ShoppingCart size={20} />,
+        },
+      ],
+    },
+    // System Section
+    {
+      group: "System",
+      items: [
+        {
+          path: "/admin/logs",
+          label: "System Logs",
+          icon: <ActivitySquare size={20} />,
+        },
+        {
+          path: "/admin/settings",
+          label: "Settings",
+          icon: <Settings size={20} />,
+        },
+      ],
+    },
+    // Communication Section
   ];
 
   return (
@@ -66,7 +158,7 @@ const DashboardLayout = () => {
         />
       )}
 
-      {/* Sidebar */}
+      {/* Enhanced Sidebar */}
       <aside
         className={`
           fixed md:static inset-y-0 left-0 z-30
@@ -77,45 +169,75 @@ const DashboardLayout = () => {
         `}
       >
         <div className="flex flex-col h-full">
-          {/* Logo area */}
+          {/* Enhanced Logo area */}
           <div className="p-4 border-b border-blue-500">
-            <NavLink
-              to="/admin"
-              className="text-2xl font-bold hover:text-blue-100 transition-colors"
-            >
-              Welcome Leon
-            </NavLink>
+            <div className="flex items-center gap-2 mb-2">
+              <Shield size={24} />
+              <NavLink
+                to="/admin"
+                className="text-2xl font-bold hover:text-blue-100 transition-colors"
+              >
+                Admin Portal
+              </NavLink>
+            </div>
+            <div className="text-sm text-blue-100">Welcome, {user.email}</div>
           </div>
 
-          {/* Navigation */}
+          {/* Enhanced Navigation with Groups */}
           <nav className="flex-1 overflow-y-auto py-4">
-            <ul className="space-y-1">
-              {navLinks.map(({ path, label }) => (
-                <li key={path}>
-                  <NavLink
-                    to={path}
-                    className={({ isActive }) =>
-                      `flex items-center px-4 py-2 transition-colors
-                      ${
-                        isActive
-                          ? "bg-blue-700 text-white"
-                          : "hover:bg-blue-700/50"
-                      }`
-                    }
-                  >
-                    {label}
-                  </NavLink>
-                </li>
-              ))}
-            </ul>
+            {navLinks.map((group, index) => (
+              <div key={index} className="mb-6">
+                <div className="px-4 mb-2 text-sm font-semibold text-blue-200">
+                  {group.group}
+                </div>
+                <ul className="space-y-1">
+                  {group.items.map((item) => (
+                    <li key={item.path}>
+                      <NavLink
+                        to={item.path}
+                        className={({ isActive }) =>
+                          `flex items-center justify-between px-4 py-2 transition-colors
+                          ${
+                            isActive
+                              ? "bg-blue-700 text-white"
+                              : "hover:bg-blue-700/50"
+                          }`
+                        }
+                      >
+                        <div className="flex items-center">
+                          <span className="mr-2">{item.icon}</span>
+                          {item.label}
+                        </div>
+                        {item.badge && (
+                          <span className="px-2 py-1 text-xs bg-blue-500 rounded-full">
+                            {item.badge}
+                          </span>
+                        )}
+                      </NavLink>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </nav>
+
+          {/* Help & Support Section */}
+          <div className="p-4 border-t border-blue-500">
+            <NavLink
+              to="/admin/support"
+              className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-blue-700/50 rounded-lg"
+            >
+              <HelpCircle size={20} />
+              <span>Help & Support</span>
+            </NavLink>
+          </div>
         </div>
       </aside>
 
-      {/* Main content */}
+      {/* Enhanced Main content */}
       <main className="flex-1 flex flex-col min-w-0">
-        {/* Top navigation bar */}
-        <header className="bg-white border-b border-gray-200 px-4 py-3">
+        {/* Enhanced Top navigation bar */}
+        <header className="bg-white border-b border-gray-200 px-4 py-3 sticky top-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button
@@ -128,34 +250,6 @@ const DashboardLayout = () => {
               <h1 className="text-xl font-semibold text-gray-800">
                 {getTitle()}
               </h1>
-            </div>
-
-            {/* Profile dropdown */}
-            <div className="relative profile-dropdown">
-              <button
-                onClick={() => setOpenProfileDropdown(!openProfileDropdown)}
-                className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg"
-              >
-                <User size={20} />
-                <span className="hidden sm:inline">Admin</span>
-                <ChevronDown
-                  size={16}
-                  className={`transition-transform duration-200 ${
-                    openProfileDropdown ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-
-              {openProfileDropdown && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
-                  <button
-                    onClick={handleLogout}
-                    className="w-full px-4 py-2 text-left text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
             </div>
           </div>
         </header>

@@ -71,6 +71,11 @@ function SubmitWork() {
 
       // Dispatch to add the order to the state
       dispatch({ type: "ADD_PRINTING_ORDER", payload: data }); // Add the order from response
+      setCategory("");
+      setContact("");
+      setDescription("");
+      setPrice("");
+      setQuantity("");
 
       // Generate the PDF receipt using jsPDF
       const doc = new jsPDF();

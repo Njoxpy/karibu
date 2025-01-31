@@ -139,8 +139,12 @@ import MovementLogs from "./pages/Godown/Pages/movement/MovementLogs";
 
 import ProtectedRoute from "./auth/ProtectedRoute";
 import RevenueDashboard from "./pages/admin/pages/RevenueDashboard";
-import AuditLogs from "./pages/admin/components/AuditLogs";
 import OrdersCostDashboard from "./pages/admin/pages/OrdersCostDashboard";
+import Support from "./pages/admin/pages/Support";
+import AuditLogs from "./pages/admin/components/AuditLogs";
+import Settings from "./pages/admin/pages/Settings";
+
+// auth
 
 export default function App() {
   const router = createBrowserRouter(
@@ -148,11 +152,15 @@ export default function App() {
       <Route>
         <Route path="admin/*" element={<DashboardLayout />}>
           <Route index element={<DashboardHome />} />
+          <Route path="dashboard" element={<DashboardHome />} />
+          <Route path="logs" element={<AuditLogs />} />
           <Route path="users" element={<UsersPage />} />
           <Route path="users/create" element={<AddUserPage />} />
+          <Route path="settings" element={<Settings />} />
           <Route path="reports" element={<ReportsPage />} />
+          <Route path="support" element={<Support />} />
+
           <Route path="revenue" element={<RevenueDashboard />} />
-          <Route path="logs" element={<AuditLogs />} />
           <Route path="Orders-Cost" element={<OrdersCostDashboard />} />
         </Route>
         <Route path="/" element={<RootLayout />}>

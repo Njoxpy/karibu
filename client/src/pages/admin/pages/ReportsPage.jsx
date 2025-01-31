@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { getToken } from "../../../services/token";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -12,10 +12,10 @@ const ReportsPage = () => {
   const token = getToken();
   const categories = [
     "Animal Feeding",
-    "Printing",
     "Fresh Oil",
-    "Hardware",
     "Godown",
+    "Hardware",
+    "Printing",
     "Stationery",
   ];
 
@@ -148,7 +148,7 @@ const ReportsPage = () => {
           className={`w-full p-4 rounded-lg text-lg font-semibold transition-all ${
             selectedCategory && !loading
               ? "bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg"
-              : "bg-blue-300 cursor-not-allowed"
+              : "bg-blue-400 text-white cursor-not-allowed"
           }`}
         >
           {loading ? (

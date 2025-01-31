@@ -111,7 +111,7 @@ const FoodsBody = () => {
                 alt={product.name}
                 className="w-full h-48 object-cover"
               />
-              <div className="p-6">
+              <div className="p-6 cursor-pointer">
                 <h2 className="font-bold text-xl text-gray-800 mb-2">
                   {product.name}
                 </h2>

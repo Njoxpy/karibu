@@ -38,7 +38,9 @@ const RootLayout = () => {
 
   // Role-specific menu items for non-admin users
   const roleSpecificMenuItems = [
-    ...(user?.category === "godown" ? [{ name: "Godown", path: "/godown" }] : []),
+    ...(user?.category === "godown"
+      ? [{ name: "Godown", path: "/godown" }]
+      : []),
     ...(user?.category === "stationery"
       ? [{ name: "Stationery", path: "/stationery" }]
       : []),
@@ -58,12 +60,12 @@ const RootLayout = () => {
 
   // Admin-specific menu items
   const adminMenuItems = [
-    { name: "Godown", path: "/godown" },
-    { name: "Stationery", path: "/stationery" },
     { name: "Animal Feeding", path: "/animal-feeding" },
+    { name: "Fresh Oil", path: "/fresh-oil" },
+    { name: "Godown", path: "/godown" },
     { name: "Hardware", path: "/hardware" },
     { name: "Printing", path: "/printing" },
-    { name: "Fresh Oil", path: "/fresh-oil" },
+    { name: "Stationery", path: "/stationery" },
   ];
 
   // Combine all menu items based on user role
