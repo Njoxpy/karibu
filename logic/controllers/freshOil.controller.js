@@ -2,6 +2,13 @@
 const FreshOilProduct = require("../models/freshOil/freshOilproductModel");
 const FreshOilOrder = require("../models/freshOil/freshOilOrderModel");
 
+// models for total cost
+const AnimalFeedingOrder = require("../models/animalFeeding/animalFeedingOrderModel");
+const GodownOrder = require("../models/godown/godownOrderModel");
+const HardwareOrder = require("../models/hardware/orderModel");
+const PrintingOrder = require("../models/printing/printingOrderModel");
+const StationeryOrder = require("../models/stationery/stationerOrderModel");
+
 // middleware
 const {
   SERVER_ERROR,
@@ -493,6 +500,30 @@ const getRevenue = async (req, res) => {
   }
 };
 
+const getTotalOrders = async (req, res) => {
+  try {
+    const collections = [
+      FreshOilOrder,
+      AnimalFeedingOrder,
+      GodownOrder,
+      HardwareOrder,
+      PrintingOrder,
+      StationeryOrder,
+    ];
+
+    // Run countDocuments queries in parallel
+    const counts = await Promise.all(
+      collections.map((collection) => collection.countDocuments())
+    );
+
+    const totalCount = counts.reduce((sum, count) => sum + count, 0);
+
+    res.status(200).json({ totalCount });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 // exports
 module.exports = {
   createFreshOilOrder,
@@ -509,4 +540,5 @@ module.exports = {
   getAvailableProducts,
   getTotalCostByDate,
   getRevenue,
+  getTotalOrders,
 };
