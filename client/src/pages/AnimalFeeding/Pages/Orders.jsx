@@ -5,6 +5,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getToken } from "../../../services/token";
 import { useAnimalFeeding } from "../../../hooks/animalFeeding/useAnimalFeeding";
+import NoOrders from "../../../components/NoOrders";
 
 // Utility function to format date
 const formatDate = (date) => new Date(date).toLocaleDateString();
@@ -217,7 +218,7 @@ const Orders = () => {
   };
 
   if (filteredOrders.length === 0) {
-    return <div className="text-center py-12">No orders</div>;
+    return <NoOrders />;
   }
 
   return (
