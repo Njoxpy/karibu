@@ -62,7 +62,7 @@ function Oils() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-yellow-100 py-8">
+    <div className="min-h-screen py-8">
       <div className="container mx-auto px-4">
         {/* Search Bar */}
         <div className="mb-8 flex justify-center">

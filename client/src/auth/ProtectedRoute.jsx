@@ -6,7 +6,7 @@ const ProtectedRoute = ({
   allowedCategories,
   categorySpecific = false,
 }) => {
-  const { user } = useAuth();
+  const user = JSON.parse(localStorage.getItem("authToken")); // Retrieve user data from localStorage
 
   if (!user) {
     // Redirect to login if the user is not logged in
@@ -27,7 +27,8 @@ const ProtectedRoute = ({
       allowedCategories &&
       !allowedCategories.includes(category)
     ) {
-      return <Navigate to="/403" />;
+      // Redirect to a category-specific page or home page if the category doesn't match
+      return <Navigate to={`/${category}`} />;
     }
     return <Outlet />;
   }
