@@ -175,6 +175,14 @@ const StationeryItemDetails = () => {
                     {product.quantity} units
                   </p>
                 </div>
+                <div className="bg-blue-50 p-4 rounded-xl">
+                  <label className="text-sm text-blue-500 block mb-1">
+                    Description
+                  </label>
+                  <p className="text-lg font-semibold text-blue-500">
+                    {product.description}
+                  </p>
+                </div>
               </div>
               <div className="space-y-4">
                 <div className="bg-blue-50 p-4 rounded-xl">
