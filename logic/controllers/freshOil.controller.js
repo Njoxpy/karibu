@@ -204,9 +204,9 @@ const getSingleFreshOilOrder = async (req, res) => {
 const updateFreshOilProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const { price, quantity } = req.body;
+    const { name, description, price, quantity } = req.body;
 
-    // Validate price and quantity
+    // Validate numeric fields
     if (price <= 0 || quantity < 0) {
       return res.status(BAD_REQUEST).json({
         message:
@@ -214,48 +214,25 @@ const updateFreshOilProduct = async (req, res) => {
       });
     }
 
-    if (typeof price !== "number" || typeof quantity !== "number") {
-      return res.status(BAD_REQUEST).json({
-        message: "Price and quantity should be valid numbers.",
-      });
-    }
-
-    // Get product to update
     const product = await FreshOilProduct.findById(id);
-
     if (!product) {
       return res.status(BAD_REQUEST).json({ message: "Product not found" });
     }
 
-    // Only update provided fields
-    const updates = {};
-    if (price !== undefined) updates.price = price;
-    if (quantity !== undefined) updates.quantity = quantity;
+    // Update all fields
+    product.name = name || product.name;
+    product.description = description || product.description;
+    product.price = price || product.price;
+    product.quantity = quantity || product.quantity;
+    product.total = product.price * product.quantity;
 
-    // Apply updates
-    Object.keys(updates).forEach((key) => {
-      product[key] = updates[key];
-    });
-
-    // Calculate new total if price or quantity changed
-    if (updates.price || updates.quantity) {
-      product.total = product.price * product.quantity;
-    }
-
-    // Save the updated product
     await product.save();
-
-    res.status(OK).json({
-      message: "Product updated successfully",
-      product,
-    });
+    res.status(OK).json({ message: "Product updated successfully", product });
   } catch (error) {
-    if (!res.headersSent) {
-      return res.status(SERVER_ERROR).json({
-        message: "Server error",
-        details: error.message,
-      });
-    }
+    res.status(SERVER_ERROR).json({
+      message: "Server error",
+      details: error.message,
+    });
   }
 };
 

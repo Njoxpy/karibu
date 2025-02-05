@@ -1,75 +1,13 @@
-const mongoose = require("mongoose");
 const HardwareProduct = require("../models/hardware/productModel");
 const HardwareOrder = require("../models/hardware/orderModel");
 const {
   SERVER_ERROR,
-  CREATED,
   BAD_REQUEST,
   OK,
   NOT_FOUND,
 } = require("../constants/responseStatusCode");
 
 // Create a Hardware Product
-const createHardwareProduct = async (req, res) => {
-  try {
-    const { name, price, quantity, description, userId } = req.body;
-
-    // Validate required fields
-    if (
-      !name ||
-      price === undefined ||
-      quantity === undefined ||
-      !description ||
-      !userId
-    ) {
-      return res
-        .status(BAD_REQUEST)
-        .json({ message: "All fields are required" });
-    }
-
-    // Validate that price and quantity are numbers
-    if (isNaN(quantity) || isNaN(price)) {
-      return res
-        .status(BAD_REQUEST)
-        .json({ error: "Quantity and price must be valid numbers." });
-    }
-
-    // Validate that quantity and price are greater than or equal to zero
-    if (quantity < 0 || price < 0) {
-      return res.status(BAD_REQUEST).json({
-        error: "Quantity and price must be greater than or equal to zero.",
-      });
-    }
-
-    // Validate userId
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(BAD_REQUEST).json({
-        error: "Invalid userId. Please provide a valid MongoDB ObjectId.",
-      });
-    }
-
-    const image = req.file ? req.file.path : null;
-
-    // Create a new hardware product
-    const newProduct = await HardwareProduct.create({
-      name,
-      price,
-      quantity,
-      description,
-      userId,
-      image,
-    });
-
-    res
-      .status(CREATED)
-      .json({ message: "Product created successfully", newProduct });
-  } catch (error) {
-    console.error(error); // Log the error for debugging
-    res
-      .status(SERVER_ERROR)
-      .json({ message: "Failed to create product", error: error.message });
-  }
-};
 
 // Get All Hardware Products
 const getAllHardwareProducts = async (req, res) => {
@@ -510,7 +448,6 @@ const getTotalCostByDate = async (req, res) => {
 };
 
 module.exports = {
-  createHardwareProduct,
   createHardwareOrder,
   getAllHardwareOrders,
   getHardwareOrderById,
