@@ -2,15 +2,35 @@ import { Outlet, Link } from "react-router-dom";
 import { useState } from "react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
+const NavLink = ({ to, children, onClick }) => (
+  <Link
+    to={to}
+    onClick={onClick}
+    className="px-4 py-2 rounded-lg hover:bg-blue-700 hover:text-white transition-all duration-200 flex items-center space-x-2"
+  >
+    {children}
+  </Link>
+);
+
 function AnimalFeedingLayout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  const navItems = [
+    { path: "/godown/", label: "Home" },
+    { path: "/godown/admin/upload", label: "Item Upload" },
+    { path: "/godown/admin/bulk-upload", label: "Bulk Upload" },
+    { path: "/godown/order-item", label: "Order Item" },
+    { path: "/godown/orders", label: "Orders" },
+    { path: "/godown/admin/move", label: "Move" },
+    { path: "/godown/admin/manage", label: "Manage Godown" },
+    { path: "/godown/admin/movement-logs", label: "Movement Logs" },
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-gradient-to-r from-blue-800 to-blue-900 text-white shadow-lg">
-        <header className="container mx-auto">
-          <div className="flex justify-between items-center p-4">
-            {/* Logo/Title */}
+      <div className="bg-gradient-to-r from-blue-900 to-indigo-900 text-white shadow-lg">
+        <header className="container mx-auto px-4">
+          <div className="flex justify-between items-center py-4">
             <h2 className="text-3xl font-bold tracking-tight">
               <Link
                 to="/godown"
@@ -20,166 +40,40 @@ function AnimalFeedingLayout() {
               </Link>
             </h2>
 
-            {/* Mobile Menu Button */}
             <button
-              className="lg:hidden p-2 rounded-lg transition-colors duration-200"
+              className="lg:hidden p-2 hover:bg-blue-800 rounded-lg transition-colors duration-200"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label="Toggle menu"
             >
               {isMenuOpen ? (
-                <XMarkIcon className="w-6 h-6 text-white" />
+                <XMarkIcon className="w-6 h-6" />
               ) : (
-                <Bars3Icon className="w-6 h-6 text-white" />
+                <Bars3Icon className="w-6 h-6" />
               )}
             </button>
 
-            {/* Navigation Links for Desktop */}
-            <nav className="hidden lg:flex">
-              <ul className="flex items-center space-x-1">
-                <li>
-                  <Link
-                    className="px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2"
-                    to="/godown/"
-                  >
-                    <span>Home</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2"
-                    to="/godown/admin/upload"
-                  >
-                    <span>Item Upload</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2"
-                    to="/godown/admin/bulk-upload"
-                  >
-                    <span>Bulk Upload</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2"
-                    to="/godown/order-item"
-                  >
-                    <span>Order Item</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="hover:text-green-200 transition-colors duration-200"
-                    to="/godown/admin/manage"
-                  >
-                    Manage Godown
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2"
-                    to="/godown/orders"
-                  >
-                    <span>Orders</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2"
-                    to="/godown/admin/move"
-                  >
-                    <span>Move</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2"
-                    to="/godown/admin/movement-logs"
-                  >
-                    <span>Movement Logs</span>
-                  </Link>
-                </li>
+            <nav className="hidden lg:block">
+              <ul className="flex items-center space-x-2">
+                {navItems.map(({ path, label }) => (
+                  <li key={path}>
+                    <NavLink to={path}>{label}</NavLink>
+                  </li>
+                ))}
               </ul>
             </nav>
           </div>
         </header>
 
-        {/* Mobile Navigation Links */}
         {isMenuOpen && (
-          <nav className="lg:hidden bg-blue-900 border-t border-blue-700">
-            <ul className="flex flex-col p-4 space-y-2">
-              <li>
-                <Link
-                  className="px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2"
-                  to="/godown/"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <span>Home</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="block px-4 py-2 rounded-lg transition-all duration-200"
-                  to="/godown/admin/upload"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Item Upload
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="block px-4 py-2 rounded-lg transition-all duration-200"
-                  to="/godown/admin/bulk-upload"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Bulk Upload
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="block px-4 py-2 rounded-lg transition-all duration-200"
-                  to="/godown/order-item"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Order Item
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="block px-4 py-2 rounded-lg transition-all duration-200"
-                  to="/godown/orders"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Orders
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="block px-4 py-2 rounded-lg transition-all duration-200"
-                  to="/godown/admin/move"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Move
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="hover:text-green-200 transition-colors duration-200"
-                  to="/godown/admin/manage"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Manage Godown
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2"
-                  to="/godown/admin/movement-logs"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <span>Movement Logs</span>
-                </Link>
-              </li>
+          <nav className="lg:hidden border-t border-blue-800">
+            <ul className="flex flex-col p-4 space-y-2 bg-blue-900/50 backdrop-blur-sm">
+              {navItems.map(({ path, label }) => (
+                <li key={path}>
+                  <NavLink to={path} onClick={() => setIsMenuOpen(false)}>
+                    {label}
+                  </NavLink>
+                </li>
+              ))}
             </ul>
           </nav>
         )}

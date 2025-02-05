@@ -111,7 +111,7 @@ const ManageGodownItems = () => {
       const response = await fetch(
         `http://localhost:5000/api/v1/godown/products/${updatedProduct._id}`,
         {
-          method: "PUT", // or "PATCH" depending on your API
+          method: "PATCH",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -121,19 +121,19 @@ const ManageGodownItems = () => {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to update product");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update product");
       }
 
       const data = await response.json();
-      console.log("Product updated successfully:", data);
-
-      // Update the products list with the edited product
       setProducts(
-        products.map((p) => (p._id === updatedProduct._id ? updatedProduct : p))
+        products.map((p) =>
+          p._id === updatedProduct._id ? data.product || updatedProduct : p
+        )
       );
-      setShowEditModal(false); // Close the modal
+      setShowEditModal(false);
     } catch (err) {
-      console.error("Error updating product:", err);
+      console.error("Error:", err);
       setError(err.message);
     }
   };

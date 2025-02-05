@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import PropTypes from "prop-types";
 import { useDropzone } from "react-dropzone";
+import ImageGuide from "../../../assets/images/excell format.png";
 import * as XLSX from "xlsx";
 
 // FileUploadZone Component
@@ -202,21 +203,27 @@ const BulkUploadGodown = () => {
                   </li>
                   <li>
                     Hakikisha faili lako lina safu zifuatazo kwa mpangilio:
+                    <div className="m-4">
+                      <p className="text-gray-700 mb-4">
+                        Mfano wa picha ya file la excell
+                      </p>
+                      <img src={ImageGuide} className="m-2"></img>
+                    </div>
                     <ul className="list-disc list-inside ml-6 mt-1">
                       <li>
-                        <code>Jina</code> (Jina la Bidhaa)
+                        <code>Jina / name</code> (Jina la Bidhaa)
                       </li>
                       <li>
-                        <code>Bei</code> (Bei ya Bidhaa)
+                        <code>Maelezo / description</code> (Maelezo ya Bidhaa)
                       </li>
                       <li>
-                        <code>Kiasi</code> (Kiasi cha Bidhaa)
+                        <code>Bei / price</code> (Bei ya Bidhaa)
                       </li>
                       <li>
-                        <code>Mahali</code> (Mahali pa Bidhaa)
+                        <code>Kiasi / quantity</code> (Kiasi cha Bidhaa)
                       </li>
                       <li>
-                        <code>Maelezo</code> (Maelezo ya Bidhaa)
+                        <code>Mahali / location</code> (Mahali pa Bidhaa)
                       </li>
                     </ul>
                   </li>

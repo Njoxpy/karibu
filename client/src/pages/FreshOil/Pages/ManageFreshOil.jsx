@@ -15,7 +15,6 @@ const ManageFreshOil = () => {
   const [isDeleteSuccessModalOpen, setIsDeleteSuccessModalOpen] =
     useState(false);
   const [editProduct, setEditProduct] = useState(null);
-  const [validationErrors, setValidationErrors] = useState({});
   const token = getToken();
   const baseURL = "http://localhost:5000";
 
@@ -36,7 +35,6 @@ const ManageFreshOil = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      console.log("API Response:", data); // Debugging line
 
       // Ensure data is an array
       if (Array.isArray(data)) {
@@ -96,7 +94,9 @@ const ManageFreshOil = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setEditProduct({ ...editProduct, [name]: value });
+    const parsedValue =
+      name === "quantity" || name === "price" ? parseFloat(value) || 0 : value;
+    setEditProduct({ ...editProduct, [name]: parsedValue });
   };
 
   const handleEditSubmit = async (e) => {
@@ -155,10 +155,7 @@ const ManageFreshOil = () => {
 
   return (
     <>
-      <div
-        className="min-h-screen bg-gradient-to-br from-yellow
-       -50 to-yellow-100"
-      >
+      <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-yellow-100">
         <div className="container mx-auto p-4">
           <h1 className="text-3xl font-bold mb-6 text-yellow-700">
             Manage Products
@@ -197,7 +194,7 @@ const ManageFreshOil = () => {
               {currentItems.map((product) => (
                 <div
                   key={product._id}
-                  className="bg-white rounded-xl shadow-lg overflow-hidden"
+                  className="bg-white rounded-xl shadow-lg overflow-hidden product"
                 >
                   <img
                     src={
@@ -220,9 +217,6 @@ const ManageFreshOil = () => {
                     </p>
                     <p className="text-gray-600 text-sm mt-2">
                       Price: Tsh {product.price.toLocaleString()}
-                    </p>
-                    <p className="text-gray-600 text-sm mt-2">
-                      Nutrients: {product.nutrients}
                     </p>
                     <div className="flex justify-between mt-6">
                       <button
@@ -336,18 +330,7 @@ const ManageFreshOil = () => {
                         type="number"
                         name="quantity"
                         value={editProduct.quantity}
-                        onChange={handleInputChange}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        Nutrients
-                      </label>
-                      <input
-                        type="text"
-                        name="nutrients"
-                        value={editProduct.nutrients}
+                        {...console.log(typeof editProduct.quantity)}
                         onChange={handleInputChange}
                         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                       />

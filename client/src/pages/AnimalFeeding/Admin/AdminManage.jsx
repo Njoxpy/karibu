@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Footer from "../../../components/Footer";
 import { getToken } from "../../../services/token";
+import "./AdminManage.css";
 
 const AdminManage = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -197,7 +198,7 @@ const AdminManage = () => {
               {currentItems.map((product) => (
                 <div
                   key={product._id}
-                  className="bg-white rounded-xl shadow-lg overflow-hidden"
+                  className="bg-white rounded-xl shadow-lg overflow-hidden product cursor-pointer"
                 >
                   <img
                     src={
