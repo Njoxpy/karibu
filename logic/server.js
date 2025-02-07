@@ -10,8 +10,6 @@ const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const timeout = require("connect-timeout"); // Import timeout middleware
 
-const admin = require("./scripts/adminSetup");
-
 // ROUTES IMPORT
 const animalFeedingRoutes = require("./routes/animalFeeding.routes");
 const freshOilRoutes = require("./routes/freshOil.routes");
@@ -37,7 +35,7 @@ app.use(cors());
 
 app.use(
   cors({
-    origin: "http://localhost:5173", // Allow only frontend from localhost:5173
+    origin: "http://localhost:5174", // Allow only frontend from localhost:5173
   })
 );
 
