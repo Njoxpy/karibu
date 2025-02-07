@@ -175,7 +175,7 @@ const ManageStationeryProducts = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
+      <div className="min-h-screen">
         <div className="container mx-auto p-4">
           <h1 className="text-3xl font-bold mb-6 text-blue-700">
             Manage Products

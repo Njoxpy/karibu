@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
 import Footer from "../../../components/Footer";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getToken } from "../../../services/token";
 import { useAnimalFeeding } from "../../../hooks/animalFeeding/useAnimalFeeding";
+import { AnimalFeedingContext } from "../../../context/AnimalFeedingContext";
 
 const GodownProductDetails = () => {
   const { id } = useParams();
@@ -95,6 +96,8 @@ const GodownProductDetails = () => {
         );
       }
 
+      const newOrder = await response.json();
+
       // Show success message and reset the state
       setOrderSuccess(true);
       toast.success("Order placed successfully!", {
@@ -105,6 +108,9 @@ const GodownProductDetails = () => {
         pauseOnHover: true,
         draggable: true,
       });
+
+      // Dispatch action to add the new order to the context
+      dispatch({ type: "ADD_ANIMAL_FEEDING_ORDER", payload: newOrder });
 
       // Reset order form state
       setQuantity(1);

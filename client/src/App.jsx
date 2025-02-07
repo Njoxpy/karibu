@@ -239,11 +239,11 @@ export default function App() {
             <Route path="admin/upload" element={<UploadGodownItems />} />
             <Route path="admin/bulk-upload" element={<BulkUploadGodown />} />
             <Route path="admin/manage" element={<ManageGodownItems />} />
+            <Route path="admin/movement-logs" element={<MovementLogs />} />
             <Route path="admin/move">
               <Route index element={<ProductsMovement />} />{" "}
               <Route path=":id" element={<ProductsMovementDetails />} />{" "}
             </Route>
-            <Route path="admin/movement-logs" element={<MovementLogs />} />
           </Route>
 
           {/* hardware */}

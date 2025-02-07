@@ -15,7 +15,6 @@ const FoodsBody = () => {
 
   const { products, dispatch } = useAnimalFeeding();
 
-  // Fetch products initially
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);

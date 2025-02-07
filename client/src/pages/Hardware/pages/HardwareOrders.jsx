@@ -278,10 +278,7 @@ const HardwareOrders = () => {
                       >
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-blue-900">
-                            {order.productame}
-                          </div>
-                          <div className="text-sm text-blue-500">
-                            ID: {order._id.slice(-6)}
+                            {order.productName}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -358,6 +355,7 @@ const HardwareOrders = () => {
       </div>
 
       {/* Edit Modal */}
+      {/* Edit Modal */}
       {showEditModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4">
@@ -379,39 +377,23 @@ const HardwareOrders = () => {
                         quantity: e.target.value,
                       })
                     }
-                    className="w-full p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                    className="w-full p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-blue-700 mb-1">
-                    Total Price
-                  </label>
-                  <input
-                    type="number"
-                    value={orderToEdit?.totalPrice || ""}
-                    onChange={(e) =>
-                      setOrderToEdit({
-                        ...orderToEdit,
-                        totalPrice: e.target.value,
-                      })
-                    }
-                    className="w-full p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-                  />
-                </div>
-                <div className="flex justify-end gap-3 mt-6">
+                <div className="flex justify-end gap-4 mt-4">
                   <button
                     type="button"
                     onClick={closeEditModal}
-                    className="px-4 py-2 text-blue-700 bg-blue-100 rounded-xl hover:bg-blue-200 transition-colors duration-200"
+                    className="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg"
                   >
                     Cancel
                   </button>
                   <button
                     type="button"
                     onClick={handleEditOrder}
-                    className="px-4 py-2 text-white bg-blue-700 rounded-xl hover:bg-blue-800 transition-colors duration-200"
+                    className="px-6 py-2 bg-blue-700 text-white rounded-lg"
                   >
-                    Save Changes
+                    Save
                   </button>
                 </div>
               </form>

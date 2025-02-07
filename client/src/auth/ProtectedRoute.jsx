@@ -6,35 +6,29 @@ const ProtectedRoute = ({
   allowedCategories,
   categorySpecific = false,
 }) => {
-  const user = JSON.parse(localStorage.getItem("authToken")); // Retrieve user data from localStorage
+  const { user, isAdmin, hasAccess } = useAuth();
 
+  // If the user is not authenticated, redirect to the login page
   if (!user) {
-    // Redirect to login if the user is not logged in
     return <Navigate to="/login" />;
   }
 
-  const { role, category } = user;
-
-  // Admin has access to everything
-  if (role === "admin") {
-    return <Outlet />;
+  // Check if the user's role is allowed
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    return <Navigate to="/unauthorized" />;
   }
 
-  // Employees need to match specific categories if categorySpecific is true
-  if (role === "employee") {
-    if (
-      categorySpecific &&
-      allowedCategories &&
-      !allowedCategories.includes(category)
-    ) {
-      // Redirect to a category-specific page or home page if the category doesn't match
-      return <Navigate to={`/${category}`} />;
-    }
-    return <Outlet />;
+  // If category-specific route, check if the user has access to that category
+  if (
+    categorySpecific &&
+    allowedCategories &&
+    !allowedCategories.some((cat) => hasAccess(cat))
+  ) {
+    return <Navigate to="/unauthorized" />;
   }
 
-  // For any other cases, deny access
-  return <Navigate to="/403" />;
+  // User is authorized, render the children route components
+  return <Outlet />;
 };
 
 export default ProtectedRoute;

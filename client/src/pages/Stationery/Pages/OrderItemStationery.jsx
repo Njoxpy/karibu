@@ -201,6 +201,15 @@ const OrderItemStationery = () => {
                     </span>
                   </p>
                 </div>
+                <div className="space-y-3 mt-2">
+                  <p className="text-sm text-blue-500">
+                    Description
+                    <span className=""></span>
+                    <span className="block mt-1 text-blue-600">
+                      {selectedProduct.description}
+                    </span>
+                  </p>
+                </div>
               </div>
             )}
 
