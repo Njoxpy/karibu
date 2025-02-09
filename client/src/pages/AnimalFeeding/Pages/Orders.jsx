@@ -156,8 +156,12 @@ const Orders = () => {
   };
 
   // Handle editing an order
-  const handleEditOrder = async () => {
+  // Handle editing an order
+  const handleEditOrder = async (e) => {
+    e.preventDefault();
+
     try {
+      // Send the request to update the order
       const response = await fetch(
         `http://localhost:5000/api/v1/animal-feeding/orders/${orderToEdit._id}`,
         {
@@ -166,30 +170,37 @@ const Orders = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ quantity: newQuantity }),
+          body: JSON.stringify({ quantity: newQuantity }), // Send the updated quantity
         }
       );
 
+      // Check if the response is okay
       if (!response.ok) {
         throw new Error("Failed to update order");
       }
 
-      const updatedOrder = await response.json();
+      // Parse the updated order from the response
+      const { order } = await response.json();
+
+      // Update the state with the updated order
       setOrders((prevOrders) =>
-        prevOrders.map((order) =>
-          order._id === updatedOrder._id ? updatedOrder : order
+        prevOrders.map((orderItem) =>
+          orderItem._id === order._id ? order : orderItem
         )
       );
+
       setFilteredOrders((prevOrders) =>
-        prevOrders.map((order) =>
-          order._id === updatedOrder._id ? updatedOrder : order
+        prevOrders.map((orderItem) =>
+          orderItem._id === order._id ? order : orderItem
         )
       );
+
+      // Close the modal and provide success feedback
       setShowEditModal(false);
-      // Dispatch the action to update the order in the context
-      dispatch({ type: "UPDATE_ANIMAL_FEEDING_ORDER", payload: updatedOrder });
+      dispatch({ type: "UPDATE_ANIMAL_FEEDING_ORDER", payload: order });
       toast.success("Order updated successfully");
     } catch (error) {
+      // Handle errors
       toast.error(`Error: ${error.message}`);
     }
   };

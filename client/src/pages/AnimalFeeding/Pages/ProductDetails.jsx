@@ -66,7 +66,6 @@ const GodownProductDetails = () => {
     setIsSubmitting(true);
 
     try {
-      // Prepare order data
       const orderData = {
         productId: product._id,
         productName: product.name,
@@ -76,14 +75,13 @@ const GodownProductDetails = () => {
         status: "pending",
       };
 
-      // Send POST request to create order
       const response = await fetch(
         "http://localhost:5000/api/v1/animal-feeding/orders",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Include bearer token
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(orderData),
         }
@@ -91,40 +89,33 @@ const GodownProductDetails = () => {
 
       if (!response.ok) {
         const errorResponse = await response.json();
-        throw new Error(
-          errorResponse.message || "Failed to place the order. Try again."
-        );
+        throw new Error(errorResponse.message || "Failed to place the order.");
       }
 
       const newOrder = await response.json();
 
-      // Show success message and reset the state
-      setOrderSuccess(true);
-      toast.success("Order placed successfully!", {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
+      // Update the local product quantity after a successful order
+      setProduct((prevProduct) => ({
+        ...prevProduct,
+        quantity: prevProduct.quantity - quantity,
+      }));
+
+      // Dispatch action to update product in context
+      dispatch({
+        type: "UPDATE_ANIMAL_FEEDING_PRODUCT_QUANTITY",
+        payload: {
+          productId: product._id,
+          newQuantity: product.quantity - quantity,
+        },
       });
 
-      // Dispatch action to add the new order to the context
-      dispatch({ type: "ADD_ANIMAL_FEEDING_ORDER", payload: newOrder });
+      toast.success("Order placed successfully!");
 
-      // Reset order form state
+      setOrderSuccess(true);
       setQuantity(1);
       setTotalPrice(product.price);
     } catch (error) {
-      // Handle errors
-      toast.error(`Error: ${error.message}`, {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+      toast.error(`Error: ${error.message}`);
     } finally {
       setIsSubmitting(false);
     }
