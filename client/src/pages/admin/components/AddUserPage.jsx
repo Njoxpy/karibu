@@ -156,6 +156,7 @@ const AddUserPage = () => {
                 <input
                   type="email"
                   name="email"
+                  autoComplete="off"
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="user@example.com"
@@ -179,6 +180,7 @@ const AddUserPage = () => {
                 </IconWrapper>
                 <input
                   type="password"
+                  autoComplete="off"
                   name="password"
                   value={formData.password}
                   onChange={handleChange}

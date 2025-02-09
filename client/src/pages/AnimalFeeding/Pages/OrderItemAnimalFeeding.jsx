@@ -116,11 +116,14 @@ const OrderItemAnimalFeeding = () => {
       setOrderSuccess(true);
       toast.success("Order placed successfully!");
 
-      // Reset form state
-      setQuantity(1);
-      if (selectedProduct) {
-        setTotalPrice(selectedProduct.price);
-      }
+      // Decrease the available stock for the selected product
+      const updatedProduct = {
+        ...selectedProduct,
+        quantity: selectedProduct.quantity - quantity,
+      };
+      setSelectedProduct(updatedProduct);
+      setQuantity(1); // Reset the quantity to 1
+      setTotalPrice(updatedProduct.price); // Reset total price to the new price per unit
     } catch (error) {
       toast.error(`Error: ${error.message}`);
     } finally {

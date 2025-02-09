@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Footer from "../../../components/Footer";
 import { getToken } from "../../../services/token";
 import "./AdminManage.css";
+import { useAnimalFeeding } from "../../../hooks/animalFeeding/useAnimalFeeding";
 
 const AdminManage = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -26,25 +27,30 @@ const AdminManage = () => {
     fetchProducts();
   }, []);
 
+  // Example of closing success modal after 3 seconds
+  useEffect(() => {
+    if (isEditSuccessModalOpen) {
+      setTimeout(() => {
+        setIsEditSuccessModalOpen(false);
+      }, 3000); // Close after 3 seconds
+    }
+  }, [isEditSuccessModalOpen]);
+
   const fetchProducts = async () => {
     try {
       const response = await fetch(
         `${baseURL}/api/v1/animal-feeding/products/`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`Failed to fetch products. Please try again.`);
       }
       const data = await response.json();
-      console.log("API Response:", data); // Debugging line
-
-      // Ensure data is an array
       if (Array.isArray(data)) {
         setProducts(data);
+
         setCurrentItems(data);
       } else {
         console.error("API response is not an array:", data);
@@ -53,6 +59,7 @@ const AdminManage = () => {
       }
     } catch (error) {
       console.error("Error fetching products:", error);
+      alert("An error occurred while fetching products. Please try again.");
       setProducts([]);
       setCurrentItems([]);
     }
@@ -106,30 +113,47 @@ const AdminManage = () => {
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Optimistically update the UI before the server response
+      const updatedProduct = { ...editProduct }; // Copy the product data
+
+      // Optimistically update the UI
+      setProducts((prevProducts) =>
+        prevProducts.map((product) =>
+          product._id === updatedProduct._id ? updatedProduct : product
+        )
+      );
+
+      // Make the API call to update the product in the database
       const response = await fetch(
-        `${baseURL}/api/v1/animal-feeding/products/${editProduct._id}`,
+        `${baseURL}/api/v1/animal-feeding/products/${updatedProduct._id}`,
         {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(editProduct),
+          body: JSON.stringify(updatedProduct),
         }
       );
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const updatedProduct = await response.json();
-      setProducts(
-        products.map((product) =>
-          product._id === updatedProduct._id ? updatedProduct : product
-        )
-      );
+
+      // Get the updated product from the API (optional)
+      const data = await response.json();
+
+      // If the update was successful, show success message and close modal
       setIsEditModalOpen(false);
       setIsEditSuccessModalOpen(true);
+
+      // Reset the edit product state for the next edit
+      setEditProduct(null);
     } catch (error) {
       console.error("Error updating product:", error);
+      // Optionally, reset the UI state or show an error message
+      setIsEditModalOpen(false);
+      alert("Error updating product");
     }
   };
 
@@ -229,12 +253,13 @@ const AdminManage = () => {
                       <button
                         className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-all duration-200"
                         onClick={() => {
-                          setEditProduct(product);
-                          setIsEditModalOpen(true);
+                          setEditProduct(product); // Set the selected product
+                          setIsEditModalOpen(true); // Open the edit modal
                         }}
                       >
                         Edit
                       </button>
+
                       <button
                         className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all duration-200"
                         onClick={() => {
