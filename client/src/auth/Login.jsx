@@ -17,7 +17,36 @@ const Login = () => {
 
   const { login, isLoading, error, user } = useLogin(); // Access user from the hook
   const navigate = useNavigate();
-  const { logout } = useContext(AuthContext); // Get logout function from context
+  const { logout, user: contextUser } = useContext(AuthContext); // Get user from context
+
+  useEffect(() => {
+    // If user is already logged in, redirect them to the appropriate dashboard
+    if (contextUser) {
+      switch (contextUser.category.toLowerCase()) {
+        case "printing":
+          navigate("/printing");
+          break;
+        case "fresh-oil":
+          navigate("/fresh-oil");
+          break;
+        case "hardware":
+          navigate("/hardware");
+          break;
+        case "animal-feeding":
+          navigate("/animal-feeding");
+          break;
+        case "godown":
+          navigate("/godown");
+          break;
+        case "stationery":
+          navigate("/stationery");
+          break;
+        default:
+          navigate("/dashboard");
+          break;
+      }
+    }
+  }, [contextUser, navigate]); // Trigger this when contextUser changes
 
   const validate = () => {
     const newErrors = {};
@@ -52,37 +81,6 @@ const Login = () => {
       });
     }
   };
-
-  useEffect(() => {
-    if (user) {
-      console.log("User data after login:", user);
-
-      // Navigate based on user category
-      switch (user.category.toLowerCase()) {
-        case "printing":
-          navigate("/printing");
-          break;
-        case "fresh-oil":
-          navigate("/fresh-oil");
-          break;
-        case "hardware":
-          navigate("/hardware");
-          break;
-        case "animal-feeding":
-          navigate("/animal-feeding");
-          break;
-        case "godown":
-          navigate("/godown");
-          break;
-        case "stationery":
-          navigate("/stationery");
-          break;
-        default:
-          navigate("/dashboard");
-          break;
-      }
-    }
-  }, [user, navigate]); // Triggered when user state is updated
 
   return (
     <>
@@ -164,7 +162,7 @@ const Login = () => {
           </form>
 
           {/* Show logout button if user is logged in */}
-          {user && (
+          {contextUser && (
             <button
               onClick={logout}
               className="mt-4 w-full rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold text-white"

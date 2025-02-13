@@ -42,6 +42,9 @@ export const useLogin = () => {
           })
         );
         localStorage.setItem("authToken", data.token);
+
+        // Force page reload to reflect state changes
+        location.reload(); // This will reload the page
       } else {
         setError(data.message || "Invalid login credentials");
       }
