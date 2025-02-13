@@ -6,7 +6,9 @@ export const useAnimalFeeding = () => {
   const context = useContext(AnimalFeedingContext);
 
   if (!context) {
-    throw new Error("useAnimalFeeding must be used within a AnimalFeedingContextProvider");
+    throw new Error(
+      "useAnimalFeeding must be used within a AnimalFeedingContextProvider"
+    );
   }
 
   return context;

@@ -4,7 +4,6 @@ import Footer from "../../../components/Footer";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getToken } from "../../../services/token";
-import { useAnimalFeeding } from "../../../hooks/animalFeeding/useAnimalFeeding";
 
 const HardwareDetails = () => {
   const { id } = useParams();
@@ -18,7 +17,6 @@ const HardwareDetails = () => {
   const [orderSuccess, setOrderSuccess] = useState(false);
 
   // Get the dispatch function from the context
-  const { dispatch } = useAnimalFeeding();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -41,7 +39,6 @@ const HardwareDetails = () => {
         setTotalPrice(data.price * quantity);
         setLoading(false);
         // Dispatch the action to set the product in the context
-        dispatch({ type: "SET_ANIMAL_FEEDING_PRODUCTS", payload: [data] });
       } catch (error) {
         toast.error(`Error: ${error.message}`);
         setLoading(false);
@@ -49,7 +46,7 @@ const HardwareDetails = () => {
     };
 
     fetchProduct();
-  }, [id, token, quantity, dispatch]);
+  }, [id, token, quantity]);
 
   const handleQuantityChange = (e) => {
     const newQuantity = parseInt(e.target.value);

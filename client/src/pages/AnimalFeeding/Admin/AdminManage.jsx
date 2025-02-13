@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import Footer from "../../../components/Footer";
 import { getToken } from "../../../services/token";
 import "./AdminManage.css";
-import { useAnimalFeeding } from "../../../hooks/animalFeeding/useAnimalFeeding";
 
 const AdminManage = () => {
   const [searchQuery, setSearchQuery] = useState("");

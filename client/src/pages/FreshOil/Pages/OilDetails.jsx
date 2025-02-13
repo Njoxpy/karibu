@@ -4,7 +4,7 @@ import Footer from "../../../components/Footer";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getToken } from "../../../services/token";
-import { useAnimalFeeding } from "../../../hooks/FreshOil/useFreshOil";
+import { useAnimalFeeding } from "../../../hooks/animalFeeding/useAnimalFeeding";
 
 const OilDetails = () => {
   const { id } = useParams();
