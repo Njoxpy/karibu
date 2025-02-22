@@ -7,11 +7,11 @@ function OilLayouts() {
 
   return (
     <>
-      <div className="bg-gradient-to-r from-yellow-700 to-yellow-800 text-white shadow-md">
+      <div className="bg-yellow-600 text-white">
         <header className="container mx-auto flex justify-between items-center p-4">
           {/* Logo/Title */}
           <h2 className="text-2xl font-semibold">
-            <Link to="/fresh-oil">Fresh Oil</Link>
+            <Link to="/fresh-oil/">Fresh Oil</Link>
           </h2>
 
           {/* Mobile Menu Button */}
@@ -42,7 +42,7 @@ function OilLayouts() {
                   to="/fresh-oil/admin/upload"
                   className="hover:text-yellow-200 transition-colors duration-200"
                 >
-                  Food Upload
+                  Oil Upload
                 </Link>
               </li>
               <li>
@@ -66,7 +66,7 @@ function OilLayouts() {
                   to="/fresh-oil/admin/manage"
                   className="hover:text-yellow-200 transition-colors duration-200"
                 >
-                  Manage Food
+                  Manage Oil
                 </Link>
               </li>
             </ul>
@@ -92,7 +92,7 @@ function OilLayouts() {
                   onClick={() => setIsMenuOpen(false)}
                   className="block py-2 hover:bg-yellow-700 px-4 rounded transition-colors duration-200"
                 >
-                  Food Upload
+                  Oil Upload
                 </Link>
               </li>
               <li>
@@ -101,7 +101,7 @@ function OilLayouts() {
                   onClick={() => setIsMenuOpen(false)}
                   className="block py-2 hover:bg-yellow-700 px-4 rounded transition-colors duration-200"
                 >
-                  Manage Food
+                  Manage Oil
                 </Link>
               </li>
               <li>
