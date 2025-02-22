@@ -11,7 +11,7 @@ function AnimalFeedingLayout() {
         <header className="container mx-auto flex justify-between items-center p-4">
           {/* Logo/Title */}
           <h2 className="text-2xl font-semibold">
-            <Link to="/animal-feeding">Animal Feeding</Link>
+            <Link to="/animal-feeding/">Animal Feeding</Link>
           </h2>
 
           {/* Mobile Menu Button */}
