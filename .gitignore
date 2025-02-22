@@ -57,3 +57,6 @@ me.js
 products_bulk_upload.xlsx
 
 .env
+
+# secrets
+/secrets

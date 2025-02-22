@@ -3,12 +3,13 @@ const express = require("express");
 const path = require("path");
 const cors = require("cors");
 const helmet = require("helmet");
+const compression = require("compression");
 const morgan = require("morgan");
+const rateLimit = require("express-rate-limit");
 const session = require("express-session");
-// const rateLimit = require("express-rate-limit");
 const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
-const timeout = require("connect-timeout"); // Import timeout middleware
+const timeout = require("connect-timeout");
 
 // ROUTES IMPORT
 const animalFeedingRoutes = require("./routes/animalFeeding.routes");
@@ -20,65 +21,61 @@ const hardwareRoutes = require("./routes/hardware.routes");
 const stationeryRoutes = require("./routes/stationery.routes");
 
 // Logger import
-const logger = require("./logs/logger"); // Update with the correct path
+const logger = require("./logs/logger");
 
-// database
+// Database connection
 const connectDB = require("./config/DB");
 
-// express app
+// Express app
 const app = express();
 
-// Use the logger middleware (logs each request)
-app.use(logger);
+// Middleware
+app.use(morgan("combined")); // Logger
+app.use(express.json());
+app.use(timeout("30s")); // Request timeout
 
-app.use(cors());
+// Handle timeout
+function haltOnTimeout(req, res, next) {
+  if (!req.timedOut) next();
+  else res.status(408).json({ error: "Request timed out" });
+}
+app.use(haltOnTimeout);
+
+// CORS Configuration
+const allowedOrigins = ["http://localhost:5173", "https://yourfrontend.com"];
 
 app.use(
   cors({
-    origin: "http://localhost:5174", // Allow only frontend from localhost:5173
-  })
-);
-
-app.use(
-  "/uploads",
-  express.static(path.join(__dirname, "uploads"), {
-    setHeaders: (res, path) => {
-      res.set("Cross-Origin-Resource-Policy", "cross-origin");
-    },
+    origin: allowedOrigins,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
   })
 );
 
 app.use(helmet());
+app.use(compression());
 
-// Update CORS configuration
 app.use(
-  cors({
-    origin:
-      process.env.NODE_ENV === "production"
-        ? process.env.ALLOWED_ORIGIN
-        : "http://localhost:5173",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true, // Enable if using cookies/sessions
-    maxAge: 86400, // Cache preflight requests for 24 hours
+  session({
+    secret: process.env.SESSION_SECRET || "default_secret",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 60 * 60 * 1000, // 1 hour
+    },
   })
 );
 
+// Serve static files
 app.use(
-  cors({
-    origin: "http://localhost:5173", // Allow only this origin
-    methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
-    credentials: true, // Allow cookies and credentials
+  "/uploads",
+  express.static(path.join(__dirname, "uploads"), {
+    setHeaders: (res) => {
+      res.set("Cross-Origin-Resource-Policy", "cross-origin");
+    },
   })
 );
-
-app.use(express.json());
-
-// Add timeout middleware (30 seconds timeout)
-app.use(timeout("30s")); // 30 seconds timeout
-app.use(haltOnTimeout); // Optional: handle timeout
-
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Swagger setup
 const options = {
@@ -100,45 +97,17 @@ const options = {
 };
 
 const swaggerSpec = swaggerJsdoc(options);
-
-// Serve Swagger UI
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(err.status || 500).json({
-    error: err.message || "Internal Server Error",
-    stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
-  });
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per window
+  message: "Too many requests, please try again later.",
 });
 
-// const limiter = rateLimit({
-//   windowMs: 15 * 60 * 1000,
-//   limit: 100,
-//   standardHeaders: "draft-8",
-//   legacyHeaders: false,
-// });
+app.use(limiter);
 
-// middleware
-app.use(morgan("dev"));
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    resave: false,
-    cookie: {
-      maxAge: 60000 * 60,
-    },
-  })
-);
-// app.use(limiter);
-
-app.get("/", (req, res) => {
-  res.json("hello world from savarrah");
-  console.log(req.session);
-});
-// register routes
+// Routes
 app.use("/api/v1/animal-feeding", animalFeedingRoutes);
 app.use("/api/v1/fresh-oil", freshOilRoutes);
 app.use("/api/v1/godown", godownRoutes);
@@ -147,22 +116,25 @@ app.use("/api/v1/printing", printingRoutes);
 app.use("/api/v1/stationery", stationeryRoutes);
 app.use("/api/v1/users", userRoutes);
 
+// 404 Handler
 app.use("*", (req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
 
-// Logs will be written to logs/file-YYYY-MM-DD.log
-
-// connect to DB
-connectDB();
-
-// listen requests
-app.listen(process.env.PORT, () => {
-  console.log(`Listening http://localhost:${process.env.PORT}/`);
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(err.status || 500).json({
+    error: err.message || "Internal Server Error",
+    stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
+  });
 });
 
-// Helper function to handle timeouts
-function haltOnTimeout(req, res, next) {
-  if (!req.timedOut) next();
-  else res.status(408).json({ error: "Request timed out" });
-}
+// Connect to DB
+connectDB();
+
+// Start Server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Listening on http://localhost:${PORT}/`);
+});
