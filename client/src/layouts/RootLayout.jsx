@@ -53,6 +53,7 @@ const RootLayout = () => {
     ...(user?.category === "printing"
       ? [{ name: "Printing", path: "/printing" }]
       : []),
+    ...(user?.role === "admin" ? [{ name: "Admin", path: "/admin" }] : []),
     ...(user?.category === "freshOil"
       ? [{ name: "Fresh Oil", path: "/fresh-oil" }]
       : []),
@@ -66,6 +67,7 @@ const RootLayout = () => {
     { name: "Hardware", path: "/hardware" },
     { name: "Printing", path: "/printing" },
     { name: "Stationery", path: "/stationery" },
+    { name: "Admin", path: "/admin" },
   ];
 
   // Combine all menu items based on user role

@@ -213,6 +213,22 @@ const OrderItemGodown = () => {
                     {selectedProduct.description}
                   </p>
                 </div>
+                <div className="bg-blue-50 p-4 rounded-xl">
+                  <label className="text-sm text-blue-500 block mb-1">
+                    Location
+                  </label>
+                  <p className="text-lg font-semibold text-blue-700">
+                    {selectedProduct.location}
+                  </p>
+                </div>
+                <div className="bg-blue-50 p-4 rounded-xl">
+                  <label className="text-sm text-blue-500 block mb-1">
+                    Price
+                  </label>
+                  <p className="text-lg font-semibold text-blue-700">
+                    {selectedProduct.price}
+                  </p>
+                </div>
               </div>
             )}
 

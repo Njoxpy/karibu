@@ -87,27 +87,29 @@ const FoodsBody = () => {
     );
   }
 
+  if (!Array.isArray(products) || products.length === 0) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-green-50 to-green-100">
+        <div className="text-gray-500 text-lg font-medium shadow-lg p-6 rounded-lg bg-white">
+          No products available at the moment
+        </div>
+      </div>
+    );
+  }
+
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-green-50 to-green-100">
         <div className="bg-white p-6 rounded-lg shadow-lg">
-          <p className="text-red-500 text-lg font-medium">Error: {error}</p>
+          <p className="text-red-500 text-lg font-medium">
+            Error: No Product found!
+          </p>
           <button
             onClick={() => window.location.reload()}
             className="mt-4 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
           >
             Retry
           </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (!Array.isArray(products) || products.length === 0) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-green-50 to-green-100">
-        <div className="text-gray-500 text-lg font-medium shadow-lg p-6 rounded-lg bg-white">
-          No products available at the moment
         </div>
       </div>
     );

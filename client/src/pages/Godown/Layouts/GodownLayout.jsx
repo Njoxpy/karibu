@@ -33,7 +33,7 @@ function AnimalFeedingLayout() {
           <div className="flex justify-between items-center py-4">
             <h2 className="text-3xl font-bold tracking-tight">
               <Link
-                to="/godown"
+                to="/godown/"
                 className="hover:text-blue-200 transition-colors duration-200"
               >
                 Godown

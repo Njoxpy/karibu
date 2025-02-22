@@ -32,6 +32,14 @@ function StationeryLayout() {
               <li>
                 <Link
                   className="hover:text-blue-200 transition-colors duration-200"
+                  to="/stationery/"
+                >
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="hover:text-blue-200 transition-colors duration-200"
                   to="/stationery/admin/upload"
                 >
                   Item Upload
@@ -69,6 +77,15 @@ function StationeryLayout() {
         {isMenuOpen && (
           <nav className="lg:hidden bg-blue-700 p-4 space-y-4">
             <ul className="flex flex-col space-y-4">
+              <li>
+                <Link
+                  className="hover:text-blue-200 transition-colors duration-200"
+                  to="/stationery/"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Home
+                </Link>
+              </li>
               <li>
                 <Link
                   className="hover:text-blue-200 transition-colors duration-200"
