@@ -1,9 +1,16 @@
 import { Outlet, Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { AuthContext } from "../../../context/auth/AuthContext"; // Assuming you have an AuthContext
 
 function StationeryLayout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, isLoading } = useContext(AuthContext); // Access user info from context
+
+  // Loading state: show a spinner or a message if user data is still loading
+  if (isLoading) {
+    return <div>Loading...</div>; // You can replace this with a spinner or skeleton loader
+  }
 
   return (
     <>
@@ -40,14 +47,6 @@ function StationeryLayout() {
               <li>
                 <Link
                   className="hover:text-blue-200 transition-colors duration-200"
-                  to="/stationery/admin/upload"
-                >
-                  Item Upload
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="hover:text-blue-200 transition-colors duration-200"
                   to="/stationery/order-item"
                 >
                   Order Item
@@ -61,14 +60,28 @@ function StationeryLayout() {
                   Orders
                 </Link>
               </li>
-              <li>
-                <Link
-                  className="hover:text-blue-200 transition-colors duration-200"
-                  to="/stationery/admin/manage"
-                >
-                  Manage Items
-                </Link>
-              </li>
+
+              {/* Admin Links (Only if user is admin) */}
+              {user && user.role === "admin" && (
+                <>
+                  <li>
+                    <Link
+                      className="hover:text-blue-200 transition-colors duration-200"
+                      to="/stationery/admin/upload"
+                    >
+                      Item Upload
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      className="hover:text-blue-200 transition-colors duration-200"
+                      to="/stationery/admin/manage"
+                    >
+                      Manage Items
+                    </Link>
+                  </li>
+                </>
+              )}
             </ul>
           </nav>
         </header>
@@ -89,15 +102,6 @@ function StationeryLayout() {
               <li>
                 <Link
                   className="hover:text-blue-200 transition-colors duration-200"
-                  to="/stationery/admin/upload"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Item Upload
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="hover:text-blue-200 transition-colors duration-200"
                   to="/stationery/order-item"
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -113,15 +117,30 @@ function StationeryLayout() {
                   Orders
                 </Link>
               </li>
-              <li>
-                <Link
-                  className="hover:text-blue-200 transition-colors duration-200"
-                  to="/stationery/admin/manage"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Manage Items
-                </Link>
-              </li>
+
+              {/* Admin Links for Mobile */}
+              {user && user.role === "admin" && (
+                <>
+                  <li>
+                    <Link
+                      className="hover:text-blue-200 transition-colors duration-200"
+                      to="/stationery/admin/upload"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Item Upload
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      className="hover:text-blue-200 transition-colors duration-200"
+                      to="/stationery/admin/manage"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Manage Items
+                    </Link>
+                  </li>
+                </>
+              )}
             </ul>
           </nav>
         )}

@@ -1,7 +1,9 @@
-import { Outlet, Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { AuthContext } from "../../../context/auth/AuthContext"; // Adjust the import path
+import { Link, Outlet } from "react-router-dom";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
+// NavLink component for better reusability
 const NavLink = ({ to, children, onClick }) => (
   <Link
     to={to}
@@ -13,18 +15,26 @@ const NavLink = ({ to, children, onClick }) => (
 );
 
 function AnimalFeedingLayout() {
+  const { user } = useContext(AuthContext); // Get user from context
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  // Base navigation items for everyone
   const navItems = [
     { path: "/godown/", label: "Home" },
-    { path: "/godown/admin/upload", label: "Item Upload" },
-    { path: "/godown/admin/bulk-upload", label: "Bulk Upload" },
     { path: "/godown/order-item", label: "Order Item" },
     { path: "/godown/orders", label: "Orders" },
-    { path: "/godown/admin/move", label: "Move" },
-    { path: "/godown/admin/manage", label: "Manage Godown" },
-    { path: "/godown/admin/movement-logs", label: "Movement Logs" },
   ];
+
+  // Admin-specific navigation items
+  if (user?.role === "admin") {
+    navItems.push(
+      { path: "/godown/admin/upload", label: "Item Upload" },
+      { path: "/godown/admin/bulk-upload", label: "Bulk Upload" },
+      { path: "/godown/admin/move", label: "Move" },
+      { path: "/godown/admin/manage", label: "Manage Godown" },
+      { path: "/godown/admin/movement-logs", label: "Movement Logs" }
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">

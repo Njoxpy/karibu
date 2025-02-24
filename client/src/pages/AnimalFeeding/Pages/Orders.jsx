@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Footer from "../../../components/Footer";
+import { AuthContext } from "../../../context/auth/AuthContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getToken } from "../../../services/token";
@@ -22,10 +23,13 @@ const Orders = () => {
   const [orderToDelete, setOrderToDelete] = useState(null);
   const [filter, setFilter] = useState("all"); // Default filter is "all"
   const [newQuantity, setNewQuantity] = useState(1);
+  const { user, isLoading } = useContext(AuthContext);
 
   // token
   const token = getToken();
-
+  if (isLoading) {
+    return <div>Loading...</div>; // You can replace this with a spinner or skeleton loader
+  }
   // Get the dispatch function from the context
   const { orders: contextOrders, dispatch } = useAnimalFeeding();
 
@@ -330,18 +334,22 @@ const Orders = () => {
                           Tsh {order.total}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                          <button
-                            onClick={() => openEditModal(order)}
-                            className="text-green-700 hover:text-green-900 bg-green-100 hover:bg-green-200 px-3 py-1 rounded-lg transition-colors duration-200"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => openDeleteModal(order._id)}
-                            className="text-red-600 hover:text-red-900 bg-red-100 hover:bg-red-200 px-3 py-1 rounded-lg transition-colors duration-200"
-                          >
-                            Delete
-                          </button>
+                          {user && user.role === "admin" && (
+                            <div>
+                              <button
+                                onClick={() => openEditModal(order)}
+                                className="text-green-700 hover:text-green-900 bg-green-100 hover:bg-green-200 px-3 py-1 rounded-lg transition-colors duration-200"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => openDeleteModal(order._id)}
+                                className="text-red-600 hover:text-red-900 bg-red-100 hover:bg-red-200 px-3 py-1 rounded-lg transition-colors duration-200"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          )}
                           <Link
                             to={`/animal-feeding/orders/${order._id}`}
                             className="text-green-700 hover:text-green-900 bg-green-100 hover:bg-green-200 px-3 py-1 rounded-lg transition-colors duration-200"

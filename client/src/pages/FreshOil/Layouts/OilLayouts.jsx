@@ -1,20 +1,34 @@
-import { Outlet, Link } from "react-router-dom";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { AuthContext } from "../../../context/auth/AuthContext"; // Adjust the import based on your file structure
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { Link } from "react-router-dom";
 
 function OilLayouts() {
+  const { user } = useContext(AuthContext); // Get the user from AuthContext
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const navItems = [
+    { path: "/fresh-oil/", label: "Home" },
+    { path: "/fresh-oil/order-item", label: "Order Item" },
+    { path: "/fresh-oil/orders", label: "Orders" },
+  ];
+
+  // Admin-specific items will only be added for admins
+  if (user.role === "admin") {
+    navItems.push(
+      { path: "/fresh-oil/admin/upload", label: "Oil Upload" },
+      { path: "/fresh-oil/admin/manage", label: "Manage Oil" }
+    );
+  }
 
   return (
     <>
       <div className="bg-yellow-600 text-white">
         <header className="container mx-auto flex justify-between items-center p-4">
-          {/* Logo/Title */}
           <h2 className="text-2xl font-semibold">
             <Link to="/fresh-oil/">Fresh Oil</Link>
           </h2>
 
-          {/* Mobile Menu Button */}
           <button
             className="lg:hidden p-2"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -29,46 +43,16 @@ function OilLayouts() {
           {/* Navigation Links for Desktop */}
           <nav className="hidden lg:flex space-x-6">
             <ul className="flex space-x-6">
-              <li>
-                <Link
-                  to="/fresh-oil/"
-                  className="hover:text-yellow-200 transition-colors duration-200"
-                >
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/fresh-oil/admin/upload"
-                  className="hover:text-yellow-200 transition-colors duration-200"
-                >
-                  Oil Upload
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/fresh-oil/order-item"
-                  className="hover:text-yellow-200 transition-colors duration-200"
-                >
-                  Order Item
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/fresh-oil/orders"
-                  className="hover:text-yellow-200 transition-colors duration-200"
-                >
-                  Orders
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/fresh-oil/admin/manage"
-                  className="hover:text-yellow-200 transition-colors duration-200"
-                >
-                  Manage Oil
-                </Link>
-              </li>
+              {navItems.map(({ path, label }) => (
+                <li key={path}>
+                  <Link
+                    to={path}
+                    className="hover:text-yellow-200 transition-colors duration-200"
+                  >
+                    {label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </nav>
         </header>
@@ -77,51 +61,17 @@ function OilLayouts() {
         {isMenuOpen && (
           <nav className="lg:hidden bg-yellow-600 p-4 space-y-4">
             <ul className="flex flex-col space-y-4">
-              <li>
-                <Link
-                  to="/fresh-oil/"
-                  className="hover:text-yellow-200 transition-colors duration-200"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/fresh-oil/admin/upload"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="block py-2 hover:bg-yellow-700 px-4 rounded transition-colors duration-200"
-                >
-                  Oil Upload
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/fresh-oil/admin/manage"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="block py-2 hover:bg-yellow-700 px-4 rounded transition-colors duration-200"
-                >
-                  Manage Oil
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/fresh-oil/order-item"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="block py-2 hover:bg-yellow-700 px-4 rounded transition-colors duration-200"
-                >
-                  Order Item
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/fresh-oil/orders"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="block py-2 hover:bg-yellow-700 px-4 rounded transition-colors duration-200"
-                >
-                  Orders
-                </Link>
-              </li>
+              {navItems.map(({ path, label }) => (
+                <li key={path}>
+                  <Link
+                    to={path}
+                    className="hover:text-yellow-200 transition-colors duration-200"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </nav>
         )}

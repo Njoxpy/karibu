@@ -1,9 +1,15 @@
 import { Outlet, Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { AuthContext } from "../../../context/auth/AuthContext"; // Assuming you have an AuthContext
 
 function HardwareLayout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, isLoading } = useContext(AuthContext); // Access user info from context
+
+  if (isLoading) {
+    return <div>Loading...</div>; // Display loading state while the user data is being fetched
+  }
 
   return (
     <>
@@ -40,14 +46,6 @@ function HardwareLayout() {
               <li>
                 <Link
                   className="hover:text-blue-200 transition-colors duration-200"
-                  to="/hardware/admin/upload"
-                >
-                  Hardware Upload
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="hover:text-blue-200 transition-colors duration-200"
                   to="/hardware/order-item"
                 >
                   Order Item
@@ -61,14 +59,28 @@ function HardwareLayout() {
                   Orders
                 </Link>
               </li>
-              <li>
-                <Link
-                  className="hover:text-blue-200 transition-colors duration-200"
-                  to="/hardware/admin/manage"
-                >
-                  Manage
-                </Link>
-              </li>
+
+              {/* Admin Links (Only if user is admin) */}
+              {user && user.role === "admin" && (
+                <>
+                  <li>
+                    <Link
+                      className="hover:text-blue-200 transition-colors duration-200"
+                      to="/hardware/admin/upload"
+                    >
+                      Hardware Upload
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      className="hover:text-blue-200 transition-colors duration-200"
+                      to="/hardware/admin/manage"
+                    >
+                      Manage
+                    </Link>
+                  </li>
+                </>
+              )}
             </ul>
           </nav>
         </header>
@@ -89,15 +101,6 @@ function HardwareLayout() {
               <li>
                 <Link
                   className="hover:text-blue-200 transition-colors duration-200"
-                  to="/hardware/admin/upload"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Hardware Upload
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="hover:text-blue-200 transition-colors duration-200"
                   to="/hardware/order-item"
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -113,15 +116,30 @@ function HardwareLayout() {
                   Orders
                 </Link>
               </li>
-              <li>
-                <Link
-                  className="hover:text-blue-200 transition-colors duration-200"
-                  to="/hardware/admin/manage"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Manage
-                </Link>
-              </li>
+
+              {/* Admin Links for Mobile */}
+              {user && user.role === "admin" && (
+                <>
+                  <li>
+                    <Link
+                      className="hover:text-blue-200 transition-colors duration-200"
+                      to="/hardware/admin/upload"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Hardware Upload
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      className="hover:text-blue-200 transition-colors duration-200"
+                      to="/hardware/admin/manage"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Manage
+                    </Link>
+                  </li>
+                </>
+              )}
             </ul>
           </nav>
         )}

@@ -15,7 +15,7 @@ const Login = () => {
     general: "",
   });
 
-  const { login, isLoading, error, user } = useLogin(); // Access user from the hook
+  const { login, isLoading, error } = useLogin(); // Access user from the hook
   const navigate = useNavigate();
   const { logout, user: contextUser } = useContext(AuthContext); // Get user from context
 

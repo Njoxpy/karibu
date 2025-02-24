@@ -1,34 +1,26 @@
+import { useContext } from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "../hooks/auth/useAuth";
+import { AuthContext } from "../context/auth/AuthContext";
 
-const ProtectedRoute = ({
-  allowedRoles,
-  allowedCategories,
-  categorySpecific = false,
-}) => {
-  const { user, isAdmin, hasAccess } = useAuth();
+const ProtectedRoute = ({ allowedRoles, allowedCategories }) => {
+  const { user } = useContext(AuthContext);
 
-  // If the user is not authenticated, redirect to the login page
   if (!user) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" replace />;
   }
 
-  // Check if the user's role is allowed
-  if (allowedRoles && !allowedRoles.includes(user.role)) {
-    return <Navigate to="/unauthorized" />;
+  // Admin can access any route
+  if (user.role === "admin") {
+    return <Outlet />;
   }
 
-  // If category-specific route, check if the user has access to that category
-  if (
-    categorySpecific &&
-    allowedCategories &&
-    !allowedCategories.some((cat) => hasAccess(cat))
-  ) {
-    return <Navigate to="/unauthorized" />;
+  // Check if the user's category is allowed
+  if (allowedCategories && allowedCategories.includes(user.category)) {
+    return <Outlet />;
   }
 
-  // User is authorized, render the children route components
-  return <Outlet />;
+  // Redirect user to their category page if they try accessing an unauthorized page
+  return <Navigate to={`/${user.category}`} replace />;
 };
 
 export default ProtectedRoute;

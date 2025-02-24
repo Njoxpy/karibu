@@ -1,4 +1,5 @@
 import { useForm } from "react-hook-form";
+import { Facebook, Instagram, MessageCircle } from "lucide-react";
 
 const Contact = () => {
   const {
@@ -8,14 +9,13 @@ const Contact = () => {
   } = useForm();
 
   const onSubmit = (data) => {
-    // Here you can handle the form submission (e.g., send the data to the backend)
     console.log("Form submitted", data);
   };
 
   return (
     <section className="px-4 py-8 max-w-7xl mx-auto" id="contact">
       <div className="grid sm:grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Fomu ya Mawasiliano */}
+        {/* Contact Form */}
         <div className="bg-white p-8 rounded-lg shadow-lg">
           <h2 className="text-2xl font-semibold text-gray-800">
             Wasiliana Nasi
@@ -50,6 +50,7 @@ const Contact = () => {
                   </p>
                 )}
               </div>
+
               <div>
                 <label
                   htmlFor="email"
@@ -79,6 +80,7 @@ const Contact = () => {
                   </p>
                 )}
               </div>
+
               <div>
                 <label
                   htmlFor="message"
@@ -102,6 +104,7 @@ const Contact = () => {
                   </p>
                 )}
               </div>
+
               <div>
                 <button
                   type="submit"
@@ -112,9 +115,37 @@ const Contact = () => {
               </div>
             </div>
           </form>
+
+          {/* Social Media Links */}
+          <div className="mt-6 flex justify-center space-x-4">
+            <a
+              href="https://www.facebook.com/savarah.printers/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-600 hover:text-blue-600"
+            >
+              <Facebook size={28} />
+            </a>
+            <a
+              href="https://www.instagram.com/savarrah_printers/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-600 hover:text-pink-500"
+            >
+              <Instagram size={28} />
+            </a>
+            <a
+              href="https://wa.me/+255755172303"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-600 hover:text-green-500"
+            >
+              <MessageCircle size={28} />
+            </a>
+          </div>
         </div>
 
-        {/* Ramani ya Google */}
+        {/* Google Map */}
         <div className="bg-white p-8 rounded-lg shadow-lg">
           <h2 className="text-2xl font-semibold text-gray-800">Tupate Hapa</h2>
           <p className="mt-2 text-gray-600">Ofisi yetu iko hapa:</p>
