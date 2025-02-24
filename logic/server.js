@@ -30,7 +30,7 @@ const connectDB = require("./config/DB");
 const app = express();
 
 // Middleware
-app.use(morgan("combined")); // Logger
+app.use(morgan("dev")); // Logger
 app.use(express.json());
 app.use(timeout("30s")); // Request timeout
 
@@ -42,16 +42,19 @@ function haltOnTimeout(req, res, next) {
 app.use(haltOnTimeout);
 
 // CORS Configuration
-const allowedOrigins = ["http://localhost:5173", "https://yourfrontend.com"];
+// const allowedOrigins = ["http://localhost:5173", "https://yourfrontend.com"];
 
 app.use(
   cors({
-    origin: allowedOrigins,
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: ["http://localhost:5173", "https://yourfrontend.com"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Include OPTIONS
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
+
+// Manually handle preflight (OPTIONS request)
+app.options("*", cors());
 
 app.use(helmet());
 app.use(compression());
