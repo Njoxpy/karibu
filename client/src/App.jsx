@@ -77,7 +77,6 @@ import GodownOrderDetailsError from "./pages/Godown/Error/GodownOrderDetailsErro
 /*printing */
 // printing pages
 import HomePrinting from "./pages/Printing/Pages/HomePrinting";
-import PrintingOrders from "./pages/Printing/Pages/PrintingOrders";
 // printing details
 // printing layout
 import PrintingLayout from "./pages/Printing/Layouts/PrintingLayout";
@@ -137,12 +136,11 @@ import ProductsMovement from "./pages/Godown/Pages/movement/Product";
 import ProductsMovementDetails from "./pages/Godown/Pages/movement/ProductMovementDetails";
 import MovementLogs from "./pages/Godown/Pages/movement/MovementLogs";
 
-import ProtectedRoute from "./auth/ProtectedRoute";
 import RevenueDashboard from "./pages/admin/pages/RevenueDashboard";
-import OrdersCostDashboard from "./pages/admin/pages/OrdersCostDashboard";
 import Support from "./pages/admin/pages/Support";
 import Settings from "./pages/admin/pages/Settings";
 import { useAuth } from "./hooks/auth/useAuth";
+import ProtectedRoute from "./auth/ProtectedRoute";
 
 // auth
 
@@ -153,16 +151,18 @@ export default function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route>
-        <Route path="admin/*" element={<DashboardLayout />}>
-          <Route index element={<DashboardHome />} />
-          <Route path="dashboard" element={<DashboardHome />} />
-          <Route path="users" element={<UsersPage />} />
-          <Route path="users/create" element={<AddUserPage />} />
-          <Route path="settings" element={<Settings />} />
-          <Route path="reports" element={<ReportsPage />} />
-          <Route path="support" element={<Support />} />
+        <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+          <Route path="admin/*" element={<DashboardLayout />}>
+            <Route index element={<DashboardHome />} />
+            <Route path="dashboard" element={<DashboardHome />} />
+            <Route path="users" element={<UsersPage />} />
+            <Route path="users/create" element={<AddUserPage />} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="reports" element={<ReportsPage />} />
+            <Route path="support" element={<Support />} />
 
-          <Route path="revenue" element={<RevenueDashboard />} />
+            <Route path="revenue" element={<RevenueDashboard />} />
+          </Route>
         </Route>
         <Route path="/" element={<RootLayout />}>
           <Route index element={<Home />} />
@@ -174,129 +174,148 @@ export default function App() {
           <Route path="/profile" element={<UserProfile />} />
 
           {/* animal feeding */}
-          <Route path="/animal-feeding" element={<AnimalFeedingLayout />}>
-            <Route index element={<AnimalFeeding />} />
+          <Route
+            element={<ProtectedRoute allowedCategories={["animal-feeding"]} />}
+          >
+            <Route path="/animal-feeding" element={<AnimalFeedingLayout />}>
+              <Route index element={<AnimalFeeding />} />
 
-            <Route path="products" element={<AnimalFeedingProductsLayout />}>
-              <Route index element={<FoodsBody />} />
+              <Route path="products" element={<AnimalFeedingProductsLayout />}>
+                <Route index element={<FoodsBody />} />
+                <Route
+                  path=":id"
+                  element={<ProductDetail />}
+                  errorElement={<ErrorPage />}
+                />
+              </Route>
+              <Route path="order-item" element={<OrderItemAnimalFeeding />} />
+              <Route path="orders" element={<Orders />} />
               <Route
-                path=":id"
-                element={<ProductDetail />}
-                errorElement={<ErrorPage />}
+                path="orders/:id"
+                element={<OrderDetailsAnimal />}
+                errorElement={<AnimalFeedingOrderDetailsError />}
               />
+              <Route path="admin/upload" element={<FoodUpload />} />
+              <Route path="admin/manage" element={<ManageFood />} />
             </Route>
-            <Route path="order-item" element={<OrderItemAnimalFeeding />} />
-            <Route path="orders" element={<Orders />} />
-            <Route
-              path="orders/:id"
-              element={<OrderDetailsAnimal />}
-              errorElement={<AnimalFeedingOrderDetailsError />}
-            />
-            <Route path="admin/upload" element={<FoodUpload />} />
-            <Route path="admin/manage" element={<ManageFood />} />
           </Route>
 
           {/* fresh oil */}
-          <Route path="/fresh-oil" element={<OilLayouts />}>
-            <Route index element={<OilList />} />
-            <Route path="products" element={<OilLayoutProduct />}>
-              <Route index element={<Oils />} />
+          <Route element={<ProtectedRoute allowedCategories={["fresh-oil"]} />}>
+            <Route path="/fresh-oil" element={<OilLayouts />}>
+              <Route index element={<OilList />} />
+              <Route path="products" element={<OilLayoutProduct />}>
+                <Route index element={<Oils />} />
+                <Route
+                  path=":id"
+                  element={<OilDetails />}
+                  errorElement={<OilDetailsError />}
+                />
+              </Route>
+              <Route path="orders" element={<FreshOilOrders />} />
               <Route
-                path=":id"
-                element={<OilDetails />}
-                errorElement={<OilDetailsError />}
+                path="orders/:id"
+                element={<FreshOilOrdersDetails />}
+                errorElement={<FreshOilOrderDetailsError />}
               />
+              <Route path="order-item" element={<OrderItem />} />
+              <Route path="admin/upload" element={<UploadFreshOil />} />
+              <Route path="admin/manage" element={<ManagFreshOil />} />
             </Route>
-            <Route path="orders" element={<FreshOilOrders />} />
-            <Route
-              path="orders/:id"
-              element={<FreshOilOrdersDetails />}
-              errorElement={<FreshOilOrderDetailsError />}
-            />
-            <Route path="order-item" element={<OrderItem />} />
-            <Route path="admin/upload" element={<UploadFreshOil />} />
-            <Route path="admin/manage" element={<ManagFreshOil />} />
           </Route>
 
           {/* godown */}
-          <Route path="/godown" element={<GodownLayout />}>
-            <Route index element={<Godown />} />
-            <Route path="products" element={<GodownLayoutProduct />}>
-              <Route index element={<InventoryTable />} />
+          <Route element={<ProtectedRoute allowedCategories={["godown"]} />}>
+            <Route path="/godown" element={<GodownLayout />}>
+              <Route index element={<Godown />} />
+              <Route path="products" element={<GodownLayoutProduct />}>
+                <Route index element={<InventoryTable />} />
+                <Route
+                  path=":id"
+                  element={<GodownProductDetails />}
+                  errorElement={<GodownItemsDetailsError />}
+                />
+              </Route>
+              <Route path="orders" element={<GodownOrders />} />
               <Route
-                path=":id"
-                element={<GodownProductDetails />}
-                errorElement={<GodownItemsDetailsError />}
+                path="orders/:id"
+                element={<GodownOrderDetails />}
+                errorElement={<GodownOrderDetailsError />}
               />
-            </Route>
-            <Route path="orders" element={<GodownOrders />} />
-            <Route
-              path="orders/:id"
-              element={<GodownOrderDetails />}
-              errorElement={<GodownOrderDetailsError />}
-            />
-            <Route path="order-item" element={<OrderItemGodown />} />
-            <Route path="admin/upload" element={<UploadGodownItems />} />
-            <Route path="admin/bulk-upload" element={<BulkUploadGodown />} />
-            <Route path="admin/manage" element={<ManageGodownItems />} />
-            <Route path="admin/movement-logs" element={<MovementLogs />} />
-            <Route path="admin/move">
-              <Route index element={<ProductsMovement />} />{" "}
-              <Route path=":id" element={<ProductsMovementDetails />} />{" "}
+              <Route path="order-item" element={<OrderItemGodown />} />
+              <Route path="admin/upload" element={<UploadGodownItems />} />
+              <Route path="admin/bulk-upload" element={<BulkUploadGodown />} />
+              <Route path="admin/manage" element={<ManageGodownItems />} />
+              <Route path="admin/movement-logs" element={<MovementLogs />} />
+              <Route path="admin/move">
+                <Route index element={<ProductsMovement />} />{" "}
+                <Route path=":id" element={<ProductsMovementDetails />} />{" "}
+              </Route>
             </Route>
           </Route>
 
           {/* hardware */}
-          <Route path="/hardware" element={<HardwareLayout />}>
-            <Route index element={<Hardware />} />
-            <Route path="products" element={<HardwareLayoutProducts />}>
-              <Route index element={<Hardwares />} />
-              <Route path=":id" element={<HardWareDetails />} />
+          <Route element={<ProtectedRoute allowedCategories={["hardware"]} />}>
+            <Route path="/hardware" element={<HardwareLayout />}>
+              <Route index element={<Hardware />} />
+              <Route path="products" element={<HardwareLayoutProducts />}>
+                <Route index element={<Hardwares />} />
+                <Route path=":id" element={<HardWareDetails />} />
+              </Route>
+              <Route path="orders" element={<HardwareOrders />} />
+              <Route
+                path="orders/:id"
+                element={<HardWareOrdersDetails />}
+                errorElement={<HardwareDetailsError />}
+              />
+              <Route path="order-item" element={<OrderItemHardware />} />
+              <Route path="admin/upload" element={<HardwareItemsUpload />} />
+              <Route path="admin/manage" element={<ManageHardwareProducts />} />
             </Route>
-            <Route path="orders" element={<HardwareOrders />} />
-            <Route
-              path="orders/:id"
-              element={<HardWareOrdersDetails />}
-              errorElement={<HardwareDetailsError />}
-            />
-            <Route path="order-item" element={<OrderItemHardware />} />
-            <Route path="admin/upload" element={<HardwareItemsUpload />} />
-            <Route path="admin/manage" element={<ManageHardwareProducts />} />
           </Route>
 
           {/* printing */}
-          <Route path="/printing" element={<PrintingLayout />}>
-            <Route index element={<HomePrinting />} />
-            <Route path="orders" element={<OrdersLayout />}>
-              <Route index element={<OrdersTable />} />
-              <Route
-                path=":id"
-                element={<OrderDetails />}
-                errorElement={<OrderDetailsError />}
-              />
+          <Route element={<ProtectedRoute allowedCategories={["printing"]} />}>
+            <Route path="/printing" element={<PrintingLayout />}>
+              <Route index element={<HomePrinting />} />
+              <Route path="orders" element={<OrdersLayout />}>
+                <Route index element={<OrdersTable />} />
+                <Route
+                  path=":id"
+                  element={<OrderDetails />}
+                  errorElement={<OrderDetailsError />}
+                />
+              </Route>
             </Route>
           </Route>
 
           {/* stationery */}
-          <Route path="/stationery" element={<StationeryLayout />}>
-            <Route index element={<StationeryItemsList />} />
-            <Route path="products" element={<StationeryProductsLayout />}>
-              <Route index element={<StationeryBody />} />
+          <Route
+            element={<ProtectedRoute allowedCategories={["stationery"]} />}
+          >
+            <Route path="/stationery" element={<StationeryLayout />}>
+              <Route index element={<StationeryItemsList />} />
+              <Route path="products" element={<StationeryProductsLayout />}>
+                <Route index element={<StationeryBody />} />
+                <Route
+                  path=":id"
+                  element={<StationeryItemsDetails />}
+                  errorElement={<StationeryItemsError />}
+                />
+              </Route>
+              <Route path="orders" element={<StationeryOrders />} />
               <Route
-                path=":id"
-                element={<StationeryItemsDetails />}
-                errorElement={<StationeryItemsError />}
+                path="orders/:id"
+                element={<StationeryOrderDetails />}
+                errorElement={<StationeryOrderDetailsError />}
+              />
+              <Route path="order-item" element={<OrderItemStationery />} />
+              <Route path="admin/upload" element={<AddItems />} />
+              <Route
+                path="admin/manage"
+                element={<ManageStationeryProducts />}
               />
             </Route>
-            <Route path="orders" element={<StationeryOrders />} />
-            <Route
-              path="orders/:id"
-              element={<StationeryOrderDetails />}
-              errorElement={<StationeryOrderDetailsError />}
-            />
-            <Route path="order-item" element={<OrderItemStationery />} />
-            <Route path="admin/upload" element={<AddItems />} />
-            <Route path="admin/manage" element={<ManageStationeryProducts />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Route>
