@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { AuthContext } from "../../../context/auth/AuthContext"; // Adjust the import based on your file structure
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { Link } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 
 function OilLayouts() {
   const { user } = useContext(AuthContext); // Get the user from AuthContext

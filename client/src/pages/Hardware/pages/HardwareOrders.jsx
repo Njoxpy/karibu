@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Footer from "../../../components/Footer";
 import { Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { AuthContext } from "../../../context/auth/AuthContext";
 
 // Utility function to format date
 const formatDate = (date) => new Date(date).toLocaleDateString();
@@ -17,6 +18,7 @@ const HardwareOrders = () => {
   const [orderToEdit, setOrderToEdit] = useState(null);
   const [orderToDelete, setOrderToDelete] = useState(null);
   const [filter, setFilter] = useState("all"); // Default filter is "all"
+  const { user, isLoading } = useContext(AuthContext);
 
   // token
   const token = localStorage.getItem("authToken");
@@ -289,25 +291,31 @@ const HardwareOrders = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-900">
                           Tsh {order.totalPrice}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                          <button
-                            onClick={() => openEditModal(order)}
-                            className="text-blue-700 hover:text-blue-900 bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded-lg transition-colors duration-200"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => openDeleteModal(order._id)}
-                            className="text-red-600 hover:text-red-900 bg-red-100 hover:bg-red-200 px-3 py-1 rounded-lg transition-colors duration-200"
-                          >
-                            Delete
-                          </button>
-                          <Link
-                            to={`/hardware/orders/${order._id}`}
-                            className="text-blue-700 hover:text-blue-900 bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded-lg transition-colors duration-200"
-                          >
-                            Details
-                          </Link>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <div className="flex items-center space-x-2">
+                            {user && user.role === "admin" && (
+                              <div className="flex space-x-2">
+                                <button
+                                  onClick={() => openEditModal(order)}
+                                  className="text-blue-700 hover:text-blue-900 bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded-lg transition duration-200 shadow-sm"
+                                >
+                                  Edit
+                                </button>
+                                <button
+                                  onClick={() => openDeleteModal(order._id)}
+                                  className="text-red-600 hover:text-red-900 bg-red-100 hover:bg-red-200 px-3 py-1 rounded-lg transition duration-200 shadow-sm"
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            )}
+                            <Link
+                              to={`/hardware/orders/${order._id}`}
+                              className="text-blue-700 hover:text-blue-900 bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded-lg transition duration-200 shadow-sm"
+                            >
+                              Details
+                            </Link>
+                          </div>
                         </td>
                       </tr>
                     ))}

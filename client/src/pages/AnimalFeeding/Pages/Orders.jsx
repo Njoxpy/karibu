@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Footer from "../../../components/Footer";
 import { AuthContext } from "../../../context/auth/AuthContext";
@@ -333,29 +333,31 @@ const Orders = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-green-900">
                           Tsh {order.total}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                          {user && user.role === "admin" && (
-                            <div>
-                              <button
-                                onClick={() => openEditModal(order)}
-                                className="text-green-700 hover:text-green-900 bg-green-100 hover:bg-green-200 px-3 py-1 rounded-lg transition-colors duration-200"
-                              >
-                                Edit
-                              </button>
-                              <button
-                                onClick={() => openDeleteModal(order._id)}
-                                className="text-red-600 hover:text-red-900 bg-red-100 hover:bg-red-200 px-3 py-1 rounded-lg transition-colors duration-200"
-                              >
-                                Delete
-                              </button>
-                            </div>
-                          )}
-                          <Link
-                            to={`/animal-feeding/orders/${order._id}`}
-                            className="text-green-700 hover:text-green-900 bg-green-100 hover:bg-green-200 px-3 py-1 rounded-lg transition-colors duration-200"
-                          >
-                            Details
-                          </Link>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <div className="flex items-center space-x-2">
+                            {user && user.role === "admin" && (
+                              <div className="flex space-x-2">
+                                <button
+                                  onClick={() => openEditModal(order)}
+                                  className="text-blue-700 hover:text-blue-900 bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded-lg transition duration-200 shadow-sm"
+                                >
+                                  Edit
+                                </button>
+                                <button
+                                  onClick={() => openDeleteModal(order._id)}
+                                  className="text-red-600 hover:text-red-900 bg-red-100 hover:bg-red-200 px-3 py-1 rounded-lg transition duration-200 shadow-sm"
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            )}
+                            <Link
+                              to={`/animal-feeding/orders/${order._id}`}
+                              className="text-blue-700 hover:text-blue-900 bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded-lg transition duration-200 shadow-sm"
+                            >
+                              Details
+                            </Link>
+                          </div>
                         </td>
                       </tr>
                     ))}
