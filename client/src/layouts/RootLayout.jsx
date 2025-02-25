@@ -44,7 +44,7 @@ const RootLayout = () => {
     ...(user?.category === "stationery"
       ? [{ name: "Stationery", path: "/stationery" }]
       : []),
-    ...(user?.category === "animalFeeding"
+    ...(user?.category === "animal-feeding"
       ? [{ name: "Animal Feeding", path: "/animal-feeding" }]
       : []),
     ...(user?.category === "hardware"
@@ -54,7 +54,7 @@ const RootLayout = () => {
       ? [{ name: "Printing", path: "/printing" }]
       : []),
     ...(user?.role === "admin" ? [{ name: "Admin", path: "/admin" }] : []),
-    ...(user?.category === "freshOil"
+    ...(user?.category === "fresh-oil"
       ? [{ name: "Fresh Oil", path: "/fresh-oil" }]
       : []),
   ];
