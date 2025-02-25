@@ -242,8 +242,8 @@ router.get(
 // Generate Animal Feeding Report
 router.get(
   "/reports",
-  // authenticate,
-  // checkCategory(["admin"]),
+  authenticate,
+  checkCategory(["admin"]),
   async (req, res) => {
     try {
       const { startDate, endDate } = req.query;

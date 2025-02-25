@@ -118,7 +118,6 @@ router.post(
   "/orders",
   authenticate,
   checkCategory(["stationery", "admin"]),
-  checkPermissions(["createOrder"]),
   createStationeryOrder
 );
 
