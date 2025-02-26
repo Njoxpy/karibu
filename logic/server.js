@@ -108,7 +108,7 @@ const limiter = rateLimit({
   message: "Too many requests, please try again later.",
 });
 
-app.use(limiter);
+// app.use(limiter);
 
 // Routes
 app.use("/api/v1/animal-feeding", animalFeedingRoutes);
