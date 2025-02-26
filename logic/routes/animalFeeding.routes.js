@@ -199,7 +199,7 @@ router.get(
   getAnimalFeedingOrderById
 ); // Employees and Admins can view order by ID
 
-router.patch(
+router.put(
   "/orders/:id",
   authenticate,
   checkCategory(["admin"]), // Only admin can update orders

@@ -54,7 +54,7 @@ userRoutes.get(
   getUserById
 );
 
-userRoutes.patch(
+userRoutes.put(
   "/:id",
   authenticate,
   checkCategory(["admin"]),
