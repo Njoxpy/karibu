@@ -1,11 +1,12 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../../../context/auth/AuthContext";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 
 function AnimalFeedingLayout() {
   const { user } = useContext(AuthContext); // Get the user data from context
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate(); // Initialize the useNavigate hook
 
   const navItems = [
     { path: "/animal-feeding/", label: "Home" },
@@ -20,6 +21,19 @@ function AnimalFeedingLayout() {
       { path: "/animal-feeding/admin/manage", label: "Manage Food" }
     );
   }
+
+  // Redirect if a non-admin tries to access admin pages
+  useEffect(() => {
+    if (user.role !== "admin") {
+      const path = window.location.pathname;
+      if (
+        path === "/animal-feeding/admin/upload" ||
+        path === "/animal-feeding/admin/manage"
+      ) {
+        navigate("/animal-feeding"); // Redirect to the main page if not an admin
+      }
+    }
+  }, [user, navigate]);
 
   return (
     <>

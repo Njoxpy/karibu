@@ -195,7 +195,7 @@ const UsersPage = () => {
       const response = await fetch(
         `http://localhost:5000/api/v1/users/${userToEdit._id}`,
         {
-          method: "PATCH",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,

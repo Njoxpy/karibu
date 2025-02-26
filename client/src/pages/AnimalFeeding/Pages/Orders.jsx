@@ -169,7 +169,7 @@ const Orders = () => {
       const response = await fetch(
         `http://localhost:5000/api/v1/animal-feeding/orders/${orderToEdit._id}`,
         {
-          method: "PATCH",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -339,7 +339,7 @@ const Orders = () => {
                               <div className="flex space-x-2">
                                 <button
                                   onClick={() => openEditModal(order)}
-                                  className="text-blue-700 hover:text-blue-900 bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded-lg transition duration-200 shadow-sm"
+                                  className="text-green-700 hover:text-green-900 bg-green-100 hover:bg-green-200 px-3 py-1 rounded-lg transition duration-200 shadow-sm"
                                 >
                                   Edit
                                 </button>
@@ -353,7 +353,7 @@ const Orders = () => {
                             )}
                             <Link
                               to={`/animal-feeding/orders/${order._id}`}
-                              className="text-blue-700 hover:text-blue-900 bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded-lg transition duration-200 shadow-sm"
+                              className="text-green-700 hover:text-green-900 bg-green-100 hover:bg-green-200 px-3 py-1 rounded-lg transition duration-200 shadow-sm"
                             >
                               Details
                             </Link>

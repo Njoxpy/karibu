@@ -141,6 +141,7 @@ import Support from "./pages/admin/pages/Support";
 import Settings from "./pages/admin/pages/Settings";
 import { useAuth } from "./hooks/auth/useAuth";
 import ProtectedRoute from "./auth/ProtectedRoute";
+import ErrorBoundary from "./error/ErrorBoundary";
 
 // auth
 
@@ -160,10 +161,10 @@ export default function App() {
             <Route path="settings" element={<Settings />} />
             <Route path="reports" element={<ReportsPage />} />
             <Route path="support" element={<Support />} />
-
             <Route path="revenue" element={<RevenueDashboard />} />
           </Route>
         </Route>
+
         <Route path="/" element={<RootLayout />}>
           <Route index element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -171,7 +172,17 @@ export default function App() {
           {/* admin */}
 
           <Route path="/contact" element={<Contact />} />
-          <Route path="/profile" element={<UserProfile />} />
+
+          {/* 
+          <Route
+            element={<ProtectedRoute allowedCategories={["animal-feeding"]} />}
+          >
+            <Route path="/profile" element={<UserProfile />} />
+          </Route>
+
+          future enhancements
+          
+          */}
 
           {/* animal feeding */}
           <Route

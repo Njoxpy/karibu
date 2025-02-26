@@ -1,41 +1,50 @@
-// src/ErrorBoundary.jsx
 import { Component } from "react";
+
+// Fallback UI Component
+const FallbackUI = ({ error, resetErrorBoundary }) => (
+  <div className="error-boundary">
+    <h2>Oops! Something went wrong...</h2>
+    <p>{error.message}</p>
+    <button onClick={resetErrorBoundary}>Try Again</button>
+  </div>
+);
 
 class ErrorBoundary extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      hasError: false,
-      error: null,
-      errorInfo: null,
-    };
+    this.state = { hasError: false, error: null, info: null };
   }
 
+  // This is where the error is caught
   static getDerivedStateFromError(error) {
-    // Update state to show the fallback UI
-    return { hasError: true };
+    return { hasError: true, error }; // Set error state
   }
 
-  componentDidCatch(error, errorInfo) {
-    // Log error to an error reporting service if needed
-    console.error("Error caught by Error Boundary:", error, errorInfo);
-    this.setState({ error, errorInfo });
+  componentDidCatch(error, info) {
+    // Log the error to an error reporting service
+    console.error("Error caught by ErrorBoundary:", error, info);
+    this.setState({ info });
   }
 
   render() {
-    if (this.state.hasError) {
-      // Fallback UI when an error occurs
+    const { hasError, error } = this.state;
+
+    if (hasError) {
       return (
-        <div>
-          <h1>Something went wrong!</h1>
-          <p>{this.state.error?.message}</p>
-        </div>
+        <FallbackUI
+          error={error}
+          resetErrorBoundary={this.resetErrorBoundary}
+        />
       );
     }
 
-    // Render children components normally
-    return this.props.children;
+    return this.props.children; // Render children if no error
   }
+
+  // Optional: Reset the error state and try again
+  resetErrorBoundary = () => {
+    this.setState({ hasError: false, error: null, info: null });
+  };
 }
 
 export default ErrorBoundary;

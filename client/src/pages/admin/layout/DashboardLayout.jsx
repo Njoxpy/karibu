@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 import {
   ChevronDown,
   Menu,
@@ -9,26 +9,17 @@ import {
   Users,
   FileText,
   DollarSign,
-  AlertCircle,
-  ShoppingCart,
-  BarChart3,
   Settings,
-  Bell,
-  Mail,
   HelpCircle,
   Shield,
-  PlusCircle,
-  ActivitySquare,
 } from "lucide-react";
 import useLogout from "../../../hooks/auth/useLogout";
 import { useAuth } from "../../../hooks/auth/useAuth";
-import { FaFirstOrder, FaFirstOrderAlt, FaProductHunt } from "react-icons/fa";
 
 const DashboardLayout = () => {
   const [open, setOpen] = useState(false);
   const [openProfileDropdown, setOpenProfileDropdown] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
   const profileDropdownRef = useRef(null);
   const logout = useLogout();
   const { user } = useAuth();
@@ -52,6 +43,10 @@ const DashboardLayout = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openProfileDropdown]);
 
+  const handleLogout = () => {
+    logout();
+  };
+
   const getTitle = () => {
     switch (location.pathname) {
       case "/admin/dashboard":
@@ -71,93 +66,16 @@ const DashboardLayout = () => {
     }
   };
 
-  const handleLogout = () => {
-    console.log("bomboclat!");
-    logout();
-  };
-
-  // Enhanced navigation structure with grouping
-  const navLinks = [
-    // Overview Section
-    {
-      group: "Overview",
-      items: [
-        {
-          path: "/admin/dashboard",
-          label: "Dashboard",
-          icon: <Home size={20} />,
-        },
-      ],
-    },
-    // User Management Section
-    {
-      group: "User Management",
-      items: [
-        {
-          path: "/admin/users",
-          label: "Users List",
-          icon: <Users size={20} />,
-        },
-        {
-          path: "/admin/users/create",
-          label: "Add User",
-          icon: <PlusCircle size={20} />,
-        },
-      ],
-    },
-
-    // Analytics & Reports Section
-    {
-      group: "Analytics & Reports",
-      items: [
-        {
-          path: "/admin/reports",
-          label: "Reports",
-          icon: <FileText size={20} />,
-        },
-        {
-          path: "/admin/revenue",
-          label: "Revenue",
-          icon: <DollarSign size={20} />,
-        },
-      ],
-    },
-    // System Section
-    {
-      group: "System",
-      items: [
-        {
-          path: "/admin/settings",
-          label: "Settings",
-          icon: <Settings size={20} />,
-        },
-      ],
-    },
-    // Communication Section
-  ];
-
   return (
     <div className="flex min-h-screen bg-gray-50">
-      {/* Overlay for mobile */}
-      {open && (
-        <div
-          className="fixed inset-0 bg-black/50 z-20 md:hidden"
-          onClick={() => setOpen(false)}
-        />
-      )}
-
-      {/* Enhanced Sidebar */}
+      {/* Sidebar */}
       <aside
-        className={`
-          fixed md:static inset-y-0 left-0 z-30
-          w-64 bg-blue-600 text-white
-          transform transition-transform duration-200 ease-in-out
-          ${open ? "translate-x-0" : "-translate-x-full"}
-          md:translate-x-0
-        `}
+        className={`fixed md:static inset-y-0 left-0 z-30 w-64 bg-blue-600 text-white transform transition-transform duration-200 ease-in-out ${
+          open ? "translate-x-0" : "-translate-x-full"
+        } md:translate-x-0`}
       >
         <div className="flex flex-col h-full">
-          {/* Enhanced Logo area */}
+          {/* Sidebar Header */}
           <div className="p-4 border-b border-blue-500">
             <div className="flex items-center gap-2 mb-2">
               <Shield size={24} />
@@ -168,70 +86,63 @@ const DashboardLayout = () => {
                 Admin Portal
               </NavLink>
             </div>
-            <div className="text-sm text-blue-100">Welcome, {user.email}</div>
+            <div className="text-sm text-blue-100">Welcome {user?.email}</div>
           </div>
 
-          {/* Enhanced Navigation with Groups */}
-          <nav className="flex-1 overflow-y-auto py-4">
-            {navLinks.map((group, index) => (
-              <div key={index} className="mb-6">
-                <div className="px-4 mb-2 text-sm font-semibold text-blue-200">
-                  {group.group}
-                </div>
-                <ul className="space-y-1">
-                  {group.items.map((item) => (
-                    <li key={item.path}>
-                      <NavLink
-                        to={item.path}
-                        className={({ isActive }) =>
-                          `flex items-center justify-between px-4 py-2 transition-colors
-                          ${
-                            isActive
-                              ? "bg-blue-700 text-white"
-                              : "hover:bg-blue-700/50"
-                          }`
-                        }
-                      >
-                        <div className="flex items-center">
-                          <span className="mr-2">{item.icon}</span>
-                          {item.label}
-                        </div>
-                        {item.badge && (
-                          <span className="px-2 py-1 text-xs bg-blue-500 rounded-full">
-                            {item.badge}
-                          </span>
-                        )}
-                      </NavLink>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+          {/* Navigation */}
+          <nav className="flex-1 overflow-y-auto py-4 space-y-1">
+            {[
+              { to: "/admin/dashboard", label: "Dashboard", icon: Home },
+              { to: "/admin/users", label: "Users", icon: Users },
+              { to: "/admin/reports", label: "Reports", icon: FileText },
+              { to: "/admin/revenue", label: "Revenue", icon: DollarSign },
+              { to: "/admin/settings", label: "Settings", icon: Settings },
+            ].map(({ to, label, icon: Icon }) => (
+              <NavLink
+                key={to}
+                to={to}
+                className={({ isActive }) =>
+                  `flex items-center px-4 py-2 rounded-lg transition ${
+                    isActive
+                      ? "bg-white text-blue-600 font-semibold shadow-md"
+                      : "text-white hover:bg-blue-700"
+                  }`
+                }
+              >
+                <Icon size={20} className="mr-2" />
+                {label}
+              </NavLink>
             ))}
           </nav>
 
-          {/* Help & Support Section */}
+          {/* Help & Support */}
           <div className="p-4 border-t border-blue-500">
             <NavLink
               to="/admin/support"
-              className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-blue-700/50 rounded-lg"
+              className={({ isActive }) =>
+                `flex items-center px-4 py-2 text-sm rounded-lg transition ${
+                  isActive
+                    ? "bg-white text-blue-600 font-semibold shadow-md"
+                    : "text-white hover:bg-blue-700/50"
+                }`
+              }
             >
-              <HelpCircle size={20} />
-              <span>Help & Support</span>
+              <HelpCircle size={20} className="mr-2" />
+              Help & Support
             </NavLink>
           </div>
         </div>
       </aside>
 
-      {/* Enhanced Main content */}
+      {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0">
-        {/* Enhanced Top navigation bar */}
+        {/* Top Navbar */}
         <header className="bg-white border-b border-gray-200 px-4 py-3 sticky top-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setOpen(!open)}
                 className="p-2 -ml-2 md:hidden hover:bg-gray-100 rounded-lg"
-                aria-label="Toggle sidebar"
               >
                 {open ? <X size={24} /> : <Menu size={24} />}
               </button>
@@ -239,10 +150,39 @@ const DashboardLayout = () => {
                 {getTitle()}
               </h1>
             </div>
+
+            {/* Profile Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setOpenProfileDropdown(!openProfileDropdown)}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                <User size={20} />
+                <ChevronDown size={20} />
+              </button>
+
+              {openProfileDropdown && (
+                <div
+                  ref={profileDropdownRef}
+                  className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg"
+                >
+                  <div className="px-4 py-2 text-sm text-gray-700">
+                    {user?.email}
+                  </div>
+                  <hr className="border-gray-200" />
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full px-4 py-2 text-sm text-red-500 hover:bg-red-600/10"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </header>
 
-        {/* Page content */}
+        {/* Page Content */}
         <div className="flex-1 overflow-auto p-6">
           <Outlet />
         </div>

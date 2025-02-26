@@ -286,62 +286,64 @@ const DashboardHome = () => {
   };
 
   return (
-    <div className="space-y-6 p-4 md:p-6 bg-gray-50">
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          title="Total Orders"
-          value={totalOrdersCount}
-          isDrop={
-            previousOrdersCount !== null &&
-            totalOrdersCount < previousOrdersCount
-          }
-          Icon={ShoppingCart}
-        />
-        <StatCard
-          title="Total Sales"
-          value={totalSales}
-          prefix="Tsh"
-          isDrop={previousSales !== null && totalSales < previousSales}
-          Icon={DollarSign}
-        />
-        <StatCard
-          title="Total Products"
-          value={totalProductsCount}
-          isDrop={
-            previousProductsCount !== null &&
-            totalProductsCount < previousProductsCount
-          }
-          Icon={Package}
-        />
-        <StatCard title="Total Users" value={totalUsers} Icon={Users} />
-      </div>
-
-      {/* Chart Section */}
-      <MetricsChart data={chartData} options={chartOptions} />
-
-      {/* Loading State */}
-      {loading && (
-        <div className="flex justify-center items-center p-8">
-          <Loader2 className="animate-spin h-8 w-8 text-blue-600" />
+    <>
+      <div className="space-y-6 p-4 md:p-6 bg-gray-50">
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard
+            title="Total Orders"
+            value={totalOrdersCount}
+            isDrop={
+              previousOrdersCount !== null &&
+              totalOrdersCount < previousOrdersCount
+            }
+            Icon={ShoppingCart}
+          />
+          <StatCard
+            title="Total Sales"
+            value={totalSales}
+            prefix="Tsh"
+            isDrop={previousSales !== null && totalSales < previousSales}
+            Icon={DollarSign}
+          />
+          <StatCard
+            title="Total Products"
+            value={totalProductsCount}
+            isDrop={
+              previousProductsCount !== null &&
+              totalProductsCount < previousProductsCount
+            }
+            Icon={Package}
+          />
+          <StatCard title="Total Users" value={totalUsers} Icon={Users} />
         </div>
-      )}
 
-      {/* Error States */}
-      <div className="space-y-2">
-        {error && <ErrorMessage message={error} />}
-        {countError && <ErrorMessage message={countError} />}
-        {salesError && <ErrorMessage message={salesError} />}
-        {productsError && <ErrorMessage message={productsError} />}
-      </div>
+        {/* Chart Section */}
+        <MetricsChart data={chartData} options={chartOptions} />
 
-      {/* Empty State */}
-      {!loading && !error && orders.length === 0 && (
-        <div className="bg-white rounded-lg shadow-md p-8 text-center">
-          <p className="text-gray-500">No orders found for this category.</p>
+        {/* Loading State */}
+        {loading && (
+          <div className="flex justify-center items-center p-8">
+            <Loader2 className="animate-spin h-8 w-8 text-blue-600" />
+          </div>
+        )}
+
+        {/* Error States */}
+        <div className="space-y-2">
+          {error && <ErrorMessage message={error} />}
+          {countError && <ErrorMessage message={countError} />}
+          {salesError && <ErrorMessage message={salesError} />}
+          {productsError && <ErrorMessage message={productsError} />}
         </div>
-      )}
-    </div>
+
+        {/* Empty State */}
+        {!loading && !error && orders.length === 0 && (
+          <div className="bg-white rounded-lg shadow-md p-8 text-center">
+            <p className="text-gray-500">No orders found for this category.</p>
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 

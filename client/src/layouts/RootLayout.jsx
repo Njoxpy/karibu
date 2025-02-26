@@ -170,28 +170,32 @@ const RootLayout = () => {
         onClose={setIsModalOpen}
         className="relative z-10"
       >
-        <div className="fixed inset-0 bg-black bg-opacity-50" />
-        <div className="flex items-center justify-center fixed inset-0 z-50">
-          <Dialog.Panel className="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full">
-            <div className="flex items-start space-x-3">
-              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-red-100">
-                <ExclamationTriangleIcon className="h-6 w-6 text-red-600" />
+        <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" />
+        <div className="flex items-center justify-center fixed inset-0 z-50 p-4">
+          <Dialog.Panel className="bg-[#141414] rounded-lg shadow-lg p-8 max-w-sm w-full space-y-6">
+            <div className="flex items-start space-x-4">
+              <div className="flex items-center justify-center w-14 h-14 rounded-full bg-[#e50914]">
+                <ExclamationTriangleIcon className="h-8 w-8 text-white" />
               </div>
               <div>
-                <h2 className="text-xl font-semibold mb-4">Confirm Logout</h2>
-                <p className="mb-6">Are you sure you want to log out?</p>
+                <h2 className="text-2xl font-semibold text-white mb-3">
+                  Confirm Logout
+                </h2>
+                <p className="text-gray-400 mb-6">
+                  Are you sure you want to log out?
+                </p>
               </div>
             </div>
             <div className="flex justify-end space-x-4">
               <button
                 onClick={cancelLogout}
-                className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+                className="px-6 py-3 bg-gray-700 text-white rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 transition duration-200"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmLogout}
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                className="px-6 py-3 bg-[#e50914] text-white rounded-md hover:bg-[#b20710] focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-200"
               >
                 Logout
               </button>
