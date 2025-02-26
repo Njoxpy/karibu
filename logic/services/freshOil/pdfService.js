@@ -1,125 +1,239 @@
 const PDFDocument = require("pdfkit");
-const moment = require("moment");
 
-const generateFreshOilPDF = (orders, res) => {
-  const doc = new PDFDocument({ margin: 50 });
-
-  // Set response headers for PDF download
-  res.setHeader("Content-Type", "application/pdf");
-  res.setHeader(
-    "Content-Disposition",
-    `attachment; filename=fresh-oil-report-${moment().format("YYYY-MM-DD")}.pdf`
-  );
-
-  // Pipe the PDF to the response
-  doc.pipe(res);
-
-  // Define Yellow Color
-  const yellow = "#FFD700";
-
-  // Add Branding Header with Yellow Background
-  doc.rect(50, 20, 500, 40).fill(yellow).stroke();
-  doc
-    .fillColor("black")
-    .fontSize(20)
-    .font("Helvetica-Bold")
-    .text("Savarrah", 50, 30, { align: "center" })
-    .moveDown(1.5);
-
-  // Add Report Title
-  doc
-    .fillColor("black")
-    .fontSize(18)
-    .font("Helvetica")
-    .text("Fresh Oil Sales Report", { align: "center" })
-    .moveDown();
-
-  // Add Date Range
-  const dateRange =
-    orders.length > 0
-      ? `${moment(orders[0].createdAt).format("MMMM D, YYYY")} – ${moment(
-          orders[orders.length - 1].createdAt
-        ).format("MMMM D, YYYY")}`
-      : "No data available";
-  doc
-    .fontSize(12)
-    .text(`Date Range: ${dateRange}`, { align: "center" })
-    .moveDown(2);
-
-  // Add Table Header with Yellow Highlight
-  doc.fontSize(12).fillColor("black").font("Helvetica-Bold");
-  doc
-    .rect(50, doc.y - 5, 500, 20)
-    .fill(yellow)
-    .stroke();
-  doc.text("Product Name", 50, doc.y, { width: 200, align: "left" });
-  doc.text("Quantity", 250, doc.y, { width: 100, align: "center" });
-  doc.text("Total Price", 400, doc.y, { width: 100, align: "right" });
-
-  // Add Horizontal Line
-  doc
-    .moveTo(50, doc.y + 15)
-    .lineTo(550, doc.y + 15)
-    .stroke();
-  doc.moveDown(1.5);
-
-  // Add Order Details
-  let totalRevenue = 0;
-  let totalQuantity = 0;
-
-  doc.font("Helvetica");
-  orders.forEach((order) => {
-    const productName = order.productName || "N/A";
-    const quantity = order.quantity || 0;
-    const price = order.price || 0;
-    const totalPrice = price * quantity;
-
-    doc.text(productName, 50, doc.y, { width: 200, align: "left" });
-    doc.text(quantity.toString(), 250, doc.y, { width: 100, align: "center" });
-    doc.text(`Tsh ${totalPrice.toFixed(2)}`, 400, doc.y, {
-      width: 100,
-      align: "right",
+const generateFreshOilPDF = (orders, res, startDate, endDate) => {
+  try {
+    const doc = new PDFDocument({
+      margin: 50,
+      size: "A4",
+      bufferPages: true,
     });
 
-    totalRevenue += totalPrice;
-    totalQuantity += quantity;
-    doc.moveDown(1.2);
+    // Set response headers
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=fresh_oil_report_${startDate}_to_${endDate}.pdf`
+    );
+    doc.pipe(res);
+
+    // Define styling constants
+    const colors = {
+      primary: "#1a5d1a", // Dark green for main elements
+      secondary: "#2E8B57", // Sea green for secondary
+      accent: "#f0f9f0", // Light green background
+      text: "#2d3436", // Dark gray text
+      border: "#e8e8e8", // Light gray borders
+      white: "#ffffff",
+    };
+
+    // Add header section
+    addHeader(doc, startDate, endDate, colors);
+
+    // Set up table layout
+    const tableTop = doc.y + 20;
+    const columnWidths = {
+      productName: 250,
+      quantity: 100,
+      price: 150,
+    };
+
+    // Add table headers
+    addTableHeaders(doc, tableTop, columnWidths, colors);
+
+    // Add table rows with improved spacing
+    let yPosition = tableTop + 30;
+    let currentPage = 1;
+
+    orders.forEach((order, index) => {
+      // Check if we need a new page
+      if (yPosition > 700) {
+        doc.addPage();
+        currentPage++;
+        // Add table headers to new page
+        addTableHeaders(doc, 50, columnWidths, colors);
+        yPosition = 80;
+      }
+
+      addTableRow(doc, order, yPosition, columnWidths, index, colors);
+      yPosition += 25;
+    });
+
+    // Add final border
+    doc.moveTo(50, yPosition).lineTo(550, yPosition).stroke();
+
+    // Add summary section
+    addSummary(doc, orders, colors);
+
+    // Add page numbers
+    addPageNumbers(doc);
+
+    doc.end();
+  } catch (error) {
+    console.error("Error generating PDF:", error);
+    res.status(500).json({ message: "Error generating PDF" });
+  }
+};
+
+// Helper Functions
+
+const addHeader = (doc, startDate, endDate, colors) => {
+  // Add logo placeholder with border
+  doc.rect(50, 50, 60, 60).strokeColor(colors.primary).stroke();
+  doc.fontSize(10).fillColor(colors.primary).text("Logo", 65, 75);
+
+  // Company name and report title
+  doc
+    .fontSize(24)
+    .font("Helvetica-Bold")
+    .fillColor(colors.primary)
+    .text("Savarrah", 120, 50)
+    .fontSize(16)
+    .font("Helvetica")
+    .fillColor(colors.secondary)
+    .text("Fresh Oil Sales Report", 120, 80);
+
+  // Date range in a styled box
+  doc.rect(120, 100, 200, 25).fillColor(colors.accent).fill();
+
+  doc
+    .fillColor(colors.primary)
+    .fontSize(12)
+    .text(`${startDate} – ${endDate}`, 130, 107);
+
+  // Decorative line
+  doc
+    .moveTo(50, 140)
+    .lineTo(550, 140)
+    .strokeColor(colors.secondary)
+    .strokeOpacity(0.5)
+    .stroke();
+};
+
+const addTableHeaders = (doc, tableTop, columnWidths, colors) => {
+  // Add table header background
+  doc.rect(50, tableTop, 500, 25).fillColor(colors.primary).fill();
+
+  // Add header text
+  doc.fillColor(colors.white).fontSize(12).font("Helvetica-Bold");
+
+  const headers = [
+    {
+      text: "Product Name",
+      x: 60,
+      width: columnWidths.productName,
+      align: "left",
+    },
+    { text: "Quantity", x: 310, width: columnWidths.quantity, align: "center" },
+    { text: "Total Price", x: 410, width: columnWidths.price, align: "right" },
+  ];
+
+  headers.forEach((header) => {
+    doc.text(header.text, header.x, tableTop + 7, {
+      width: header.width,
+      align: header.align,
+    });
+  });
+};
+
+const addTableRow = (doc, order, yPosition, columnWidths, index, colors) => {
+  // Alternate row backgrounds
+  if (index % 2 === 0) {
+    doc
+      .rect(50, yPosition, 500, 20)
+      .fillColor(colors.accent)
+      .fillOpacity(0.3)
+      .fill()
+      .fillOpacity(1);
+  }
+
+  // Add row content
+  doc.fillColor(colors.text).fontSize(11).font("Helvetica");
+
+  // Product name
+  doc.text(order.productName || "N/A", 60, yPosition + 5, {
+    width: columnWidths.productName,
+    align: "left",
   });
 
-  // Add Summary Section with Yellow Highlight
-  doc.moveDown(2);
-  doc.rect(50, doc.y, 500, 20).fill(yellow).stroke();
+  // Quantity
+  doc.text(order.quantity.toString(), 310, yPosition + 5, {
+    width: columnWidths.quantity,
+    align: "center",
+  });
+
+  // Price
+  doc.text(formatCurrency(order.price * order.quantity), 410, yPosition + 5, {
+    width: columnWidths.price,
+    align: "right",
+  });
+
+  // Add subtle row border
   doc
-    .fillColor("black")
+    .moveTo(50, yPosition)
+    .lineTo(550, yPosition)
+    .strokeColor(colors.border)
+    .stroke();
+};
+
+const addSummary = (doc, orders, colors) => {
+  const totalRevenue = orders.reduce(
+    (sum, order) => sum + order.price * order.quantity,
+    0
+  );
+  const totalQuantity = orders.reduce((sum, order) => sum + order.quantity, 0);
+  const averagePrice = orders.length > 0 ? totalRevenue / totalQuantity : 0;
+
+  // Add summary box
+  const summaryY = doc.y + 30;
+  doc
+    .rect(300, summaryY, 250, 100)
+    .fillColor(colors.accent)
+    .fill()
+    .strokeColor(colors.primary)
+    .stroke();
+
+  // Add summary content
+  doc
+    .fillColor(colors.primary)
+    .fontSize(14)
     .font("Helvetica-Bold")
-    .text("Summary:", 50, doc.y + 5, { align: "left" })
-    .moveDown(0.5);
+    .text("Summary", 320, summaryY + 15);
 
-  doc
-    .fillColor("black")
-    .font("Helvetica")
-    .text(`Total Products Sold: ${totalQuantity}`, { align: "left" })
-    .text(
-      `Average Price per Product: Tsh ${(totalRevenue / totalQuantity || 0).toFixed(2)}`,
-      { align: "left" }
-    )
-    .text(`Total Revenue: Tsh ${totalRevenue.toFixed(2)}`, { align: "left" });
+  // Add summary items
+  const summaryItems = [
+    { label: "Total Products Sold:", value: totalQuantity.toString() },
+    {
+      label: "Average Price per Product:",
+      value: formatCurrency(averagePrice),
+    },
+    { label: "Total Revenue:", value: formatCurrency(totalRevenue) },
+  ];
 
-  // Footer
-  doc
-    .fontSize(8)
-    .fillColor("gray")
-    .text(
-      `Generated on: ${moment().format("YYYY-MM-DD HH:mm:ss")}`,
-      50,
-      doc.page.height - 30,
-      { align: "center" }
-    );
+  doc.fontSize(11).font("Helvetica");
 
-  // Finalize the PDF
-  doc.end();
+  summaryItems.forEach((item, index) => {
+    doc
+      .text(item.label, 320, summaryY + 40 + index * 20)
+      .text(item.value, 470, summaryY + 40 + index * 20, { align: "right" });
+  });
 };
 
-module.exports = {
-  generateFreshOilPDF,
+const addPageNumbers = (doc) => {
+  const pages = doc.bufferedPageRange();
+  for (let i = 0; i < pages.count; i++) {
+    doc.switchToPage(i);
+    doc
+      .fillColor("#666666")
+      .fontSize(10)
+      .text(`Page ${i + 1} of ${pages.count}`, 50, 750, { align: "center" });
+  }
 };
+
+const formatCurrency = (amount) => {
+  return `Tsh ${amount.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+};
+
+module.exports = { generateFreshOilPDF };
