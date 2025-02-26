@@ -50,3 +50,36 @@ body {
 .product:hover {
   transform: scale(1.05);
 }
+
+/* ErrorBoundary CSS */
+.error-boundary {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+}
+
+.error-boundary h2 {
+  font-size: 2rem;
+  color: #e74c3c;
+}
+
+.error-boundary p {
+  color: #7f8c8d;
+}
+
+.error-boundary button {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.error-boundary button:hover {
+  background-color: #2980b9;
+}
