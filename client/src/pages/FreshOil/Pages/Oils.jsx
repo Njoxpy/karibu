@@ -6,7 +6,7 @@ function Oils() {
   const [searchTerm, setSearchTerm] = useState("");
   const [products, setProducts] = useState([]); // State for fetched products
   const [currentPage, setCurrentPage] = useState(1); // Current page number
-  const itemsPerPage = 6; // Items per page for pagination
+  const itemsPerPage = 8; // Items per page for pagination
   const baseURL = "http://localhost:5000";
 
   useEffect(() => {

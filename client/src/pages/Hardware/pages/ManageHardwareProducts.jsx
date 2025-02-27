@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Footer from "../../../components/Footer";
 import { getToken } from "../../../services/token";
 
@@ -6,7 +6,6 @@ const ManageHardwareProducts = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [quantityFilter, setQuantityFilter] = useState("");
   const [sortOrder, setSortOrder] = useState("");
-  const [currentItems, setCurrentItems] = useState([]);
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -15,99 +14,122 @@ const ManageHardwareProducts = () => {
   const [isDeleteSuccessModalOpen, setIsDeleteSuccessModalOpen] =
     useState(false);
   const [editProduct, setEditProduct] = useState(null);
-  const [error, setError] = useState(null);
+  const [validationErrors, setValidationErrors] = useState({});
   const token = getToken();
   const baseURL = "http://localhost:5000";
-
-  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchProducts();
   }, []);
 
+  // Close success modals after 3 seconds
+  useEffect(() => {
+    if (isEditSuccessModalOpen || isDeleteSuccessModalOpen) {
+      const timer = setTimeout(() => {
+        setIsEditSuccessModalOpen(false);
+        setIsDeleteSuccessModalOpen(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [isEditSuccessModalOpen, isDeleteSuccessModalOpen]);
+
+  // Fetch products from the API
   const fetchProducts = async () => {
     try {
       const response = await fetch(`${baseURL}/api/v1/hardware/products/`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`Failed to fetch products. Please try again.`);
       }
       const data = await response.json();
-      setProducts(data);
-      setCurrentItems(data);
+      if (Array.isArray(data)) {
+        setProducts(data);
+      } else {
+        console.error("API response is not an array:", data);
+        setProducts([]);
+      }
     } catch (error) {
       console.error("Error fetching products:", error);
+      alert("An error occurred while fetching products. Please try again.");
+      setProducts([]);
     }
   };
 
-  const handleSearch = (e) => {
-    setSearchQuery(e.target.value);
-    filterProducts(e.target.value, quantityFilter, sortOrder);
-  };
+  // Filter and sort products
+  const getFilteredProducts = () => {
+    let filteredProducts = [...products];
 
-  const handleQuantityFilter = (e) => {
-    setQuantityFilter(e.target.value);
-    filterProducts(searchQuery, e.target.value, sortOrder);
-  };
-
-  const handleSortOrder = (e) => {
-    setSortOrder(e.target.value);
-    filterProducts(searchQuery, quantityFilter, e.target.value);
-  };
-
-  const filterProducts = (search, quantity, order) => {
-    let filteredProducts = products;
-    if (search) {
+    if (searchQuery) {
       filteredProducts = filteredProducts.filter((product) =>
-        product.name.toLowerCase().includes(search.toLowerCase())
+        product.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
-    if (quantity) {
+
+    if (quantityFilter) {
       filteredProducts = filteredProducts.filter(
-        (product) => product.quantity >= parseInt(quantity)
+        (product) => product.quantity >= parseInt(quantityFilter)
       );
     }
-    if (order) {
-      filteredProducts = filteredProducts.sort((a, b) => {
-        if (order === "asc") {
+
+    if (sortOrder) {
+      filteredProducts.sort((a, b) => {
+        if (sortOrder === "asc") {
           return a.quantity - b.quantity;
-        } else if (order === "desc") {
+        } else if (sortOrder === "desc") {
           return b.quantity - a.quantity;
         }
         return 0;
       });
     }
-    setCurrentItems(filteredProducts);
+
+    return filteredProducts;
   };
 
+  const filteredProducts = getFilteredProducts();
+
+  // Handle input changes in the edit form
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setEditProduct({ ...editProduct, [name]: value });
+    setValidationErrors({ ...validationErrors, [name]: "" }); // Clear validation error
   };
 
+  // Validate edit form inputs
+  const validateForm = () => {
+    const errors = {};
+    if (!editProduct.name) errors.name = "Product name is required.";
+    if (!editProduct.description)
+      errors.description = "Description is required.";
+    if (editProduct.quantity <= 0)
+      errors.quantity = "Quantity must be greater than 0.";
+    if (editProduct.price <= 0) errors.price = "Price must be greater than 0.";
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  // Handle edit form submission
   const handleEditSubmit = async (e) => {
     e.preventDefault();
-
-    // Convert price and quantity to numbers
-    const updatedProduct = {
-      ...editProduct,
-      price: Number(editProduct.price),
-      quantity: Number(editProduct.quantity),
-    };
+    if (!validateForm()) return;
 
     try {
+      // Optimistically update the UI
+      const updatedProducts = products.map((product) =>
+        product._id === editProduct._id ? editProduct : product
+      );
+      setProducts(updatedProducts);
+
+      // Make the API call to update the product
       const response = await fetch(
-        `${baseURL}/api/v1/hardware/products/${updatedProduct._id}`,
+        `${baseURL}/api/v1/hardware/products/${editProduct._id}`,
         {
-          method: "PATCH",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(updatedProduct),
+          body: JSON.stringify(editProduct),
         }
       );
 
@@ -115,20 +137,26 @@ const ManageHardwareProducts = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
-      setProducts(
-        products.map((product) => (product._id === data._id ? data : product))
-      );
+      // Close the edit modal and show success message
       setIsEditModalOpen(false);
       setIsEditSuccessModalOpen(true);
     } catch (error) {
       console.error("Error updating product:", error);
-      setError("Failed to update product. Please check the input values.");
+      alert("An error occurred while updating the product. Please try again.");
+      fetchProducts(); // Re-fetch products to restore the original state
     }
   };
 
+  // Handle product deletion
   const handleDelete = async () => {
     try {
+      // Optimistically update the UI
+      const updatedProducts = products.filter(
+        (product) => product._id !== selectedProduct._id
+      );
+      setProducts(updatedProducts);
+
+      // Make the API call to delete the product
       const response = await fetch(
         `${baseURL}/api/v1/hardware/products/${selectedProduct._id}`,
         {
@@ -138,132 +166,111 @@ const ManageHardwareProducts = () => {
           },
         }
       );
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      setProducts(
-        products.filter((product) => product._id !== selectedProduct._id)
-      );
+
+      // Close the delete modal and show success message
       setIsDeleteModalOpen(false);
       setIsDeleteSuccessModalOpen(true);
     } catch (error) {
       console.error("Error deleting product:", error);
+      alert("An error occurred while deleting the product. Please try again.");
+      fetchProducts(); // Re-fetch products to restore the original state
     }
   };
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-indigo-100">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
         <div className="container mx-auto p-4">
-          <h1 className="text-3xl font-bold mb-6 text-indigo-700">
-            Manage Products
+          <h1 className="text-3xl font-bold mb-6 text-blue-700">
+            Manage Fresh Oil Products
           </h1>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <input
               type="text"
               placeholder="Search products..."
               value={searchQuery}
-              onChange={handleSearch}
-              className="border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <input
               type="number"
               placeholder="Filter by quantity..."
               value={quantityFilter}
-              onChange={handleQuantityFilter}
-              className="border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              onChange={(e) => setQuantityFilter(e.target.value)}
+              className="border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <select
               value={sortOrder}
-              onChange={handleSortOrder}
-              className="border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              onChange={(e) => setSortOrder(e.target.value)}
+              className="border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Sort by quantity</option>
               <option value="asc">Lowest to Highest</option>
               <option value="desc">Highest to Lowest</option>
             </select>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {currentItems.map((product) => (
-              <div
-                key={product._id}
-                className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
-              >
-                <img
-                  src={
-                    product.image
-                      ? `${baseURL}${product.image}`
-                      : "https://via.placeholder.com/400x300"
-                  }
-                  alt={product.name}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-6">
-                  <h2 className="text-xl font-bold text-indigo-700">
-                    {product.name}
-                  </h2>
-                  <p className="text-gray-600 text-sm mt-2">
-                    {product.description}
-                  </p>
-                  <p className="text-gray-600 text-sm mt-2">
-                    Quantity: {product.quantity}
-                  </p>
-                  <p className="text-gray-600 text-sm mt-2">
-                    Price: Tsh {product.price.toLocaleString()}
-                  </p>
-
-                  <div className="flex justify-between mt-6">
-                    <button
-                      className="bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition-all duration-200"
-                      onClick={() => {
-                        setEditProduct(product);
-                        setIsEditModalOpen(true);
-                      }}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all duration-200"
-                      onClick={() => {
-                        setSelectedProduct(product);
-                        setIsDeleteModalOpen(true);
-                      }}
-                    >
-                      Delete
-                    </button>
+          {filteredProducts.length === 0 ? (
+            <div className="text-center text-gray-600">
+              <p>No products found.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredProducts.map((product) => (
+                <div
+                  key={product._id}
+                  className="bg-white rounded-xl shadow-lg overflow-hidden product"
+                >
+                  <img
+                    src={
+                      product.image
+                        ? `${baseURL}${product.image}`
+                        : "https://via.placeholder.com/400x300"
+                    }
+                    alt={product.name}
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="p-6">
+                    <h2 className="text-xl font-bold text-blue-700">
+                      {product.name}
+                    </h2>
+                    <p className="text-gray-600 text-sm mt-2">
+                      {product.description}
+                    </p>
+                    <p className="text-gray-600 text-sm mt-2">
+                      Quantity: {product.quantity}
+                    </p>
+                    <p className="text-gray-600 text-sm mt-2">
+                      Price: Tsh {product.price.toLocaleString()}
+                    </p>
+                    <div className="flex justify-between mt-6">
+                      <button
+                        className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-all duration-200"
+                        onClick={() => {
+                          setEditProduct(product);
+                          setIsEditModalOpen(true);
+                        }}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all duration-200"
+                        onClick={() => {
+                          setSelectedProduct(product);
+                          setIsDeleteModalOpen(true);
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-center mt-6">
-            {Array.from(
-              { length: Math.ceil(currentItems.length / itemsPerPage) },
-              (_, index) => (
-                <button
-                  key={index}
-                  onClick={() =>
-                    setCurrentItems(
-                      currentItems.slice(
-                        index * itemsPerPage,
-                        (index + 1) * itemsPerPage
-                      )
-                    )
-                  }
-                  className={`px-4 py-2 mx-1 rounded-lg ${
-                    currentItems.slice(
-                      index * itemsPerPage,
-                      (index + 1) * itemsPerPage
-                    ).length === itemsPerPage
-                      ? "bg-indigo-500 text-white"
-                      : "bg-gray-200 hover:bg-gray-300"
-                  }`}
-                >
-                  {index + 1}
-                </button>
-              )
-            )}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Edit Modal */}
@@ -271,7 +278,7 @@ const ManageHardwareProducts = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
               <div className="p-6">
-                <h2 className="text-2xl font-bold text-indigo-700 mb-6">
+                <h2 className="text-2xl font-bold text-blue-700 mb-6">
                   Edit Product
                 </h2>
                 <form onSubmit={handleEditSubmit}>
@@ -285,8 +292,13 @@ const ManageHardwareProducts = () => {
                         name="name"
                         value={editProduct.name}
                         onChange={handleInputChange}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
+                      {validationErrors.name && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {validationErrors.name}
+                        </p>
+                      )}
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700">
@@ -297,8 +309,13 @@ const ManageHardwareProducts = () => {
                         name="description"
                         value={editProduct.description}
                         onChange={handleInputChange}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
+                      {validationErrors.description && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {validationErrors.description}
+                        </p>
+                      )}
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700">
@@ -309,8 +326,13 @@ const ManageHardwareProducts = () => {
                         name="price"
                         value={editProduct.price}
                         onChange={handleInputChange}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
+                      {validationErrors.price && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {validationErrors.price}
+                        </p>
+                      )}
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700">
@@ -321,8 +343,13 @@ const ManageHardwareProducts = () => {
                         name="quantity"
                         value={editProduct.quantity}
                         onChange={handleInputChange}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
+                      {validationErrors.quantity && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {validationErrors.quantity}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="flex justify-end gap-4 mt-6">
@@ -335,7 +362,7 @@ const ManageHardwareProducts = () => {
                     </button>
                     <button
                       type="submit"
-                      className="px-4 py-2 text-white bg-indigo-500 rounded-lg hover:bg-indigo-600 transition-all duration-200"
+                      className="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-all duration-200"
                     >
                       Save Changes
                     </button>
@@ -351,7 +378,7 @@ const ManageHardwareProducts = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
               <div className="p-6">
-                <h2 className="text-2xl font-bold text-indigo-700 mb-6">
+                <h2 className="text-2xl font-bold text-blue-700 mb-6">
                   Delete Product
                 </h2>
                 <p className="text-gray-600">
@@ -381,14 +408,14 @@ const ManageHardwareProducts = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
               <div className="p-6">
-                <h2 className="text-2xl font-bold text-indigo-700 mb-6">
+                <h2 className="text-2xl font-bold text-blue-700 mb-6">
                   Success
                 </h2>
                 <p className="text-gray-600">Product updated successfully!</p>
                 <div className="flex justify-end mt-6">
                   <button
                     onClick={() => setIsEditSuccessModalOpen(false)}
-                    className="px-4 py-2 text-white bg-indigo-500 rounded-lg hover:bg-indigo-600 transition-all duration-200"
+                    className="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-all duration-200"
                   >
                     Close
                   </button>
@@ -403,14 +430,14 @@ const ManageHardwareProducts = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
               <div className="p-6">
-                <h2 className="text-2xl font-bold text-indigo-700 mb-6">
+                <h2 className="text-2xl font-bold text-blue-700 mb-6">
                   Success
                 </h2>
                 <p className="text-gray-600">Product deleted successfully!</p>
                 <div className="flex justify-end mt-6">
                   <button
                     onClick={() => setIsDeleteSuccessModalOpen(false)}
-                    className="px-4 py-2 text-white bg-indigo-500 rounded-lg hover:bg-indigo-600 transition-all duration-200"
+                    className="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-all duration-200"
                   >
                     Close
                   </button>

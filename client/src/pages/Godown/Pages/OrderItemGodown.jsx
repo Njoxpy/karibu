@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Footer from "../../../components/Footer";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { getToken } from "../../../services/token";
 
 const OrderItemGodown = () => {
   const [products, setProducts] = useState([]);
@@ -11,55 +12,76 @@ const OrderItemGodown = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
-  const token = localStorage.getItem("authToken");
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch(
-          "http://localhost:5000/api/v1/godown/products",
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        const data = await response.json();
-        if (response.ok) {
-          if (data.length === 0) {
-            toast.info("No products available");
-            setIsLoading(false);
-          } else {
-            setProducts(data);
-            setSelectedProduct(data[0]);
-            setTotalPrice(data[0]?.price || 0);
-            setIsLoading(false);
-          }
-        } else {
-          toast.error("Failed to fetch products");
-          setIsLoading(false);
+  const token = getToken();
+
+  // Fetch products and set initial selected product
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/v1/godown/products",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
-      } catch (error) {
-        toast.error("An error occurred while fetching products");
-        setIsLoading(false);
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch products");
       }
-    };
+      const data = await response.json();
 
+      if (Array.isArray(data)) {
+        setProducts(data);
+        // Set initial selected product and total price if products exist
+        if (data.length > 0) {
+          // Find the currently selected product in the updated product list
+          const currentProduct = selectedProduct
+            ? data.find((p) => p._id === selectedProduct._id)
+            : data[0];
+
+          setSelectedProduct(currentProduct);
+          setTotalPrice(currentProduct.price * quantity);
+        } else {
+          toast.info("No products found");
+        }
+      } else {
+        console.error("API response is not an array:", data);
+        setProducts([]);
+        toast.error("Invalid data format received from the server");
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      toast.error("Error fetching products");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Initial fetch on component mount
+  useEffect(() => {
     fetchProducts();
   }, [token]);
 
-  const handleProductChange = (e) => {
-    const productId = e.target.value;
-    const product = products.find((product) => product._id === productId);
-    setSelectedProduct(product);
-    setTotalPrice(product.price * quantity);
+  // Update total price when quantity or product changes
+  useEffect(() => {
+    if (selectedProduct) {
+      setTotalPrice(selectedProduct.price * quantity);
+    }
+  }, [quantity, selectedProduct]);
+
+  const handleProductChange = (event) => {
+    const product = products.find((p) => p._id === event.target.value);
+    if (product) {
+      setSelectedProduct(product);
+      setTotalPrice(product.price * quantity);
+    }
   };
 
-  const handleQuantityChange = (e) => {
-    const newQuantity = parseInt(e.target.value);
-    if (newQuantity < 1) return;
+  const handleQuantityChange = (event) => {
+    const newQuantity = Math.max(1, parseInt(event.target.value) || 1);
     setQuantity(newQuantity);
     if (selectedProduct) {
       setTotalPrice(selectedProduct.price * newQuantity);
@@ -68,62 +90,75 @@ const OrderItemGodown = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!selectedProduct) {
+      toast.error("Please select a product");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      // Prepare order data
       const orderData = {
         productId: selectedProduct._id,
-        productName: selectedProduct.name, // Most probable
+        productName: selectedProduct.name,
         quantity,
         price: selectedProduct.price,
         total: totalPrice,
+        status: "pending",
       };
 
-      // Send POST request to create order
-      const response = await fetch(
+      // 1. Create the order
+      const orderResponse = await fetch(
         "http://localhost:5000/api/v1/godown/orders",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Include bearer token
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(orderData),
         }
       );
 
-      if (!response.ok) {
-        const errorResponse = await response.json();
+      if (!orderResponse.ok) {
+        const errorResponse = await orderResponse.json();
         throw new Error(
           errorResponse.message || "Failed to place the order. Try again."
         );
       }
 
-      // Show success message and reset the state
-      setOrderSuccess(true);
-      toast.success("Order placed successfully!", {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+      // 2. Update the product quantity in the backend
+      const updatedQuantity = selectedProduct.quantity - quantity;
+      const updateResponse = await fetch(
+        `http://localhost:5000/api/v1/godown/products/${selectedProduct._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ quantity: updatedQuantity }),
+        }
+      );
 
-      // Reset order form state
+      // if (!updateResponse.ok) {
+      //   // If updating product fails, we should still show order success
+      //   // but also show a warning that inventory wasn't updated
+      //   toast.warning(
+      //     "Order placed, but inventory not updated. Please refresh."
+      //   );
+      // }
+
+      // 3. Refresh products list to get updated quantities
+      await fetchProducts();
+
+      setOrderSuccess(true);
+      toast.success("Order placed successfully!");
+
+      // Reset form state
       setQuantity(1);
-      setTotalPrice(selectedProduct.price);
     } catch (error) {
-      // Handle errors
-      toast.error(`Error: ${error.message}`, {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+      toast.error(`Error: ${error.message}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -131,193 +166,212 @@ const OrderItemGodown = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-900"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-900"></div>
       </div>
     );
   }
+
   if (products.length === 0) {
     return (
-      <>
-        <div className="flex flex-col items-center justify-center h-screen bg-gray-50">
-          <div className="text-center p-6 rounded-lg shadow-lg bg-white">
-            <h1 className="text-2xl font-semibold text-gray-800">
-              No Products
-            </h1>
-            <p className="mt-2 text-gray-600">
-              There are currently no products available!
-            </p>
-          </div>
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-50">
+        <div className="text-center p-6 rounded-lg shadow-lg bg-white">
+          <h1 className="text-2xl font-semibold text-gray-800">
+            No Products Available
+          </h1>
+          <p className="mt-2 text-gray-600">
+            There are currently no products in the store.
+          </p>
         </div>
-      </>
+      </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
-      <ToastContainer />
+    <div className="min-h-screen bg-gradient-to-br ">
+      <ToastContainer position="top-center" autoClose={3000} />
       <div className="max-w-4xl mx-auto px-4 py-12">
         <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-blue-100">
-          {/* Header Section */}
+          {/* Header */}
           <div className="bg-gradient-to-r from-blue-700 to-blue-800 px-6 py-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-white text-center">
-              Order Product
+            <h2 className="text-3xl font-bold text-white text-center">
+              Create New Order
             </h2>
-            <p className="text-blue-300 text-center mt-2">Product Details</p>
+            <p className="text-blue-300 text-center mt-2">
+              Select product and specify quantity
+            </p>
           </div>
 
-          <div className="p-8">
+          <form onSubmit={handleSubmit} className="p-8 space-y-8">
             {/* Product Selection */}
-            <div className="bg-blue-50 p-6 rounded-2xl">
-              <label className="block text-sm font-medium text-blue-700 mb-2">
-                Select Product
-              </label>
-              <select
-                value={selectedProduct?._id || ""}
-                onChange={handleProductChange}
-                className="w-full p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-              >
-                {products.map((product) => (
-                  <option key={product._id} value={product._id}>
-                    {product.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-6">
+                <div className="bg-blue-50 p-6 rounded-2xl">
+                  <label className="block text-sm font-medium text-blue-700 mb-2">
+                    Select Product
+                  </label>
+                  <select
+                    value={selectedProduct?._id || ""}
+                    onChange={handleProductChange}
+                    className="w-full p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                  >
+                    {products.map((product) => (
+                      <option key={product._id} value={product._id}>
+                        {product.name} - {product.quantity} available
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-            {/* Product Details */}
-            {selectedProduct && (
-              <div className="bg-blue-50 p-6 rounded-2xl mt-4">
-                <label className="block text-sm font-medium text-blue-700 mb-2">
-                  Product Details
-                </label>
-                <div className="space-y-3">
-                  <p className="text-sm text-blue-500">
-                    Available Stock:
-                    <span
-                      className={`ml-2 px-2 py-1 rounded-full text-sm font-medium ${
-                        selectedProduct.quantity > 20
-                          ? "bg-blue-100 text-blue-800"
-                          : "bg-blue-100 text-blue-800"
-                      }`}
-                    >
-                      {selectedProduct.quantity} units
-                    </span>
-                  </p>
-                </div>
-                <div className="bg-blue-50 p-4 rounded-xl">
-                  <label className="text-sm text-blue-500 block mb-1">
-                    Description
-                  </label>
-                  <p className="text-lg font-semibold text-blue-700">
-                    {selectedProduct.description}
-                  </p>
-                </div>
-                <div className="bg-blue-50 p-4 rounded-xl">
-                  <label className="text-sm text-blue-500 block mb-1">
-                    Location
-                  </label>
-                  <p className="text-lg font-semibold text-blue-700">
-                    {selectedProduct.location}
-                  </p>
-                </div>
-                <div className="bg-blue-50 p-4 rounded-xl">
-                  <label className="text-sm text-blue-500 block mb-1">
-                    Price
-                  </label>
-                  <p className="text-lg font-semibold text-blue-700">
-                    {selectedProduct.price}
-                  </p>
-                </div>
+                {selectedProduct && (
+                  <div className="bg-blue-50 p-6 rounded-2xl">
+                    <label className="block text-sm font-medium text-blue-700 mb-2">
+                      Product Details
+                    </label>
+                    <div className="space-y-3">
+                      <p className="text-sm text-blue-500">
+                        Product Description:{" "}
+                        <span className="font-mono text-blue-700">
+                          {selectedProduct.description}
+                        </span>
+                      </p>
+                      <div>
+                        <span className="text-blue-500 ">Location</span>
+                        <span className="font-medium p-2 text-blue-700 font-mono ">
+                          {selectedProduct.location}
+                        </span>
+                      </div>
+                      <p className="text-sm text-blue-500">
+                        Available Stock:
+                        <span
+                          className={`ml-2 px-2 py-1 rounded-full text-sm font-medium ${
+                            selectedProduct.quantity > 20
+                              ? "bg-green-100 text-green-800"
+                              : selectedProduct.quantity > 5
+                              ? "bg-blue-100 text-blue-800"
+                              : "bg-red-100 text-red-800"
+                          }`}
+                        >
+                          {selectedProduct.quantity} units
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
 
-            {/* Order Form */}
-            <form onSubmit={handleSubmit} className="space-y-6 mt-4">
-              <div className="bg-blue-50 p-6 rounded-2xl">
-                <label className="block text-sm font-medium text-blue-700 mb-2">
-                  Order Quantity
-                </label>
-                <div className="flex items-center space-x-4">
+              <div className="space-y-6">
+                <div className="bg-blue-50 p-6 rounded-2xl">
+                  <label className="block text-sm font-medium text-blue-700 mb-2">
+                    Quantity
+                  </label>
                   <input
                     type="number"
                     value={quantity}
                     onChange={handleQuantityChange}
                     min="1"
                     max={selectedProduct?.quantity || 1}
-                    className="flex-1 p-3 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200"
+                    className="w-full p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent"
                   />
-                  <div className="text-right">
-                    <p className="text-sm text-blue-500">Total Price</p>
-                    <p className="text-xl font-bold text-blue-700">
-                      Tsh {totalPrice.toLocaleString()}
+                  {selectedProduct && quantity > selectedProduct.quantity && (
+                    <p className="mt-2 text-sm text-red-500">
+                      Quantity exceeds available stock
                     </p>
-                  </div>
+                  )}
                 </div>
-                {quantity > selectedProduct?.quantity && (
-                  <p className="mt-2 text-sm text-red-500">
-                    Quantity exceeds available stock
-                  </p>
+
+                {selectedProduct && (
+                  <div className="bg-blue-50 p-6 rounded-2xl">
+                    <label className="block text-sm font-medium text-blue-700 mb-2">
+                      Order Summary
+                    </label>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-blue-500">Price per unit</span>
+                        <span className="font-medium">
+                          Tsh {selectedProduct.price.toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-blue-500">Quantity</span>
+                        <span className="font-medium">{quantity} units</span>
+                      </div>
+                      <div className="pt-3 border-t border-blue-200">
+                        <div className="flex justify-between items-center">
+                          <span className="text-lg font-medium text-blue-700">
+                            Total Amount
+                          </span>
+                          <span className="text-xl font-bold text-blue-900">
+                            Tsh {totalPrice.toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 )}
               </div>
+            </div>
 
-              {/* Submit Button */}
-              <div className="flex justify-end">
-                <button
-                  type="submit"
-                  disabled={
-                    isSubmitting || quantity > selectedProduct?.quantity
+            {/* Submit Button */}
+            <div className="flex justify-end pt-6">
+              <button
+                type="submit"
+                disabled={
+                  isSubmitting ||
+                  !selectedProduct ||
+                  quantity > selectedProduct?.quantity
+                }
+                className={`
+                  w-full md:w-auto px-8 py-4 rounded-xl text-white font-medium
+                  transition-all duration-200 transform hover:scale-105
+                  ${
+                    isSubmitting ||
+                    !selectedProduct ||
+                    quantity > selectedProduct?.quantity
+                      ? "bg-blue-400 cursor-not-allowed"
+                      : "bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 shadow-lg hover:shadow-xl"
                   }
-                  className={`
-                    w-full md:w-auto px-8 py-4 rounded-xl text-white font-medium
-                    transition-all duration-200 transform hover:scale-105
-                    ${
-                      isSubmitting || quantity > selectedProduct?.quantity
-                        ? "bg-blue-400 cursor-not-allowed"
-                        : "bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 shadow-lg hover:shadow-xl"
-                    }
-                  `}
-                >
-                  {isSubmitting ? (
-                    <span className="flex items-center justify-center">
-                      <svg
-                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                      Processing...
-                    </span>
-                  ) : (
-                    "Place Order"
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
+                `}
+              >
+                {isSubmitting ? (
+                  <span className="flex items-center justify-center">
+                    <svg
+                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    Processing...
+                  </span>
+                ) : (
+                  "Place Order"
+                )}
+              </button>
+            </div>
+          </form>
         </div>
       </div>
 
       {/* Success Modal */}
       {orderSuccess && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all duration-300 scale-100">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4">
             <div className="p-8">
-              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100">
+              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 mb-6">
                 <svg
                   className="h-8 w-8 text-blue-600"
                   fill="none"
@@ -332,20 +386,25 @@ const OrderItemGodown = () => {
                   />
                 </svg>
               </div>
-              <h3 className="mt-6 text-xl font-semibold text-blue-900 text-center">
+              <h3 className="text-xl font-semibold text-blue-900 text-center mb-4">
                 Order Placed Successfully!
               </h3>
-              <p className="mt-4 text-blue-500 text-center">
+              <p className="text-blue-500 text-center mb-6">
                 Your order has been successfully placed and is being processed.
               </p>
-              <div className="mt-8">
-                <button
-                  onClick={() => setOrderSuccess(false)}
-                  className="w-full px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-blue-700 to-blue-800 rounded-xl hover:from-blue-800 hover:to-blue-900 transition-all duration-200 transform hover:scale-105"
-                >
-                  Continue Ordering
-                </button>
+              <div className="text-center mb-6 bg-blue-50 p-3 rounded-xl">
+                <p className="text-blue-700 font-medium">Updated Inventory</p>
+                <p className="text-blue-600">
+                  {selectedProduct?.name}:{" "}
+                  {selectedProduct?.quantity - quantity} units remaining
+                </p>
               </div>
+              <button
+                onClick={() => setOrderSuccess(false)}
+                className="w-full px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-blue-700 to-blue-800 rounded-xl hover:from-blue-800 hover:to-blue-900 transition-all duration-200 transform hover:scale-105"
+              >
+                Continue Shopping
+              </button>
             </div>
           </div>
         </div>

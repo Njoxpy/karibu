@@ -1,10 +1,11 @@
-import { useState, useEffect, useContext } from "react";
-import Footer from "../../../components/Footer";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import Footer from "../../../components/Footer";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getToken } from "../../../services/token";
-import { useGodown } from "../../../hooks/Godown/useGodown";
+import { useAnimalFeeding } from "../../../hooks/animalFeeding/useAnimalFeeding";
+import NoOrders from "../../../components/NoOrders";
 import { AuthContext } from "../../../context/auth/AuthContext";
 
 // Utility function to format date
@@ -15,15 +16,20 @@ const GodownOrders = () => {
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
+  const [totalPages, setTotalPages] = useState(1);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [orderToEdit, setOrderToEdit] = useState(null);
   const [orderToDelete, setOrderToDelete] = useState(null);
   const [filter, setFilter] = useState("all"); // Default filter is "all"
-  const { dispatch } = useGodown();
+  const [newQuantity, setNewQuantity] = useState(1);
+  const { user, isLoading } = useContext(AuthContext);
+
   // token
   const token = getToken();
-  const { user, isLoading } = useContext(AuthContext);
+
+  // Get the dispatch function from the context
+  const { orders: contextOrders, dispatch } = useAnimalFeeding();
 
   // Fetch orders from API
   const fetchOrders = async () => {
@@ -40,14 +46,23 @@ const GodownOrders = () => {
       );
       const data = await response.json();
       if (response.ok) {
-        setOrders(data);
-        dispatch({ type: "SET_GODOWN_ORDERS", payload: data });
-        setFilteredOrders(data); // Initially set filtered orders as all fetched orders
+        if (Array.isArray(data)) {
+          setOrders(data);
+          setFilteredOrders(data); // Initially set filtered orders as all fetched orders
+          setTotalPages(Math.ceil(data.length / itemsPerPage)); // Assuming itemsPerPage orders per page
+          // Dispatch the action to set orders in the context
+          dispatch({ type: "SET_ANIMAL_FEEDING_ORDERS", payload: data });
+        } else {
+          console.error("API response is not an array");
+          setFilteredOrders([]); // Ensure filteredOrders is an array
+        }
       } else {
         console.error("Failed to fetch orders");
+        setFilteredOrders([]); // Ensure filteredOrders is an array
       }
     } catch (error) {
       console.error("Error fetching orders:", error);
+      setFilteredOrders([]); // Ensure filteredOrders is an array
     }
   };
 
@@ -61,7 +76,6 @@ const GodownOrders = () => {
   };
 
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
   const paginatedOrders = filteredOrders.slice(
     startIndex,
     startIndex + itemsPerPage
@@ -118,6 +132,13 @@ const GodownOrders = () => {
   // Handle deleting an order
   const handleDeleteOrder = async (orderId) => {
     try {
+      // Optimistically update the UI
+      const updatedOrders = orders.filter((order) => order._id !== orderId);
+      setOrders(updatedOrders);
+      setFilteredOrders(updatedOrders);
+      setShowDeleteModal(false);
+
+      // Make the API call to delete the order
       const response = await fetch(
         `http://localhost:5000/api/v1/godown/orders/${orderId}`,
         {
@@ -128,54 +149,61 @@ const GodownOrders = () => {
           },
         }
       );
-      if (response.ok) {
-        const updatedOrders = orders.filter((order) => order._id !== orderId);
-        dispatch({ type: "DELETE_GODOWN_ORDER", payload: orderId });
-        setOrders(updatedOrders);
-        setFilteredOrders(updatedOrders);
-        setShowDeleteModal(false);
-      } else {
-        console.error("Failed to delete the order");
+
+      if (!response.ok) {
+        throw new Error("Failed to delete the order");
       }
+
+      // Dispatch the action to delete the order in the context
+      dispatch({ type: "DELETE_ANIMAL_FEEDING_ORDER", payload: orderId });
+      toast.success("Order deleted successfully");
     } catch (error) {
-      console.error("Error deleting order:", error);
+      // Revert the state if the API call fails
+      setOrders(orders);
+      setFilteredOrders(orders);
+      toast.error(`Error: ${error.message}`);
     }
   };
 
   // Handle editing an order
   const handleEditOrder = async () => {
     try {
+      // Optimistically update the UI
+      const updatedOrders = orders.map((order) =>
+        order._id === orderToEdit._id
+          ? { ...order, quantity: newQuantity }
+          : order
+      );
+      setOrders(updatedOrders);
+      setFilteredOrders(updatedOrders);
+      setShowEditModal(false);
+
+      // Make the API call to update the order
       const response = await fetch(
         `http://localhost:5000/api/v1/godown/orders/${orderToEdit._id}`,
         {
-          method: "PATCH",
+          method: "PUT",
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({
-            quantity: orderToEdit.quantity, // Only send the quantity
-          }),
+          body: JSON.stringify({ quantity: newQuantity }),
         }
       );
 
-      if (response.ok) {
-        const updatedOrder = await response.json();
-        const updatedOrders = orders.map((order) =>
-          order._id === updatedOrder._id ? updatedOrder : order
-        );
-        setOrders(updatedOrders);
-        setFilteredOrders(updatedOrders);
-        setShowEditModal(false);
-        setOrderToEdit(null);
-        toast.success("Order updated successfully!");
-      } else {
-        console.error("Failed to update the order");
-        toast.error("Failed to update the order");
+      if (!response.ok) {
+        throw new Error("Failed to update order");
       }
+
+      // Dispatch the action to update the order in the context
+      const updatedOrder = await response.json();
+      dispatch({ type: "UPDATE_ANIMAL_FEEDING_ORDER", payload: updatedOrder });
+      toast.success("Order updated successfully");
     } catch (error) {
-      console.error("Error updating order:", error);
-      toast.error("Error updating order");
+      // Revert the state if the API call fails
+      setOrders(orders);
+      setFilteredOrders(orders);
+      toast.error(`Error: ${error.message}`);
     }
   };
 
@@ -188,6 +216,7 @@ const GodownOrders = () => {
   // Handle Edit Order Modal
   const openEditModal = (order) => {
     setOrderToEdit(order);
+    setNewQuantity(order.quantity);
     setShowEditModal(true);
   };
 
@@ -201,15 +230,19 @@ const GodownOrders = () => {
     setOrderToDelete(null);
   };
 
+  if (filteredOrders.length === 0) {
+    return <NoOrders />;
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
       <div className="max-w-7xl mx-auto p-6">
-        <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-indigo-100">
-          <div className="bg-gradient-to-r from-indigo-700 to-indigo-800 px-6 py-8">
+        <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-blue-100">
+          <div className="bg-gradient-to-r from-blue-700 to-blue-800 px-6 py-8">
             <h1 className="text-3xl font-bold text-white text-center">
               Orders Management
             </h1>
-            <p className="text-indigo-300 text-center mt-2">
+            <p className="text-blue-300 text-center mt-2">
               Track and manage your orders
             </p>
           </div>
@@ -225,8 +258,8 @@ const GodownOrders = () => {
                     px-6 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
                     ${
                       filter === filterOption
-                        ? "bg-indigo-700 text-white shadow-lg transform scale-105"
-                        : "bg-indigo-100 text-indigo-600 hover:bg-indigo-200"
+                        ? "bg-blue-700 text-white shadow-lg transform scale-105"
+                        : "bg-blue-100 text-blue-600 hover:bg-blue-200"
                     }
                   `}
                 >
@@ -243,7 +276,7 @@ const GodownOrders = () => {
 
             {filteredOrders.length === 0 ? (
               <div className="text-center py-12">
-                <div className="text-indigo-400 mb-4">
+                <div className="text-blue-400 mb-4">
                   <svg
                     className="mx-auto h-12 w-12"
                     fill="none"
@@ -258,50 +291,45 @@ const GodownOrders = () => {
                     />
                   </svg>
                 </div>
-                <p className="text-indigo-500 text-lg">
+                <p className="text-blue-500 text-lg">
                   No orders found for the selected time period
                 </p>
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-indigo-200">
+                <table className="min-w-full divide-y divide-blue-200">
                   <thead>
-                    <tr className="bg-indigo-50">
-                      <th className="px-6 py-4 text-left text-xs font-medium text-indigo-500 uppercase tracking-wider">
+                    <tr className="bg-blue-50">
+                      <th className="px-6 py-4 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
                         Product
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-indigo-500 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
                         Quantity
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-indigo-500 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
                         Total Price
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-indigo-500 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
                         Actions
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-indigo-200">
+                  <tbody className="bg-white divide-y divide-blue-200">
                     {paginatedOrders.map((order) => (
                       <tr
                         key={order._id}
-                        className="hover:bg-indigo-50 transition-colors duration-200"
+                        className="hover:bg-blue-50 transition-colors duration-200"
                       >
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-indigo-900">
-                            {order.productName}
-                          </div>
-                          {/* <div className="text-sm text-indigo-500">
-                            ID: {order._id.slice(-6)}
-                          </div> */}
+                          {order.productName}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                          <span className="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
                             {order.quantity} units
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-indigo-900">
-                          Tsh {order.totalPrice.toLocaleString()}
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-900">
+                          Tsh {order.totalPrice}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex items-center space-x-2">
@@ -345,14 +373,14 @@ const GodownOrders = () => {
                   px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200
                   ${
                     currentPage === 1
-                      ? "bg-indigo-100 text-indigo-400 cursor-not-allowed"
-                      : "bg-indigo-700 text-white hover:bg-indigo-800"
+                      ? "bg-blue-100 text-blue-400 cursor-not-allowed"
+                      : "bg-blue-700 text-white hover:bg-blue-800"
                   }
                 `}
               >
                 Previous
               </button>
-              <span className="text-indigo-600">
+              <span className="text-blue-600">
                 Page {currentPage} of {totalPages}
               </span>
               <button
@@ -362,8 +390,8 @@ const GodownOrders = () => {
                   px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200
                   ${
                     currentPage === totalPages
-                      ? "bg-indigo-100 text-indigo-400 cursor-not-allowed"
-                      : "bg-indigo-700 text-white hover:bg-indigo-800"
+                      ? "bg-blue-100 text-blue-400 cursor-not-allowed"
+                      : "bg-blue-700 text-white hover:bg-blue-800"
                   }
                 `}
               >
@@ -379,69 +407,34 @@ const GodownOrders = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4">
             <div className="p-6">
-              <h2 className="text-2xl font-bold text-indigo-900 mb-6">
+              <h2 className="text-2xl font-bold text-blue-900 mb-6">
                 Edit Order
               </h2>
               <form className="space-y-4">
-                {/* Product Name (Read-only) */}
                 <div>
-                  <label className="block text-sm font-medium text-indigo-700 mb-1">
-                    Product Name
-                  </label>
-                  <input
-                    type="text"
-                    value={orderToEdit?.name || ""}
-                    readOnly // Make the field read-only
-                    className="w-full p-3 border border-indigo-300 rounded-xl bg-gray-100 cursor-not-allowed"
-                  />
-                </div>
-
-                {/* Quantity (Editable) */}
-                <div>
-                  <label className="block text-sm font-medium text-indigo-700 mb-1">
+                  <label className="block text-sm font-medium text-blue-700 mb-1">
                     Quantity
                   </label>
                   <input
                     type="number"
-                    value={orderToEdit?.quantity || ""}
-                    onChange={(e) =>
-                      setOrderToEdit({
-                        ...orderToEdit,
-                        quantity: e.target.value,
-                      })
-                    }
-                    className="w-full p-3 border border-indigo-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-transparent"
+                    value={newQuantity}
+                    onChange={(e) => setNewQuantity(parseInt(e.target.value))}
+                    min="1"
+                    className="w-full p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent"
                   />
                 </div>
-
-                {/* Total Price (Read-only) */}
-                <div>
-                  <label className="block text-sm font-medium text-indigo-700 mb-1">
-                    Total Price
-                  </label>
-                  <input
-                    type="text"
-                    value={`Tsh ${
-                      orderToEdit?.totalPrice?.toLocaleString() || ""
-                    }`}
-                    readOnly // Make the field read-only
-                    className="w-full p-3 border border-indigo-300 rounded-xl bg-gray-100 cursor-not-allowed"
-                  />
-                </div>
-
-                {/* Action Buttons */}
                 <div className="flex justify-end gap-3 mt-6">
                   <button
                     type="button"
                     onClick={closeEditModal}
-                    className="px-4 py-2 text-indigo-700 bg-indigo-100 rounded-xl hover:bg-indigo-200 transition-colors duration-200"
+                    className="px-4 py-2 text-blue-700 bg-blue-100 rounded-xl hover:bg-blue-200 transition-colors duration-200"
                   >
                     Cancel
                   </button>
                   <button
                     type="button"
                     onClick={handleEditOrder}
-                    className="px-4 py-2 text-white bg-indigo-700 rounded-xl hover:bg-indigo-800 transition-colors duration-200"
+                    className="px-4 py-2 text-white bg-blue-700 rounded-xl hover:bg-blue-800 transition-colors duration-200"
                   >
                     Save Changes
                   </button>
@@ -451,6 +444,7 @@ const GodownOrders = () => {
           </div>
         </div>
       )}
+
       {/* Delete Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -471,17 +465,17 @@ const GodownOrders = () => {
                   />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 text-center mb-4">
+              <h3 className="text-xl font-bold text-blue-900 text-center mb-4">
                 Confirm Delete
               </h3>
-              <p className="text-gray-500 text-center mb-6">
+              <p className="text-blue-500 text-center mb-6">
                 Are you sure you want to delete this order? This action cannot
                 be undone.
               </p>
               <div className="flex justify-center gap-3">
                 <button
                   onClick={closeDeleteModal}
-                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors duration-200"
+                  className="px-4 py-2 text-blue-700 bg-blue-100 rounded-xl hover:bg-blue-200 transition-colors duration-200"
                 >
                   Cancel
                 </button>

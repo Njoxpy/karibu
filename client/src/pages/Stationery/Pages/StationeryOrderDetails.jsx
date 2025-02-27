@@ -104,7 +104,7 @@ const StationeryOrderDetails = () => {
             {/* Header */}
             <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-8">
               <h1 className="text-2xl font-bold text-white">Order Details</h1>
-              <p className="text-sm text-blue-200 mt-1">Animal Feeding Order</p>
+              <p className="text-sm text-blue-200 mt-1">Stationery Order</p>
             </div>
 
             {/* Body */}

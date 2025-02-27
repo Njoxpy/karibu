@@ -132,6 +132,13 @@ const FreshOilOrders = () => {
   // Handle deleting an order
   const handleDeleteOrder = async (orderId) => {
     try {
+      // Optimistically update the UI
+      const updatedOrders = orders.filter((order) => order._id !== orderId);
+      setOrders(updatedOrders);
+      setFilteredOrders(updatedOrders);
+      setShowDeleteModal(false);
+
+      // Make the API call to delete the order
       const response = await fetch(
         `http://localhost:5000/api/v1/fresh-oil/orders/${orderId}`,
         {
@@ -142,28 +149,40 @@ const FreshOilOrders = () => {
           },
         }
       );
-      if (response.ok) {
-        const updatedOrders = orders.filter((order) => order._id !== orderId);
-        setOrders(updatedOrders);
-        setFilteredOrders(updatedOrders);
-        setShowDeleteModal(false);
-        // Dispatch the action to delete the order in the context
-        dispatch({ type: "DELETE_ANIMAL_FEEDING_ORDER", payload: orderId });
-      } else {
-        console.error("Failed to delete the order");
+
+      if (!response.ok) {
+        throw new Error("Failed to delete the order");
       }
+
+      // Dispatch the action to delete the order in the context
+      dispatch({ type: "DELETE_ANIMAL_FEEDING_ORDER", payload: orderId });
+      toast.success("Order deleted successfully");
     } catch (error) {
-      console.error("Error deleting order:", error);
+      // Revert the state if the API call fails
+      setOrders(orders);
+      setFilteredOrders(orders);
+      toast.error(`Error: ${error.message}`);
     }
   };
 
   // Handle editing an order
   const handleEditOrder = async () => {
     try {
+      // Optimistically update the UI
+      const updatedOrders = orders.map((order) =>
+        order._id === orderToEdit._id
+          ? { ...order, quantity: newQuantity }
+          : order
+      );
+      setOrders(updatedOrders);
+      setFilteredOrders(updatedOrders);
+      setShowEditModal(false);
+
+      // Make the API call to update the order
       const response = await fetch(
         `http://localhost:5000/api/v1/fresh-oil/orders/${orderToEdit._id}`,
         {
-          method: "PATCH",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -176,22 +195,14 @@ const FreshOilOrders = () => {
         throw new Error("Failed to update order");
       }
 
-      const updatedOrder = await response.json();
-      setOrders((prevOrders) =>
-        prevOrders.map((order) =>
-          order._id === updatedOrder._id ? updatedOrder : order
-        )
-      );
-      setFilteredOrders((prevOrders) =>
-        prevOrders.map((order) =>
-          order._id === updatedOrder._id ? updatedOrder : order
-        )
-      );
-      setShowEditModal(false);
       // Dispatch the action to update the order in the context
+      const updatedOrder = await response.json();
       dispatch({ type: "UPDATE_ANIMAL_FEEDING_ORDER", payload: updatedOrder });
       toast.success("Order updated successfully");
     } catch (error) {
+      // Revert the state if the API call fails
+      setOrders(orders);
+      setFilteredOrders(orders);
       toast.error(`Error: ${error.message}`);
     }
   };
@@ -326,7 +337,7 @@ const FreshOilOrders = () => {
                               <div className="flex space-x-2">
                                 <button
                                   onClick={() => openEditModal(order)}
-                                  className="text-blue-700 hover:text-blue-900 bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded-lg transition duration-200 shadow-sm"
+                                  className="text-yellow-700 hover:text-yellow-900 bg-yellow-100 hover:bg-yellow-200 px-3 py-1 rounded-lg transition duration-200 shadow-sm"
                                 >
                                   Edit
                                 </button>
@@ -340,7 +351,7 @@ const FreshOilOrders = () => {
                             )}
                             <Link
                               to={`/fresh-oil/orders/${order._id}`}
-                              className="text-blue-700 hover:text-blue-900 bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded-lg transition duration-200 shadow-sm"
+                              className="text-yellow-700 hover:text-yellow-900 bg-yellow-100 hover:bg-yellow-200 px-3 py-1 rounded-lg transition duration-200 shadow-sm"
                             >
                               Details
                             </Link>

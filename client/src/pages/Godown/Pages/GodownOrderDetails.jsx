@@ -100,7 +100,7 @@ const GodownOrdersDetails = () => {
         <div className="bg-white rounded-lg shadow-md max-w-2xl mx-auto">
           <div className="p-6 border-b border-gray-200">
             <h1 className="text-2xl font-bold">Order Details</h1>
-            <p className="text-sm text-gray-500">Animal Feeding Order</p>
+            <p className="text-sm text-gray-500">Godown Order</p>
           </div>
 
           <div className="p-6 space-y-6">
@@ -158,7 +158,6 @@ const GodownOrdersDetails = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </>
   );
 };

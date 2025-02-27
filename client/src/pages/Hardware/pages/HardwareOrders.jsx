@@ -1,8 +1,11 @@
-import { useState, useEffect, useContext } from "react";
-import Footer from "../../../components/Footer";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import Footer from "../../../components/Footer";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { getToken } from "../../../services/token";
+import { useAnimalFeeding } from "../../../hooks/animalFeeding/useAnimalFeeding";
+import NoOrders from "../../../components/NoOrders";
 import { AuthContext } from "../../../context/auth/AuthContext";
 
 // Utility function to format date
@@ -13,15 +16,20 @@ const HardwareOrders = () => {
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
+  const [totalPages, setTotalPages] = useState(1);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [orderToEdit, setOrderToEdit] = useState(null);
   const [orderToDelete, setOrderToDelete] = useState(null);
   const [filter, setFilter] = useState("all"); // Default filter is "all"
+  const [newQuantity, setNewQuantity] = useState(1);
   const { user, isLoading } = useContext(AuthContext);
 
   // token
-  const token = localStorage.getItem("authToken");
+  const token = getToken();
+
+  // Get the dispatch function from the context
+  const { orders: contextOrders, dispatch } = useAnimalFeeding();
 
   // Fetch orders from API
   const fetchOrders = async () => {
@@ -38,13 +46,23 @@ const HardwareOrders = () => {
       );
       const data = await response.json();
       if (response.ok) {
-        setOrders(data);
-        setFilteredOrders(data); // Initially set filtered orders as all fetched orders
+        if (Array.isArray(data)) {
+          setOrders(data);
+          setFilteredOrders(data); // Initially set filtered orders as all fetched orders
+          setTotalPages(Math.ceil(data.length / itemsPerPage)); // Assuming itemsPerPage orders per page
+          // Dispatch the action to set orders in the context
+          dispatch({ type: "SET_ANIMAL_FEEDING_ORDERS", payload: data });
+        } else {
+          console.error("API response is not an array");
+          setFilteredOrders([]); // Ensure filteredOrders is an array
+        }
       } else {
         console.error("Failed to fetch orders");
+        setFilteredOrders([]); // Ensure filteredOrders is an array
       }
     } catch (error) {
       console.error("Error fetching orders:", error);
+      setFilteredOrders([]); // Ensure filteredOrders is an array
     }
   };
 
@@ -58,7 +76,6 @@ const HardwareOrders = () => {
   };
 
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
   const paginatedOrders = filteredOrders.slice(
     startIndex,
     startIndex + itemsPerPage
@@ -115,6 +132,13 @@ const HardwareOrders = () => {
   // Handle deleting an order
   const handleDeleteOrder = async (orderId) => {
     try {
+      // Optimistically update the UI
+      const updatedOrders = orders.filter((order) => order._id !== orderId);
+      setOrders(updatedOrders);
+      setFilteredOrders(updatedOrders);
+      setShowDeleteModal(false);
+
+      // Make the API call to delete the order
       const response = await fetch(
         `http://localhost:5000/api/v1/hardware/orders/${orderId}`,
         {
@@ -125,48 +149,61 @@ const HardwareOrders = () => {
           },
         }
       );
-      if (response.ok) {
-        const updatedOrders = orders.filter((order) => order._id !== orderId);
-        setOrders(updatedOrders);
-        setFilteredOrders(updatedOrders);
-        setShowDeleteModal(false);
-      } else {
-        console.error("Failed to delete the order");
+
+      if (!response.ok) {
+        throw new Error("Failed to delete the order");
       }
+
+      // Dispatch the action to delete the order in the context
+      dispatch({ type: "DELETE_ANIMAL_FEEDING_ORDER", payload: orderId });
+      toast.success("Order deleted successfully");
     } catch (error) {
-      console.error("Error deleting order:", error);
+      // Revert the state if the API call fails
+      setOrders(orders);
+      setFilteredOrders(orders);
+      toast.error(`Error: ${error.message}`);
     }
   };
 
   // Handle editing an order
   const handleEditOrder = async () => {
     try {
+      // Optimistically update the UI
+      const updatedOrders = orders.map((order) =>
+        order._id === orderToEdit._id
+          ? { ...order, quantity: newQuantity }
+          : order
+      );
+      setOrders(updatedOrders);
+      setFilteredOrders(updatedOrders);
+      setShowEditModal(false);
+
+      // Make the API call to update the order
       const response = await fetch(
         `http://localhost:5000/api/v1/hardware/orders/${orderToEdit._id}`,
         {
-          method: "PATCH",
+          method: "PUT",
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(orderToEdit),
+          body: JSON.stringify({ quantity: newQuantity }),
         }
       );
 
-      if (response.ok) {
-        const updatedOrder = await response.json();
-        const updatedOrders = orders.map((order) =>
-          order._id === updatedOrder._id ? updatedOrder : order
-        );
-        setOrders(updatedOrders);
-        setFilteredOrders(updatedOrders);
-        setShowEditModal(false);
-        setOrderToEdit(null);
-      } else {
-        console.error("Failed to update the order");
+      if (!response.ok) {
+        throw new Error("Failed to update order");
       }
+
+      // Dispatch the action to update the order in the context
+      const updatedOrder = await response.json();
+      dispatch({ type: "UPDATE_ANIMAL_FEEDING_ORDER", payload: updatedOrder });
+      toast.success("Order updated successfully");
     } catch (error) {
-      console.error("Error updating order:", error);
+      // Revert the state if the API call fails
+      setOrders(orders);
+      setFilteredOrders(orders);
+      toast.error(`Error: ${error.message}`);
     }
   };
 
@@ -179,6 +216,7 @@ const HardwareOrders = () => {
   // Handle Edit Order Modal
   const openEditModal = (order) => {
     setOrderToEdit(order);
+    setNewQuantity(order.quantity);
     setShowEditModal(true);
   };
 
@@ -191,6 +229,10 @@ const HardwareOrders = () => {
     setShowDeleteModal(false);
     setOrderToDelete(null);
   };
+
+  if (filteredOrders.length === 0) {
+    return <NoOrders />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
@@ -279,9 +321,7 @@ const HardwareOrders = () => {
                         className="hover:bg-blue-50 transition-colors duration-200"
                       >
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-blue-900">
-                            {order.productName}
-                          </div>
+                          {order.productName}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
@@ -363,7 +403,6 @@ const HardwareOrders = () => {
       </div>
 
       {/* Edit Modal */}
-      {/* Edit Modal */}
       {showEditModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4">
@@ -378,30 +417,26 @@ const HardwareOrders = () => {
                   </label>
                   <input
                     type="number"
-                    value={orderToEdit?.quantity || ""}
-                    onChange={(e) =>
-                      setOrderToEdit({
-                        ...orderToEdit,
-                        quantity: e.target.value,
-                      })
-                    }
-                    className="w-full p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500"
+                    value={newQuantity}
+                    onChange={(e) => setNewQuantity(parseInt(e.target.value))}
+                    min="1"
+                    className="w-full p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent"
                   />
                 </div>
-                <div className="flex justify-end gap-4 mt-4">
+                <div className="flex justify-end gap-3 mt-6">
                   <button
                     type="button"
                     onClick={closeEditModal}
-                    className="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg"
+                    className="px-4 py-2 text-blue-700 bg-blue-100 rounded-xl hover:bg-blue-200 transition-colors duration-200"
                   >
                     Cancel
                   </button>
                   <button
                     type="button"
                     onClick={handleEditOrder}
-                    className="px-6 py-2 bg-blue-700 text-white rounded-lg"
+                    className="px-4 py-2 text-white bg-blue-700 rounded-xl hover:bg-blue-800 transition-colors duration-200"
                   >
-                    Save
+                    Save Changes
                   </button>
                 </div>
               </form>

@@ -4,7 +4,7 @@ import Footer from "../../../components/Footer";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getToken } from "../../../services/token";
-import { useGodown } from "../../../hooks/Godown/useGodown";
+import { useAnimalFeeding } from "../../../hooks/animalFeeding/useAnimalFeeding";
 
 const GodownProductDetails = () => {
   const { id } = useParams();
@@ -18,7 +18,7 @@ const GodownProductDetails = () => {
   const [orderSuccess, setOrderSuccess] = useState(false);
 
   // Get the dispatch function from the context
-  const { dispatch } = useGodown();
+  const { dispatch } = useAnimalFeeding();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -41,10 +41,9 @@ const GodownProductDetails = () => {
         setTotalPrice(data.price * quantity);
         setLoading(false);
         // Dispatch the action to set the product in the context
-        dispatch({ type: "SET_GODOWN_PRODUCTS", payload: [data] });
+        dispatch({ type: "SET_ANIMAL_FEEDING_PRODUCTS", payload: [data] });
       } catch (error) {
         toast.error(`Error: ${error.message}`);
-        // dispatch({ type: "SET_ERROR", payload: error.message });
         setLoading(false);
       }
     };
@@ -89,14 +88,25 @@ const GodownProductDetails = () => {
         }
       );
 
-      dispatch({ type: "ADD_GODOWN_ORDER", payload: response.data });
-
       if (!response.ok) {
         const errorResponse = await response.json();
         throw new Error(
           errorResponse.message || "Failed to place the order. Try again."
         );
       }
+
+      // Update the product quantity locally
+      const updatedProduct = {
+        ...product,
+        quantity: product.quantity - quantity,
+      };
+
+      // Update state and context
+      setProduct(updatedProduct);
+      dispatch({
+        type: "SET_ANIMAL_FEEDING_PRODUCTS",
+        payload: [updatedProduct],
+      });
 
       // Show success message and reset the state
       setOrderSuccess(true);
@@ -111,7 +121,7 @@ const GodownProductDetails = () => {
 
       // Reset order form state
       setQuantity(1);
-      setTotalPrice(product.price);
+      setTotalPrice(updatedProduct.price);
     } catch (error) {
       // Handle errors
       toast.error(`Error: ${error.message}`, {
@@ -130,7 +140,7 @@ const GodownProductDetails = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-900"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-900"></div>
       </div>
     );
   }
@@ -138,8 +148,8 @@ const GodownProductDetails = () => {
   if (!product) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="bg-indigo-50 p-4 rounded-lg">
-          <p className="text-indigo-600 text-center font-medium">
+        <div className="bg-blue-50 p-4 rounded-lg">
+          <p className="text-blue-600 text-center font-medium">
             Product not found
           </p>
         </div>
@@ -148,38 +158,38 @@ const GodownProductDetails = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-indigo-100">
+    <div className="min-h-screen">
       <ToastContainer />
       <div className="max-w-4xl mx-auto px-4 py-12">
-        <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-indigo-100">
+        <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-blue-100">
           {/* Header Section */}
-          <div className="bg-gradient-to-r from-indigo-700 to-indigo-800 px-6 py-8">
+          <div className="bg-gradient-to-r from-blue-700 to-blue-800 px-6 py-8">
             <h2 className="text-2xl md:text-3xl font-bold text-white text-center">
               {product.name}
             </h2>
-            <p className="text-indigo-300 text-center mt-2">Product Details</p>
+            <p className="text-blue-300 text-center mt-2">Product Details</p>
           </div>
 
           <div className="p-8">
             {/* Product Info Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
               <div className="space-y-4">
-                <div className="bg-indigo-50 p-4 rounded-xl">
-                  <label className="text-sm text-indigo-500 block mb-1">
-                    Product Description
+                <div className="bg-blue-50 p-4 rounded-xl">
+                  <label className="text-sm text-blue-500 block mb-1">
+                    Description
                   </label>
-                  <p className="text-lg font-semibold text-indigo-700">
+                  <p className="text-lg font-semibold text-blue-700">
                     {product.description}
                   </p>
                 </div>
-                <div className="bg-indigo-50 p-4 rounded-xl">
-                  <label className="text-sm text-indigo-500 block mb-1">
+                <div className="bg-blue-50 p-4 rounded-xl">
+                  <label className="text-sm text-blue-500 block mb-1">
                     Available Stock
                   </label>
                   <p
                     className={`text-lg font-semibold ${
                       product.quantity > 20
-                        ? "text-indigo-600"
+                        ? "text-blue-600"
                         : "text-orange-500"
                     }`}
                   >
@@ -188,22 +198,30 @@ const GodownProductDetails = () => {
                 </div>
               </div>
               <div className="space-y-4">
-                <div className="bg-indigo-50 p-4 rounded-xl">
-                  <label className="text-sm text-indigo-500 block mb-1">
+                <div className="bg-blue-50 p-4 rounded-xl">
+                  <label className="text-sm text-blue-500 block mb-1">
                     Price per Unit
                   </label>
-                  <p className="text-lg font-semibold text-indigo-700">
+                  <p className="text-lg font-semibold text-blue-700">
                     Tsh {product.price.toLocaleString()}
                   </p>
                 </div>
                 <div className="bg-indigo-50 p-4 rounded-xl">
-                  <label className="text-sm text-indigo-500 block mb-1">
+                  <span className="text-sm text-indigo-500 block mb-1">
+                    Location
+                  </span>
+                  <span className="text-lg font-semibold text-indigo-700">
+                    {product.location}
+                  </span>
+                </div>
+                <div className="bg-blue-50 p-4 rounded-xl">
+                  <label className="text-sm text-blue-500 block mb-1">
                     Status
                   </label>
                   <span
                     className={`px-3 py-1 rounded-full text-sm font-medium ${
                       product.quantity > 0
-                        ? "bg-indigo-100 text-indigo-800"
+                        ? "bg-blue-100 text-blue-800"
                         : "bg-red-100 text-red-800"
                     }`}
                   >
@@ -215,8 +233,8 @@ const GodownProductDetails = () => {
 
             {/* Order Form */}
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="bg-indigo-50 p-6 rounded-xl">
-                <label className="block text-sm font-medium text-indigo-700 mb-2">
+              <div className="bg-blue-50 p-6 rounded-xl">
+                <label className="block text-sm font-medium text-blue-700 mb-2">
                   Order Quantity
                 </label>
                 <div className="flex items-center space-x-4">
@@ -226,11 +244,11 @@ const GodownProductDetails = () => {
                     onChange={handleQuantityChange}
                     min="1"
                     max={product.quantity}
-                    className="flex-1 p-3 border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-200"
+                    className="flex-1 p-3 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200"
                   />
                   <div className="text-right">
-                    <p className="text-sm text-indigo-500">Total Price</p>
-                    <p className="text-xl font-bold text-indigo-700">
+                    <p className="text-sm text-blue-500">Total Price</p>
+                    <p className="text-xl font-bold text-blue-700">
                       Tsh {totalPrice.toLocaleString()}
                     </p>
                   </div>
@@ -246,14 +264,20 @@ const GodownProductDetails = () => {
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  disabled={isSubmitting || quantity > product.quantity}
+                  disabled={
+                    isSubmitting ||
+                    quantity > product.quantity ||
+                    product.quantity === 0
+                  }
                   className={`
                     w-full md:w-auto px-8 py-4 rounded-xl text-white font-medium
                     transition-all duration-200 transform hover:scale-105
                     ${
-                      isSubmitting || quantity > product.quantity
-                        ? "bg-indigo-400 cursor-not-allowed"
-                        : "bg-gradient-to-r from-indigo-700 to-indigo-800 hover:from-indigo-800 hover:to-indigo-900 shadow-lg hover:shadow-xl"
+                      isSubmitting ||
+                      quantity > product.quantity ||
+                      product.quantity === 0
+                        ? "bg-blue-400 cursor-not-allowed"
+                        : "bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 shadow-lg hover:shadow-xl"
                     }
                   `}
                 >
@@ -296,9 +320,9 @@ const GodownProductDetails = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all duration-300 scale-100">
             <div className="p-8">
-              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-indigo-100">
+              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100">
                 <svg
-                  className="h-8 w-8 text-indigo-600"
+                  className="h-8 w-8 text-blue-600"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -311,16 +335,16 @@ const GodownProductDetails = () => {
                   />
                 </svg>
               </div>
-              <h3 className="mt-6 text-xl font-semibold text-indigo-900 text-center">
+              <h3 className="mt-6 text-xl font-semibold text-blue-900 text-center">
                 Order Placed Successfully!
               </h3>
-              <p className="mt-4 text-indigo-500 text-center">
+              <p className="mt-4 text-blue-500 text-center">
                 Your order has been successfully placed and is being processed.
               </p>
               <div className="mt-8">
                 <button
                   onClick={() => setOrderSuccess(false)}
-                  className="w-full px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-indigo-700 to-indigo-800 rounded-xl hover:from-indigo-800 hover:to-indigo-900 transition-all duration-200 transform hover:scale-105"
+                  className="w-full px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-blue-700 to-blue-800 rounded-xl hover:from-blue-800 hover:to-blue-900 transition-all duration-200 transform hover:scale-105"
                 >
                   Continue Ordering
                 </button>

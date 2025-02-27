@@ -16,48 +16,61 @@ const OrderItem = () => {
   const token = getToken();
 
   // Fetch products and set initial selected product
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch(
-          "http://localhost:5000/api/v1/fresh-oil/products",
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch products");
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/v1/fresh-oil/products",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
-        const data = await response.json();
-
-        if (Array.isArray(data)) {
-          setProducts(data);
-          // Set initial selected product and total price if products exist
-          if (data.length > 0) {
-            setSelectedProduct(data[0]);
-            setTotalPrice(data[0].price * quantity);
-          } else {
-            toast.info("No products found");
-          }
-        } else {
-          console.error("API response is not an array:", data);
-          setProducts([]);
-          toast.error("Invalid data format received from the server");
-        }
-      } catch (error) {
-        console.error("Error fetching products:", error);
-        toast.error("Error fetching products");
-      } finally {
-        setIsLoading(false);
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch products");
       }
-    };
+      const data = await response.json();
 
+      if (Array.isArray(data)) {
+        setProducts(data);
+        // Set initial selected product and total price if products exist
+        if (data.length > 0) {
+          // Find the currently selected product in the updated product list
+          const currentProduct = selectedProduct
+            ? data.find((p) => p._id === selectedProduct._id)
+            : data[0];
+
+          setSelectedProduct(currentProduct);
+          setTotalPrice(currentProduct.price * quantity);
+        } else {
+          toast.info("No products found");
+        }
+      } else {
+        console.error("API response is not an array:", data);
+        setProducts([]);
+        toast.error("Invalid data format received from the server");
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      toast.error("Error fetching products");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Initial fetch on component mount
+  useEffect(() => {
     fetchProducts();
-  }, [token, quantity]);
+  }, [token]);
+
+  // Update total price when quantity or product changes
+  useEffect(() => {
+    if (selectedProduct) {
+      setTotalPrice(selectedProduct.price * quantity);
+    }
+  }, [quantity, selectedProduct]);
 
   const handleProductChange = (event) => {
     const product = products.find((p) => p._id === event.target.value);
@@ -94,7 +107,8 @@ const OrderItem = () => {
         status: "pending",
       };
 
-      const response = await fetch(
+      // 1. Create the order
+      const orderResponse = await fetch(
         "http://localhost:5000/api/v1/fresh-oil/orders",
         {
           method: "POST",
@@ -106,21 +120,43 @@ const OrderItem = () => {
         }
       );
 
-      if (!response.ok) {
-        const errorResponse = await response.json();
+      if (!orderResponse.ok) {
+        const errorResponse = await orderResponse.json();
         throw new Error(
           errorResponse.message || "Failed to place the order. Try again."
         );
       }
+
+      // 2. Update the product quantity in the backend
+      const updatedQuantity = selectedProduct.quantity - quantity;
+      const updateResponse = await fetch(
+        `http://localhost:5000/api/v1/fresh-oil/products/${selectedProduct._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ quantity: updatedQuantity }),
+        }
+      );
+
+      // if (!updateResponse.ok) {
+      //   // If updating product fails, we should still show order success
+      //   // but also show a warning that inventory wasn't updated
+      //   toast.warning(
+      //     "Order placed, but inventory not updated. Please refresh."
+      //   );
+      // }
+
+      // 3. Refresh products list to get updated quantities
+      await fetchProducts();
 
       setOrderSuccess(true);
       toast.success("Order placed successfully!");
 
       // Reset form state
       setQuantity(1);
-      if (selectedProduct) {
-        setTotalPrice(selectedProduct.price);
-      }
     } catch (error) {
       toast.error(`Error: ${error.message}`);
     } finally {
@@ -181,7 +217,7 @@ const OrderItem = () => {
                   >
                     {products.map((product) => (
                       <option key={product._id} value={product._id}>
-                        {product.name}
+                        {product.name} - {product.quantity} available
                       </option>
                     ))}
                   </select>
@@ -204,8 +240,10 @@ const OrderItem = () => {
                         <span
                           className={`ml-2 px-2 py-1 rounded-full text-sm font-medium ${
                             selectedProduct.quantity > 20
+                              ? "bg-green-100 text-green-800"
+                              : selectedProduct.quantity > 5
                               ? "bg-yellow-100 text-yellow-800"
-                              : "bg-yellow-100 text-yellow-800"
+                              : "bg-red-100 text-red-800"
                           }`}
                         >
                           {selectedProduct.quantity} units
@@ -348,6 +386,13 @@ const OrderItem = () => {
               <p className="text-yellow-500 text-center mb-6">
                 Your order has been successfully placed and is being processed.
               </p>
+              <div className="text-center mb-6 bg-yellow-50 p-3 rounded-xl">
+                <p className="text-yellow-700 font-medium">Updated Inventory</p>
+                <p className="text-yellow-600">
+                  {selectedProduct?.name}:{" "}
+                  {selectedProduct?.quantity - quantity} units remaining
+                </p>
+              </div>
               <button
                 onClick={() => setOrderSuccess(false)}
                 className="w-full px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-yellow-700 to-yellow-800 rounded-xl hover:from-yellow-800 hover:to-yellow-900 transition-all duration-200 transform hover:scale-105"

@@ -1,11 +1,19 @@
-import { Outlet, Link } from "react-router-dom";
-import { useState, useContext } from "react";
+import { Outlet, Link, useNavigate } from "react-router-dom";
+import { useState, useContext, useEffect } from "react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { AuthContext } from "../../../context/auth/AuthContext"; // Assuming you have an AuthContext
 
 function HardwareLayout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, isLoading } = useContext(AuthContext); // Access user info from context
+  const navigate = useNavigate();
+
+  // Redirect if the user is not admin and tries to access admin routes
+  useEffect(() => {
+    if (user && user.role !== "admin") {
+      navigate("/hardware"); // Redirect non-admins to the hardware homepage
+    }
+  }, [user, navigate]);
 
   if (isLoading) {
     return <div>Loading...</div>; // Display loading state while the user data is being fetched

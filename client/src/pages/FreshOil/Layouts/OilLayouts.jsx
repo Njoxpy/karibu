@@ -1,11 +1,12 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../../context/auth/AuthContext"; // Adjust the import based on your file structure
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 
 function OilLayouts() {
   const { user } = useContext(AuthContext); // Get the user from AuthContext
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   const navItems = [
     { path: "/fresh-oil/", label: "Home" },
@@ -20,6 +21,17 @@ function OilLayouts() {
       { path: "/fresh-oil/admin/manage", label: "Manage Oil" }
     );
   }
+  useEffect(() => {
+    if (user.role !== "admin") {
+      const path = window.location.pathname;
+      if (
+        path === "/fresh-oil/admin/upload" ||
+        path === "/fresh-oil/admin/manage"
+      ) {
+        navigate("/fresh-oil"); // Redirect to the main page if not an admin
+      }
+    }
+  }, [user, navigate]);
 
   return (
     <>

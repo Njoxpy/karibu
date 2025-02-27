@@ -126,7 +126,6 @@ import DashboardLayout from "./pages/admin/layout/DashboardLayout";
 import DashboardHome from "./pages/admin/pages/DashboardHome";
 import UsersPage from "./pages/admin/pages/UsersPage";
 import ReportsPage from "./pages/admin/pages/ReportsPage";
-import UserProfile from "./components/UserProfile";
 import AddUserPage from "./pages/admin/components/AddUserPage";
 
 import OilDetailsError from "./pages/FreshOil/Error/OilDetailsError";
@@ -141,8 +140,6 @@ import Support from "./pages/admin/pages/Support";
 import Settings from "./pages/admin/pages/Settings";
 import { useAuth } from "./hooks/auth/useAuth";
 import ProtectedRoute from "./auth/ProtectedRoute";
-import ErrorBoundary from "./error/ErrorBoundary";
-
 // auth
 
 export default function App() {

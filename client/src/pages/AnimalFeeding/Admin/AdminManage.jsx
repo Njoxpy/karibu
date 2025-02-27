@@ -108,16 +108,20 @@ const AdminManage = () => {
     const { name, value } = e.target;
     setEditProduct({ ...editProduct, [name]: value });
   };
-
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     try {
       // Optimistically update the UI before the server response
       const updatedProduct = { ...editProduct }; // Copy the product data
 
-      // Optimistically update the UI
+      // Optimistically update the UI in both products and currentItems
       setProducts((prevProducts) =>
         prevProducts.map((product) =>
+          product._id === updatedProduct._id ? updatedProduct : product
+        )
+      );
+      setCurrentItems((prevItems) =>
+        prevItems.map((product) =>
           product._id === updatedProduct._id ? updatedProduct : product
         )
       );
@@ -126,7 +130,7 @@ const AdminManage = () => {
       const response = await fetch(
         `${baseURL}/api/v1/animal-feeding/products/${updatedProduct._id}`,
         {
-          method: "PATCH",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -158,6 +162,16 @@ const AdminManage = () => {
 
   const handleDelete = async () => {
     try {
+      // Optimistically update the UI before the server response
+      const updatedProducts = products.filter(
+        (product) => product._id !== selectedProduct._id
+      );
+
+      // Optimistically update the products and currentItems in the UI
+      setProducts(updatedProducts);
+      setCurrentItems(updatedProducts);
+
+      // Proceed with the delete API call
       const response = await fetch(
         `${baseURL}/api/v1/animal-feeding/products/${selectedProduct._id}`,
         {
@@ -170,13 +184,14 @@ const AdminManage = () => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      setProducts(
-        products.filter((product) => product._id !== selectedProduct._id)
-      );
+
+      // If delete is successful, show success modal
       setIsDeleteModalOpen(false);
       setIsDeleteSuccessModalOpen(true);
     } catch (error) {
       console.error("Error deleting product:", error);
+      // If there was an error, restore the original list (just in case)
+      fetchProducts();
     }
   };
 

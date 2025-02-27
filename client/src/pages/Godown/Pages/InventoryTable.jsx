@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { getToken } from "../../../services/token";
 import { useGodown } from "../../../hooks/Godown/useGodown";
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 10;
 const API_URL = "http://localhost:5000/api/v1/godown/products";
 
 const InventoryTable = () => {

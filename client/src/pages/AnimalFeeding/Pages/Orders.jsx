@@ -15,7 +15,7 @@ const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  const itemsPerPage = 10;
   const [totalPages, setTotalPages] = useState(1);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -351,6 +351,7 @@ const Orders = () => {
                                 </button>
                               </div>
                             )}
+
                             <Link
                               to={`/animal-feeding/orders/${order._id}`}
                               className="text-green-700 hover:text-green-900 bg-green-100 hover:bg-green-200 px-3 py-1 rounded-lg transition duration-200 shadow-sm"

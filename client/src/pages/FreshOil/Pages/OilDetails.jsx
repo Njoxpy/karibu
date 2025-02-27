@@ -95,6 +95,19 @@ const OilDetails = () => {
         );
       }
 
+      // Update the product quantity locally
+      const updatedProduct = {
+        ...product,
+        quantity: product.quantity - quantity,
+      };
+
+      // Update state and context
+      setProduct(updatedProduct);
+      dispatch({
+        type: "SET_ANIMAL_FEEDING_PRODUCTS",
+        payload: [updatedProduct],
+      });
+
       // Show success message and reset the state
       setOrderSuccess(true);
       toast.success("Order placed successfully!", {
@@ -108,7 +121,7 @@ const OilDetails = () => {
 
       // Reset order form state
       setQuantity(1);
-      setTotalPrice(product.price);
+      setTotalPrice(updatedProduct.price);
     } catch (error) {
       // Handle errors
       toast.error(`Error: ${error.message}`, {
@@ -243,12 +256,18 @@ const OilDetails = () => {
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  disabled={isSubmitting || quantity > product.quantity}
+                  disabled={
+                    isSubmitting ||
+                    quantity > product.quantity ||
+                    product.quantity === 0
+                  }
                   className={`
                     w-full md:w-auto px-8 py-4 rounded-xl text-white font-medium
                     transition-all duration-200 transform hover:scale-105
                     ${
-                      isSubmitting || quantity > product.quantity
+                      isSubmitting ||
+                      quantity > product.quantity ||
+                      product.quantity === 0
                         ? "bg-yellow-400 cursor-not-allowed"
                         : "bg-gradient-to-r from-yellow-700 to-yellow-800 hover:from-yellow-800 hover:to-yellow-900 shadow-lg hover:shadow-xl"
                     }
