@@ -20,6 +20,9 @@ const printingRoutes = require("./routes/printing.routes");
 const hardwareRoutes = require("./routes/hardware.routes");
 const stationeryRoutes = require("./routes/stationery.routes");
 
+// script
+const admin = require("./scripts/adminSetup");
+
 // Logger import
 const logger = require("./logs/logger");
 

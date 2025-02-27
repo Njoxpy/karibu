@@ -11,7 +11,7 @@ const animalFeedingOrderSchema = new Schema(
         `ORDER-ANIMAL-FEEDING-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
     },
     productName: {
-      type: String, // Add this field
+      type: String,
       required: true,
     },
     productId: {
@@ -42,36 +42,45 @@ const animalFeedingOrderSchema = new Schema(
   { timestamps: true }
 );
 
-// Pre-save hook to calculate total
-animalFeedingOrderSchema.pre("save", function (next) {
-  if (!this.price) {
-    // Fetch the price from the product if not provided
-    AnimalFeedingProduct.findById(this.productId, (err, product) => {
-      if (err || !product) {
-        return next(new Error("Product not found"));
-      }
-      this.price = product.price;
-      this.total = this.quantity * this.price;
-      next();
-    });
-  } else {
+// Pre-save hook to fetch price & calculate total
+animalFeedingOrderSchema.pre("save", async function (next) {
+  try {
+    const product = await AnimalFeedingProduct.findById(this.productId);
+    if (!product) {
+      return next(new Error("Product not found"));
+    }
+
+    // Ensure the price is always fetched from the product
+    this.price = product.price;
     this.total = this.quantity * this.price;
+
+    // Check stock availability
+    if (product.quantity < this.quantity) {
+      return next(new Error("Not enough stock available"));
+    }
+
     next();
+  } catch (error) {
+    next(error);
   }
 });
 
-// Post-save hook to update product stock
+// Post-save hook to update product stock safely
 animalFeedingOrderSchema.post("save", async function (doc, next) {
   try {
-    const product = await AnimalFeedingProduct.findById(doc.productId);
-    if (product.quantity < doc.quantity) {
-      throw new Error("Not enough stock available");
+    const updatedProduct = await AnimalFeedingProduct.findOneAndUpdate(
+      { _id: doc.productId, quantity: { $gte: doc.quantity } }, // Ensure stock is enough
+      { $inc: { quantity: -doc.quantity } }, // Deduct stock
+      { new: true }
+    );
+
+    if (!updatedProduct) {
+      return next(new Error("Stock update failed. Not enough stock."));
     }
-    product.quantity -= doc.quantity;
-    await product.save();
+
     next();
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(error);
   }
 });
 
