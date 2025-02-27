@@ -9,9 +9,10 @@ const {
   SERVER_ERROR,
   BAD_REQUEST,
 } = require("../constants/responseStatusCode");
+
+// models
 const StationeryProduct = require("../models/stationery/stationeryProductModel");
 const StationeryOrder = require("../models/stationery/stationerOrderModel");
-const { default: mongoose } = require("mongoose");
 
 const searchStationeryProducts = async (req, res) => {
   const { name, description, minPrice, maxPrice } = req.query;
@@ -192,86 +193,88 @@ const createStationeryOrder = async (req, res) => {
   }
 };
 
-// const createStationeryOrder = async (req, res) => {
-//   try {
-//     const { productId, quantity } = req.body;
+/* 
+const createStationeryOrder = async (req, res) => {
+  try {
+    const { productId, quantity } = req.body;
 
-//     const userId = req.user && req.user._id;
+    const userId = req.user && req.user._id;
 
-//     if (!mongoose.Types.ObjectId.isValid(userId)) {
-//       return res.status(BAD_REQUEST).json({ error: "Invalid userId." });
-//     }
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(BAD_REQUEST).json({ error: "Invalid userId." });
+    }
 
-//     if (!mongoose.Types.ObjectId.isValid(productId)) {
-//       return res.status(BAD_REQUEST).json({ error: "Invalid product id." });
-//     }
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(BAD_REQUEST).json({ error: "Invalid product id." });
+    }
 
-//     // Check if all fields are provided
-//     if (!productId || !quantity || !userId) {
-//       return res
-//         .status(BAD_REQUEST)
-//         .json({ message: "All fields are required" });
-//     }
+    // Check if all fields are provided
+    if (!productId || !quantity || !userId) {
+      return res
+        .status(BAD_REQUEST)
+        .json({ message: "All fields are required" });
+    }
 
-//     if (quantity < 0) {
-//       return res
-//         .status(BAD_REQUEST)
-//         .json({ message: "Quantity cannot be negative" });
-//     }
+    if (quantity < 0) {
+      return res
+        .status(BAD_REQUEST)
+        .json({ message: "Quantity cannot be negative" });
+    }
 
-//     if (!productId) {
-//       return res
-//         .status(BAD_REQUEST)
-//         .json({ message: "Product ID is required" });
-//     }
-//     if (!quantity) {
-//       return res.status(BAD_REQUEST).json({ message: "Quantity is required" });
-//     }
-//     if (!userId) {
-//       return res.status(BAD_REQUEST).json({ message: "User ID is required" });
-//     }
+    if (!productId) {
+      return res
+        .status(BAD_REQUEST)
+        .json({ message: "Product ID is required" });
+    }
+    if (!quantity) {
+      return res.status(BAD_REQUEST).json({ message: "Quantity is required" });
+    }
+    if (!userId) {
+      return res.status(BAD_REQUEST).json({ message: "User ID is required" });
+    }
 
-//     // Fetch the product from the database
-//     const product = await StationeryProduct.findById(productId);
-//     if (!product) {
-//       return res.status(NOT_FOUND).json({ error: "Product not found" });
-//     }
+    // Fetch the product from the database
+    const product = await StationeryProduct.findById(productId);
+    if (!product) {
+      return res.status(NOT_FOUND).json({ error: "Product not found" });
+    }
 
-//     // Check if there's enough stock
-//     if (product.quantity < quantity) {
-//       return res.status(BAD_REQUEST).json({ message: "Insufficient stock" });
-//     }
+    // Check if there's enough stock
+    if (product.quantity < quantity) {
+      return res.status(BAD_REQUEST).json({ message: "Insufficient stock" });
+    }
 
-//     const price = product.price;
+    const price = product.price;
 
-//     // Create the order
-//     const order = await StationeryOrder.create({
-//       productId,
-//       quantity,
-//       price, // Ensure price is passed
-//       total: quantity * price,
-//       userId,
-//     });
+    // Create the order
+    const order = await StationeryOrder.create({
+      productId,
+      quantity,
+      price, // Ensure price is passed
+      total: quantity * price,
+      userId,
+    });
 
-//     // Update the product stock
-//     product.quantity -= quantity;
-//     await product.save();
+    // Update the product stock
+    product.quantity -= quantity;
+    await product.save();
 
-//     // Return response
-//     if (!res.headersSent) {
-//       return res
-//         .status(201)
-//         .json({ message: "Order created successfully", order });
-//     }
-//   } catch (error) {
-//     if (!res.headersSent) {
-//       return res.status(SERVER_ERROR).json({
-//         message: "An error occurred while creating the order",
-//         error: error.message,
-//       });
-//     }
-//   }
-// };
+    // Return response
+    if (!res.headersSent) {
+      return res
+        .status(201)
+        .json({ message: "Order created successfully", order });
+    }
+  } catch (error) {
+    if (!res.headersSent) {
+      return res.status(SERVER_ERROR).json({
+        message: "An error occurred while creating the order",
+        error: error.message,
+      });
+    }
+  }
+};
+*/
 
 // UPDATE PRODUCT
 const updateStationeryProduct = async (req, res) => {
@@ -288,11 +291,10 @@ const updateStationeryProduct = async (req, res) => {
     if (quantity < 0) {
       return res
         .status(BAD_REQUEST)
-        .json({ message: "Price cannot be negative" });
+        .json({ message: "Quantity cannot be negative" });
     }
 
     const updates = req.body;
-
     const product = await StationeryProduct.findById(id);
 
     if (!product) {
@@ -303,13 +305,23 @@ const updateStationeryProduct = async (req, res) => {
       product.condition = "Out of Stock";
     }
 
+    // Apply updates
     Object.keys(updates).forEach((key) => {
       product[key] = updates[key];
     });
 
+    // Recalculate totalPrice manually
+    const updatedTotalPrice = product.quantity * product.price;
+    if (updatedTotalPrice < 1) {
+      return res
+        .status(BAD_REQUEST)
+        .json({ message: "Total price must be at least 1" });
+    }
+    product.totalPrice = updatedTotalPrice;
+
     await product.save();
 
-    res.status(OK).json({ message: "Updated sucessfully", product });
+    res.status(OK).json({ message: "Updated successfully", product });
   } catch (error) {
     if (!res.headersSent) {
       return res

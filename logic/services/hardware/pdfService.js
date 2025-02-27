@@ -22,7 +22,9 @@ const generateHardwarePDF = (orders, res) => {
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename=hardware-report-${moment().format("YYYY-MM-DD")}.pdf`
+      `attachment; filename=hardware-report-${moment().format(
+        "YYYY-MM-DD"
+      )}.pdf`
     );
 
     // Pipe the PDF to the response
@@ -183,7 +185,7 @@ const addTableHeaders = (doc, productNameX, quantityX, priceX, colors) => {
     .font("Helvetica-Bold")
     .text("Product Name", productNameX + 10, headerY + 7)
     .text("Quantity", quantityX, headerY + 7)
-    .text("Total Price (Tsh)", priceX, headerY + 7);
+    .text("Total Price", priceX, headerY + 7);
 
   // Add horizontal line below headers
   doc
@@ -352,7 +354,9 @@ const addFooter = (doc, colors) => {
       .fillColor(colors.subtleText)
       .fontSize(8)
       .text(
-        `Generated on ${moment().format("YYYY-MM-DD [at] HH:mm")} | CONFIDENTIAL DOCUMENT | FOR INTERNAL USE ONLY`,
+        `Generated on ${moment().format(
+          "YYYY-MM-DD [at] HH:mm"
+        )} | CONFIDENTIAL DOCUMENT | FOR INTERNAL USE ONLY`,
         0,
         doc.page.height - 25,
         { align: "center" }

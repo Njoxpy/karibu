@@ -10,7 +10,7 @@ const generateAnimalFeedingPDF = (orders, res) => {
       bufferPages: true,
       autoFirstPage: true,
       info: {
-        Title: `Animal Sales Report - ${moment().format("YYYY-MM-DD")}`,
+        Title: `Animal Feeding Sales Report - ${moment().format("YYYY-MM-DD")}`,
         Author: "Animal Management System",
         Subject: "Sales Report",
         Keywords: "Animal, sales, report",
@@ -22,7 +22,7 @@ const generateAnimalFeedingPDF = (orders, res) => {
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename=Animal-report-${moment().format("YYYY-MM-DD")}.pdf`
+      `attachment; filename=Animal-feeding-report-${moment().format("YYYY-MM-DD")}.pdf`
     );
 
     // Pipe the PDF to the response
@@ -131,7 +131,7 @@ const addHeader = (doc, colors) => {
     .fillColor(colors.white)
     .fontSize(22)
     .font("Helvetica-Bold")
-    .text("Animal Feeding SALES REPORT", 50, 54, { align: "center" })
+    .text("ANIMAL FEEDING SALES REPORT", 50, 54, { align: "center" })
     .moveDown(2);
 };
 

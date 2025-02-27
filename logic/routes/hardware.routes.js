@@ -1,5 +1,4 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const router = express.Router();
 const hardwareController = require("../controllers/hardware.controller");
 
@@ -10,7 +9,6 @@ const checkPermissions = require("../middleware/auth/permissionMiddleware");
 const validateObjectId = require("../middleware/validateObjectId");
 const upload = require("../middleware/uploadAnimalFeeding");
 const HardwareProduct = require("../models/hardware/productModel");
-const { getRevenue } = require("../controllers/godown.controller");
 const { generateHardwarePDF } = require("../services/hardware/pdfService");
 const { getHardwareOrders } = require("../services/hardware/hardwareService");
 

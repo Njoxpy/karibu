@@ -9,9 +9,9 @@ const createFirstAdmin = async () => {
 
     if (!adminExists) {
       // Create the first admin user
-      const hashedPassword = await bcrypt.hash("adminpassword", 10);
+      const hashedPassword = await bcrypt.hash("yourpassword123", 12);
       const firstAdmin = new User({
-        email: "yohana@gmail.com",
+        email: "admin@example.com",
         password: hashedPassword,
         role: "admin",
         category: "animal-feeding",

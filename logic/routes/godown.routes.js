@@ -195,7 +195,7 @@ router.get(
   getGodownOrder
 );
 
-router.patch(
+router.put(
   "/products/:id",
   authenticate,
   checkCategory(["admin"]),
@@ -204,7 +204,7 @@ router.patch(
   updateGodownProductById
 );
 
-router.patch(
+router.put(
   "/orders/:id",
   authenticate,
   checkCategory(["admin"]),

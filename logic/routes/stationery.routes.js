@@ -171,7 +171,7 @@ router.get(
   getStationeryOrder
 );
 
-// PATCH: Update stationery product details
+// PUT: Update stationery product details
 router.put(
   "/products/:id",
   authenticate,
@@ -181,7 +181,7 @@ router.put(
   updateStationeryProduct
 );
 
-// PATCH: Update stationery order details
+// PUT: Update stationery order details
 router.put(
   "/orders/:id",
   authenticate,
