@@ -5,6 +5,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getToken } from "../../../services/token";
 import { useAnimalFeeding } from "../../../hooks/animalFeeding/useAnimalFeeding";
+import NoOrders from "../../../components/NoOrders";
 import { AuthContext } from "../../../context/auth/AuthContext";
 
 // Utility function to format date
@@ -131,6 +132,13 @@ const StationeryOrders = () => {
   // Handle deleting an order
   const handleDeleteOrder = async (orderId) => {
     try {
+      // Optimistically update the UI
+      const updatedOrders = orders.filter((order) => order._id !== orderId);
+      setOrders(updatedOrders);
+      setFilteredOrders(updatedOrders);
+      setShowDeleteModal(false);
+
+      // Make the API call to delete the order
       const response = await fetch(
         `http://localhost:5000/api/v1/stationery/orders/${orderId}`,
         {
@@ -141,28 +149,40 @@ const StationeryOrders = () => {
           },
         }
       );
-      if (response.ok) {
-        const updatedOrders = orders.filter((order) => order._id !== orderId);
-        setOrders(updatedOrders);
-        setFilteredOrders(updatedOrders);
-        setShowDeleteModal(false);
-        // Dispatch the action to delete the order in the context
-        dispatch({ type: "DELETE_ANIMAL_FEEDING_ORDER", payload: orderId });
-      } else {
-        console.error("Failed to delete the order");
+
+      if (!response.ok) {
+        throw new Error("Failed to delete the order");
       }
+
+      // Dispatch the action to delete the order in the context
+      dispatch({ type: "DELETE_ANIMAL_FEEDING_ORDER", payload: orderId });
+      toast.success("Order deleted successfully");
     } catch (error) {
-      console.error("Error deleting order:", error);
+      // Revert the state if the API call fails
+      setOrders(orders);
+      setFilteredOrders(orders);
+      toast.error(`Error: ${error.message}`);
     }
   };
 
   // Handle editing an order
   const handleEditOrder = async () => {
     try {
+      // Optimistically update the UI
+      const updatedOrders = orders.map((order) =>
+        order._id === orderToEdit._id
+          ? { ...order, quantity: newQuantity }
+          : order
+      );
+      setOrders(updatedOrders);
+      setFilteredOrders(updatedOrders);
+      setShowEditModal(false);
+
+      // Make the API call to update the order
       const response = await fetch(
         `http://localhost:5000/api/v1/stationery/orders/${orderToEdit._id}`,
         {
-          method: "PATCH",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -175,22 +195,14 @@ const StationeryOrders = () => {
         throw new Error("Failed to update order");
       }
 
-      const updatedOrder = await response.json();
-      setOrders((prevOrders) =>
-        prevOrders.map((order) =>
-          order._id === updatedOrder._id ? updatedOrder : order
-        )
-      );
-      setFilteredOrders((prevOrders) =>
-        prevOrders.map((order) =>
-          order._id === updatedOrder._id ? updatedOrder : order
-        )
-      );
-      setShowEditModal(false);
       // Dispatch the action to update the order in the context
+      const updatedOrder = await response.json();
       dispatch({ type: "UPDATE_ANIMAL_FEEDING_ORDER", payload: updatedOrder });
       toast.success("Order updated successfully");
     } catch (error) {
+      // Revert the state if the API call fails
+      setOrders(orders);
+      setFilteredOrders(orders);
       toast.error(`Error: ${error.message}`);
     }
   };
@@ -219,18 +231,7 @@ const StationeryOrders = () => {
   };
 
   if (filteredOrders.length === 0) {
-    return (
-      <main className="grid min-h-full place-items-center bg-white px-6 py-24 sm:py-32 lg:px-8">
-        <div className="text-center">
-          <h1 className="mt-4 text-3xl font-bold tracking-tight text-blue-900 sm:text-5xl">
-            Orders
-          </h1>
-          <p className="mt-6 text-base leading-7 text-blue-600">
-            There are no order for now based on day!
-          </p>
-        </div>
-      </main>
-    );
+    return <NoOrders />;
   }
 
   return (
@@ -328,7 +329,7 @@ const StationeryOrders = () => {
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-900">
-                          Tsh {order.total}
+                          Tsh {order.price}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex items-center space-x-2">

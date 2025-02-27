@@ -215,6 +215,14 @@ const OrderItemAnimalFeeding = () => {
                         </span>
                       </p>
                     </div>
+                    <div className="space-y-3 mt-2">
+                      <p className="text-sm text-green-500">
+                        Nutrients:{" "}
+                        <span className="font-mono text-green-700">
+                          {selectedProduct.nutrients}
+                        </span>
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>
