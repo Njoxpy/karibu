@@ -54,7 +54,7 @@ router.get(
 );
 
 // update order
-router.patch(
+router.put(
   "/orders/:id",
   authenticate,
   checkCategory(["admin"]),

@@ -172,7 +172,7 @@ router.get(
 );
 
 // PATCH: Update stationery product details
-router.patch(
+router.put(
   "/products/:id",
   authenticate,
   checkCategory(["admin"]),
@@ -182,7 +182,7 @@ router.patch(
 );
 
 // PATCH: Update stationery order details
-router.patch(
+router.put(
   "/orders/:id",
   authenticate,
   checkCategory(["admin"]),
