@@ -4,7 +4,7 @@ import Footer from "../../../components/Footer";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getToken } from "../../../services/token";
-import { useAnimalFeeding } from "../../../hooks/animalFeeding/useAnimalFeeding";
+import { useFreshOil } from "../../../hooks/FreshOil/useFreshOil";
 import NoOrders from "../../../components/NoOrders";
 import { AuthContext } from "../../../context/auth/AuthContext";
 
@@ -29,7 +29,7 @@ const FreshOilOrders = () => {
   const token = getToken();
 
   // Get the dispatch function from the context
-  const { orders: contextOrders, dispatch } = useAnimalFeeding();
+  const { orders: contextOrders, dispatch } = useFreshOil();
 
   // Fetch orders from API
   const fetchOrders = async () => {

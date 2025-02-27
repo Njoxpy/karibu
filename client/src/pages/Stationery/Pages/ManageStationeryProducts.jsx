@@ -225,14 +225,11 @@ const ManageStationeryProducts = () => {
                   className="bg-white rounded-xl shadow-lg overflow-hidden product"
                 >
                   <img
-                    src={
-                      product.image
-                        ? `${baseURL}${product.image}`
-                        : "https://via.placeholder.com/400x300"
-                    }
+                    src={`${baseURL}/${product.image}`}
                     alt={product.name}
                     className="w-full h-48 object-cover"
                   />
+
                   <div className="p-6">
                     <h2 className="text-xl font-bold text-blue-700">
                       {product.name}

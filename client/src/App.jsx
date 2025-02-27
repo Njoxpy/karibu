@@ -171,16 +171,6 @@ export default function App() {
           <Route path="/contact" element={<Contact />} />
 
           {/* 
-          <Route
-            element={<ProtectedRoute allowedCategories={["animal-feeding"]} />}
-          >
-            <Route path="/profile" element={<UserProfile />} />
-          </Route>
-
-          future enhancements
-          
-          */}
-
           {/* animal feeding */}
           <Route
             element={<ProtectedRoute allowedCategories={["animal-feeding"]} />}

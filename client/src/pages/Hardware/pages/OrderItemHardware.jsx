@@ -386,13 +386,6 @@ const OrderItemHardware = () => {
               <p className="text-blue-500 text-center mb-6">
                 Your order has been successfully placed and is being processed.
               </p>
-              <div className="text-center mb-6 bg-blue-50 p-3 rounded-xl">
-                <p className="text-blue-700 font-medium">Updated Inventory</p>
-                <p className="text-blue-600">
-                  {selectedProduct?.name}:{" "}
-                  {selectedProduct?.quantity - quantity} units remaining
-                </p>
-              </div>
               <button
                 onClick={() => setOrderSuccess(false)}
                 className="w-full px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-blue-700 to-blue-800 rounded-xl hover:from-blue-800 hover:to-blue-900 transition-all duration-200 transform hover:scale-105"

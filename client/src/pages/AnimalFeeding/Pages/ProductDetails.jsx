@@ -5,7 +5,6 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getToken } from "../../../services/token";
 import { useAnimalFeeding } from "../../../hooks/animalFeeding/useAnimalFeeding";
-import { AnimalFeedingContext } from "../../../context/AnimalFeedingContext";
 
 const GodownProductDetails = () => {
   const { id } = useParams();
@@ -21,11 +20,13 @@ const GodownProductDetails = () => {
   // Get the dispatch function from the context
   const { dispatch } = useAnimalFeeding();
 
+  const baseURL = "http://localhost:5000";
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/v1/animal-feeding/products/${id}`,
+          `${baseURL}/api/v1/animal-feeding/products/${id}`,
           {
             method: "GET",
             headers: {
@@ -75,17 +76,14 @@ const GodownProductDetails = () => {
         status: "pending",
       };
 
-      const response = await fetch(
-        "http://localhost:5000/api/v1/animal-feeding/orders",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(orderData),
-        }
-      );
+      const response = await fetch(`${baseURL}/api/v1/animal-feeding/orders`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(orderData),
+      });
 
       if (!response.ok) {
         const errorResponse = await response.json();

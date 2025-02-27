@@ -95,19 +95,6 @@ const StationeryItemDetails = () => {
         );
       }
 
-      // Update the product quantity locally
-      const updatedProduct = {
-        ...product,
-        quantity: product.quantity - quantity,
-      };
-
-      // Update state and context
-      setProduct(updatedProduct);
-      dispatch({
-        type: "SET_ANIMAL_FEEDING_PRODUCTS",
-        payload: [updatedProduct],
-      });
-
       // Show success message and reset the state
       setOrderSuccess(true);
       toast.success("Order placed successfully!", {
@@ -121,7 +108,7 @@ const StationeryItemDetails = () => {
 
       // Reset order form state
       setQuantity(1);
-      setTotalPrice(updatedProduct.price);
+      setTotalPrice(product.price);
     } catch (error) {
       // Handle errors
       toast.error(`Error: ${error.message}`, {
@@ -158,7 +145,7 @@ const StationeryItemDetails = () => {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
       <ToastContainer />
       <div className="max-w-4xl mx-auto px-4 py-12">
         <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-blue-100">
@@ -176,14 +163,6 @@ const StationeryItemDetails = () => {
               <div className="space-y-4">
                 <div className="bg-blue-50 p-4 rounded-xl">
                   <label className="text-sm text-blue-500 block mb-1">
-                    Description
-                  </label>
-                  <p className="text-lg font-semibold text-blue-700">
-                    {product.description}
-                  </p>
-                </div>
-                <div className="bg-blue-50 p-4 rounded-xl">
-                  <label className="text-sm text-blue-500 block mb-1">
                     Available Stock
                   </label>
                   <p
@@ -194,6 +173,14 @@ const StationeryItemDetails = () => {
                     }`}
                   >
                     {product.quantity} units
+                  </p>
+                </div>
+                <div className="bg-blue-50 p-4 rounded-xl">
+                  <label className="text-sm text-blue-500 block mb-1">
+                    Description
+                  </label>
+                  <p className="text-lg font-semibold text-blue-500">
+                    {product.description}
                   </p>
                 </div>
               </div>
@@ -256,18 +243,12 @@ const StationeryItemDetails = () => {
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  disabled={
-                    isSubmitting ||
-                    quantity > product.quantity ||
-                    product.quantity === 0
-                  }
+                  disabled={isSubmitting || quantity > product.quantity}
                   className={`
                     w-full md:w-auto px-8 py-4 rounded-xl text-white font-medium
                     transition-all duration-200 transform hover:scale-105
                     ${
-                      isSubmitting ||
-                      quantity > product.quantity ||
-                      product.quantity === 0
+                      isSubmitting || quantity > product.quantity
                         ? "bg-blue-400 cursor-not-allowed"
                         : "bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-800 hover:to-blue-900 shadow-lg hover:shadow-xl"
                     }

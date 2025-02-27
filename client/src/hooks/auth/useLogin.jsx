@@ -20,8 +20,6 @@ export const useLogin = () => {
 
       const data = await response.json();
 
-      console.log("API Response:", data);
-
       if (response.ok && data) {
         // Set the user in state
         setUser({
