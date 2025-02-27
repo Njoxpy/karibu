@@ -114,7 +114,7 @@ router.get(
   hardwareController.getHardwareProductById
 );
 
-router.patch(
+router.put(
   "/products/:id",
   authenticate,
   checkCategory(["admin"]),
@@ -155,7 +155,7 @@ router.get(
   hardwareController.getHardwareOrderById
 );
 
-router.patch(
+router.put(
   "/orders/:id",
   authenticate,
   checkCategory(["admin"]),

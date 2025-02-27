@@ -158,7 +158,7 @@ router.post(
   }
 );
 
-router.patch(
+router.put(
   "/products/:id",
   authenticate,
   checkCategory(["admin"]),

@@ -153,7 +153,7 @@ router.post(
   }
 );
 
-router.patch(
+router.put(
   "/products/:id",
   authenticate,
   checkCategory(["admin"]),
@@ -202,7 +202,7 @@ router.get(
   getSingleFreshOilOrder
 );
 
-router.patch(
+router.put(
   "/orders/:id",
   authenticate,
   checkCategory(["admin"]),
