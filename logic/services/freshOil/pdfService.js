@@ -30,11 +30,12 @@ const generateFreshOilPDF = (orders, res, startDate, endDate) => {
 
     // Define green color scheme
     const colors = {
-      primary: "#1a5d1a", // Dark green for headers and accents
-      secondary: "#2E8B57", // Sea green for secondary elements
-      accent: "#f0f9f0", // Light green for backgrounds
-      text: "#2d3436", // Dark gray for text
-      border: "#e8e8e8", // Light gray for borders
+      primary: "#FFD700", // Dominant yellow (Gold) for main elements
+      secondary: "#FFA500", // Orange for secondary elements and accents
+      accent: "#FFECB3", // Soft pastel yellow for backgrounds
+      background: "#FFF8E1", // Light creamy yellow for overall background
+      text: "#333333", // Dark gray for readability
+      border: "#E0C200", // Muted gold for borders and dividers
       white: "#ffffff", // White for contrast
     };
 
