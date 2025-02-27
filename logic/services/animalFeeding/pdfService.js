@@ -131,7 +131,7 @@ const addHeader = (doc, colors) => {
     .fillColor(colors.white)
     .fontSize(22)
     .font("Helvetica-Bold")
-    .text("Animal SALES REPORT", 50, 54, { align: "center" })
+    .text("Animal Feeding SALES REPORT", 50, 54, { align: "center" })
     .moveDown(2);
 };
 

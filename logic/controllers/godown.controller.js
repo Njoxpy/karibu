@@ -26,9 +26,9 @@ const getMovementLogs = async (req, res) => {
         .json({ message: "There are no products for now" });
     }
 
-    return res.status(OK).json(logs); // Added return statement
+    return res.status(OK).json(logs); // Added return to ensure no further code is executed
   } catch (error) {
-    return res.status(SERVER_ERROR).json({ error: error.message }); // Uncommented and added return
+    return res.status(SERVER_ERROR).json({ error: error.message }); // Added return here as well
   }
 };
 
