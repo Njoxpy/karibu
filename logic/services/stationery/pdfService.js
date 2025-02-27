@@ -28,12 +28,12 @@ const generateStationeryPDF = (orders, res) => {
     // Pipe the PDF to the response
     doc.pipe(res);
 
-    // Define improved color scheme
+    // Define green color scheme
     const colors = {
-      primary: "#1e7145", // Darker forest green for headers
-      secondary: "#4caf50", // Medium green for accents
-      accent: "#e8f5e9", // Light green for backgrounds
-      highlight: "#81c784", // Medium light green for highlights
+      primary: "#228B22", // Forest green for headers and accents
+      secondary: "#32CD32", // Lime green for secondary elements
+      accent: "#E8F5E9", // Light green for backgrounds
+      highlight: "#66b3ff", // Medium light blue for highlights
       text: "#212121", // Nearly black for better readability
       subtleText: "#757575", // Medium gray for secondary text
       border: "#bdbdbd", // Medium gray for borders
@@ -43,13 +43,13 @@ const generateStationeryPDF = (orders, res) => {
     // Add a subtle background pattern
     addBackgroundPattern(doc, colors);
 
-    // Add header section (without logo)
+    // Add header section
     addHeader(doc, colors);
 
     // Add report metadata
     addReportMetadata(doc, orders, colors);
 
-    // Define improved column positions
+    // Define column positions
     const productNameX = 50;
     const quantityX = 370;
     const priceX = 470;
@@ -121,7 +121,7 @@ const addBackgroundPattern = (doc, colors) => {
 };
 
 const addHeader = (doc, colors) => {
-  // Add main heading with gradient-like effect (full width without logo)
+  // Add main heading with gradient-like effect (full width)
   doc.rect(50, 40, 500, 40).fillColor(colors.primary).fill();
 
   // Add a subtle accent line
@@ -273,7 +273,7 @@ const addSummary = (doc, totalRevenue, totalQuantity, orderCount, colors) => {
     .stroke();
   doc.moveDown(1);
 
-  // Add summary box with shadow effect - now on the left side
+  // Add summary box with shadow effect - on the left side
   const summaryY = doc.y;
 
   // Shadow effect (subtle offset rectangle)
