@@ -1,4 +1,4 @@
-const User = require("../models/user/userModel"); // Path to your User model
+const User = require("../models/user/userModel");
 const bcrypt = require("bcrypt");
 
 // Check if admin exists, create one if not
@@ -9,12 +9,12 @@ const createFirstAdmin = async () => {
 
     if (!adminExists) {
       // Create the first admin user
-      const hashedPassword = await bcrypt.hash("adminpassword", 10); // Password hash
+      const hashedPassword = await bcrypt.hash("adminpassword", 10);
       const firstAdmin = new User({
-        email: "admin@gmail.com",
+        email: "yohana@gmail.com",
         password: hashedPassword,
         role: "admin",
-        category: "printing", // Set the category for the admin
+        category: "animal-feeding",
       });
 
       await firstAdmin.save();
