@@ -1,0 +1,15 @@
+2025-02-28T00:14:33.280Z info: ::ffff:127.0.0.1 - OPTIONS - /api/v1/stationery/orders - 2025-02-28T00:14:33.278Z - Status: 204
+2025-02-28T00:14:33.453Z info: ::ffff:127.0.0.1 - POST - /orders - 2025-02-28T00:14:33.453Z - Status: 201
+2025-02-28T00:14:36.857Z info: ::ffff:127.0.0.1 - OPTIONS - /api/v1/stationery/products - 2025-02-28T00:14:36.857Z - Status: 204
+2025-02-28T00:14:36.878Z info: ::ffff:127.0.0.1 - GET - /products - 2025-02-28T00:14:36.878Z - Status: 200
+2025-02-28T00:14:36.890Z info: ::ffff:127.0.0.1 - GET - /products - 2025-02-28T00:14:36.890Z - Status: 304
+2025-02-28T00:14:37.818Z info: ::ffff:127.0.0.1 - GET - /orders - 2025-02-28T00:14:37.818Z - Status: 200
+2025-02-28T00:14:37.837Z info: ::ffff:127.0.0.1 - GET - /orders - 2025-02-28T00:14:37.837Z - Status: 304
+2025-02-28T00:14:42.551Z info: ::ffff:127.0.0.1 - OPTIONS - /api/v1/stationery/orders - 2025-02-28T00:14:42.551Z - Status: 204
+2025-02-28T00:14:42.580Z info: ::ffff:127.0.0.1 - OPTIONS - /api/v1/stationery/orders - 2025-02-28T00:14:42.580Z - Status: 204
+2025-02-28T00:14:42.587Z info: ::ffff:127.0.0.1 - GET - /orders - 2025-02-28T00:14:42.587Z - Status: 200
+2025-02-28T00:14:42.613Z info: ::ffff:127.0.0.1 - GET - /orders - 2025-02-28T00:14:42.613Z - Status: 200
+2025-02-28T00:21:11.650Z info: ::ffff:127.0.0.1 - OPTIONS - /api/v1/animal-feeding/reports?startDate=2025-02-21&endDate=2025-02-28 - 2025-02-28T00:21:11.649Z - Status: 204
+2025-02-28T00:21:11.845Z info: ::ffff:127.0.0.1 - GET - /reports?startDate=2025-02-21&endDate=2025-02-28 - 2025-02-28T00:21:11.844Z - Status: 200
+2025-02-28T00:21:56.377Z info: ::ffff:127.0.0.1 - OPTIONS - /api/v1/fresh-oil/reports?startDate=2025-02-21&endDate=2025-02-28 - 2025-02-28T00:21:56.377Z - Status: 204
+2025-02-28T00:21:56.431Z info: ::ffff:127.0.0.1 - GET - /reports?startDate=2025-02-21&endDate=2025-02-28 - 2025-02-28T00:21:56.431Z - Status: 200

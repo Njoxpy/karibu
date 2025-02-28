@@ -9,6 +9,10 @@ const inventoryMovementSchema = new mongoose.Schema(
       ref: "GodownProduct",
       required: [true, "Product ID is required"],
     },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
     transferQuantity: {
       type: Number,
       required: [true, "Transfer quantity is required"],

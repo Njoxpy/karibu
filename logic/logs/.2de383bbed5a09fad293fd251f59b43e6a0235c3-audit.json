@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "C:\\Users\\Administrator\\Desktop\\savarrah\\logic\\logs\\.2de383bbed5a09fad293fd251f59b43e6a0235c3-audit.json",
+    "files": [
+        {
+            "date": 1740701305154,
+            "name": "C:\\Users\\Administrator\\Desktop\\savarrah\\logic\\logs\\2025-02-28-access.log",
+            "hash": "2c8e4029695a778ac36c899493342208d01bee64e4200d185fd8a86c08874b28"
+        }
+    ],
+    "hashType": "sha256"
+}

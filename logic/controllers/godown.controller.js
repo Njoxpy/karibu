@@ -18,7 +18,9 @@ const NO_CONTENT = 204;
 
 const getMovementLogs = async (req, res) => {
   try {
-    const logs = await InventoryMovement.find().sort({ createdAt: -1 });
+    const logs = await InventoryMovement.find()
+      .populate('product', 'name') 
+      .sort({ createdAt: -1 });
 
     if (logs.length === 0) {
       return res
@@ -26,9 +28,9 @@ const getMovementLogs = async (req, res) => {
         .json({ message: "There are no products for now" });
     }
 
-    return res.status(OK).json(logs); // Added return to ensure no further code is executed
+    return res.status(OK).json(logs);
   } catch (error) {
-    return res.status(SERVER_ERROR).json({ error: error.message }); // Added return here as well
+    return res.status(SERVER_ERROR).json({ error: error.message });
   }
 };
 
@@ -652,7 +654,77 @@ const getTotalCostByDate = async (req, res) => {
   }
 };
 
+// Get Log by ID
+const getLogById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find the log by its id
+    const log = await InventoryMovement.findOne({ id }).populate('product transferredBy');
+    if (!log) {
+      return res.status(NOT_FOUND).json({ message: "Log not found." });
+    }
+
+    return res.status(OK).json(log); // Return the log details
+  } catch (error) {
+    return res.status(SERVER_ERROR).json({ error: error.message });
+  }
+};
+
+// Update Log by ID
+const updateLog = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { transferQuantity, origin, destination, reason } = req.body;
+
+    // Find the log by its id
+    const log = await InventoryMovement.findOne({ id });
+    if (!log) {
+      return res.status(NOT_FOUND).json({ message: "Log not found." });
+    }
+
+    // Update fields if provided
+    if (transferQuantity) log.transferQuantity = transferQuantity;
+    if (origin) log.origin = origin;
+    if (destination) log.destination = destination;
+    if (reason) log.reason = reason;
+
+    await log.save(); // Save the updated log
+
+    return res.status(OK).json({
+      message: "Log updated successfully.",
+      log,
+    });
+  } catch (error) {
+    return res.status(SERVER_ERROR).json({ error: error.message });
+  }
+};
+
+// Delete Log by ID
+const deleteLog = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find the log by its id
+    const log = await InventoryMovement.findOne({ id });
+    if (!log) {
+      return res.status(NOT_FOUND).json({ message: "Log not found." });
+    }
+
+    // Delete the log
+    await log.remove();
+
+    return res.status(OK).json({ message: "Log deleted successfully." });
+  } catch (error) {
+    return res.status(SERVER_ERROR).json({ error: error.message });
+  }
+};
+
+
 module.exports = {
+  getLogById,
+  updateLog,
+  deleteLog,
   createGodownProduct,
   createGodownOrder,
   getAllGodownProducts,

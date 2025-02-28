@@ -20,9 +20,6 @@ const printingRoutes = require("./routes/printing.routes");
 const hardwareRoutes = require("./routes/hardware.routes");
 const stationeryRoutes = require("./routes/stationery.routes");
 
-// script
-const admin = require("./scripts/adminSetup");
-
 // Logger import
 const logger = require("./logs/logger");
 
@@ -33,6 +30,7 @@ const connectDB = require("./config/DB");
 const app = express();
 
 // Middleware
+app.use(logger);
 app.use(morgan("dev")); // Logger
 app.use(express.json());
 app.use(timeout("30s")); // Request timeout
