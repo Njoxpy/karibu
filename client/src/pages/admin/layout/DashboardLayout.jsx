@@ -94,6 +94,7 @@ const DashboardLayout = () => {
             {[
               { to: "/admin/dashboard", label: "Dashboard", icon: Home },
               { to: "/admin/users", label: "Users", icon: Users },
+              { to: "/admin/users/create", label: "Add User", icon: Users },
               { to: "/admin/reports", label: "Reports", icon: FileText },
               { to: "/admin/revenue", label: "Revenue", icon: DollarSign },
               { to: "/admin/settings", label: "Settings", icon: Settings },
