@@ -51,7 +51,6 @@ const ManageFreshOil = () => {
       }
     } catch (error) {
       console.error("Error fetching products:", error);
-      alert("An error occurred while fetching products. Please try again.");
       setProducts([]);
     }
   };
@@ -142,7 +141,6 @@ const ManageFreshOil = () => {
       setIsEditSuccessModalOpen(true);
     } catch (error) {
       console.error("Error updating product:", error);
-      alert("An error occurred while updating the product. Please try again.");
       fetchProducts(); // Re-fetch products to restore the original state
     }
   };
@@ -176,7 +174,6 @@ const ManageFreshOil = () => {
       setIsDeleteSuccessModalOpen(true);
     } catch (error) {
       console.error("Error deleting product:", error);
-      alert("An error occurred while deleting the product. Please try again.");
       fetchProducts(); // Re-fetch products to restore the original state
     }
   };
