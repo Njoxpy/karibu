@@ -24,8 +24,6 @@ function AnimalFeedingLayout() {
     { path: "/godown/", label: "Home" },
     { path: "/godown/order-item", label: "Order Item" },
     { path: "/godown/orders", label: "Orders" },
-    { path: "/godown/admin/move", label: "Move" },
-    { path: "/godown/admin/movement-logs", label: "Movement Logs" },
   ];
 
   // Admin-specific navigation items
