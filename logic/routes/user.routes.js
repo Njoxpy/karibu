@@ -23,9 +23,9 @@ userRoutes.post("/login", loginUser);
 // Protected routes - admin only
 userRoutes.post(
   "/signup",
-  authenticate,
-  checkCategory(["admin"]),
-  checkPermissions(["createUser"]),
+  // authenticate,
+  // checkCategory(["admin"]),
+  // checkPermissions(["createUser"]),
   signupUser
 );
 

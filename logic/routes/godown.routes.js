@@ -2,6 +2,7 @@ const express = require("express");
 const xlsx = require("xlsx");
 const router = express.Router();
 
+const CHUNK_SIZE = 1000;
 // Import controllers
 const {
   createGodownProduct,
@@ -20,6 +21,12 @@ const {
   getTotalCostByDate,
   getMovementLogs,
 } = require("../controllers/godown.controller");
+
+const {
+  getLogById,
+  updateLog,
+  deleteLog
+} = require("../controllers/godown.controller"); 
 
 // Import middleware
 const uploadExcel = require("../middleware/excell/uploadExcel"); // Adjust to your middleware path
@@ -43,6 +50,7 @@ router.post(
   checkPermissions(["createProduct"]),
   createGodownProduct
 );
+
 
 router.post(
   "/products/bulk-upload",
@@ -130,13 +138,21 @@ router.post(
         (product) => product.errors.length === 0
       );
 
-      // Insert valid products into the database
-      const createdProducts = await GodownProduct.insertMany(validProducts);
+      // Chunk the valid products into smaller arrays for bulk insert
+      const chunkedProducts = [];
+      for (let i = 0; i < validProducts.length; i += CHUNK_SIZE) {
+        chunkedProducts.push(validProducts.slice(i, i + CHUNK_SIZE));
+      }
+
+      // Insert each chunk separately
+      for (let chunk of chunkedProducts) {
+        await GodownProduct.insertMany(chunk);
+      }
 
       // Return a success response
       res.status(201).json({
         message: "Products uploaded successfully",
-        products: createdProducts,
+        products: validProducts.length,
       });
     } catch (error) {
       console.error(error);
@@ -217,8 +233,33 @@ router.get(
   "/movement-logs",
   authenticate,
   checkCategory(["admin"]),
-  validateObjectId,
   getMovementLogs
+);
+
+router.get(
+  "/movement-logs/:id", 
+  authenticate,
+  checkCategory(["admin"]),
+  validateObjectId,
+  getLogById
+);
+
+// Route to update log by ID
+router.put(
+  "/movement-logs/:id",
+  authenticate,
+  checkCategory(["admin"]),
+  validateObjectId,
+  updateLog 
+);
+
+// Route to delete log by ID
+router.delete(
+  "/movement-logs/:id", 
+  authenticate,
+  checkCategory(["admin"]),
+  validateObjectId,
+  deleteLog
 );
 
 router.delete(
