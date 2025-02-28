@@ -420,7 +420,7 @@ const transferInventory = async (req, res) => {
     // Get request data
     const { productId, transferQuantity, origin, destination, reason } =
       req.body;
-    const transferredBy = req.user._id; // Assume the user making the transfer is in req.user
+    const transferredBy = req.user._id; 
 
     // Validate the request data
     if (!productId || !transferQuantity || !origin || !destination) {

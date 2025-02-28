@@ -25,8 +25,8 @@ const {
 const {
   getLogById,
   updateLog,
-  deleteLog
-} = require("../controllers/godown.controller"); 
+  deleteLog,
+} = require("../controllers/godown.controller");
 
 // Import middleware
 const uploadExcel = require("../middleware/excell/uploadExcel"); // Adjust to your middleware path
@@ -50,7 +50,6 @@ router.post(
   checkPermissions(["createProduct"]),
   createGodownProduct
 );
-
 
 router.post(
   "/products/bulk-upload",
@@ -237,7 +236,7 @@ router.get(
 );
 
 router.get(
-  "/movement-logs/:id", 
+  "/movement-logs/:id",
   authenticate,
   checkCategory(["admin"]),
   validateObjectId,
@@ -250,12 +249,12 @@ router.put(
   authenticate,
   checkCategory(["admin"]),
   validateObjectId,
-  updateLog 
+  updateLog
 );
 
 // Route to delete log by ID
 router.delete(
-  "/movement-logs/:id", 
+  "/movement-logs/:id",
   authenticate,
   checkCategory(["admin"]),
   validateObjectId,
