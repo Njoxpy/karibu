@@ -134,10 +134,6 @@ const Hardwares = () => {
                         <span className="font-medium">Quantity:</span>{" "}
                         {product.quantity}
                       </p>
-                      <p className="text-gray-600 text-sm">
-                        <span className="font-medium">Nutrients:</span>{" "}
-                        {product.nutrients}
-                      </p>
                       <p className="font-bold text-indigo-700 text-lg">
                         Tsh {product.price.toLocaleString()}
                       </p>

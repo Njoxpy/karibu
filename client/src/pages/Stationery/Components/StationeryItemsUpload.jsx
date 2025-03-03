@@ -70,7 +70,7 @@ const StationeryItemsUpload = () => {
     <>
       <div className="flex flex-col items-center justify-center min-h-screen p-4">
         <h1 className="text-3xl font-bold text-center text-blue-800 mb-6">
-          Upload New Fresh Oil Product
+          Upload Stationery Product
         </h1>
         <form
           onSubmit={handleSubmit}
