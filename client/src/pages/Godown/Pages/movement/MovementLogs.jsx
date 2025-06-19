@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import { getToken } from "../../../../services/token";
 
 const MovementLogs = () => {
+  // create variable for api url
+  const baseURL = import.meta.env.VITE_API_URL;
+
   const [movementLogs, setMovementLogs] = useState([]);
   const [filteredLogs, setFilteredLogs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,16 +22,13 @@ const MovementLogs = () => {
       setError("");
 
       try {
-        const response = await fetch(
-          "http://localhost:5000/api/v1/godown/movement-logs",
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const response = await fetch(`${baseURL}/godown/movement-logs`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
 
         if (!response.ok) {
           const errorData = await response.json();

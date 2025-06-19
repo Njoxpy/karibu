@@ -5,6 +5,8 @@ import "../../../styles/submitWork.css";
 import { usePrinting } from "../../../hooks/printing/usePrinting";
 
 function SubmitWork() {
+  // create variable for api url
+  const baseURL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const { dispatch } = usePrinting();
 
@@ -51,17 +53,14 @@ function SubmitWork() {
       const token = localStorage.getItem("authToken");
 
       // Send the order data to the backend API with Bearer token in the headers
-      const response = await fetch(
-        "http://localhost:5000/api/v1/printing/orders",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Add Bearer token here
-          },
-          body: JSON.stringify(orderData),
-        }
-      );
+      const response = await fetch(`${baseURL}/printing/orders`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Add Bearer token here
+        },
+        body: JSON.stringify(orderData),
+      });
 
       if (!response.ok) {
         throw new Error("Failed to create order");

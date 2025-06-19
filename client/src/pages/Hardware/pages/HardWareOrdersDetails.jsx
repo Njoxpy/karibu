@@ -4,6 +4,9 @@ import { getToken } from "../../../services/token";
 import Footer from "../../../components/Footer";
 
 const HardwareOrdersDetails = () => {
+  // create variable for api url
+  const baseURL = import.meta.env.VITE_API_URL;
+
   const { id } = useParams();
   const navigate = useNavigate();
   const [order, setOrder] = useState(null);
@@ -14,15 +17,12 @@ const HardwareOrdersDetails = () => {
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:5000/API/v1/hardware/orders/${id}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await fetch(`${baseURL}/hardware/orders/${id}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         if (!response.ok) {
           throw new Error("Order not found");
         }

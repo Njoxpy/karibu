@@ -6,14 +6,15 @@ const ProductDetails = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+     // create variable for api url
+     const baseURL = import.meta.env.VITE_API_URL;
   useEffect(() => {
     const fetchProductDetails = async () => {
       try {
         setLoading(true);
         const token = localStorage.getItem("token"); // Retrieve the token from local storage
         const response = await axios.get(
-          `http://localhost:5000/api/v1/fresh-oil/products/details/${id}`,
+          `${baseURL}/fresh-oil/products/details/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`, // Include the bearer token in the headers

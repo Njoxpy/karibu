@@ -3,9 +3,12 @@ import { Link } from "react-router-dom";
 import { getToken } from "../../../../services/token";
 
 const ITEMS_PER_PAGE = 10;
-const API_URL = "http://localhost:5000/api/v1/godown/products";
 
 const ProductsMovement = () => {
+  // create variable for api url
+  const baseURL = import.meta.env.VITE_API_URL;
+  const API_URL = `${baseURL}/godown/products`;
+
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [inventory, setInventory] = useState([]);

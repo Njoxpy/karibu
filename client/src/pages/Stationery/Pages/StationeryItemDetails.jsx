@@ -7,6 +7,9 @@ import { getToken } from "../../../services/token";
 import { useAnimalFeeding } from "../../../hooks/animalFeeding/useAnimalFeeding";
 
 const StationeryItemDetails = () => {
+
+  // create variable for api url
+     const baseURL = import.meta.env.VITE_API_URL;
   const { id } = useParams();
   const token = getToken(); // Retrieve token from localStorage
 
@@ -24,7 +27,7 @@ const StationeryItemDetails = () => {
     const fetchProduct = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/v1/stationery/products/${id}`,
+          `${baseURL}/stationery/products/${id}`,
           {
             method: "GET",
             headers: {
@@ -77,7 +80,7 @@ const StationeryItemDetails = () => {
 
       // Send POST request to create order
       const response = await fetch(
-        "http://localhost:5000/api/v1/stationery/orders",
+        `${baseURL}/stationery/orders`,
         {
           method: "POST",
           headers: {

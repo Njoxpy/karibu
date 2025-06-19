@@ -5,6 +5,9 @@ import Footer from "../../../components/Footer";
 import { getToken } from "../../../services/token";
 
 function OrderDetails() {
+  // create variable for api url
+  const baseURL = import.meta.env.VITE_API_URL;
+
   const { id } = useParams();
   const [order, setOrder] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -16,15 +19,12 @@ function OrderDetails() {
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:5000/api/v1/printing/orders/${id}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await fetch(`${baseURL}/printing/orders/${id}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         if (!response.ok) {
           throw new Error("Failed to fetch order details");
         }

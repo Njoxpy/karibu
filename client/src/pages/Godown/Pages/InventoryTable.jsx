@@ -4,9 +4,12 @@ import { getToken } from "../../../services/token";
 import { useGodown } from "../../../hooks/Godown/useGodown";
 
 const ITEMS_PER_PAGE = 10;
-const API_URL = "http://localhost:5000/api/v1/godown/products";
 
 const InventoryTable = () => {
+  // create variable for api url
+  const baseURL = import.meta.env.VITE_API_URL;
+  const API_URL = `${baseURL}/godown/products`;
+
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [inventory, setInventory] = useState([]);
@@ -42,7 +45,6 @@ const InventoryTable = () => {
       const data = await response.json();
       setInventory(formatInventoryData(data));
       dispatch({ type: "SET_GODOWN_PRODUCTS", payload: data });
-      // console.log(dispatch);
     } catch (error) {
       setError(error.message);
     } finally {

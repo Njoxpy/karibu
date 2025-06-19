@@ -37,6 +37,9 @@ const IconWrapper = ({ children }) => (
 );
 
 const AddUserPage = () => {
+
+  // create variable for api url
+  const baseURL = import.meta.env.VITE_API_URL;
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -101,7 +104,7 @@ const AddUserPage = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        "http://localhost:5000/api/v1/users/signup",
+        `${baseURL}/users/signup`,
         {
           method: "POST",
           headers: {

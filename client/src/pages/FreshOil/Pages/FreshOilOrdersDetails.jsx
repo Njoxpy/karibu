@@ -4,6 +4,10 @@ import { getToken } from "../../../services/token";
 import Footer from "../../../components/Footer";
 
 const FreshOilOrdersDetails = () => {
+
+     // create variable for api url
+     const baseURL = import.meta.env.VITE_API_URL;
+
   const { id } = useParams();
   const navigate = useNavigate();
   const [order, setOrder] = useState(null);
@@ -15,7 +19,7 @@ const FreshOilOrdersDetails = () => {
     const fetchOrder = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/API/v1/fresh-oil/orders/${id}`,
+          `${baseURL}/fresh-oil/orders/${id}`,
           {
             method: "GET",
             headers: {

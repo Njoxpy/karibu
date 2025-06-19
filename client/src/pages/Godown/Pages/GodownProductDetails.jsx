@@ -7,6 +7,9 @@ import { getToken } from "../../../services/token";
 import { useAnimalFeeding } from "../../../hooks/animalFeeding/useAnimalFeeding";
 
 const GodownProductDetails = () => {
+  // create variable for api url
+  const baseURL = import.meta.env.VITE_API_URL;
+
   const { id } = useParams();
   const token = getToken(); // Retrieve token from localStorage
 
@@ -23,16 +26,13 @@ const GodownProductDetails = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:5000/api/v1/godown/products/${id}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`, // Add bearer token in the request headers
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const response = await fetch(`${baseURL}/godown/products/${id}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`, // Add bearer token in the request headers
+            "Content-Type": "application/json",
+          },
+        });
         if (!response.ok) {
           throw new Error("Product not found");
         }
@@ -76,17 +76,14 @@ const GodownProductDetails = () => {
       };
 
       // Send POST request to create order
-      const response = await fetch(
-        "http://localhost:5000/api/v1/godown/orders",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Include bearer token
-          },
-          body: JSON.stringify(orderData),
-        }
-      );
+      const response = await fetch(`${baseURL}/godown/orders`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Include bearer token
+        },
+        body: JSON.stringify(orderData),
+      });
 
       if (!response.ok) {
         const errorResponse = await response.json();

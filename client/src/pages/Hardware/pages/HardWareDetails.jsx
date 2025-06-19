@@ -10,6 +10,9 @@ const HardwareDetails = () => {
   const { id } = useParams();
   const token = getToken(); // Retrieve token from localStorage
 
+  // create variable for api url
+  const baseURL = import.meta.env.VITE_API_URL;
+
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [totalPrice, setTotalPrice] = useState(0);
@@ -23,16 +26,13 @@ const HardwareDetails = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:5000/api/v1/hardware/products/${id}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`, // Add bearer token in the request headers
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const response = await fetch(`${baseURL}/hardware/products/${id}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`, // Add bearer token in the request headers
+            "Content-Type": "application/json",
+          },
+        });
         if (!response.ok) {
           throw new Error("Product not found");
         }
@@ -76,17 +76,14 @@ const HardwareDetails = () => {
       };
 
       // Send POST request to create order
-      const response = await fetch(
-        "http://localhost:5000/api/v1/hardware/orders",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Include bearer token
-          },
-          body: JSON.stringify(orderData),
-        }
-      );
+      const response = await fetch(`${baseURL}/hardware/orders`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Include bearer token
+        },
+        body: JSON.stringify(orderData),
+      });
 
       if (!response.ok) {
         const errorResponse = await response.json();

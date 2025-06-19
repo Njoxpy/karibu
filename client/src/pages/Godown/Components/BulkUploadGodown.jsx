@@ -77,6 +77,9 @@ SuccessModal.propTypes = {
 
 // BulkUploadGodown Component
 const BulkUploadGodown = () => {
+
+       // create variable for api url
+     const baseURL = import.meta.env.VITE_API_URL;
   const [file, setFile] = useState(null);
   const [dataPreview, setDataPreview] = useState([]);
   const [errors, setErrors] = useState([]);
@@ -148,7 +151,7 @@ const BulkUploadGodown = () => {
 
       const token = localStorage.getItem("authToken");
       const response = await fetch(
-        "http://localhost:5000/api/v1/godown/products/bulk-upload",
+        `${baseURL}/godown/products/bulk-upload`,
         {
           method: "POST",
           headers: {

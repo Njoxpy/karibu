@@ -5,12 +5,15 @@ export const useLogin = () => {
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null); // Track user data here
 
+
   const login = async (email, password) => {
+    // base url for the API
+    const baseURL = import.meta.env.VITE_API_URL;
     setIsLoading(true);
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:5000/api/v1/users/login", {
+      const response = await fetch(`${baseURL}/users/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

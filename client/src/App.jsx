@@ -146,10 +146,10 @@ import ProtectedRoute from "./auth/ProtectedRoute";
 export default function App() {
   const { user } = useAuth();
 
-  console.log(user);
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route>
+        {/* only admin */}
         <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
           <Route path="admin/*" element={<DashboardLayout />}>
             <Route index element={<DashboardHome />} />

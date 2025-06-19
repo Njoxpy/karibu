@@ -9,6 +9,9 @@ const ProductMovementDetails = () => {
   const { id } = useParams();
   const token = getToken(); // Retrieve token from localStorage
 
+  // create variable for api url
+  const baseURL = import.meta.env.VITE_API_URL;
+
   const [product, setProduct] = useState(null);
   const [transferQuantity, setTransferQuantity] = useState(1);
   const [origin, setOrigin] = useState("");
@@ -21,16 +24,13 @@ const ProductMovementDetails = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:5000/api/v1/godown/products/${id}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`, // Add bearer token in the request headers
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const response = await fetch(`${baseURL}/godown/products/${id}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`, // Add bearer token in the request headers
+            "Content-Type": "application/json",
+          },
+        });
         if (!response.ok) {
           throw new Error("Product not found");
         }
@@ -75,17 +75,14 @@ const ProductMovementDetails = () => {
       };
 
       // Send POST request to transfer inventory
-      const response = await fetch(
-        "http://localhost:5000/api/v1/godown/inventory-movement",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Include bearer token
-          },
-          body: JSON.stringify(transferData),
-        }
-      );
+      const response = await fetch(`${baseURL}/godown/inventory-movement`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Include bearer token
+        },
+        body: JSON.stringify(transferData),
+      });
 
       if (!response.ok) {
         const errorResponse = await response.json();

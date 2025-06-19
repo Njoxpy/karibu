@@ -1,4 +1,5 @@
-const apiUrl = "http://localhost:5000/api/v1";
+     // create variable for api url
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem("authToken");

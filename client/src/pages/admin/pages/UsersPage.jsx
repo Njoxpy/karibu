@@ -127,6 +127,9 @@ const SelectField = ({ label, icon: Icon, options, ...props }) => (
 );
 
 const UsersPage = () => {
+        // create variable for api url
+     const baseURL = import.meta.env.VITE_API_URL;
+
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -163,7 +166,7 @@ const UsersPage = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:5000/api/v1/users", {
+      const response = await fetch(`${baseURL}/users`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -193,7 +196,7 @@ const UsersPage = () => {
   const handleEdit = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/users/${userToEdit._id}`,
+        `${baseURL}/users/${userToEdit._id}`,
         {
           method: "PUT",
           headers: {
@@ -218,7 +221,7 @@ const UsersPage = () => {
   const handleDelete = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/users/${userToDelete._id}`,
+        `${baseURL}/users/${userToDelete._id}`,
         {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` },

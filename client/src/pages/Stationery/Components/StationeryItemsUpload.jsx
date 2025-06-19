@@ -11,7 +11,7 @@ const StationeryItemsUpload = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
-  const URL = "http://localhost:5000/api/v1/stationery/products";
+  const URL = `${import.meta.env.VITE_API_URL}/stationery/products`; 
   const token = getToken();
 
   const validateInputs = () => {

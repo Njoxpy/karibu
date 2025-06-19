@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import Footer from "../../../components/Footer";
 
 const InventoryMovement = () => {
+  // create variable for api url
+  const baseURL = import.meta.env.VITE_API_URL;
+
   const [inventory, setInventory] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [transferQuantity, setTransferQuantity] = useState(0);
@@ -19,16 +22,13 @@ const InventoryMovement = () => {
   useEffect(() => {
     const fetchInventory = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:5000/api/v1/godown/products/",
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const response = await fetch(`${baseURL}/godown/products/`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
         const data = await response.json();
 
         if (response.ok) {
@@ -75,23 +75,20 @@ const InventoryMovement = () => {
     setMessage("");
 
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/v1/godown/inventory-movement",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            selectedItemId: selectedItem._id,
-            transferQuantity,
-            origin,
-            destination,
-            reason,
-          }),
-        }
-      );
+      const response = await fetch(`${baseURL}/godown/inventory-movement`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          selectedItemId: selectedItem._id,
+          transferQuantity,
+          origin,
+          destination,
+          reason,
+        }),
+      });
 
       const data = await response.json();
 

@@ -5,6 +5,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { getToken } from "../../../services/token";
 
 const OrderItemGodown = () => {
+  const baseURL = import.meta.env.VITE_API_URL;
+
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
@@ -18,16 +20,13 @@ const OrderItemGodown = () => {
   // Fetch products and set initial selected product
   const fetchProducts = async () => {
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/v1/godown/products",
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`${baseURL}/godown/products`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
       if (!response.ok) {
         throw new Error("Failed to fetch products");
       }
@@ -108,17 +107,14 @@ const OrderItemGodown = () => {
       };
 
       // 1. Create the order
-      const orderResponse = await fetch(
-        "http://localhost:5000/api/v1/godown/orders",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(orderData),
-        }
-      );
+      const orderResponse = await fetch(`${baseURL}/godown/orders`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(orderData),
+      });
 
       if (!orderResponse.ok) {
         const errorResponse = await orderResponse.json();
@@ -130,7 +126,7 @@ const OrderItemGodown = () => {
       // 2. Update the product quantity in the backend
       const updatedQuantity = selectedProduct.quantity - quantity;
       const updateResponse = await fetch(
-        `http://localhost:5000/api/v1/godown/products/${selectedProduct._id}`,
+        `${baseURL}/godown/products/${selectedProduct._id}`,
         {
           method: "PUT",
           headers: {

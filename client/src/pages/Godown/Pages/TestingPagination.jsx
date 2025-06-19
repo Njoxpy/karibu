@@ -21,10 +21,9 @@ function TestingPagination() {
       .then((data) => {
         setOrders(data);
         setIsLoading(false);
-        console.log(data);
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
       });
   }, []);
   return (

@@ -9,7 +9,8 @@ import { useAnimalFeeding } from "../../../hooks/animalFeeding/useAnimalFeeding"
 const OilDetails = () => {
   const { id } = useParams();
   const token = getToken(); // Retrieve token from localStorage
-
+   // create variable for api url
+     const baseURL = import.meta.env.VITE_API_URL;
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [totalPrice, setTotalPrice] = useState(0);
@@ -24,7 +25,7 @@ const OilDetails = () => {
     const fetchProduct = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/v1/fresh-oil/products/${id}`,
+          `${baseURL}/fresh-oil/products/${id}`,
           {
             method: "GET",
             headers: {
@@ -77,7 +78,7 @@ const OilDetails = () => {
 
       // Send POST request to create order
       const response = await fetch(
-        "http://localhost:5000/api/v1/fresh-oil/orders",
+        `${baseURL}/fresh-oil/orders`, 
         {
           method: "POST",
           headers: {

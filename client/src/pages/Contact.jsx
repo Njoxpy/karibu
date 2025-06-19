@@ -8,10 +8,6 @@ const Contact = () => {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log("Form submitted", data);
-  };
-
   return (
     <section className="px-4 py-8 max-w-7xl mx-auto" id="contact">
       <div className="grid sm:grid-cols-1 lg:grid-cols-2 gap-8">

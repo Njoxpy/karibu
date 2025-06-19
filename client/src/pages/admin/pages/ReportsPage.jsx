@@ -4,6 +4,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const ReportsPage = () => {
+        // create variable for api url
+     const baseURL = import.meta.env.VITE_API_URL;
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [loading, setLoading] = useState(false);
@@ -31,7 +33,7 @@ const ReportsPage = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/${selectedCategory
+        `${baseURL}/${selectedCategory
           .toLowerCase()
           .replace(
             " ",

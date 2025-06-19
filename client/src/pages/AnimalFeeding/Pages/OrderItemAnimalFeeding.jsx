@@ -5,6 +5,9 @@ import "react-toastify/dist/ReactToastify.css";
 import { getToken } from "../../../services/token";
 
 const OrderItemAnimalFeeding = () => {
+
+           // create variable for api url
+     const baseURL = import.meta.env.VITE_API_URL;
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
@@ -20,7 +23,7 @@ const OrderItemAnimalFeeding = () => {
     const fetchProducts = async () => {
       try {
         const response = await fetch(
-          "http://localhost:5000/api/v1/animal-feeding/products",
+          `${baseURL}/animal-feeding/products`,
           {
             method: "GET",
             headers: {
@@ -95,7 +98,7 @@ const OrderItemAnimalFeeding = () => {
       };
 
       const response = await fetch(
-        "http://localhost:5000/api/v1/animal-feeding/orders",
+        `${baseURL}/animal-feeding/orders`,
         {
           method: "POST",
           headers: {

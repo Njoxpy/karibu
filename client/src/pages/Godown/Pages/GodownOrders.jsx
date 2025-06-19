@@ -12,6 +12,9 @@ import { AuthContext } from "../../../context/auth/AuthContext";
 const formatDate = (date) => new Date(date).toLocaleDateString();
 
 const GodownOrders = () => {
+  // create variable for api url
+  const baseURL = import.meta.env.VITE_API_URL;
+
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -34,16 +37,13 @@ const GodownOrders = () => {
   // Fetch orders from API
   const fetchOrders = async () => {
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/v1/godown/orders",
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`${baseURL}/godown/orders`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
       const data = await response.json();
       if (response.ok) {
         if (Array.isArray(data)) {
@@ -139,16 +139,13 @@ const GodownOrders = () => {
       setShowDeleteModal(false);
 
       // Make the API call to delete the order
-      const response = await fetch(
-        `http://localhost:5000/api/v1/godown/orders/${orderId}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`${baseURL}/godown/orders/${orderId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
       if (!response.ok) {
         throw new Error("Failed to delete the order");
@@ -180,7 +177,7 @@ const GodownOrders = () => {
 
       // Make the API call to update the order
       const response = await fetch(
-        `http://localhost:5000/api/v1/godown/orders/${orderToEdit._id}`,
+        `${baseURL}/godown/orders/${orderToEdit._id}`,
         {
           method: "PUT",
           headers: {

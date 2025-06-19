@@ -3,6 +3,12 @@ import { Link } from "react-router-dom";
 import { getToken } from "../../../services/token";
 
 const OrdersPage = () => {
+
+
+
+      // create variable for api url
+     const baseURL = import.meta.env.VITE_API_URL;
+
   const [orders, setOrders] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
@@ -20,7 +26,7 @@ const OrdersPage = () => {
 
       try {
         const response = await fetch(
-          `http://localhost:5000/API/v1/${selectedCategory}/orders/`,
+          `${baseURL}${selectedCategory}/orders/`,
           {
             method: "GET",
             headers: {

@@ -8,11 +8,15 @@ const OrderDetailsPage = () => {
   const [error, setError] = useState(""); // Error state
 
   useEffect(() => {
+
+    // create variable for api url
+     const baseURL = import.meta.env.VITE_API_URL;
+
     const fetchOrderDetails = async () => {
       try {
         // Fetch order details from the API
         const response = await fetch(
-          `http://localhost:5000/API/v1/orders/${orderId}`
+          `${baseURL}/orders/${orderId}`
         );
 
         if (!response.ok) {

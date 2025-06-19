@@ -6,6 +6,9 @@ import EditModal from "../Components/EditModal";
 import { getToken } from "../../../services/token";
 
 const ManageGodownItems = () => {
+  // create variable for api url
+  const baseURL = import.meta.env.VITE_API_URL;
+
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -33,16 +36,13 @@ const ManageGodownItems = () => {
   // Fetch products from the API
   const fetchProducts = async () => {
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/v1/godown/products",
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`, // Attach the token in the Authorization header
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`${baseURL}/godown/products`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`, // Attach the token in the Authorization header
+          "Content-Type": "application/json",
+        },
+      });
 
       if (!response.ok) {
         throw new Error("Failed to fetch products");
@@ -74,7 +74,7 @@ const ManageGodownItems = () => {
   const onDeleteConfirm = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/godown/products/${selectedProductId}`,
+        `${baseURL}/godown/products/${selectedProductId}`,
         {
           method: "DELETE",
           headers: {
@@ -109,7 +109,7 @@ const ManageGodownItems = () => {
   const handleSaveEdit = async (updatedProduct) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/godown/products/${updatedProduct._id}`,
+        `${baseURL}/godown/products/${updatedProduct._id}`,
         {
           method: "PUT",
           headers: {

@@ -10,8 +10,9 @@ const HardwareItemsUpload = () => {
   const [image, setImage] = useState(null);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
-
-  const URL = "http://localhost:5000/api/v1/hardware/products";
+  // create variable for api url
+  const baseURL = import.meta.env.VITE_API_URL;
+  const URL = `${baseURL}/hardware/products`;
   const token = getToken();
 
   const validateInputs = () => {

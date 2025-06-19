@@ -4,6 +4,8 @@ import { getToken } from "../../../services/token";
 const token = getToken();
 
 const RevenueDashboard = () => {
+        // create variable for api url
+     const baseURL = import.meta.env.VITE_API_URL;
   const [revenueData, setRevenueData] = useState({
     animalFeeding: null,
     freshOil: null,
@@ -17,7 +19,7 @@ const RevenueDashboard = () => {
   const fetchRevenueData = async (category, period) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/${category}/revenue?period=${period}`,
+        `${baseURL}/${category}/revenue?period=${period}`,
         {
           method: "GET",
           headers: {

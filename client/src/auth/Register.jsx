@@ -2,6 +2,8 @@ import { useState } from "react";
 import axios from "axios";
 
 const SignupForm = () => {
+
+  const baseURL = import.meta.env.VITE_API_URL ;
   // State for form fields
   const [formData, setFormData] = useState({
     email: "",
@@ -10,7 +12,7 @@ const SignupForm = () => {
     role: "employee",
     category: "",
   });
-
+  
   // State for form submission and feedback
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -62,7 +64,7 @@ const SignupForm = () => {
     try {
       // Submit data to your API endpoint
       const response = await axios.post(
-        "http://localhost:5000/api/v1/users/signup",
+        `${baseURL}/users/signup`,
         {
           email: formData.email,
           password: formData.password,

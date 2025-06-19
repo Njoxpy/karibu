@@ -12,6 +12,9 @@ import NoOrders from "../../../components/NoOrders";
 const formatDate = (date) => new Date(date).toLocaleDateString();
 
 const Orders = () => {
+      // create variable for api url
+     const baseURL = import.meta.env.VITE_API_URL;
+  
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -37,7 +40,7 @@ const Orders = () => {
   const fetchOrders = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/v1/animal-feeding/orders",
+        `${baseURL}/animal-feeding/orders`,
         {
           method: "GET",
           headers: {
@@ -135,7 +138,7 @@ const Orders = () => {
   const handleDeleteOrder = async (orderId) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/animal-feeding/orders/${orderId}`,
+        `${baseURL}/animal-feeding/orders/${orderId}`,
         {
           method: "DELETE",
           headers: {
@@ -167,7 +170,7 @@ const Orders = () => {
     try {
       // Send the request to update the order
       const response = await fetch(
-        `http://localhost:5000/api/v1/animal-feeding/orders/${orderToEdit._id}`,
+        `${baseURL}/animal-feeding/orders/${orderToEdit._id}`,
         {
           method: "PUT",
           headers: {

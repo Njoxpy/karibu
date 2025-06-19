@@ -87,6 +87,10 @@ const ErrorMessage = ({ message }) => (
 );
 
 const DashboardHome = () => {
+
+      // create variable for api url
+     const baseURL = import.meta.env.VITE_API_URL;
+
   const location = useLocation();
   const [orders, setOrders] = useState([]);
   const [totalOrdersCount, setTotalOrdersCount] = useState(null);
@@ -110,7 +114,7 @@ const DashboardHome = () => {
     setError(null);
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/${selectedCategory}/orders/`,
+        `${baseURL}/${selectedCategory}/orders/`,
         {
           method: "GET",
           headers: {
@@ -134,7 +138,7 @@ const DashboardHome = () => {
     setCountError(null);
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/fresh-oil/orders-count`,
+        `${baseURL}/fresh-oil/orders-count`,
         {
           method: "GET",
           headers: {
@@ -159,7 +163,7 @@ const DashboardHome = () => {
     setSalesError(null);
     try {
       const response = await fetch(
-        "http://localhost:5000/api/v1/fresh-oil/sales-total",
+        `${baseURL}/fresh-oil/sales-total`,
         {
           method: "GET",
           headers: {
@@ -184,7 +188,7 @@ const DashboardHome = () => {
     setProductsError(null);
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/fresh-oil/products-count`,
+        `${baseURL}/fresh-oil/products-count`,
         {
           method: "GET",
           headers: {
@@ -208,7 +212,7 @@ const DashboardHome = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:5000/api/v1/users", {
+      const response = await fetch(`${baseURL}/users`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) {

@@ -12,8 +12,11 @@ const FoodUpload = () => {
   const [image, setImage] = useState(null);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+        // create variable for api url
+     const baseURL = import.meta.env.VITE_API_URL;
 
-  const URL = "http://localhost:5000/api/v1/animal-feeding/products";
+  const URL = `${baseURL}/animal-feeding/products`;
+  
   const token = getToken();
 
   const { dispatch } = useAnimalFeeding();

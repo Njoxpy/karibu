@@ -25,6 +25,8 @@ const FreshOilOrders = () => {
   const [newQuantity, setNewQuantity] = useState(1);
   const { user, isLoading } = useContext(AuthContext);
 
+      // create variable for api url
+     const baseURL = import.meta.env.VITE_API_URL;
   // token
   const token = getToken();
 
@@ -35,7 +37,7 @@ const FreshOilOrders = () => {
   const fetchOrders = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/v1/fresh-oil/orders",
+        `${baseURL}/fresh-oil/orders`, 
         {
           method: "GET",
           headers: {
@@ -140,7 +142,7 @@ const FreshOilOrders = () => {
 
       // Make the API call to delete the order
       const response = await fetch(
-        `http://localhost:5000/api/v1/fresh-oil/orders/${orderId}`,
+        `${baseURL}/fresh-oil/orders/${orderId}`,
         {
           method: "DELETE",
           headers: {
@@ -180,7 +182,7 @@ const FreshOilOrders = () => {
 
       // Make the API call to update the order
       const response = await fetch(
-        `http://localhost:5000/api/v1/fresh-oil/orders/${orderToEdit._id}`,
+        `${baseURL}/fresh-oil/orders/${orderToEdit._id}`,
         {
           method: "PUT",
           headers: {

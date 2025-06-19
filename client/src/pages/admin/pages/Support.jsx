@@ -21,9 +21,8 @@ const Support = () => {
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Here, you would send the form data to an API or email service
-    console.log("Support form submitted", formData);
-    setSubmitted(true); // Display a success message after submission
+
+    setSubmitted(true);
   };
 
   return (

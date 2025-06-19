@@ -12,6 +12,9 @@ import { AuthContext } from "../../../context/auth/AuthContext";
 const formatDate = (date) => new Date(date).toLocaleDateString();
 
 const StationeryOrders = () => {
+
+    // create variable for api url
+     const baseURL = import.meta.env.VITE_API_URL;
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -35,7 +38,7 @@ const StationeryOrders = () => {
   const fetchOrders = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/v1/stationery/orders",
+        "${baseURL}://localhost:5000/api/v1/stationery/orders",
         {
           method: "GET",
           headers: {
@@ -140,7 +143,7 @@ const StationeryOrders = () => {
 
       // Make the API call to delete the order
       const response = await fetch(
-        `http://localhost:5000/api/v1/stationery/orders/${orderId}`,
+        `${baseURL}://localhost:5000/api/v1/stationery/orders/${orderId}`,
         {
           method: "DELETE",
           headers: {
@@ -180,7 +183,7 @@ const StationeryOrders = () => {
 
       // Make the API call to update the order
       const response = await fetch(
-        `http://localhost:5000/api/v1/stationery/orders/${orderToEdit._id}`,
+        `${baseURL}://localhost:5000/api/v1/stationery/orders/${orderToEdit._id}`,
         {
           method: "PUT",
           headers: {

@@ -5,6 +5,10 @@ import "react-toastify/dist/ReactToastify.css";
 import { getToken } from "../../../services/token";
 
 const OrderItem = () => {
+
+  // create variable for api url
+     const baseURL = import.meta.env.VITE_API_URL;
+
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
@@ -19,7 +23,7 @@ const OrderItem = () => {
   const fetchProducts = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/v1/fresh-oil/products",
+        `${baseURL}/fresh-oil/products`,
         {
           method: "GET",
           headers: {
@@ -109,7 +113,7 @@ const OrderItem = () => {
 
       // 1. Create the order
       const orderResponse = await fetch(
-        "http://localhost:5000/api/v1/fresh-oil/orders",
+        `${baseURL}/fresh-oil/orders`, 
         {
           method: "POST",
           headers: {
@@ -130,7 +134,7 @@ const OrderItem = () => {
       // 2. Update the product quantity in the backend
       const updatedQuantity = selectedProduct.quantity - quantity;
       const updateResponse = await fetch(
-        `http://localhost:5000/api/v1/fresh-oil/products/${selectedProduct._id}`,
+        `${baseURL}/fresh-oil/products/${selectedProduct._id}`,
         {
           method: "PUT",
           headers: {

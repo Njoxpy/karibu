@@ -9,6 +9,8 @@ import { AuthContext } from "../../../context/auth/AuthContext";
 const formatDate = (date) => new Date(date).toLocaleDateString();
 
 const OrdersTable = () => {
+  // create variable for api url
+  const baseURL = import.meta.env.VITE_API_URL;
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -28,16 +30,13 @@ const OrdersTable = () => {
     try {
       const token = localStorage.getItem("authToken"); // Ensure the token is retrieved from localStorage
 
-      const response = await fetch(
-        "http://localhost:5000/api/v1/printing/orders",
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`${baseURL}/printing/orders`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
       const data = await response.json();
 
@@ -120,16 +119,13 @@ const OrdersTable = () => {
   // Handle deleting an order
   const handleDeleteOrder = async (orderId) => {
     try {
-      const response = await fetch(
-        `http://localhost:5000/api/v1/printing/orders/${orderId}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`${baseURL}/printing/orders/${orderId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
       if (response.ok) {
         const updatedOrders = orders.filter((order) => order._id !== orderId);
         setOrders(updatedOrders);
@@ -147,7 +143,7 @@ const OrdersTable = () => {
   const handleEditOrder = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/printing/orders/${orderToEdit._id}`,
+        `${baseURL}/printing/orders/${orderToEdit._id}`,
         {
           method: "PUT",
           headers: {

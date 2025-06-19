@@ -10,12 +10,13 @@ const StationeryOrderDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const token = getToken();
-
+// create variable for api url
+     const baseURL = import.meta.env.VITE_API_URL;
   useEffect(() => {
     const fetchOrder = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/API/v1/stationery/orders/${id}`,
+          `${baseURL}/stationery/orders/${id}`,
           {
             method: "GET",
             headers: {

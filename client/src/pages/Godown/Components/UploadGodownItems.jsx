@@ -3,6 +3,11 @@ import Footer from "../../../components/Footer";
 import InputField from "./InputField"; // Import the InputField component
 
 const UploadGodownItems = () => {
+  // create variable for api url
+  const baseURL = import.meta.env.VITE_API_URL;
+
+  const URL = `${baseURL}/godown/products`;
+
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -51,7 +56,6 @@ const UploadGodownItems = () => {
       description,
     };
 
-    const URL = "http://localhost:5000/api/v1/godown/products";
     try {
       const response = await fetch(URL, {
         method: "POST",

@@ -7,11 +7,12 @@ function StationeryBody() {
   const [products, setProducts] = useState([]); // State for fetched products
   const [currentPage, setCurrentPage] = useState(1); // Current page number
   const itemsPerPage = 6; // Items per page for pagination
-
+  // create variable for api url
+     const baseURL = import.meta.env.VITE_API_URL;
   useEffect(() => {
     const token = getToken();
 
-    fetch("http://localhost:5000/api/v1/stationery/products", {
+    fetch(`${baseURL}/stationery/products`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`, // Attach the token in the Authorization header

@@ -11,11 +11,14 @@ const OrderDetails = () => {
   const [error, setError] = useState(null);
   const token = getToken();
 
+          // create variable for api url
+     const baseURL = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     const fetchOrder = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/API/v1/animal-feeding/orders/${id}`,
+          `${baseURL}/animal-feeding/orders/${id}`,
           {
             method: "GET",
             headers: {
