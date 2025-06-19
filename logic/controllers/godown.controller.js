@@ -19,7 +19,7 @@ const NO_CONTENT = 204;
 const getMovementLogs = async (req, res) => {
   try {
     const logs = await InventoryMovement.find()
-      .populate('product', 'name') 
+      .populate("product", "name")
       .sort({ createdAt: -1 });
 
     if (logs.length === 0) {
@@ -420,7 +420,7 @@ const transferInventory = async (req, res) => {
     // Get request data
     const { productId, transferQuantity, origin, destination, reason } =
       req.body;
-    const transferredBy = req.user._id; 
+    const transferredBy = req.user._id;
 
     // Validate the request data
     if (!productId || !transferQuantity || !origin || !destination) {
@@ -623,9 +623,6 @@ const getTotalCostByDate = async (req, res) => {
   }
 
   try {
-    console.log("Start Date:", startDate);
-    console.log("End Date:", now);
-
     const totalCost = await GodownOrder.aggregate([
       {
         $match: {
@@ -660,7 +657,9 @@ const getLogById = async (req, res) => {
     const { id } = req.params;
 
     // Find the log by its id
-    const log = await InventoryMovement.findOne({ id }).populate('product transferredBy');
+    const log = await InventoryMovement.findOne({ id }).populate(
+      "product transferredBy"
+    );
     if (!log) {
       return res.status(NOT_FOUND).json({ message: "Log not found." });
     }
@@ -719,7 +718,6 @@ const deleteLog = async (req, res) => {
     return res.status(SERVER_ERROR).json({ error: error.message });
   }
 };
-
 
 module.exports = {
   getLogById,

@@ -12,7 +12,6 @@ const getPrintingOrderss = async (startDate, endDate) => {
       createdAt: { $gte: start, $lte: end },
     });
   } catch (error) {
-    console.log(error);
     throw new Error("Error fetching animal feeding orders");
   }
 };

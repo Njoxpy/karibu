@@ -58,8 +58,6 @@ router.post(
   checkPermissions(["createProduct"]), // Ensure user has permissions
   uploadExcel.single("file"), // Upload a single Excel file
   async (req, res) => {
-    console.log("Uploaded file:", req.file); // Log the file object for debugging
-
     try {
       if (!req.file) {
         return res.status(400).json({ message: "No file uploaded" });
