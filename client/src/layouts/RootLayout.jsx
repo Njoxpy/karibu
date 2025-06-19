@@ -142,14 +142,6 @@ const RootLayout = () => {
               >
                 Login
               </Link>
-              <Link to={"/register"}>
-                <button
-                  className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white bg-blue-500 hover:bg-blue-600 hover:border-blue-600 mt-4 lg:mt-0"
-                  aria-label="Register"
-                >
-                  Register
-                </button>
-              </Link>
             </div>
           ) : (
             <>

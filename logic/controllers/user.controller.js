@@ -45,6 +45,44 @@ const loginUser = async (req, res) => {
   }
 };
 
+const createAdminController = async (req, res) => {
+  const { secretKey } = req.body;
+
+  // Simple secret check to allow admin creation only if you have the key
+  if (secretKey !== process.env.SECRET) {
+    return res.status(403).json({ error: "Unauthorized" });
+  }
+
+  try {
+    const adminExists = await User.findOne({ role: "admin" });
+    if (adminExists) {
+      return res.status(400).json({ error: "Admin already exists" });
+    }
+
+    const adminEmail = process.env.ADMIN_EMAIL || "admin@savarrah.com";
+    const adminPassword = process.env.ADMIN_PASSWORD || "SavarrahAdmin123!";
+    const adminCategory = "stationery";
+
+    const user = await User.signup(
+      adminEmail,
+      adminPassword,
+      "admin",
+      adminCategory
+    );
+    const token = createToken(user._id, user.role, user.category);
+
+    res.status(201).json({
+      message: "Admin created successfully",
+      email: user.email,
+      role: user.role,
+      category: user.category,
+      token,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 // Signup user (Modified to include category in the token)
 const signupUser = async (req, res) => {
   const { email, password, role, category } = req.body;
@@ -201,4 +239,5 @@ module.exports = {
   deleteUser,
   getUserById,
   availableUserCount,
+  createAdminController,
 };

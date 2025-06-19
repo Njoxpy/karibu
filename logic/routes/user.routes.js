@@ -7,6 +7,7 @@ const {
   updateUser,
   deleteUser,
   availableUserCount,
+  createAdminController,
 } = require("../controllers/user.controller");
 
 // Import middleware
@@ -23,9 +24,9 @@ userRoutes.post("/login", loginUser);
 // Protected routes - admin only
 userRoutes.post(
   "/signup",
-  // authenticate,
-  // checkCategory(["admin"]),
-  // checkPermissions(["createUser"]),
+  authenticate,
+  checkCategory(["admin"]),
+  checkPermissions(["createUser"]),
   signupUser
 );
 
@@ -44,7 +45,8 @@ userRoutes.get(
   checkPermissions(["viewUsers"]),
   availableUserCount
 );
-
+// 48
+userRoutes.post("/create-admin", createAdminController);
 userRoutes.get(
   "/:id",
   authenticate,

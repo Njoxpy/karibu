@@ -15,7 +15,6 @@ import OrderDetailsError from "./pages/Printing/Error/OrderDetailsError";
 // pages
 import Home from "./Home/Home";
 import Login from "./auth/Login";
-import Register from "./auth/Register";
 import OrdersTable from "./pages/Printing/Orders/OrderTable";
 import Contact from "./pages/Contact";
 
@@ -166,7 +165,6 @@ export default function App() {
         <Route path="/" element={<RootLayout />}>
           <Route index element={<Home />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
 
           {/* admin */}
 

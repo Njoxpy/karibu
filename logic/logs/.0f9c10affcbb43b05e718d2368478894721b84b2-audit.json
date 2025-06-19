@@ -6,9 +6,9 @@
     "auditLog": "/home/njox/Desktop/gitProjects/savarrah/logic/logs/.0f9c10affcbb43b05e718d2368478894721b84b2-audit.json",
     "files": [
         {
-            "date": 1750348023553,
+            "date": 1750355649340,
             "name": "/home/njox/Desktop/gitProjects/savarrah/logic/logs/2025-06-19-access.log",
-            "hash": "e42ac378d8a234d9ad9960b69073456659f1b3f28882c232de035af398a0dd0a"
+            "hash": "eb229ab44eed12e6f9bd892a619f1c561438904c2b41581a2624d0a4397d8570"
         }
     ],
     "hashType": "sha256"
