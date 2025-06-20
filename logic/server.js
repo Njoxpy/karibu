@@ -43,7 +43,7 @@ app.use(haltOnTimeout);
 app.use(
   cors({
     origin: ["http://localhost:5173", "https://yourfrontend.com"],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Include OPTIONS
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], 
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
@@ -64,7 +64,6 @@ app.use(
     },
   })
 );
-
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, 
