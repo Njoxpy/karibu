@@ -70,7 +70,7 @@ app.use(
     },
   })
 );
-
+// 
 // Serve static files
 app.use(
   "/uploads",
@@ -104,12 +104,10 @@ const swaggerSpec = swaggerJsdoc(options);
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per window
+  windowMs: 15 * 60 * 1000, 
+  max: 100, 
   message: "Too many requests, please try again later.",
 });
-
-// app.use(limiter);
 
 // Routes
 app.use("/api/v1/animal-feeding", animalFeedingRoutes);
@@ -134,11 +132,9 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Connect to DB
-connectDB();
-
 // Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Listening on http://localhost:${PORT}/`);
+  connectDB();
 });
