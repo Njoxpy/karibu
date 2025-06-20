@@ -38,7 +38,7 @@ const StationeryOrders = () => {
   const fetchOrders = async () => {
     try {
       const response = await fetch(
-        "${baseURL}://localhost:5000/api/v1/stationery/orders",
+        `${baseURL}/stationery/orders`,
         {
           method: "GET",
           headers: {
@@ -143,7 +143,7 @@ const StationeryOrders = () => {
 
       // Make the API call to delete the order
       const response = await fetch(
-        `${baseURL}://localhost:5000/api/v1/stationery/orders/${orderId}`,
+        `${baseURL}/stationery/orders/${orderId}`,
         {
           method: "DELETE",
           headers: {
@@ -183,7 +183,7 @@ const StationeryOrders = () => {
 
       // Make the API call to update the order
       const response = await fetch(
-        `${baseURL}://localhost:5000/api/v1/stationery/orders/${orderToEdit._id}`,
+        `${baseURL}/stationery/orders/${orderToEdit._id}`,
         {
           method: "PUT",
           headers: {

@@ -20,13 +20,14 @@ const GodownProductDetails = () => {
   // Get the dispatch function from the context
   const { dispatch } = useAnimalFeeding();
 
-  const baseURL = "http://localhost:5000";
+  // base url for the API
+    const baseURL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const response = await fetch(
-          `${baseURL}/api/v1/animal-feeding/products/${id}`,
+          `${baseURL}/animal-feeding/products/${id}`,
           {
             method: "GET",
             headers: {
@@ -76,7 +77,7 @@ const GodownProductDetails = () => {
         status: "pending",
       };
 
-      const response = await fetch(`${baseURL}/api/v1/animal-feeding/orders`, {
+      const response = await fetch(`${baseURL}/animal-feeding/orders`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

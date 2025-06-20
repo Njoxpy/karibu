@@ -11,7 +11,9 @@ const FoodsBody = () => {
   const itemsPerPage = 10;
 
   const token = getToken();
-  const baseURL = "http://localhost:5000";
+
+  // base url for the API
+    const baseURL = import.meta.env.VITE_API_URL;
 
   const { products, dispatch } = useAnimalFeeding();
 
@@ -22,7 +24,7 @@ const FoodsBody = () => {
 
       try {
         const response = await fetch(
-          `${baseURL}/api/v1/animal-feeding/products`,
+          `${baseURL}/animal-feeding/products`,
           {
             method: "GET",
             headers: {

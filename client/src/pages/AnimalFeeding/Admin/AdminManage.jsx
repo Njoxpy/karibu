@@ -19,7 +19,9 @@ const AdminManage = () => {
   const [validationErrors, setValidationErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const token = getToken();
-  const baseURL = "http://localhost:5000";
+
+  // base url for the API
+    const baseURL = import.meta.env.VITE_API_URL;
 
   const itemsPerPage = 10;
 
@@ -49,7 +51,7 @@ const AdminManage = () => {
   const fetchProducts = async () => {
     try {
       const response = await fetch(
-        `${baseURL}/api/v1/animal-feeding/products/`,
+        `${baseURL}/animal-feeding/products/`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -175,7 +177,7 @@ const AdminManage = () => {
 
       // Make the API call to update the product in the database
       const response = await fetch(
-        `${baseURL}/api/v1/animal-feeding/products/${updatedProduct._id}`,
+        `${baseURL}/animal-feeding/products/${updatedProduct._id}`,
         {
           method: "PUT",
           headers: {
@@ -229,7 +231,7 @@ const AdminManage = () => {
     try {
       // Proceed with the delete API call
       const response = await fetch(
-        `${baseURL}/api/v1/animal-feeding/products/${selectedProduct._id}`,
+        `${baseURL}/animal-feeding/products/${selectedProduct._id}`,
         {
           method: "DELETE",
           headers: {

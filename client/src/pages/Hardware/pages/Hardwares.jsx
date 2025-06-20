@@ -13,7 +13,10 @@ const Hardwares = () => {
   const itemsPerPage = 6;
 
   const token = getToken();
-  const baseURL = "http://localhost:5000";
+  
+  // base url for the API
+  const baseURL = import.meta.env.VITE_API_URL;
+
   const { products, dispatch } = useAnimalFeeding();
 
   useEffect(() => {
@@ -28,7 +31,7 @@ const Hardwares = () => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`${baseURL}/api/v1/hardware/products`, {
+        const response = await fetch(`${baseURL}/hardware/products`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",

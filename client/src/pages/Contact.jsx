@@ -12,8 +12,7 @@ const Contact = () => {
   // 🔧 Form submit handler
   const onSubmit = (data) => {
     console.log("Form Data Submitted:", data);
-    // 👉 Here you can send the data to a backend, email service, etc.
-    // Example: axios.post('/api/contact', data)
+  
     alert("Ujumbe umetumwa kwa mafanikio! 🙌");
     reset(); // clear the form
   };

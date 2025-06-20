@@ -16,7 +16,9 @@ const ManageFreshOil = () => {
   const [editProduct, setEditProduct] = useState(null);
   const [validationErrors, setValidationErrors] = useState({});
   const token = getToken();
-  const baseURL = "http://localhost:5000";
+
+  // base url for the API
+    const baseURL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     fetchProducts();
@@ -36,7 +38,7 @@ const ManageFreshOil = () => {
   // Fetch products from the API
   const fetchProducts = async () => {
     try {
-      const response = await fetch(`${baseURL}/api/v1/fresh-oil/products/`, {
+      const response = await fetch(`${baseURL}/fresh-oil/products/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) {
@@ -121,7 +123,7 @@ const ManageFreshOil = () => {
 
       // Make the API call to update the product
       const response = await fetch(
-        `${baseURL}/api/v1/fresh-oil/products/${editProduct._id}`,
+        `${baseURL}/fresh-oil/products/${editProduct._id}`,
         {
           method: "PUT",
           headers: {
@@ -156,7 +158,7 @@ const ManageFreshOil = () => {
 
       // Make the API call to delete the product
       const response = await fetch(
-        `${baseURL}/api/v1/fresh-oil/products/${selectedProduct._id}`,
+        `${baseURL}/fresh-oil/products/${selectedProduct._id}`,
         {
           method: "DELETE",
           headers: {

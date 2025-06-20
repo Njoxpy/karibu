@@ -16,7 +16,9 @@ const ManageStationeryProducts = () => {
   const [editProduct, setEditProduct] = useState(null);
   const [validationErrors, setValidationErrors] = useState({});
   const token = getToken();
-  const baseURL = "http://localhost:5000";
+
+  // base url for the API
+    const baseURL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     fetchProducts();
@@ -36,7 +38,7 @@ const ManageStationeryProducts = () => {
   // Fetch products from the API
   const fetchProducts = async () => {
     try {
-      const response = await fetch(`${baseURL}/api/v1/stationery/products/`, {
+      const response = await fetch(`${baseURL}/stationery/products/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) {
@@ -121,7 +123,7 @@ const ManageStationeryProducts = () => {
 
       // Make the API call to update the product
       const response = await fetch(
-        `${baseURL}/api/v1/stationery/products/${editProduct._id}`,
+        `${baseURL}/stationery/products/${editProduct._id}`,
         {
           method: "PUT",
           headers: {
@@ -156,7 +158,7 @@ const ManageStationeryProducts = () => {
 
       // Make the API call to delete the product
       const response = await fetch(
-        `${baseURL}/api/v1/stationery/products/${selectedProduct._id}`,
+        `${baseURL}/stationery/products/${selectedProduct._id}`,
         {
           method: "DELETE",
           headers: {

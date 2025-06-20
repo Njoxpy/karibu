@@ -57,7 +57,7 @@ function SubmitWork() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Add Bearer token here
+          Authorization: `Bearer ${token}`, 
         },
         body: JSON.stringify(orderData),
       });
@@ -69,7 +69,7 @@ function SubmitWork() {
       const data = await response.json();
 
       // Dispatch to add the order to the state
-      dispatch({ type: "ADD_PRINTING_ORDER", payload: data }); // Add the order from response
+      dispatch({ type: "ADD_PRINTING_ORDER", payload: data }); 
       setCategory("");
       setContact("");
       setDescription("");
