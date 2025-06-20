@@ -6,9 +6,6 @@ const helmet = require("helmet");
 const compression = require("compression");
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
-const session = require("express-session");
-const swaggerJsdoc = require("swagger-jsdoc");
-const swaggerUi = require("swagger-ui-express");
 const timeout = require("connect-timeout");
 
 // ROUTES IMPORT
@@ -42,9 +39,7 @@ function haltOnTimeout(req, res, next) {
 }
 app.use(haltOnTimeout);
 
-// CORS Configuration
-// const allowedOrigins = ["http://localhost:5173", "https://yourfrontend.com"];
-
+// cors configurations
 app.use(
   cors({
     origin: ["http://localhost:5173", "https://yourfrontend.com"],
@@ -60,17 +55,6 @@ app.options("*", cors());
 app.use(helmet());
 app.use(compression());
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      maxAge: 60 * 60 * 1000, // 1 hour
-    },
-  })
-);
-// 
 // Serve static files
 app.use(
   "/uploads",
@@ -81,27 +65,6 @@ app.use(
   })
 );
 
-// Swagger setup
-const options = {
-  definition: {
-    openapi: "3.0.0",
-    info: {
-      title: "Savarrah API",
-      version: "1.0.0",
-      description: "API documentation for Savarrah",
-    },
-    servers: [
-      {
-        url: "http://localhost:5000/api/v1",
-        description: "Development server",
-      },
-    ],
-  },
-  apis: ["./routes/*.js"],
-};
-
-const swaggerSpec = swaggerJsdoc(options);
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, 
@@ -133,7 +96,7 @@ app.use((err, req, res, next) => {
 });
 
 // Start Server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Listening on http://localhost:${PORT}/`);
   connectDB();
