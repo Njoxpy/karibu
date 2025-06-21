@@ -1,16 +1,30 @@
+// responseStatusCode.js
+
 // 200
-export const CREATED = 201;
-export const OK = 200;
+const CREATED = 201;
+const OK = 200;
 
 // 400
-export const BAD_REQUEST = 400;
-export const UNAUTHORIZED = 401;
-export const FORBIDDEN = 403;
-export const NOT_FOUND = 404;
+const BAD_REQUEST = 400;
+const UNAUTHORIZED = 401;
+const FORBIDDEN = 403;
+const NOT_FOUND = 404;
 
 // 500
-export const SERVER_ERROR = 500;
-export const INTERNAL_SERVER_ERROR = 500;
+const SERVER_ERROR = 500;
+const INTERNAL_SERVER_ERROR = 500;
 
 // NO CONTENT
-export const NO_CONTENT = 204;
+const NO_CONTENT = 204;
+
+module.exports = {
+  CREATED,
+  OK,
+  BAD_REQUEST,
+  UNAUTHORIZED,
+  FORBIDDEN,
+  NOT_FOUND,
+  SERVER_ERROR,
+  INTERNAL_SERVER_ERROR,
+  NO_CONTENT
+};
