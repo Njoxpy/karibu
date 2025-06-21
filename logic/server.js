@@ -8,7 +8,10 @@ const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
 const timeout = require("connect-timeout");
 
-// ROUTES IMPORT
+// --- SERVER LISTEN ---
+const PORT = Number(process.env.PORT) || 4000;
+
+// ROUTES
 const animalFeedingRoutes = require("./routes/animalFeeding.routes");
 const freshOilRoutes = require("./routes/freshOil.routes");
 const godownRoutes = require("./routes/godown.routes");
@@ -17,61 +20,52 @@ const printingRoutes = require("./routes/printing.routes");
 const hardwareRoutes = require("./routes/hardware.routes");
 const stationeryRoutes = require("./routes/stationery.routes");
 
-// Logger import
+// LOGGER + DB
 const logger = require("./logs/logger");
-
-// Database connection
 const connectDB = require("./config/DB");
 
-// Express app
 const app = express();
 
-// Middleware
+// --- MIDDLEWARE ---
 app.use(logger);
-app.use(morgan("dev")); // Logger
+app.use(morgan("dev"));
 app.use(express.json());
-app.use(timeout("30s")); // Request timeout
+app.use(timeout("30s"));
 
-// Handle timeout
-function haltOnTimeout(req, res, next) {
+// Handle timeouts
+app.use((req, res, next) => {
   if (!req.timedOut) next();
   else res.status(408).json({ error: "Request timed out" });
-}
-app.use(haltOnTimeout);
+});
 
-// cors configurations
-app.use(
-  cors({
-    origin: ["http://localhost:5173", "https://yourfrontend.com"],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], 
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
-
-// Manually handle preflight (OPTIONS request)
+// CORS config
+app.use(cors({
+  origin: ["http://localhost:5173", "https://yourfrontend.com"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+}));
 app.options("*", cors());
 
 app.use(helmet());
 app.use(compression());
 
-// Serve static files
-app.use(
-  "/uploads",
-  express.static(path.join(__dirname, "uploads"), {
-    setHeaders: (res) => {
-      res.set("Cross-Origin-Resource-Policy", "cross-origin");
-    },
-  })
-);
+// Serve uploaded files
+app.use("/uploads", express.static(path.join(__dirname, "uploads"), {
+  setHeaders: (res) => {
+    res.set("Cross-Origin-Resource-Policy", "cross-origin");
+  },
+}));
 
+// Rate limiter
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, 
-  max: 100, 
+  windowMs: 15 * 60 * 1000, // 15 min
+  max: 100,
   message: "Too many requests, please try again later.",
 });
+app.use(limiter);
 
-// Routes
+// --- ROUTES ---
 app.use("/api/v1/animal-feeding", animalFeedingRoutes);
 app.use("/api/v1/fresh-oil", freshOilRoutes);
 app.use("/api/v1/godown", godownRoutes);
@@ -80,12 +74,12 @@ app.use("/api/v1/printing", printingRoutes);
 app.use("/api/v1/stationery", stationeryRoutes);
 app.use("/api/v1/users", userRoutes);
 
-// 404 Handler
+// Catch-all 404
 app.use("*", (req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
 
-// Global Error Handler
+// Global error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(err.status || 500).json({
@@ -94,9 +88,13 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start Server
-const PORT = process.env.PORT;
+
+
+console.log("PORT from env:", process.env.PORT);
+console.log("PORT type:", typeof process.env.PORT);
+console.log("Final PORT used:", PORT);
+
 app.listen(PORT, () => {
-  console.log(`Listening on http://localhost:${PORT}/`);
+  console.log(`✅ Server running on http://localhost:${PORT}`);
   connectDB();
 });
