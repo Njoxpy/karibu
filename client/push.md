@@ -1,0 +1,1 @@
+scp -r /home/njox/savarrah/client/dist/* root@209.38.255.249:/var/www/savarrah.co.tz/html/

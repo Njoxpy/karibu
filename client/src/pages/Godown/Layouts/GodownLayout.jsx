@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect } from "react";
-import { AuthContext } from "../../../context/auth/AuthContext"; // Adjust the import path
+import { AuthContext } from "../../../context/auth/AuthContext";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,14 +9,14 @@ const NavLink = ({ to, children, onClick }) => (
   <Link
     to={to}
     onClick={onClick}
-    className="px-4 py-2 rounded-lg hover:bg-blue-700 hover:text-white transition-all duration-200 flex items-center space-x-2"
+    className="px-3 py-2 rounded-lg hover:bg-blue-700 hover:text-white transition-all duration-200 flex items-center space-x-2 text-sm lg:text-base"
   >
     {children}
   </Link>
 );
 
 function AnimalFeedingLayout() {
-  const { user } = useContext(AuthContext); // Get user from context
+  const { user } = useContext(AuthContext);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Base navigation items for everyone
@@ -31,7 +31,9 @@ function AnimalFeedingLayout() {
     navItems.push(
       { path: "/godown/admin/upload", label: "Item Upload" },
       { path: "/godown/admin/bulk-upload", label: "Bulk Upload" },
-      { path: "/godown/admin/manage", label: "Manage Godown" }
+      { path: "/godown/admin/manage", label: "Manage Godown" },
+      { path: "/godown/admin/move", label: "Move Products" },
+      { path: "/godown/admin/movement-logs", label: "Movement Logs" }
     );
   }
 
@@ -55,17 +57,11 @@ function AnimalFeedingLayout() {
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="bg-gradient-to-r from-blue-900 to-indigo-900 text-white shadow-lg">
-        <header className="container mx-auto px-6">
-          <div className="flex justify-between items-center py-4">
-            <h2 className="text-3xl font-bold tracking-tight">
-              <Link
-                to="/godown/"
-                className="hover:text-blue-300 transition-colors duration-200"
-              >
-                Godown
-              </Link>
-            </h2>
+        <header className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-3 sm:py-4">
+            {/* Logo/Title */}
 
+            {/* Mobile menu button */}
             <button
               className="lg:hidden p-2 hover:bg-blue-800 rounded-lg transition-colors duration-200"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -78,8 +74,9 @@ function AnimalFeedingLayout() {
               )}
             </button>
 
+            {/* Desktop navigation */}
             <nav className="hidden lg:block">
-              <ul className="flex items-center space-x-4">
+              <ul className="flex items-center space-x-2 xl:space-x-4">
                 {navItems.map(({ path, label }) => (
                   <li key={path}>
                     <NavLink to={path}>{label}</NavLink>
@@ -90,15 +87,16 @@ function AnimalFeedingLayout() {
           </div>
         </header>
 
+        {/* Mobile navigation */}
         <AnimatePresence>
           {isMenuOpen && (
             <motion.nav
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="lg:hidden border-t border-blue-800"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="lg:hidden border-t border-blue-800 overflow-hidden"
             >
-              <ul className="flex flex-col p-4 space-y-3 bg-blue-900/80 backdrop-blur-md">
+              <ul className="flex flex-col p-4 space-y-2 bg-blue-900/95 backdrop-blur-md">
                 {navItems.map(({ path, label }) => (
                   <li key={path}>
                     <NavLink to={path} onClick={() => setIsMenuOpen(false)}>
@@ -111,6 +109,8 @@ function AnimalFeedingLayout() {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Main content */}
 
       <Outlet />
     </div>

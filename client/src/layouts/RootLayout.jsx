@@ -170,32 +170,44 @@ const RootLayout = () => {
         onClose={setIsModalOpen}
         className="relative z-10"
       >
-        <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" />
-        <div className="flex items-center justify-center fixed inset-0 z-50 p-4">
-          <Dialog.Panel className="bg-[#141414] rounded-lg shadow-lg p-8 max-w-sm w-full space-y-6">
-            <div className="flex items-start space-x-4">
-              <div className="flex items-center justify-center w-14 h-14 rounded-full bg-[#e50914]">
-                <ExclamationTriangleIcon className="h-8 w-8 text-white" />
+        {/* Backdrop */}
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
+          aria-hidden="true"
+        />
+
+        {/* Dialog container */}
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <Dialog.Panel className="relative bg-[#141414] rounded-xl shadow-2xl border border-gray-800 p-8 max-w-md w-full transform transition-all duration-300 scale-100">
+            {/* Header with icon and text */}
+            <div className="flex items-start space-x-4 mb-8">
+              <div className="flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-[#e50914] to-[#b20710] shadow-lg">
+                <ExclamationTriangleIcon className="h-6 w-6 text-white" />
               </div>
-              <div>
-                <h2 className="text-2xl font-semibold text-white mb-3">
+
+              <div className="flex-1 pt-1">
+                <Dialog.Title className="text-xl font-semibold text-white leading-tight">
                   Confirm Logout
-                </h2>
-                <p className="text-gray-400 mb-6">
-                  Are you sure you want to log out?
-                </p>
+                </Dialog.Title>
+                <Dialog.Description className="text-gray-400 mt-2 text-sm leading-relaxed">
+                  Are you sure you want to log out? You'll need to sign in again
+                  to access your account.
+                </Dialog.Description>
               </div>
             </div>
-            <div className="flex justify-end space-x-4">
+
+            {/* Action buttons */}
+            <div className="flex justify-end space-x-3">
               <button
                 onClick={cancelLogout}
-                className="px-6 py-3 bg-gray-700 text-white rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 transition duration-200"
+                className="px-6 py-2.5 bg-gray-700/80 text-gray-200 rounded-lg hover:bg-gray-600 active:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-[#141414] transition-all duration-200 font-medium"
               >
                 Cancel
               </button>
+
               <button
                 onClick={confirmLogout}
-                className="px-6 py-3 bg-[#e50914] text-white rounded-md hover:bg-[#b20710] focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-200"
+                className="px-6 py-2.5 bg-gradient-to-r from-[#e50914] to-[#b20710] text-white rounded-lg hover:from-[#b20710] hover:to-[#8a0408] active:from-[#8a0408] active:to-[#5c0205] focus:outline-none focus:ring-2 focus:ring-[#e50914] focus:ring-offset-2 focus:ring-offset-[#141414] transition-all duration-200 font-medium shadow-lg"
               >
                 Logout
               </button>
