@@ -72,7 +72,7 @@ const HardwareItemsUpload = () => {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 py-12">
         <div className="container mx-auto px-4">
           <h1 className="text-3xl font-bold text-center text-blue-800 mb-8">
-            Upload New Fresh Oil Product
+            Upload New Hardware Product
           </h1>
           <form
             onSubmit={handleSubmit}
