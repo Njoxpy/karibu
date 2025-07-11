@@ -8,7 +8,7 @@ function StationeryBody() {
   const [currentPage, setCurrentPage] = useState(1); // Current page number
   const itemsPerPage = 6; // Items per page for pagination
   // create variable for api url
-     const baseURL = import.meta.env.VITE_API_URL;
+  const baseURL = import.meta.env.VITE_API_URL;
   useEffect(() => {
     const token = getToken();
 
@@ -104,16 +104,9 @@ function StationeryBody() {
                 <img
                   src={
                     product.image
-                      ? `http://localhost:5000/uploads/${product.image
-                          .split("\\")
-                          .pop()}`
+                      ? `${baseURL}/${product.image.split("\\").pop()}`
                       : FreshOil1
                   }
-                  alt={product.name}
-                  className="w-full h-48 object-cover"
-                  onError={(e) => {
-                    e.target.src = FreshOil1; // Fallback to FreshOil1 if the image fails to load
-                  }}
                 />
                 <div className="p-6">
                   <h2 className="font-bold text-xl text-gray-800 mb-2">
