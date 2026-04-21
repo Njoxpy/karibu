@@ -4,4 +4,32 @@
          <loc>https://mydomain.org/mysite/</loc>
          <lastmod>2026-04-21</lastmod>
     </url>
+    <url>
+         <loc>https://mydomain.org/mysite/animalfeeding/</loc>
+         <lastmod>2026-04-21</lastmod>
+    </url>
+    <url>
+         <loc>https://mydomain.org/mysite/freshoil/</loc>
+         <lastmod>2026-04-21</lastmod>
+    </url>
+    <url>
+         <loc>https://mydomain.org/mysite/godown/</loc>
+         <lastmod>2026-04-21</lastmod>
+    </url>
+    <url>
+         <loc>https://mydomain.org/mysite/hardware/</loc>
+         <lastmod>2026-04-21</lastmod>
+    </url>
+    <url>
+         <loc>https://mydomain.org/mysite/printing/</loc>
+         <lastmod>2026-04-21</lastmod>
+    </url>
+    <url>
+         <loc>https://mydomain.org/mysite/stationery/</loc>
+         <lastmod>2026-04-21</lastmod>
+    </url>
+    <url>
+         <loc>https://mydomain.org/mysite/user/</loc>
+         <lastmod>2026-04-21</lastmod>
+    </url>
 </urlset>
