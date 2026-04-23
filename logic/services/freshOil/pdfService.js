@@ -11,7 +11,7 @@ const generateFreshOilPDF = (orders, res, startDate, endDate) => {
       autoFirstPage: true,
       info: {
         Title: `Fresh Oil Sales Report - ${startDate} to ${endDate}`,
-        Author: "Savarrah Management System",
+        Author: "karibu Management System",
         Subject: "Sales Report",
         Keywords: "fresh oil, sales, report",
         CreationDate: new Date(),
@@ -22,7 +22,7 @@ const generateFreshOilPDF = (orders, res, startDate, endDate) => {
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename=fresh_oil_report_${startDate}_to_${endDate}.pdf`
+      `attachment; filename=fresh_oil_report_${startDate}_to_${endDate}.pdf`,
     );
 
     // Pipe the PDF to the response
@@ -83,7 +83,7 @@ const generateFreshOilPDF = (orders, res, startDate, endDate) => {
         priceX,
         yPosition,
         index,
-        colors
+        colors,
       );
       yPosition += 30; // More space between rows for better readability
 
@@ -197,7 +197,7 @@ const addTableRow = (
   priceX,
   yPosition,
   index,
-  colors
+  colors,
 ) => {
   // Alternate row backgrounds with subtle effect
   if (index % 2 === 0) {
@@ -351,7 +351,7 @@ const addFooter = (doc, colors) => {
         `Generated on ${moment().format("YYYY-MM-DD [at] HH:mm")} | CONFIDENTIAL DOCUMENT | FOR INTERNAL USE ONLY`,
         0,
         doc.page.height - 25,
-        { align: "center" }
+        { align: "center" },
       );
   }
 };

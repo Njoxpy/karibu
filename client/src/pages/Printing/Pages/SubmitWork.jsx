@@ -57,7 +57,7 @@ function SubmitWork() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, 
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(orderData),
       });
@@ -69,7 +69,7 @@ function SubmitWork() {
       const data = await response.json();
 
       // Dispatch to add the order to the state
-      dispatch({ type: "ADD_PRINTING_ORDER", payload: data }); 
+      dispatch({ type: "ADD_PRINTING_ORDER", payload: data });
       setCategory("");
       setContact("");
       setDescription("");
@@ -80,10 +80,10 @@ function SubmitWork() {
       const doc = new jsPDF();
       doc.setFont("tahoma", "normal");
 
-      // Title Section with Savarrah Printing brand blue color
+      // Title Section with karibu Printing brand blue color
       doc.setFontSize(22);
-      doc.setTextColor(0, 123, 255); // Savarrah Blue color
-      doc.text("Savarrah Printing", 20, 20);
+      doc.setTextColor(0, 123, 255); // karibu Blue color
+      doc.text("karibu Printing", 20, 20);
 
       // Line separator
       doc.setLineWidth(0.5);
@@ -97,7 +97,7 @@ function SubmitWork() {
       doc.rect(20, 30, 170, 10, "F");
       doc.text("Order Details", 20, 37);
 
-      // Reset text color for the order content (Savarrah Blue)
+      // Reset text color for the order content (karibu Blue)
       doc.setTextColor(0, 123, 255);
       doc.setFontSize(12);
 
@@ -113,9 +113,9 @@ function SubmitWork() {
       doc.setDrawColor(0, 123, 255);
       doc.line(20, 110, 190, 110);
 
-      // Footer with Savarrah Green color
+      // Footer with karibu Green color
       doc.setFontSize(10);
-      doc.setTextColor(40, 167, 69); // Savarrah Green
+      doc.setTextColor(40, 167, 69); // karibu Green
       doc.text("Thank you for your order!", 20, 120);
 
       // Save the PDF in the state as a blob

@@ -12,7 +12,7 @@ function PrintingLayout() {
         <header className="container mx-auto flex justify-between items-center p-4">
           {/* Logo */}
           <Link to="/printing" className="flex items-center space-x-2">
-            <img src={logo} alt="Savarrah Logo" className="h-10 w-auto" />
+            <img src={logo} alt="karibu Logo" className="h-10 w-auto" />
           </Link>
 
           {/* Mobile Menu Button */}

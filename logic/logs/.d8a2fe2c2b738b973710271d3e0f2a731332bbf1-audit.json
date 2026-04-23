@@ -1,0 +1,20 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/home/njox/Desktop/PERSONAL/projects/karibu/logic/logs/.d8a2fe2c2b738b973710271d3e0f2a731332bbf1-audit.json",
+    "files": [
+        {
+            "date": 1776772264763,
+            "name": "/home/njox/Desktop/PERSONAL/projects/karibu/logic/logs/2026-04-21-access.log",
+            "hash": "192a55b70b54ba9f3e04fb28ac0c8c8f1ec38293f257313e2f3587c7da985260"
+        },
+        {
+            "date": 1776956668869,
+            "name": "/home/njox/Desktop/PERSONAL/projects/karibu/logic/logs/2026-04-23-access.log",
+            "hash": "ed0108672132a49df302b21c29edaa91a22ef1e929bf75df34d782f850574bfa"
+        }
+    ],
+    "hashType": "sha256"
+}

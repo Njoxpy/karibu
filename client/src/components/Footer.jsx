@@ -4,10 +4,11 @@ const Footer = () => {
       <div className="mx-auto max-w-screen-xl space-y-8 px-4 py-16 sm:px-6 lg:space-y-16 lg:px-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           <div>
-            <h2 className="text-2xl font-semibold text-green-400">Savarrah</h2>
+            <h2 className="text-2xl font-semibold text-green-400">karibu</h2>
             <p className="mt-4 max-w-xs text-gray-300">
-              Mtoa huduma bora wa bidhaa na huduma za hali ya juu katika
-              sekta mbalimbali ikiwemo Vifaa vya Ujenzi, Mafuta Safi, Vifaa vya Ofisini, Lishe ya Wanyama, na Uchapishaji.
+              Mtoa huduma bora wa bidhaa na huduma za hali ya juu katika sekta
+              mbalimbali ikiwemo Vifaa vya Ujenzi, Mafuta Safi, Vifaa vya
+              Ofisini, Lishe ya Wanyama, na Uchapishaji.
             </p>
 
             {/* Viungo vya Mitandao ya Kijamii */}
@@ -26,7 +27,7 @@ const Footer = () => {
                       <span className="sr-only">{platform}</span>
                     </a>
                   </li>
-                )
+                ),
               )}
             </ul>
           </div>
@@ -58,15 +59,18 @@ const Footer = () => {
             <div>
               <h3 className="font-medium text-green-400">Kampuni</h3>
               <ul className="mt-6 space-y-4 text-sm text-gray-300">
-                {["Kuhusu Sisi", "Kutana na Timu Yetu", "Ajira", "Mahali Yetu"].map(
-                  (companyInfo) => (
-                    <li key={companyInfo}>
-                      <a href="#" className="hover:opacity-75">
-                        {companyInfo}
-                      </a>
-                    </li>
-                  )
-                )}
+                {[
+                  "Kuhusu Sisi",
+                  "Kutana na Timu Yetu",
+                  "Ajira",
+                  "Mahali Yetu",
+                ].map((companyInfo) => (
+                  <li key={companyInfo}>
+                    <a href="#" className="hover:opacity-75">
+                      {companyInfo}
+                    </a>
+                  </li>
+                ))}
               </ul>
             </div>
 
@@ -107,7 +111,7 @@ const Footer = () => {
 
         {/* Sehemu ya Chini */}
         <p className="text-xs text-white font-bold text-center mt-8">
-          &copy; {new Date().getFullYear()} Savarrah. Haki zote zimehifadhiwa.
+          &copy; {new Date().getFullYear()} karibu. Haki zote zimehifadhiwa.
         </p>
       </div>
     </footer>

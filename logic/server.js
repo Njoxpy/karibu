@@ -8,7 +8,6 @@ const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
 const timeout = require("connect-timeout");
 
-// --- SERVER LISTEN ---
 const PORT = Number(process.env.PORT) || 4000;
 
 // ROUTES
@@ -23,6 +22,7 @@ const stationeryRoutes = require("./routes/stationery.routes");
 // LOGGER + DB
 const logger = require("./logs/logger");
 const connectDB = require("./config/DB");
+const createAdminUser = require("./createAdmin");
 
 const app = express();
 
@@ -39,23 +39,29 @@ app.use((req, res, next) => {
 });
 
 // CORS config
-app.use(cors({
-  origin: ["http://localhost:5173", "https://yourfrontend.com"],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://yourfrontend.com"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  }),
+);
+
 app.options("*", cors());
 
 app.use(helmet());
 app.use(compression());
 
 // Serve uploaded files
-app.use("/uploads", express.static(path.join(__dirname, "uploads"), {
-  setHeaders: (res) => {
-    res.set("Cross-Origin-Resource-Policy", "cross-origin");
-  },
-}));
+app.use(
+  "/uploads",
+  express.static(path.join(__dirname, "uploads"), {
+    setHeaders: (res) => {
+      res.set("Cross-Origin-Resource-Policy", "cross-origin");
+    },
+  }),
+);
 
 // Rate limiter
 const limiter = rateLimit({
@@ -63,6 +69,7 @@ const limiter = rateLimit({
   max: 100,
   message: "Too many requests, please try again later.",
 });
+
 app.use(limiter);
 
 // --- ROUTES ---
@@ -73,6 +80,10 @@ app.use("/api/v1/hardware", hardwareRoutes);
 app.use("/api/v1/printing", printingRoutes);
 app.use("/api/v1/stationery", stationeryRoutes);
 app.use("/api/v1/users", userRoutes);
+
+app.get("/", (req, res) => {
+  res.status(200).json({ message: "Karibu is running!" });
+});
 
 // Catch-all 404
 app.use("*", (req, res) => {
@@ -88,13 +99,9 @@ app.use((err, req, res, next) => {
   });
 });
 
-
-
-console.log("PORT from env:", process.env.PORT);
-console.log("PORT type:", typeof process.env.PORT);
-console.log("Final PORT used:", PORT);
+createAdminUser();
 
 app.listen(PORT, () => {
-  console.log(`✅ Server running on http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
   connectDB();
 });

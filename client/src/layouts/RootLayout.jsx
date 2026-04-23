@@ -11,7 +11,7 @@ const RootLayout = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const logout = useLogout();
   const { user } = useAuth();
-  const fallbackLogo = "Savarrah";
+  const fallbackLogo = "karibu";
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -84,7 +84,7 @@ const RootLayout = () => {
           <Link to="/" aria-label="Go to Home Page">
             <img
               src={logo || fallbackLogo}
-              alt="Savarrah Logo"
+              alt="karibu Logo"
               className="h-10 w-auto"
               onError={(e) => {
                 e.target.src = fallbackLogo;

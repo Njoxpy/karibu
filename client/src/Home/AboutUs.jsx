@@ -8,9 +8,9 @@ const AboutUs = () => {
         <div className="text-center mb-12">
           <h2 className="text-4xl font-extrabold text-blue-600">Kuhusu Sisi</h2>
           <p className="mt-4 text-lg text-gray-700 max-w-2xl mx-auto">
-            Katika Savarrah, tumejizatiti kutoa suluhisho bunifu ambazo
-            zinainua biashara. Dhamira yetu ni kuunda ushirikiano wa kudumu
-            na kutoa huduma ambazo zinachangia mafanikio ya wateja wetu.
+            Katika karibu, tumejizatiti kutoa suluhisho bunifu ambazo zinainua
+            biashara. Dhamira yetu ni kuunda ushirikiano wa kudumu na kutoa
+            huduma ambazo zinachangia mafanikio ya wateja wetu.
           </p>
         </div>
 
@@ -47,7 +47,7 @@ const AboutUs = () => {
         {/* Kitufe cha Jifunze Zaidi */}
         <div className="flex justify-center">
           <button className="inline-block text-center bg-blue-600 text-white text-lg font-semibold py-3 px-8 rounded-md hover:bg-blue-500 mt-8 transition-all duration-300 ease-in-out transform hover:scale-105">
-           <a href="#services"> Jifunze Zaidi</a>
+            <a href="#services"> Jifunze Zaidi</a>
           </button>
         </div>
       </div>

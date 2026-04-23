@@ -15,17 +15,17 @@ const Testimonials = () => {
             {
               image: customer,
               alt: "Maoni ya mteja wa kiume",
-              text: "Savarrah imebadilisha kabisa jinsi tunavyosimamia shughuli zetu. Kuanzia siku ya kwanza, timu ilitoa msaada wa kipekee, ikitusaidia kuelewa na kutekeleza mfumo kwa urahisi. Muundo wa jukwaa ulio rahisi kutumia na zana bora zimetuwezesha kupunguza muda wa kazi zinazojirudia na kujikita zaidi katika kukuza biashara yetu.",
+              text: "karibu imebadilisha kabisa jinsi tunavyosimamia shughuli zetu. Kuanzia siku ya kwanza, timu ilitoa msaada wa kipekee, ikitusaidia kuelewa na kutekeleza mfumo kwa urahisi. Muundo wa jukwaa ulio rahisi kutumia na zana bora zimetuwezesha kupunguza muda wa kazi zinazojirudia na kujikita zaidi katika kukuza biashara yetu.",
             },
             {
               image: customer2,
               alt: "Maoni ya mteja wa kike",
-              text: "Huduma ya Kulisha Wanyama ya Savarrah imebadilisha kabisa shughuli za shamba letu. Kabla ya kuitumia, kufuatilia hesabu ya malisho na kusimamia maagizo kulikuwa na changamoto na kuchukua muda. Sasa, mchakato ni rahisi sana—wafanyakazi wanaweza kuweka maagizo haraka, na tunaweza kufuatilia kila kitu kwa wakati halisi.",
+              text: "Huduma ya Kulisha Wanyama ya karibu imebadilisha kabisa shughuli za shamba letu. Kabla ya kuitumia, kufuatilia hesabu ya malisho na kusimamia maagizo kulikuwa na changamoto na kuchukua muda. Sasa, mchakato ni rahisi sana—wafanyakazi wanaweza kuweka maagizo haraka, na tunaweza kufuatilia kila kitu kwa wakati halisi.",
             },
             {
               image: Godbless,
               alt: "Maoni ya msimamizi",
-              text: "Vipengele vya Vifaa vya Ofisi na Godown kwenye jukwaa la Savarrah ni kile haswa timu yetu ilihitaji kurahisisha shughuli. Kama msimamizi, ninaweza kupakia bidhaa mpya haraka, kufanya masasisho, na kufuatilia maagizo bila wasiwasi wa makosa au ucheleweshaji. Wafanyakazi wetu pia wanapenda jinsi ilivyo rahisi kuweka maagizo na kuona hali ya maombi yao.",
+              text: "Vipengele vya Vifaa vya Ofisi na Godown kwenye jukwaa la karibu ni kile haswa timu yetu ilihitaji kurahisisha shughuli. Kama msimamizi, ninaweza kupakia bidhaa mpya haraka, kufanya masasisho, na kufuatilia maagizo bila wasiwasi wa makosa au ucheleweshaji. Wafanyakazi wetu pia wanapenda jinsi ilivyo rahisi kuweka maagizo na kuona hali ya maombi yao.",
             },
           ].map((testimonial, index) => (
             <blockquote

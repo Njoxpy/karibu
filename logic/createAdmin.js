@@ -6,28 +6,28 @@ const createAdminUser = async () => {
     const adminExists = await User.findOne({ role: "admin" });
 
     if (!adminExists) {
-      console.log("🔐 No admin found. Creating default admin...");
+      console.log("No admin found. Creating default admin...");
 
       const defaultAdmin = {
-        email: process.env.ADMIN_EMAIL || "admin@savarrah.com",
-        password: process.env.ADMIN_PASSWORD || "SavarrahAdmin123!",
+        email: process.env.ADMIN_EMAIL || "admin@karibu.com",
+        password: process.env.ADMIN_PASSWORD || "karibuAdmin123!",
         role: "admin",
-        category: "stationery", // or any default valid category
+        category: "stationery",
       };
 
       await User.signup(
         defaultAdmin.email,
         defaultAdmin.password,
         defaultAdmin.role,
-        defaultAdmin.category
+        defaultAdmin.category,
       );
 
-      console.log("✅ Admin user created:", defaultAdmin.email);
+      console.log("Admin user created:", defaultAdmin.email);
     } else {
-      console.log("✅ Admin already exists. Skipping admin creation.");
+      console.log("Admin already exists. Skipping admin creation.");
     }
   } catch (error) {
-    console.error("❌ Error creating admin user:", error.message);
+    console.error("Error creating admin user:", error.message);
   }
 };
 

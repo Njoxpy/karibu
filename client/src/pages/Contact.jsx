@@ -12,7 +12,7 @@ const Contact = () => {
   // 🔧 Form submit handler
   const onSubmit = (data) => {
     console.log("Form Data Submitted:", data);
-  
+
     alert("Ujumbe umetumwa kwa mafanikio! 🙌");
     reset(); // clear the form
   };
@@ -128,7 +128,7 @@ const Contact = () => {
               <Facebook size={28} />
             </a>
             <a
-              href="https://www.instagram.com/savarrah_printers/"
+              href="https://www.instagram.com/karibu_printers/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-600 hover:text-pink-500"

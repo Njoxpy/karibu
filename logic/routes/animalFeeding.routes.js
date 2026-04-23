@@ -47,46 +47,43 @@ router.get(
   "/products",
   authenticate,
   checkCategory(["animal-feeding", "admin"]),
-  getAllAnimalFeedingProducts
-); // Employees and Admins can view products
+  getAllAnimalFeedingProducts,
+);
 
 router.get(
   "/products/search",
   authenticate,
   checkCategory(["animal-feeding", "admin"]),
-  searchAnimalFeedingProducts
-); // Employees and Admins can search products
+  searchAnimalFeedingProducts,
+);
 
 router.get(
   "/orders/search",
   authenticate,
   checkCategory(["animal-feeding", "admin"]),
-  searchAnimalFeedingOrders
-); // Employees and Admins can search products
+  searchAnimalFeedingOrders,
+);
 
 router.get(
   "/products/:id",
   authenticate,
   checkCategory(["animal-feeding", "admin"]),
   validateObjectId,
-  getAnimalFeedingProductById
-); // Employees and Admins can view product by ID
+  getAnimalFeedingProductById,
+);
 
 router.post(
   "/products",
   authenticate,
-  checkCategory(["admin"]), // Admin only
+  checkCategory(["admin"]),
   checkPermissions(["createProduct"]),
-  upload.single("image"), // Upload a single image file
+  upload.single("image"),
   async (req, res) => {
     try {
-      // Extract product details from the request body
       const { name, description, quantity, nutrients, price } = req.body;
 
-      // Get the userId from the authenticated user (set by `authenticate` middleware)
-      const userId = req.user && req.user._id; // Assuming `req.user` is populated by `authenticate`
+      const userId = req.user && req.user._id;
 
-      // Check if the required fields are present
       if (!name || !description || !quantity || !nutrients || !price) {
         return res
           .status(400)
@@ -123,18 +120,14 @@ router.post(
           .json({ message: "Price must be a positive number" });
       }
 
-      // Check if an image was uploaded
       if (!req.file) {
         return res.status(400).json({ message: "Image is required" });
       }
 
-      // Define the image path
       const imagePath = req.file.path;
 
-      // Generate the relative path for the image
       const imageUrl = `/uploads/${req.file.filename}`;
 
-      // Create a new product object (save this to your database)
       const newProduct = {
         name,
         description,
@@ -142,7 +135,7 @@ router.post(
         nutrients,
         price,
         userId,
-        image: imageUrl, // Save the relative image URL
+        image: imageUrl,
       };
 
       const product = await AnimalFeedingProductProduct.create(newProduct);
@@ -155,7 +148,7 @@ router.post(
       console.error(error);
       res.status(500).json({ error: "Server error, please try again later." });
     }
-  }
+  },
 );
 
 router.put(
@@ -164,7 +157,7 @@ router.put(
   checkCategory(["admin"]),
   validateObjectId,
   checkPermissions(["updateProduct"]), // Admin only
-  updateAnimalFeedingProduct
+  updateAnimalFeedingProduct,
 );
 
 router.delete(
@@ -173,7 +166,7 @@ router.delete(
   checkCategory(["admin"]),
   validateObjectId,
   checkPermissions(["deleteProduct"]), // Admin only
-  deleteAnimalFeedingProductById
+  deleteAnimalFeedingProductById,
 );
 
 // Order Routes
@@ -181,14 +174,14 @@ router.post(
   "/orders",
   authenticate,
   checkCategory(["animal-feeding", "admin"]),
-  createAnimalFeedingOrder
+  createAnimalFeedingOrder,
 );
 
 router.get(
   "/orders",
   authenticate,
   checkCategory(["animal-feeding", "admin"]),
-  getAnimalFeedingAllOrders
+  getAnimalFeedingAllOrders,
 ); // Employees and Admins can view orders
 
 router.get(
@@ -196,7 +189,7 @@ router.get(
   authenticate,
   checkCategory(["animal-feeding", "admin"]),
   validateObjectId,
-  getAnimalFeedingOrderById
+  getAnimalFeedingOrderById,
 ); // Employees and Admins can view order by ID
 
 router.put(
@@ -205,7 +198,7 @@ router.put(
   checkCategory(["admin"]), // Only admin can update orders
   validateObjectId,
   checkPermissions(["updateOrder"]),
-  updateAnimalFeedingOrder
+  updateAnimalFeedingOrder,
 );
 
 router.delete(
@@ -213,8 +206,8 @@ router.delete(
   authenticate,
   checkCategory(["admin"]),
   validateObjectId,
-  checkPermissions(["deleteOrder"]), // Only admin can delete orders
-  deleteAnimalFeedingOrderById
+  checkPermissions(["deleteOrder"]),
+  deleteAnimalFeedingOrderById,
 );
 
 // Other Routes
@@ -222,21 +215,16 @@ router.get(
   "/available-products",
   authenticate,
   checkCategory(["animal-feeding", "admin"]),
-  getAvailableProducts
+  getAvailableProducts,
 );
 
-router.get(
-  "/revenue",
-  authenticate,
-  checkCategory(["admin"]), // Admin only
-  getRevenue
-);
+router.get("/revenue", authenticate, checkCategory(["admin"]), getRevenue);
 
 router.get(
   "/total-orders",
   authenticate,
   checkCategory(["admin"]), // Admin only
-  getTotalCostByDate
+  getTotalCostByDate,
 );
 
 // Generate Animal Feeding Report
@@ -266,7 +254,7 @@ router.get(
       console.error(error);
       res.status(SERVER_ERROR).json({ message: "Error generating report" });
     }
-  }
+  },
 );
 
 module.exports = router;

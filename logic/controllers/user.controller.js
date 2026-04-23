@@ -59,15 +59,15 @@ const createAdminController = async (req, res) => {
       return res.status(400).json({ error: "Admin already exists" });
     }
 
-    const adminEmail = process.env.ADMIN_EMAIL || "admin@savarrah.com";
-    const adminPassword = process.env.ADMIN_PASSWORD || "SavarrahAdmin123!";
+    const adminEmail = process.env.ADMIN_EMAIL || "admin@karibu.com";
+    const adminPassword = process.env.ADMIN_PASSWORD || "karibuAdmin123!";
     const adminCategory = "stationery";
 
     const user = await User.signup(
       adminEmail,
       adminPassword,
       "admin",
-      adminCategory
+      adminCategory,
     );
     const token = createToken(user._id, user.role, user.category);
 

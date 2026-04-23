@@ -83,14 +83,10 @@ const getAllAnimalFeedingProducts = async (req, res) => {
     const products = await Product.find().sort({ createdAt: -1 });
 
     if (products.length === 0) {
-      if (!res.headersSent) {
-        return res.status(OK).json({ message: "There are no products now" });
-      }
+      return res.status(OK).json({ message: "There are no products now" });
     }
 
-    if (!res.headersSent) {
-      return res.status(OK).json(products);
-    }
+    res.status(200).json(products);
   } catch (error) {
     if (!res.headersSent) {
       return res
@@ -130,14 +126,10 @@ const getAnimalFeedingProductById = async (req, res) => {
     const product = await Product.findOne({ _id: id });
 
     if (!product) {
-      if (!res.headersSent) {
-        return res.status(NOT_FOUND).json({ error: "Product not found" });
-      }
+      return res.status(NOT_FOUND).json({ error: "Product not found" });
     }
 
-    if (!res.headersSent) {
-      return res.status(OK).json(product); // Ensure response is sent only once
-    }
+    res.status(OK).json(product); // Ensure response is sent only once
   } catch (error) {
     if (!res.headersSent) {
       return res.status(SERVER_ERROR).json({
@@ -173,35 +165,30 @@ const createAnimalFeedingOrder = async (req, res) => {
     const { productId, productName, quantity } = req.body;
     const userId = req.user && req.user._id;
 
-    // Validate inputs
     if (!productId || !productName || !quantity || !userId) {
       return res
         .status(BAD_REQUEST)
         .json({ message: "All fields are required" });
     }
 
-    // Fetch the product
     const product = await AnimalFeedingProduct.findById(productId);
     if (!product) {
       return res.status(NOT_FOUND).json({ error: "Product not found" });
     }
 
-    // Check stock
     if (product.quantity < quantity) {
       return res.status(BAD_REQUEST).json({ message: "Insufficient stock" });
     }
 
-    // Create the order
     const order = await AnimalFeedingOrder.create({
       productId,
-      productName, // Include the product name
+      productName,
       quantity,
       price: product.price,
       total: quantity * product.price,
       userId,
     });
 
-    // Update the product stock
     product.quantity -= quantity;
     await product.save();
 
