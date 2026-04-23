@@ -52,7 +52,7 @@ const searchFreshOilOrders = async (req, res) => {
     let searchQuery = {};
 
     if (orderId) {
-      searchQuery._id = orderId; // Search by orderId (MongoDB's ObjectId)
+      searchQuery._id = orderId;
     }
 
     if (status) {
@@ -73,41 +73,35 @@ const searchFreshOilOrders = async (req, res) => {
   }
 };
 
-// create order
 const createFreshOilOrder = async (req, res) => {
   try {
     const { productId, productName, quantity } = req.body;
     const userId = req.user && req.user._id;
 
-    // Validate inputs
     if (!productId || !productName || !quantity || !userId) {
       return res
         .status(BAD_REQUEST)
         .json({ message: "All fields are required" });
     }
 
-    // Fetch the product
     const product = await FreshOilProduct.findById(productId);
     if (!product) {
       return res.status(NOT_FOUND).json({ error: "Product not found" });
     }
 
-    // Check stock
     if (product.quantity < quantity) {
       return res.status(BAD_REQUEST).json({ message: "Insufficient stock" });
     }
 
-    // Create the order
     const order = await FreshOilOrder.create({
       productId,
-      productName, // Include the product name
+      productName,
       quantity,
       price: product.price,
       total: quantity * product.price,
       userId,
     });
 
-    // Update the product stock
     product.quantity -= quantity;
     await product.save();
 
@@ -490,7 +484,7 @@ const getTotalOrders = async (req, res) => {
 
     // Run countDocuments queries in parallel
     const counts = await Promise.all(
-      collections.map((collection) => collection.countDocuments())
+      collections.map((collection) => collection.countDocuments()),
     );
 
     const totalCount = counts.reduce((sum, count) => sum + count, 0);

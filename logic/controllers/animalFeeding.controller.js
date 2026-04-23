@@ -1,8 +1,6 @@
-// models
 const Product = require("../models/animalFeeding/animalFeedingProductModel");
 const Order = require("../models/animalFeeding/animalFeedingOrderModel");
 
-// status code
 const {
   OK,
   NOT_FOUND,
@@ -10,8 +8,16 @@ const {
   BAD_REQUEST,
   CREATED,
 } = require("../constants/responseStatusCode");
+
 const AnimalFeedingProduct = require("../models/animalFeeding/animalFeedingProductModel");
 const AnimalFeedingOrder = require("../models/animalFeeding/animalFeedingOrderModel");
+
+const {
+  generateAnimalFeedingPDF,
+} = require("../services/animalFeeding/pdfService");
+const {
+  getAnimalFeedingOrders,
+} = require("../services/animalFeeding/animalFeedingService");
 
 const searchAnimalFeedingProducts = async (req, res) => {
   const { name, description, minPrice, maxPrice } = req.query;
@@ -45,7 +51,6 @@ const searchAnimalFeedingProducts = async (req, res) => {
   }
 };
 
-// Search animal feeding orders with filters
 const searchAnimalFeedingOrders = async (req, res) => {
   const { orderId, status, userId } = req.query;
 
@@ -67,7 +72,7 @@ const searchAnimalFeedingOrders = async (req, res) => {
     const orders = await Order.find(searchQuery);
 
     if (!res.headersSent) {
-      return res.status(OK).json(orders); // Ensure response is sent only once
+      return res.status(OK).json(orders);
     }
   } catch (error) {
     if (!res.headersSent) {
@@ -96,8 +101,6 @@ const getAllAnimalFeedingProducts = async (req, res) => {
   }
 };
 
-// GET ALL ORDERS
-// Get all orders
 const getAnimalFeedingAllOrders = async (req, res) => {
   try {
     const orders = await AnimalFeedingOrder.find()
@@ -114,7 +117,6 @@ const getAnimalFeedingAllOrders = async (req, res) => {
   }
 };
 
-// GET PRODUCT BY ID
 const getAnimalFeedingProductById = async (req, res) => {
   const { id } = req.params;
 
@@ -140,22 +142,17 @@ const getAnimalFeedingProductById = async (req, res) => {
   }
 };
 
-// GET ORDER BY ID
-// Get single order by ID
 const getAnimalFeedingOrderById = async (req, res) => {
   const { id } = req.params;
 
   try {
     const order = await AnimalFeedingOrder.findById(id);
     if (!order) {
-      // If the order is not found, return a 404 and exit early.
       return res.status(404).json({ error: "Order not found" });
     }
 
-    // If the order exists, return it with a 200 status code.
     return res.status(200).json(order);
   } catch (error) {
-    // Handle any errors in a single response.
     return res.status(500).json({ error: error.message });
   }
 };
@@ -203,20 +200,17 @@ const createAnimalFeedingOrder = async (req, res) => {
   }
 };
 
-// UPDATE PRODUCT
 const updateAnimalFeedingProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const { price, quantity } = req.body;
 
-    // Validate price
     if (price <= 0) {
       return res
         .status(BAD_REQUEST)
         .json({ message: "Price should be greater than zero" });
     }
 
-    // Validate quantity
     if (quantity < 0) {
       return res
         .status(BAD_REQUEST)
@@ -225,26 +219,22 @@ const updateAnimalFeedingProduct = async (req, res) => {
 
     const updates = req.body;
 
-    // Find the product by ID
     const product = await Product.findById(id);
 
     if (!product) {
       return res.status(BAD_REQUEST).json({ message: "Product not found" });
     }
 
-    // Update condition if quantity is zero
     if (quantity === 0) {
       product.condition = "Out of Stock";
     } else if (quantity > 0) {
-      product.condition = "In Stock"; // or reset condition to "In Stock" when quantity is greater than zero
+      product.condition = "In Stock";
     }
 
-    // Apply updates to the product
     Object.keys(updates).forEach((key) => {
       product[key] = updates[key];
     });
 
-    // Save the updated product
     await product.save();
 
     res.status(OK).json({ message: "Updated successfully", product });
@@ -256,9 +246,6 @@ const updateAnimalFeedingProduct = async (req, res) => {
     }
   }
 };
-
-// UPDATE ORDER
-// Update an order (Admin only)
 
 const updateAnimalFeedingOrder = async (req, res) => {
   const { id } = req.params;
@@ -304,7 +291,6 @@ const updateAnimalFeedingOrder = async (req, res) => {
   }
 };
 
-// DELETE PRODUCT BY ID
 const deleteAnimalFeedingProductById = async (req, res) => {
   const { id } = req.params;
 
@@ -331,28 +317,23 @@ const deleteAnimalFeedingProductById = async (req, res) => {
   }
 };
 
-// DELETE ORDER BY ID
-// Delete an order (Admin only)
 const deleteAnimalFeedingOrderById = async (req, res) => {
   const { id } = req.params;
 
   try {
-    // Find the order by its ID
     const order = await AnimalFeedingOrder.findById(id);
     if (!order) {
       return res.status(NOT_FOUND).json({ error: "Order not found" });
     }
 
-    // Delete the order
     await order.deleteOne();
 
-    res.status(OK).json({ message: "Order deleted successfully" });
+    res.status(OK).json({ message: "Order deleted successfully", order });
   } catch (error) {
     res.status(SERVER_ERROR).json({ error: error.message });
   }
 };
 
-// SEARCH PRODUCT BY NAME
 const searchAnimalFeedingProductName = async (req, res) => {
   const { productName } = req.query;
 
@@ -386,7 +367,6 @@ const searchAnimalFeedingProductName = async (req, res) => {
   }
 };
 
-// Calculate Total Cost for Orders Filtered by Date
 const getTotalCostByDate = async (req, res) => {
   const { filter } = req.query; // Expected values: 'day', 'week', 'month'
   const now = new Date();
@@ -481,8 +461,6 @@ const getRevenueByDateRange = async (startDate, endDate) => {
   }
 };
 
-// Get total revenue for the day, week, and month
-// Get total revenue for the day, week, and month
 const getRevenue = async (req, res) => {
   try {
     const { period } = req.query; // Expecting 'day', 'week', or 'month'
@@ -535,6 +513,29 @@ const getRevenue = async (req, res) => {
   }
 };
 
+const getAnimalFeedingReporort = async (req, res) => {
+  try {
+    const { startDate, endDate } = req.query;
+
+    if (!startDate || !endDate) {
+      return res.status(BAD_REQUEST).json({ message: "Missing date range" });
+    }
+
+    const orders = await getAnimalFeedingOrders(startDate, endDate);
+
+    if (!orders.length) {
+      return res
+        .status(404)
+        .json({ message: "No orders found for the given period" });
+    }
+
+    generateAnimalFeedingPDF(orders, res, startDate, endDate);
+  } catch (error) {
+    console.error(error);
+    res.status(SERVER_ERROR).json({ message: "Error generating report" });
+  }
+};
+
 module.exports = {
   getAllAnimalFeedingProducts,
   createAnimalFeedingOrder,
@@ -551,4 +552,5 @@ module.exports = {
   getTotalCostByDate,
   getAvailableProducts,
   getRevenue,
+  getAnimalFeedingReporort,
 };

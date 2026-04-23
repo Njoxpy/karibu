@@ -34,7 +34,7 @@ const freshOilProductSchema = new Schema(
       type: Number,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 freshOilProductSchema.pre("save", function (next) {
@@ -46,6 +46,6 @@ freshOilProductSchema.pre("save", function (next) {
 
 const freshOilProduct = mongoose.model(
   "FreshOilProduct",
-  freshOilProductSchema
+  freshOilProductSchema,
 );
 module.exports = freshOilProduct;
