@@ -33,7 +33,7 @@ router.post(
   checkCategory(["printing", "admin"]),
   // checkPermissions(["createOrder"]),
   validatePrintingOrder,
-  createOrder
+  createOrder,
 );
 
 // get all orders
@@ -41,7 +41,7 @@ router.get(
   "/orders",
   authenticate,
   checkCategory(["printing", "admin"]),
-  getPrintingOrders
+  getPrintingOrders,
 );
 
 // get single order
@@ -50,7 +50,7 @@ router.get(
   authenticate,
   checkCategory(["printing", "admin"]),
   validateObjectId,
-  getSinglePrintingOrder
+  getSinglePrintingOrder,
 );
 
 // update order
@@ -60,7 +60,7 @@ router.put(
   checkCategory(["admin"]),
   validateObjectId,
   checkPermissions(["updateOrder"]),
-  updatePrintingOrder
+  updatePrintingOrder,
 );
 
 // delete order
@@ -70,7 +70,7 @@ router.delete(
   checkCategory(["admin"]),
   validateObjectId,
   checkPermissions(["deleteOrder"]),
-  deletePrintingOrder
+  deletePrintingOrder,
 );
 
 // update order status
@@ -80,7 +80,7 @@ router.put(
   checkCategory(["printing", "admin"]),
   checkPermissions(["updateOrderStatus"]),
   validateObjectId,
-  updateOrderStatus
+  updateOrderStatus,
 );
 
 router.get("/revenue", authenticate, checkCategory(["admin"]), getRevenue);
@@ -89,7 +89,7 @@ router.get(
   "/total-orders",
   authenticate,
   checkCategory(["admin"]),
-  getTotalCostByDate
+  getTotalCostByDate,
 );
 
 router.get(
@@ -117,7 +117,7 @@ router.get(
       console.error(error);
       res.status(500).json({ message: "Error generating printing report" });
     }
-  }
+  },
 );
 
 module.exports = router;

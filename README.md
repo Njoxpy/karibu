@@ -6,3 +6,4 @@
 - [api docs](https://njoxpy.github.io/karibu/)
 - [Backend]()
 - [Frontend]()
+- [postman docs link]()
