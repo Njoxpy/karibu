@@ -8,13 +8,6 @@ const checkPermissions = require("../middleware/auth/permissionMiddleware");
 const validateObjectId = require("../middleware/validateObjectId");
 
 const {
-  getAnimalFeedingOrders,
-} = require("../services/animalFeeding/animalFeedingService");
-const {
-  generateAnimalFeedingPDF,
-} = require("../services/animalFeeding/pdfService");
-
-const {
   createAnimalFeedingOrder,
   getAllAnimalFeedingProducts,
   getAnimalFeedingAllOrders,
@@ -29,20 +22,13 @@ const {
   getAvailableProducts,
   getRevenue,
   searchAnimalFeedingOrders,
+  getAnimalFeedingReporort,
 } = require("../controllers/animalFeeding.controller");
 
 const upload = require("../middleware/uploadAnimalFeeding");
 
-// Constants for HTTP status codes
-const {
-  SERVER_ERROR,
-  BAD_REQUEST,
-} = require("../constants/responseStatusCode");
 const AnimalFeedingProductProduct = require("../models/animalFeeding/animalFeedingProductModel");
 
-// Routes
-
-// Product Routes
 router.get(
   "/products",
   authenticate,
@@ -156,7 +142,7 @@ router.put(
   authenticate,
   checkCategory(["admin"]),
   validateObjectId,
-  checkPermissions(["updateProduct"]), // Admin only
+  checkPermissions(["updateProduct"]),
   updateAnimalFeedingProduct,
 );
 
@@ -165,11 +151,10 @@ router.delete(
   authenticate,
   checkCategory(["admin"]),
   validateObjectId,
-  checkPermissions(["deleteProduct"]), // Admin only
+  checkPermissions(["deleteProduct"]),
   deleteAnimalFeedingProductById,
 );
 
-// Order Routes
 router.post(
   "/orders",
   authenticate,
@@ -182,7 +167,7 @@ router.get(
   authenticate,
   checkCategory(["animal-feeding", "admin"]),
   getAnimalFeedingAllOrders,
-); // Employees and Admins can view orders
+);
 
 router.get(
   "/orders/:id",
@@ -190,12 +175,12 @@ router.get(
   checkCategory(["animal-feeding", "admin"]),
   validateObjectId,
   getAnimalFeedingOrderById,
-); // Employees and Admins can view order by ID
+);
 
 router.put(
   "/orders/:id",
   authenticate,
-  checkCategory(["admin"]), // Only admin can update orders
+  checkCategory(["admin"]),
   validateObjectId,
   checkPermissions(["updateOrder"]),
   updateAnimalFeedingOrder,
@@ -210,7 +195,6 @@ router.delete(
   deleteAnimalFeedingOrderById,
 );
 
-// Other Routes
 router.get(
   "/available-products",
   authenticate,
@@ -223,38 +207,15 @@ router.get("/revenue", authenticate, checkCategory(["admin"]), getRevenue);
 router.get(
   "/total-orders",
   authenticate,
-  checkCategory(["admin"]), // Admin only
+  checkCategory(["admin"]),
   getTotalCostByDate,
 );
 
-// Generate Animal Feeding Report
 router.get(
   "/reports",
   authenticate,
   checkCategory(["admin"]),
-  async (req, res) => {
-    try {
-      const { startDate, endDate } = req.query;
-
-      if (!startDate || !endDate) {
-        return res.status(BAD_REQUEST).json({ message: "Missing date range" });
-      }
-
-      const orders = await getAnimalFeedingOrders(startDate, endDate);
-
-      if (!orders.length) {
-        return res
-          .status(404)
-          .json({ message: "No orders found for the given period" });
-      }
-
-      // Generate and send the PDF
-      generateAnimalFeedingPDF(orders, res, startDate, endDate);
-    } catch (error) {
-      console.error(error);
-      res.status(SERVER_ERROR).json({ message: "Error generating report" });
-    }
-  },
+  getAnimalFeedingReporort,
 );
 
 module.exports = router;

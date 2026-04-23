@@ -9,6 +9,18 @@ const checkPermissions = require("../middleware/auth/permissionMiddleware");
 const validateObjectId = require("../middleware/validateObjectId");
 const upload = require("../middleware/uploadAnimalFeeding");
 
+const FreshOilProduct = require("../models/freshOil/freshOilproductModel");
+const AnimalFeedingProduct = require("../models/animalFeeding/animalFeedingProductModel");
+const GodownProduct = require("../models/godown/godownProductModel");
+const HardwareProduct = require("../models/hardware/productModel");
+const StationeryProduct = require("../models/stationery/stationeryProductModel");
+const FreshOilOrder = require("../models/freshOil/freshOilOrderModel");
+const AnimalFeedingOrder = require("../models/animalFeeding/animalFeedingOrderModel");
+const GodownOrder = require("../models/godown/godownOrderModel");
+const HardwareOrder = require("../models/hardware/orderModel");
+const PrintingOrder = require("../models/printing/printingOrderModel");
+const StationeryOrder = require("../models/stationery/stationerOrderModel");
+
 // Controllers
 const {
   createFreshOilOrder,
@@ -45,21 +57,16 @@ router.get(
   authenticate,
   checkCategory(["fresh-oil", "admin"]),
   addPagination,
-  getAllFreshOilProducts
+  getAllFreshOilProducts,
 );
 
-router.get(
-  "/revenue",
-  authenticate,
-  checkCategory(["admin"]), // Admin only
-  getRevenue
-);
+router.get("/revenue", authenticate, checkCategory(["admin"]), getRevenue);
 
 router.get(
   "/products/search",
   authenticate,
   checkCategory(["fresh-oil", "admin"]),
-  searchFreshOilProducts
+  searchFreshOilProducts,
 );
 
 router.get(
@@ -67,24 +74,21 @@ router.get(
   authenticate,
   checkCategory(["fresh-oil", "admin"]),
   validateObjectId,
-  getSingleFreshOilProduct
+  getSingleFreshOilProduct,
 );
 
 router.post(
   "/products",
   authenticate,
-  checkCategory(["admin"]), // Admin only
+  checkCategory(["admin"]),
   checkPermissions(["createProduct"]),
-  upload.single("image"), // Upload a single image file
+  upload.single("image"),
   async (req, res) => {
     try {
-      // Extract product details from the request body
       const { name, description, quantity, price } = req.body;
 
-      // Get the userId from the authenticated user (set by `authenticate` middleware)
-      const userId = req.user && req.user._id; // Assuming `req.user` is populated by `authenticate`
+      const userId = req.user && req.user._id;
 
-      // Check if the required fields are present
       if (!name || !description || !quantity || !price) {
         return res
           .status(400)
@@ -117,29 +121,24 @@ router.post(
           .json({ message: "Price must be a positive number" });
       }
 
-      // Check if an image was uploaded
       if (!req.file) {
         return res.status(400).json({ message: "Image is required" });
       }
 
-      // Define the image path
       const imagePath = req.file.path;
 
-      // Generate the relative path for the image
       const imageUrl = `/uploads/${req.file.filename}`;
 
-      // Create a new product object (save this to your database)
       const newProduct = {
         name,
         description,
         quantity,
         price,
         userId,
-        image: imageUrl, // Save the relative image URL
+        image: imageUrl,
         total: quantity * price,
       };
 
-      // Save the product to the database
       const product = await freshOilProduct.create(newProduct);
 
       res.status(201).json({
@@ -150,7 +149,7 @@ router.post(
       console.error(error);
       res.status(500).json({ error: "Server error, please try again later." });
     }
-  }
+  },
 );
 
 router.put(
@@ -159,7 +158,7 @@ router.put(
   checkCategory(["admin"]),
   validateObjectId,
   checkPermissions(["updateProduct"]),
-  updateFreshOilProduct
+  updateFreshOilProduct,
 );
 
 router.delete(
@@ -168,15 +167,14 @@ router.delete(
   checkCategory(["admin"]),
   validateObjectId,
   checkPermissions(["deleteProduct"]),
-  deleteFreshOilProduct
+  deleteFreshOilProduct,
 );
 
-// Order Routes
 router.post(
   "/orders",
   authenticate,
   checkCategory(["fresh-oil", "admin"]),
-  createFreshOilOrder
+  createFreshOilOrder,
 );
 
 router.get(
@@ -184,14 +182,14 @@ router.get(
   authenticate,
   checkCategory(["fresh-oil", "admin"]),
   addPagination,
-  getAllFreshOilOrders
+  getAllFreshOilOrders,
 );
 
 router.get(
   "/orders/search",
   authenticate,
   checkCategory(["fresh-oil", "admin"]),
-  searchFreshOilOrders
+  searchFreshOilOrders,
 );
 
 router.get(
@@ -199,7 +197,7 @@ router.get(
   authenticate,
   checkCategory(["fresh-oil", "admin"]),
   validateObjectId,
-  getSingleFreshOilOrder
+  getSingleFreshOilOrder,
 );
 
 router.put(
@@ -208,7 +206,7 @@ router.put(
   checkCategory(["admin"]),
   validateObjectId,
   checkPermissions(["updateOrder"]),
-  updateFreshOilOrder
+  updateFreshOilOrder,
 );
 
 router.delete(
@@ -217,7 +215,7 @@ router.delete(
   checkCategory(["admin"]),
   validateObjectId,
   checkPermissions(["deleteOrder"]),
-  deleteFreshOilOrder
+  deleteFreshOilOrder,
 );
 
 // Miscellaneous Routes
@@ -225,17 +223,16 @@ router.get(
   "/available-products",
   authenticate,
   checkCategory(["fresh-oil", "admin"]),
-  getAvailableProducts
+  getAvailableProducts,
 );
 
 router.get(
   "/total-orders",
   authenticate,
   checkCategory(["admin"]),
-  getTotalCostByDate
+  getTotalCostByDate,
 );
 
-// Generate Fresh Oil Report
 router.get(
   "/reports",
   authenticate,
@@ -261,22 +258,15 @@ router.get(
       console.error(error);
       res.status(500).json({ message: "Error generating report" });
     }
-  }
+  },
 );
 
-router.get("/orders-count", getTotalOrders);
-
-const FreshOilProduct = require("../models/freshOil/freshOilproductModel");
-const AnimalFeedingProduct = require("../models/animalFeeding/animalFeedingProductModel");
-const GodownProduct = require("../models/godown/godownProductModel");
-const HardwareProduct = require("../models/hardware/productModel");
-const StationeryProduct = require("../models/stationery/stationeryProductModel");
-const FreshOilOrder = require("../models/freshOil/freshOilOrderModel");
-const AnimalFeedingOrder = require("../models/animalFeeding/animalFeedingOrderModel");
-const GodownOrder = require("../models/godown/godownOrderModel");
-const HardwareOrder = require("../models/hardware/orderModel");
-const PrintingOrder = require("../models/printing/printingOrderModel");
-const StationeryOrder = require("../models/stationery/stationerOrderModel");
+router.get(
+  "/orders-count",
+  authenticate,
+  checkCategory(["admin"]),
+  getTotalOrders,
+);
 
 const getTotalProducts = async (req, res) => {
   try {
@@ -351,8 +341,18 @@ const getTotalSales = async (req, res) => {
   }
 };
 
-router.get("/products-count", getTotalProducts);
+router.get(
+  "/products-count",
+  authenticate,
+  checkCategory(["admin"]),
+  getTotalProducts,
+);
 
-router.get("/sales-total", getTotalSales);
+router.get(
+  "/sales-total",
+  authenticate,
+  checkCategory(["admin"]),
+  getTotalSales,
+);
 
 module.exports = router;
