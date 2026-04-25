@@ -99,9 +99,12 @@ app.use((err, req, res, next) => {
   });
 });
 
-createAdminUser();
+const start = async () => {
+  await connectDB();
+  await createAdminUser();
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+};
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-  connectDB();
-});
+start();
