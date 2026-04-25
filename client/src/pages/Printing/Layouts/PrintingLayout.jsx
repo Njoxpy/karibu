@@ -1,7 +1,7 @@
 import { Outlet, Link } from "react-router-dom";
 import { useState } from "react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import logo from "../../../assets/images/logPrinting.png";
+import logo from "../../../assets/images/logPrinting.webp";
 
 function PrintingLayout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

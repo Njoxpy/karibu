@@ -1,7 +1,7 @@
 import { Link, NavLink, Outlet } from "react-router-dom";
 import { useState } from "react";
 import useLogout from "../hooks/auth/useLogout";
-import logo from "../assets/images/logoWithName.png";
+import logo from "../assets/images/logoWithName.webp";
 import { useAuth } from "../hooks/auth/useAuth";
 import { Dialog } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";

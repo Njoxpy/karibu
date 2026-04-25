@@ -12,7 +12,7 @@
   }
   ```
 */
-import Logo from "../../assets/images/logo.jpg"
+import Logo from "../../assets/images/logo.webp"
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'

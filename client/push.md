@@ -1,1 +1,0 @@
-scp -r /home/njox/karibu/client/dist/* root@209.38.255.249:/var/www/karibu.co.tz/html/

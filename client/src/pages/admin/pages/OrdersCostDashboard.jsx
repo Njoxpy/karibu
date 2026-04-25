@@ -70,37 +70,37 @@ const OrdersCostDashboard = () => {
       key: "animalFeeding",
       name: "Animal Feeding",
       color: "bg-green-500",
-      icon: "🌿",
+      icon: "",
     },
     {
       key: "freshOil",
       name: "Fresh Oil",
       color: "bg-yellow-500",
-      icon: "🛢️",
+      icon: "",
     },
     {
       key: "godown",
       name: "Godown",
       color: "bg-indigo-500",
-      icon: "🏢",
+      icon: "",
     },
     {
       key: "hardware",
       name: "Hardware",
       color: "bg-blue-500",
-      icon: "🔧",
+      icon: "",
     },
     {
       key: "stationery",
       name: "Stationery",
       color: "bg-blue-400",
-      icon: "✏️",
+      icon: "",
     },
     {
       key: "printing",
       name: "Printing",
       color: "bg-blue-600",
-      icon: "📃",
+      icon: "",
     },
   ];
 

@@ -1,6 +1,6 @@
-import customer from "../assets/images/male1.jpg";
-import customer2 from "../assets/images/female.jpg";
-import Godbless from "../assets/images/jefrey.jpg";
+import customer from "../assets/images/male1.webp";
+import customer2 from "../assets/images/female.webp";
+import Godbless from "../assets/images/jefrey.webp";
 
 const Testimonials = () => {
   return (

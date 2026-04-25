@@ -1,4 +1,4 @@
-import Animal2 from "../../../assets/images/animal2.jpg";
+import Animal2 from "../../../assets/images/animal2.webp";
 import Footer from "../../../components/Footer";
 
 const ManagePrintingOrders = () => {
