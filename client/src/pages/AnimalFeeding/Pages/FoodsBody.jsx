@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Animal2 from "../../../assets/images/animal2.jpg";
+import Animal2 from "../../../assets/images/animal2.webp";
 import { getToken } from "../../../services/token";
 import { useAnimalFeeding } from "../../../hooks/animalFeeding/useAnimalFeeding";
 

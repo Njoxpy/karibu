@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import PropTypes from "prop-types";
 import { useDropzone } from "react-dropzone";
-import ImageGuide from "../../../assets/images/excell format.png";
+import ImageGuide from "../../../assets/images/excell format.webp";
 import * as XLSX from "xlsx";
 
 // FileUploadZone Component

@@ -9,18 +9,17 @@ const Contact = () => {
     reset,
   } = useForm();
 
-  // 🔧 Form submit handler
   const onSubmit = (data) => {
     console.log("Form Data Submitted:", data);
 
-    alert("Ujumbe umetumwa kwa mafanikio! 🙌");
+    alert("Ujumbe umetumwa kwa mafanikio!");
     reset(); // clear the form
   };
 
   return (
     <section className="px-4 py-8 max-w-7xl mx-auto" id="contact">
       <div className="grid sm:grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* 📬 Contact Form */}
+        {/* Contact Form */}
         <div className="bg-white p-8 rounded-lg shadow-lg">
           <h2 className="text-2xl font-semibold text-gray-800">
             Wasiliana Nasi
@@ -31,7 +30,7 @@ const Contact = () => {
           </p>
 
           <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
-            {/* 🧍 Jina */}
+            {/* Jina */}
             <div>
               <label htmlFor="name" className="block text-gray-700 font-medium">
                 Jina Lako
@@ -52,7 +51,7 @@ const Contact = () => {
               )}
             </div>
 
-            {/* 📧 Barua Pepe */}
+            {/* Barua Pepe */}
             <div>
               <label
                 htmlFor="email"
@@ -82,7 +81,7 @@ const Contact = () => {
               )}
             </div>
 
-            {/* 💬 Ujumbe */}
+            {/* Ujumbe */}
             <div>
               <label
                 htmlFor="message"
@@ -106,7 +105,7 @@ const Contact = () => {
               )}
             </div>
 
-            {/* 🚀 Submit Button */}
+            {/* Submit Button */}
             <div>
               <button
                 type="submit"
@@ -117,10 +116,10 @@ const Contact = () => {
             </div>
           </form>
 
-          {/* 🌐 Social Media Links */}
+          {/* Social Media Links */}
           <div className="mt-6 flex justify-center space-x-4">
             <a
-              href="https://www.facebook.com/savarah.printers/"
+              href="https://www.facebook.com"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-600 hover:text-blue-600"
@@ -128,7 +127,7 @@ const Contact = () => {
               <Facebook size={28} />
             </a>
             <a
-              href="https://www.instagram.com/karibu_printers/"
+              href="https://www.instagram.com"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-600 hover:text-pink-500"
@@ -136,7 +135,7 @@ const Contact = () => {
               <Instagram size={28} />
             </a>
             <a
-              href="https://wa.me/+255755172303"
+              href="https://wa.me/+255623216660"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-600 hover:text-green-500"
@@ -146,7 +145,7 @@ const Contact = () => {
           </div>
         </div>
 
-        {/* 🗺️ Google Map */}
+        {/* Google Map */}
         <div className="bg-white p-8 rounded-lg shadow-lg">
           <h2 className="text-2xl font-semibold text-gray-800">Tupate Hapa</h2>
           <p className="mt-2 text-gray-600">Ofisi yetu iko hapa:</p>

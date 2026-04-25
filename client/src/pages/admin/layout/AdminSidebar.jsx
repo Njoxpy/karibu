@@ -1,5 +1,5 @@
-import Logo from "../../assets/images/logo.jpg";
-import Leon from "../../assets/images/male.jpg";
+import Logo from "../../assets/images/logo.webp";
+import Leon from "../../assets/images/male1.webp";
 
 import { useState } from "react";
 import {
@@ -99,17 +99,17 @@ const AdminDashboard = () => {
                               to={item.href}
                               className={classNames(
                                 item.current
-                                  ? "bg-gray-50 text-indigo-600"
-                                  : "text-gray-700 hover:bg-gray-50 hover:text-indigo-600",
-                                "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6",
+                                  ? "bg-[#EFF5FE] text-[#1565D8]"
+                                  : "text-[#0F172A] hover:bg-[#F8FAFC] hover:text-[#1565D8]",
+                                "group flex gap-x-3 rounded-12 p-2 text-sm font-medium leading-6",
                               )}
                             >
                               <item.icon
                                 aria-hidden="true"
                                 className={classNames(
                                   item.current
-                                    ? "text-indigo-600"
-                                    : "text-gray-400 group-hover:text-indigo-600",
+                                    ? "text-[#1565D8]"
+                                    : "text-[#64748B] group-hover:text-[#1565D8]",
                                   "h-6 w-6 shrink-0",
                                 )}
                               />
@@ -127,9 +127,9 @@ const AdminDashboard = () => {
         </Dialog>
 
         {/* Static sidebar for desktop */}
-        <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+        <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-sidebar lg:flex-col">
           {/* Sidebar component, swap this element with another sidebar if you like */}
-          <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6">
+          <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-[#E2E8F0] bg-white px-6">
             <div className="flex h-16 shrink-0 items-center">
               <img alt="karibu" src={Logo} className="h-8 w-auto" />
             </div>
@@ -143,17 +143,17 @@ const AdminDashboard = () => {
                           href={item.href}
                           className={classNames(
                             item.current
-                              ? "bg-gray-50 text-indigo-600"
-                              : "text-gray-700 hover:bg-gray-50 hover:text-indigo-600",
-                            "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6",
+                              ? "bg-[#EFF5FE] text-[#1565D8]"
+                              : "text-[#0F172A] hover:bg-[#F8FAFC] hover:text-[#1565D8]",
+                            "group flex gap-x-3 rounded-12 p-2 text-sm font-medium leading-6",
                           )}
                         >
                           <item.icon
                             aria-hidden="true"
                             className={classNames(
                               item.current
-                                ? "text-indigo-600"
-                                : "text-gray-400 group-hover:text-indigo-600",
+                                ? "text-[#1565D8]"
+                                : "text-[#64748B] group-hover:text-[#1565D8]",
                               "h-6 w-6 shrink-0",
                             )}
                           />
@@ -201,7 +201,7 @@ const AdminDashboard = () => {
           </a>
         </div>
 
-        <main className="py-10 lg:pl-72">
+        <main className="py-10 lg:pl-sidebar">
           <div className="px-4 sm:px-6 lg:px-8">{/* Your content */}</div>
         </main>
       </div>

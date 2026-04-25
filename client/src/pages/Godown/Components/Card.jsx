@@ -1,4 +1,4 @@
-import Product from "../../../assets/images/animal1.jpg";
+import Product from "../../../assets/images/animal2.webp";
 
 function Card() {
   return (

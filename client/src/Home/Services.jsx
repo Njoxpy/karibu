@@ -1,9 +1,9 @@
-import printingImage from "../assets/images/printing.jpg";
-import oilImage from "../assets/images/oil5.jpg";
-import hardImage from "../assets/images/hard.jpg";
-import animal2Image from "../assets/images/animal2.jpg";
-import godownImage from "../assets/images/godown-new-11.jpg";
-import stationeryImage from "../assets/images/stationery1.jpg";
+import printingImage from "../assets/images/printing.webp";
+import oilImage from "../assets/images/oil5.webp";
+import hardImage from "../assets/images/hard.webp";
+import animal2Image from "../assets/images/animal2.webp";
+import godownImage from "../assets/images/godown-new-11.webp";
+import stationeryImage from "../assets/images/stationery1.webp";
 
 function Services() {
   return (

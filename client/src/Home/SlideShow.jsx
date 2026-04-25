@@ -4,10 +4,10 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
-import stationery from "../assets/images/stationery1.jpg";
-import printing from "../assets/images/printing.jpg";
-import godown from "../assets/images/godown-new-11.jpg";
-import animalFeeding from "../assets/images/animalFeeding.jpg";
+import stationery from "../assets/images/stationery1.webp";
+import printing from "../assets/images/printing.webp";
+import godown from "../assets/images/godown-new-11.webp";
+import animalFeeding from "../assets/images/animalFeeding.webp";
 
 const images = [
     { id: 1, src: stationery, alt: "Bidhaa za vifaa vya ofisini zikiwa kwenye onyesho" },

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLogin } from "../hooks/auth/useLogin";
-import Logo from "../assets/images/logo.png";
+import Logo from "../assets/images/logo.webp";
 import Footer from "../components/Footer";
 import { useContext } from "react";
 import { AuthContext } from "../context/auth/AuthContext"; // Import the context

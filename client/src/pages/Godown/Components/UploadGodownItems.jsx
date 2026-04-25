@@ -19,10 +19,6 @@ const UploadGodownItems = () => {
 
   const token = localStorage.getItem("authToken");
 
-  if (!token) {
-    return "Token not found";
-  }
-
   const validateForm = () => {
     if (!name || !description || !price || !quantity || !location) {
       return "All fields are required.";
