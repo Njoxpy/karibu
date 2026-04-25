@@ -62,3 +62,5 @@ products_bulk_upload.xlsx
 
 # secrets
 /secrets
+
+nginx.conf

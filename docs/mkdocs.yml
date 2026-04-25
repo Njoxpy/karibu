@@ -1,4 +1,15 @@
-site_name: Karibu api documentation
-site_url: https://mydomain.org/mysite
+site_name: Karibu API documentation
+site_url: https://mydomain.org/mysite/
 theme:
   name: readthedocs
+nav:
+  - Home: index.md
+  - API Reference:
+      - Overview: api/index.md
+      - Users: api/users.md
+      - Animal Feeding: api/animal-feeding.md
+      - Fresh Oil: api/fresh-oil.md
+      - Godown: api/godown.md
+      - Hardware: api/hardware.md
+      - Printing: api/printing.md
+      - Stationery: api/stationery.md
