@@ -68,3 +68,9 @@ site/
 sites/
 
 nginx.conf
+
+agent-teams.md
+
+logs/
+
+logic/logs
