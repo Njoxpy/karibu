@@ -6,20 +6,6 @@ The printing module is order-only; jobs are created without a backing product
 catalogue. All endpoints require `authenticate`. Category checks use
 `["printing", "admin"]` unless noted as admin-only.
 
-## Endpoints
-
-| Method | Path                  | Category    | Permission           | Description                         |
-|--------|-----------------------|-------------|----------------------|-------------------------------------|
-| POST   | `/orders`             | printing, admin |                  | Create a printing order.            |
-| GET    | `/orders`             | printing, admin |                  | List printing orders.               |
-| GET    | `/orders/:id`         | printing, admin |                  | Get an order by id.                 |
-| PUT    | `/orders/:id`         | admin       | `updateOrder`        | Update an order.                    |
-| DELETE | `/orders/:id`         | admin       | `deleteOrder`        | Delete an order.                    |
-| PUT    | `/orders/:id/status`  | printing, admin | `updateOrderStatus` | Update order status (e.g. complete).|
-| GET    | `/revenue`            | admin       |                      | Revenue by `?period=day|week|month`.|
-| GET    | `/total-orders`       | admin       |                      | Total cost by `?filter=...`.        |
-| GET    | `/reports`            | admin       |                      | PDF report by `?startDate&endDate`. |
-
 ## POST /orders
 
 The body is validated by the `validatePrintingOrder` middleware.
@@ -73,7 +59,7 @@ Response (201):
 ## GET /revenue
 
 ```bash
-curl "http://localhost:4000/api/v1/printing/revenue?period=day" \
+curl "http://localhost:4100//api/v1/printing/revenue?period=day" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
@@ -82,7 +68,7 @@ curl "http://localhost:4000/api/v1/printing/revenue?period=day" \
 ## GET /reports
 
 ```bash
-curl "http://localhost:4000/api/v1/printing/reports?startDate=2025-01-01&endDate=2026-10-31" \
+curl "http://localhost:4100//api/v1/printing/reports?startDate=2025-01-01&endDate=2026-10-31" \
   -H "Authorization: Bearer $TOKEN" \
   -o printing-report.pdf
 ```

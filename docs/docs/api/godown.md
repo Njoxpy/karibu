@@ -5,31 +5,6 @@ Base path: `/api/v1/godown`
 All endpoints require `authenticate`. Category checks use `["godown", "admin"]`
 unless noted as admin-only.
 
-## Endpoints
-
-| Method | Path                       | Category    | Permission           | Description                              |
-|--------|----------------------------|-------------|----------------------|------------------------------------------|
-| POST   | `/products`                | admin       | `createProduct`      | Create a product.                        |
-| POST   | `/products/bulk-upload`    | admin       | `createProduct`      | Bulk-create products from `.xlsx`.       |
-| GET    | `/products`                | godown, admin |                    | List products.                           |
-| GET    | `/products/:id`            | godown, admin |                    | Get product by id.                       |
-| PUT    | `/products/:id`            | admin       | `updateProduct`      | Update a product.                        |
-| DELETE | `/products/:id`            | admin       | `deleteProduct`      | Delete a product.                        |
-| GET    | `/available-products`      | godown, admin | `createOrder`      | Products available for ordering.         |
-| POST   | `/orders`                  | godown, admin |                    | Create an order.                         |
-| GET    | `/orders`                  | godown, admin |                    | List orders.                             |
-| GET    | `/orders/:id`              | godown, admin |                    | Get order by id.                         |
-| PUT    | `/orders/:id`              | admin       | `updateOrder`        | Update an order.                         |
-| DELETE | `/orders/:id`              | admin       | `deleteOrder`        | Delete an order.                         |
-| POST   | `/inventory-movement`      | admin       | `transferInventory`  | Transfer stock between locations.        |
-| GET    | `/movement-logs`           | admin       |                      | List inventory movement logs.            |
-| GET    | `/movement-logs/:id`       | admin       |                      | Get a movement log by id.                |
-| PUT    | `/movement-logs/:id`       | admin       |                      | Update a movement log.                   |
-| DELETE | `/movement-logs/:id`       | admin       |                      | Delete a movement log.                   |
-| GET    | `/revenue`                 | admin       |                      | Revenue by `?period=day|week|month`.     |
-| GET    | `/total-orders`            | admin       |                      | Total cost by `?filter=...`.             |
-| GET    | `/reports`                 | admin       |                      | PDF report by `?startDate&endDate`.      |
-
 ## POST /products
 
 ```json
@@ -44,7 +19,7 @@ unless noted as admin-only.
 ```
 
 ```bash
-curl -X POST http://localhost:4000/api/v1/godown/products \
+curl -X POST http://localhost:4100//api/v1/godown/products \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"name":"Cement","description":"50kg bag","quantity":200,"price":18000,"location":"Main godown"}'
@@ -57,7 +32,7 @@ Required columns per row: `name`, `price`, `quantity`, `location`,
 `description`. Optional: `condition` (defaults to `new`).
 
 ```bash
-curl -X POST http://localhost:4000/api/v1/godown/products/bulk-upload \
+curl -X POST http://localhost:4100//api/v1/godown/products/bulk-upload \
   -H "Authorization: Bearer $TOKEN" \
   -F file=@./products.xlsx
 ```
@@ -72,11 +47,31 @@ Validation failures return `400` with a `errors` array of `{ row, errors[] }`.
 
 ## GET /products
 
+```bash
+curl "http://localhost:4100/api/v1/godown/products" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
 ## GET /products/:id
+
+```bash
+curl "http://localhost:4100/api/v1/godown/products/:id" \
+  -H "Authorization: Bearer $TOKEN"
+```
 
 ## PUT /products/:id
 
+```bash
+curl -X PUT "http://localhost:4100/api/v1/godown/products/:id" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
 ## DELETE /products/:id
+
+```bash
+curl -X DELETE "http://localhost:4100/api/v1/godown/products/:id" \
+  -H "Authorization: Bearer $TOKEN"
+```
 
 ## POST /orders
 
@@ -131,7 +126,7 @@ Transfer inventory between godown locations or to another module.
 ## GET /reports
 
 ```bash
-curl "http://localhost:4000/api/v1/godown/reports?startDate=2025-01-01&endDate=2026-10-31" \
+curl "http://localhost:4100//api/v1/godown/reports?startDate=2025-01-01&endDate=2026-10-31" \
   -H "Authorization: Bearer $TOKEN" \
   -o godown-report.pdf
 ```

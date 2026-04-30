@@ -8,11 +8,11 @@ Karibu is the internal company management system for Karibu Company Limited. It 
 
 ## Repository Layout
 
-| Folder    | Role     | Stack                        | Dev URL                      |
-| --------- | -------- | ---------------------------- | ---------------------------- |
-| `logic/`  | Backend  | Node.js, Express, MongoDB    | `http://localhost:4000`      |
-| `client/` | Frontend | React 18, Vite, Tailwind CSS | `http://localhost:5173`      |
-| `docs/`   | Docs     | MkDocs                       | `http://127.0.0.1:8000/`     |
+| Folder    | Role     | Stack                        | Dev URL                  |
+| --------- | -------- | ---------------------------- | ------------------------ |
+| `logic/`  | Backend  | Node.js, Express, MongoDB    | `http://localhost:4100/` |
+| `client/` | Frontend | React 18, Vite, Tailwind CSS | `http://localhost:5173`  |
+| `docs/`   | Docs     | MkDocs                       | `http://127.0.0.1:8000/` |
 
 ## Backend (`logic/`)
 
@@ -26,7 +26,7 @@ Karibu is the internal company management system for Karibu Company Limited. It 
 
 - Entry: `client/src/main.jsx` → `App.jsx`. Pages under `client/src/pages/` mirror backend modules. Admin layout: `client/src/pages/admin/layout/`.
 - Styling: Tailwind, configured in `client/tailwind.config.js` against the design system in `.claude/agents/AGENTS.md`.
-- API calls: `client/src/services/` (axios). Backend base is `http://localhost:4000`.
+- API calls: `client/src/services/` (axios). Backend base is `http://localhost:4100/`.
 
 ## Docs (`docs/`)
 

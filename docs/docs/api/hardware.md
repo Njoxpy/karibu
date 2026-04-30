@@ -5,31 +5,12 @@ Base path: `/api/v1/hardware`
 All endpoints require `authenticate`. Category checks use `["hardware", "admin"]`
 unless noted as admin-only.
 
-## Endpoints
-
-| Method | Path                  | Category    | Permission        | Description                         |
-|--------|-----------------------|-------------|-------------------|-------------------------------------|
-| GET    | `/products`           | hardware, admin |              | List products.                      |
-| GET    | `/products/:id`       | hardware, admin |              | Get product by id.                  |
-| POST   | `/products`           | admin       | `createProduct`   | Create a product (multipart/form).  |
-| PUT    | `/products/:id`       | admin       | `updateProduct`   | Update a product.                   |
-| DELETE | `/products/:id`       | admin       | `deleteProduct`   | Delete a product.                   |
-| GET    | `/orders`             | hardware, admin |              | List orders.                        |
-| GET    | `/orders/:id`         | hardware, admin |              | Get order by id.                    |
-| POST   | `/orders`             | hardware, admin |              | Create an order.                    |
-| PUT    | `/orders/:id`         | admin       | `updateOrder`     | Update an order.                    |
-| DELETE | `/orders/:id`         | admin       | `deleteOrder`     | Delete an order.                    |
-| GET    | `/available-products` | hardware, admin | `createOrder`  | Available products for orders.      |
-| GET    | `/revenue`            | admin       |                   | Revenue by `?period=day|week|month`.|
-| GET    | `/total-orders`       | admin       |                   | Total cost by `?filter=...`.        |
-| GET    | `/reports`            | admin       |                   | PDF report by `?startDate&endDate`. |
-
 ## POST /products
 
 Multipart form fields: `name`, `description`, `quantity`, `price`, plus `image`.
 
 ```bash
-curl -X POST http://localhost:4000/api/v1/hardware/products \
+curl -X POST http://localhost:4100//api/v1/hardware/products \
   -H "Authorization: Bearer $TOKEN" \
   -F name=Hammer \
   -F description="Steel claw hammer" \
@@ -91,7 +72,7 @@ Response (201):
 ## GET /reports
 
 ```bash
-curl "http://localhost:4000/api/v1/hardware/reports?startDate=2025-01-01&endDate=2026-10-31" \
+curl "http://localhost:4100//api/v1/hardware/reports?startDate=2025-01-01&endDate=2026-10-31" \
   -H "Authorization: Bearer $TOKEN" \
   -o hardware-report.pdf
 ```

@@ -10,6 +10,6 @@ COPY . .
 
 EXPOSE 5173
 
-ENV VITE_API_URL=http://localhost:4000/api/v1
+ENV VITE_API_URL=http://localhost:4100//api/v1
 
 CMD ["npm", "run", "dev", "--", "--host"]
