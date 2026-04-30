@@ -18,6 +18,7 @@ const userRoutes = require("./routes/user.routes");
 const printingRoutes = require("./routes/printing.routes");
 const hardwareRoutes = require("./routes/hardware.routes");
 const stationeryRoutes = require("./routes/stationery.routes");
+const messageRoutes = require("./routes/message.routes");
 
 // LOGGER + DB
 const logger = require("./logs/logger");
@@ -41,7 +42,7 @@ app.use((req, res, next) => {
 // CORS config
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://yourfrontend.com"],
+    origin: ["http://localhost:5173", "https://karibu.zanzlearn.xyz/"],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
@@ -80,6 +81,7 @@ app.use("/api/v1/hardware", hardwareRoutes);
 app.use("/api/v1/printing", printingRoutes);
 app.use("/api/v1/stationery", stationeryRoutes);
 app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/messages", messageRoutes);
 
 app.get("/", (req, res) => {
   res.status(200).json({ message: "Karibu is running!" });

@@ -9,10 +9,10 @@ const createAdminUser = async () => {
       console.log("No admin found. Creating default admin...");
 
       const defaultAdmin = {
-        email: process.env.ADMIN_EMAIL || "admin@karibu.com",
-        password: process.env.ADMIN_PASSWORD || "karibuAdmin123!",
+        email: process.env.ADMIN_EMAIL,
+        password: process.env.ADMIN_PASSWORD,
+        category: process.env.ADMIN_CATEGORY,
         role: "admin",
-        category: "stationery",
       };
 
       await User.signup(

@@ -27,7 +27,7 @@ userRoutes.post(
   authenticate,
   checkCategory(["admin"]),
   checkPermissions(["createUser"]),
-  signupUser
+  signupUser,
 );
 
 userRoutes.get(
@@ -35,7 +35,7 @@ userRoutes.get(
   authenticate,
   checkCategory(["admin"]),
   checkPermissions(["viewUsers"]),
-  getAllUsers
+  getAllUsers,
 );
 
 userRoutes.get(
@@ -43,7 +43,7 @@ userRoutes.get(
   authenticate,
   checkCategory(["admin"]),
   checkPermissions(["viewUsers"]),
-  availableUserCount
+  availableUserCount,
 );
 // 48
 userRoutes.post("/create-admin", createAdminController);
@@ -53,7 +53,7 @@ userRoutes.get(
   checkCategory(["admin"]),
   checkPermissions(["viewUsers"]),
   validateObjectId,
-  getUserById
+  getUserById,
 );
 
 userRoutes.put(
@@ -61,7 +61,7 @@ userRoutes.put(
   authenticate,
   checkCategory(["admin"]),
   checkPermissions(["updateUser"]),
-  updateUser
+  updateUser,
 );
 
 userRoutes.delete(
@@ -69,7 +69,7 @@ userRoutes.delete(
   authenticate,
   checkCategory(["admin"]),
   checkPermissions(["deleteUser"]),
-  deleteUser
+  deleteUser,
 );
 
 module.exports = userRoutes;

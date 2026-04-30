@@ -21,15 +21,15 @@ const searchStationeryProducts = async (req, res) => {
     let searchQuery = {};
 
     if (name) {
-      searchQuery.name = { $regex: name, $options: "i" }; // Case-insensitive search for name
+      searchQuery.name = { $regex: name, $options: "i" };
     }
 
     if (description) {
-      searchQuery.description = { $regex: description, $options: "i" }; // Case-insensitive search for description
+      searchQuery.description = { $regex: description, $options: "i" };
     }
 
     if (minPrice && maxPrice) {
-      searchQuery.price = { $gte: minPrice, $lte: maxPrice }; // Filter by price range
+      searchQuery.price = { $gte: minPrice, $lte: maxPrice };
     }
 
     const products = await Product.find(searchQuery);
@@ -41,7 +41,6 @@ const searchStationeryProducts = async (req, res) => {
   }
 };
 
-// Search stationery orders by orderId, status, or userId
 const searchStationeryOrders = async (req, res) => {
   const { orderId, status, userId } = req.query;
 
@@ -49,15 +48,15 @@ const searchStationeryOrders = async (req, res) => {
     let searchQuery = {};
 
     if (orderId) {
-      searchQuery._id = orderId; // Search by orderId (MongoDB's ObjectId)
+      searchQuery._id = orderId;
     }
 
     if (status) {
-      searchQuery.status = status; // Filter orders by status (e.g., "pending", "shipped", etc.)
+      searchQuery.status = status;
     }
 
     if (userId) {
-      searchQuery.userId = userId; // Filter orders by userId
+      searchQuery.userId = userId;
     }
 
     const orders = await Order.find(searchQuery);
@@ -192,89 +191,6 @@ const createStationeryOrder = async (req, res) => {
     });
   }
 };
-
-/* 
-const createStationeryOrder = async (req, res) => {
-  try {
-    const { productId, quantity } = req.body;
-
-    const userId = req.user && req.user._id;
-
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(BAD_REQUEST).json({ error: "Invalid userId." });
-    }
-
-    if (!mongoose.Types.ObjectId.isValid(productId)) {
-      return res.status(BAD_REQUEST).json({ error: "Invalid product id." });
-    }
-
-    // Check if all fields are provided
-    if (!productId || !quantity || !userId) {
-      return res
-        .status(BAD_REQUEST)
-        .json({ message: "All fields are required" });
-    }
-
-    if (quantity < 0) {
-      return res
-        .status(BAD_REQUEST)
-        .json({ message: "Quantity cannot be negative" });
-    }
-
-    if (!productId) {
-      return res
-        .status(BAD_REQUEST)
-        .json({ message: "Product ID is required" });
-    }
-    if (!quantity) {
-      return res.status(BAD_REQUEST).json({ message: "Quantity is required" });
-    }
-    if (!userId) {
-      return res.status(BAD_REQUEST).json({ message: "User ID is required" });
-    }
-
-    // Fetch the product from the database
-    const product = await StationeryProduct.findById(productId);
-    if (!product) {
-      return res.status(NOT_FOUND).json({ error: "Product not found" });
-    }
-
-    // Check if there's enough stock
-    if (product.quantity < quantity) {
-      return res.status(BAD_REQUEST).json({ message: "Insufficient stock" });
-    }
-
-    const price = product.price;
-
-    // Create the order
-    const order = await StationeryOrder.create({
-      productId,
-      quantity,
-      price, // Ensure price is passed
-      total: quantity * price,
-      userId,
-    });
-
-    // Update the product stock
-    product.quantity -= quantity;
-    await product.save();
-
-    // Return response
-    if (!res.headersSent) {
-      return res
-        .status(201)
-        .json({ message: "Order created successfully", order });
-    }
-  } catch (error) {
-    if (!res.headersSent) {
-      return res.status(SERVER_ERROR).json({
-        message: "An error occurred while creating the order",
-        error: error.message,
-      });
-    }
-  }
-};
-*/
 
 // UPDATE PRODUCT
 const updateStationeryProduct = async (req, res) => {
