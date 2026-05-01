@@ -31,12 +31,12 @@ Karibu is a full-stack production system designed to replace manual, spreadsheet
 
 ## Tech Stack
 
-| Layer    | Technologies                                                                                          |
-| -------- | ----------------------------------------------------------------------------------------------------- |
+| Layer    | Technologies                                                                                                  |
+| -------- | ------------------------------------------------------------------------------------------------------------- |
 | Backend  | Node.js, Express, MongoDB (Mongoose), JWT, Multer, PDFKit, Winston (daily rotation), Helmet, CORS, Rate Limit |
-| Frontend | React 18, Vite, Tailwind CSS, React Router, React Hook Form, Axios, Chart.js, Framer Motion, Lucide   |
-| Docs     | MkDocs, Markdown                                                                                      |
-| Tooling  | ESLint, Mocha, Nodemon, Docker                                                                        |
+| Frontend | React 18, Vite, Tailwind CSS, React Router, React Hook Form, Axios, Chart.js, Framer Motion, Lucide           |
+| Docs     | MkDocs, Markdown                                                                                              |
+| Tooling  | ESLint, Mocha, Nodemon, Docker                                                                                |
 
 ---
 
@@ -53,15 +53,15 @@ Each business module follows a parallel structure across all three layers — `l
 
 ### API Surface (`/api/v1`)
 
-| Module          | Endpoints | Capabilities                                                            |
-| --------------- | --------: | ----------------------------------------------------------------------- |
-| `users`         |         8 | Login, signup, admin bootstrap, CRUD, totals                            |
-| `animal-feeding`|        16 | Products + orders CRUD, search, revenue, PDF reports                    |
-| `fresh-oil`     |        19 | Paginated catalogue, sales aggregates, order/product counts             |
-| `godown`        |        19 | xlsx bulk upload, inventory movement, movement-log CRUD                 |
-| `hardware`      |        14 | Products + orders                                                       |
-| `printing`      |         9 | Print job orders with status transitions                                |
-| `stationery`    |        16 | Products + orders                                                       |
+| Module           | Endpoints | Capabilities                                                |
+| ---------------- | --------: | ----------------------------------------------------------- |
+| `users`          |         8 | Login, signup, admin bootstrap, CRUD, totals                |
+| `animal-feeding` |        16 | Products + orders CRUD, search, revenue, PDF reports        |
+| `fresh-oil`      |        19 | Paginated catalogue, sales aggregates, order/product counts |
+| `godown`         |        19 | xlsx bulk upload, inventory movement, movement-log CRUD     |
+| `hardware`       |        14 | Products + orders                                           |
+| `printing`       |         9 | Print job orders with status transitions                    |
+| `stationery`     |        16 | Products + orders                                           |
 
 ---
 
@@ -126,7 +126,7 @@ Available at `http://127.0.0.1:8000/`. Canonical deployed path: `/mysite/`.
 
 ## About the Author
 
-Built and maintained by **NjoxPy** (Godbless Nyagawa) — full-stack engineer focused on shipping production internal tools.
+Built and maintained by **NjoxPy** (Godbless Nyagawa)
 
 - GitHub: [@njoxpy](https://github.com/njoxpy)
 

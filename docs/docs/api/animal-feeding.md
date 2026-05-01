@@ -5,34 +5,13 @@ Base path: `/api/v1/animal-feeding`
 All endpoints require `authenticate`. Category checks use `["animal-feeding", "admin"]`
 unless noted as admin-only.
 
-## Endpoints
-
-| Method | Path                  | Category    | Permission        | Description                         |
-|--------|-----------------------|-------------|-------------------|-------------------------------------|
-| GET    | `/products`           | animal-feeding, admin |          | List products.                      |
-| GET    | `/products/search`    | animal-feeding, admin |          | Search products.                    |
-| GET    | `/products/:id`       | animal-feeding, admin |          | Get product by id.                  |
-| POST   | `/products`           | admin       | `createProduct`   | Create a product (multipart/form).  |
-| PUT    | `/products/:id`       | admin       | `updateProduct`   | Update a product.                   |
-| DELETE | `/products/:id`       | admin       | `deleteProduct`   | Delete a product.                   |
-| GET    | `/orders`             | animal-feeding, admin |          | List orders.                        |
-| GET    | `/orders/search`      | animal-feeding, admin |          | Search orders.                      |
-| GET    | `/orders/:id`         | animal-feeding, admin |          | Get order by id.                    |
-| POST   | `/orders`             | animal-feeding, admin |          | Create an order.                    |
-| PUT    | `/orders/:id`         | admin       | `updateOrder`     | Update an order.                    |
-| DELETE | `/orders/:id`         | admin       | `deleteOrder`     | Delete an order.                    |
-| GET    | `/available-products` | animal-feeding, admin |          | Products with quantity > 0.         |
-| GET    | `/revenue`            | admin       |                   | Revenue by `?period=day|week|month`.|
-| GET    | `/total-orders`       | admin       |                   | Total cost by `?filter=day|week|month`. |
-| GET    | `/reports`            | admin       |                   | PDF report by `?startDate&endDate`. |
-
 ## POST /products
 
 Multipart form fields: `name`, `description`, `quantity`, `nutrients`, `price`,
 plus `image` (file).
 
 ```bash
-curl -X POST http://localhost:4000/api/v1/animal-feeding/products \
+curl -X POST http://localhost:4100//api/v1/animal-feeding/products \
   -H "Authorization: Bearer $TOKEN" \
   -F name=lezod \
   -F description="chakula cha ngombe" \
@@ -66,7 +45,7 @@ Response (201):
 ## GET /products
 
 ```bash
-curl http://localhost:4000/api/v1/animal-feeding/products \
+curl http://localhost:4100//api/v1/animal-feeding/products \
   -H "Authorization: Bearer $TOKEN"
 ```
 
@@ -75,18 +54,24 @@ curl http://localhost:4000/api/v1/animal-feeding/products \
 Query params: `name`, `description`, `minPrice`, `maxPrice`.
 
 ```bash
-curl "http://localhost:4000/api/v1/animal-feeding/products/search?name=milk" \
+curl "http://localhost:4100//api/v1/animal-feeding/products/search?name=milk" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
 ## GET /products/:id
 
 ```bash
-curl http://localhost:4000/api/v1/animal-feeding/products/<id> \
+curl http://localhost:4100//api/v1/animal-feeding/products/<id> \
   -H "Authorization: Bearer $TOKEN"
 ```
 
 ## PUT /products/:id
+
+```sh
+curl -X PUT http://localhost:4100//api/v1/animal-feeding/products/<id> \
+  -H "Authorization: Bearer $TOKEN"
+  -d # request body
+```
 
 Request body (any subset):
 
@@ -97,7 +82,7 @@ Request body (any subset):
 ## DELETE /products/:id
 
 ```bash
-curl -X DELETE http://localhost:4000/api/v1/animal-feeding/products/<id> \
+curl -X DELETE http://localhost:4100//api/v1/animal-feeding/products/<id> \
   -H "Authorization: Bearer $TOKEN"
 ```
 
@@ -132,7 +117,7 @@ Response (201):
 ## GET /orders
 
 ```bash
-curl http://localhost:4000/api/v1/animal-feeding/orders \
+curl http://localhost:4100//api/v1/animal-feeding/orders \
   -H "Authorization: Bearer $TOKEN"
 ```
 
@@ -142,7 +127,18 @@ Query params: `orderId`, `status`, `userId`.
 
 ## GET /orders/:id
 
+```sh
+curl http://localhost:4100//api/v1/animal-feeding/orders/:id \
+  -H "Authorization: Bearer $TOKEN
+```
+
 ## PUT /orders/:id
+
+```sh
+curl -X PUT http://localhost:4100//api/v1/animal-feeding/orders/:id \
+  -H "Authorization: Bearer $TOKEN
+  -d "body info"
+```
 
 ```json
 { "quantity": 2 }
@@ -150,14 +146,24 @@ Query params: `orderId`, `status`, `userId`.
 
 ## DELETE /orders/:id
 
+```sh
+curl -X DELETE http://localhost:4100//api/v1/animal-feeding/orders/:id \
+ -H "Authorization: Bearer $TOKEN
+```
+
 ## GET /available-products
+
+```bash
+curl "http://localhost:4100//api/v1/animal-feeding/available-products" \
+  -H "Authorization: Bearer $TOKEN"
+```
 
 Returns only products with `quantity > 0`.
 
 ## GET /revenue
 
 ```bash
-curl "http://localhost:4000/api/v1/animal-feeding/revenue?period=day" \
+curl "http://localhost:4100//api/v1/animal-feeding/revenue?period=day" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
@@ -174,7 +180,7 @@ curl "http://localhost:4000/api/v1/animal-feeding/revenue?period=day" \
 ## GET /total-orders
 
 ```bash
-curl "http://localhost:4000/api/v1/animal-feeding/total-orders?filter=week" \
+curl "http://localhost:4100//api/v1/animal-feeding/total-orders?filter=week" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
@@ -187,7 +193,7 @@ curl "http://localhost:4000/api/v1/animal-feeding/total-orders?filter=week" \
 Returns a PDF stream.
 
 ```bash
-curl "http://localhost:4000/api/v1/animal-feeding/reports?startDate=2025-01-01&endDate=2026-10-31" \
+curl "http://localhost:4100//api/v1/animal-feeding/reports?startDate=2025-01-01&endDate=2026-10-31" \
   -H "Authorization: Bearer $TOKEN" \
   -o animal-feeding-report.pdf
 ```

@@ -4,16 +4,16 @@ Base path: `/api/v1/users`
 
 ## Endpoints
 
-| Method | Path                | Auth          | Permission   | Description                       |
-|--------|---------------------|---------------|--------------|-----------------------------------|
-| POST   | `/login`            | Public        |              | Authenticate and obtain a JWT.    |
-| POST   | `/signup`           | Admin         | `createUser` | Create a new user.                |
-| POST   | `/create-admin`     | Public        |              | Bootstrap an admin account.       |
-| GET    | `/`                 | Admin         | `viewUsers`  | List all users.                   |
-| GET    | `/total-users`      | Admin         | `viewUsers`  | Count of users.                   |
-| GET    | `/:id`              | Admin         | `viewUsers`  | Get a user by id.                 |
-| PUT    | `/:id`              | Admin         | `updateUser` | Update a user.                    |
-| DELETE | `/:id`              | Admin         | `deleteUser` | Delete a user.                    |
+| Method | Path            | Auth   | Permission   | Description                    |
+| ------ | --------------- | ------ | ------------ | ------------------------------ |
+| POST   | `/login`        | Public |              | Authenticate and obtain a JWT. |
+| POST   | `/signup`       | Admin  | `createUser` | Create a new user.             |
+| POST   | `/create-admin` | Public |              | Bootstrap an admin account.    |
+| GET    | `/`             | Admin  | `viewUsers`  | List all users.                |
+| GET    | `/total-users`  | Admin  | `viewUsers`  | Count of users.                |
+| GET    | `/:id`          | Admin  | `viewUsers`  | Get a user by id.              |
+| PUT    | `/:id`          | Admin  | `updateUser` | Update a user.                 |
+| DELETE | `/:id`          | Admin  | `deleteUser` | Delete a user.                 |
 
 ## POST /login
 
@@ -21,7 +21,7 @@ Request body:
 
 ```json
 {
-  "email": "admin@https://api.karibu.zanzlearn.xyz/",
+  "email": "admin@karibu.zanzlearn.xyz",
   "password": "secret"
 }
 ```
@@ -35,8 +35,9 @@ Response:
   "user": {
     "_id": "...",
     "name": "Admin",
-    "email": "admin@https://api.karibu.zanzlearn.xyz/",
-    "category": "admin"
+    "email": "admin@karibu.zanzlearn.xyz",
+    "category": "stationery",
+    "role": "admin"
   }
 }
 ```
@@ -44,9 +45,9 @@ Response:
 curl:
 
 ```bash
-curl -X POST http://localhost:4000/api/v1/users/login \
+curl -X POST http://localhost:4100/api/v1/users/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@https://api.karibu.zanzlearn.xyz/","password":"secret"}'
+  -d '{"email":"admin@karibu.zanzlearn.xyz","password":"secret"}'
 ```
 
 ## POST /signup
@@ -58,7 +59,7 @@ Request body:
 ```json
 {
   "name": "Jane",
-  "email": "jane@https://api.karibu.zanzlearn.xyz/",
+  "email": "jane@karibu.zanzlearn.xyz/api/",
   "password": "secret",
   "category": "animal-feeding",
   "permissions": ["createOrder"]
@@ -68,10 +69,10 @@ Request body:
 curl:
 
 ```bash
-curl -X POST http://localhost:4000/api/v1/users/signup \
+curl -X POST http://localhost:4100/api/v1/users/signup \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"name":"Jane","email":"jane@https://api.karibu.zanzlearn.xyz/","password":"secret","category":"animal-feeding"}'
+  -d '{"name":"Jane","email":"jane@karibu.zanzlearn.xyz/api/","password":"secret","category":"animal-feeding"}'
 ```
 
 ## POST /create-admin
@@ -80,9 +81,9 @@ Bootstrap endpoint that creates the first admin account when the system has no
 admin yet.
 
 ```bash
-curl -X POST http://localhost:4000/api/v1/users/create-admin \
+curl -X POST http://localhost:4100/api/v1/users/create-admin \
   -H "Content-Type: application/json" \
-  -d '{"name":"Owner","email":"owner@https://api.karibu.zanzlearn.xyz/","password":"secret"}'
+  -d '{"name":"Owner","email":"owner@karibu.zanzlearn.xyz/api/","password":"secret", "role":"admin"}'
 ```
 
 ## GET /
@@ -90,14 +91,14 @@ curl -X POST http://localhost:4000/api/v1/users/create-admin \
 List all users.
 
 ```bash
-curl http://localhost:4000/api/v1/users/ \
+curl http://localhost:4100/api/v1/users/ \
   -H "Authorization: Bearer $TOKEN"
 ```
 
 ## GET /total-users
 
 ```bash
-curl http://localhost:4000/api/v1/users/total-users \
+curl http://localhost:4100/api/v1/users/total-users \
   -H "Authorization: Bearer $TOKEN"
 ```
 
@@ -110,11 +111,17 @@ Response:
 ## GET /:id
 
 ```bash
-curl http://localhost:4000/api/v1/users/69e76562713885bf5dbbe900 \
+curl http://localhost:4100/api/v1/users/69e76562713885bf5dbbe900 \
   -H "Authorization: Bearer $TOKEN"
 ```
 
 ## PUT /:id
+
+```bash
+curl -X PUT http://localhost:4100/api/v1/users/69e76562713885bf5dbbe900 \
+  -H "Authorization: Bearer $TOKEN"
+  -d "data" : "data"
+```
 
 Request body (any subset of the fields):
 
@@ -129,6 +136,6 @@ Request body (any subset of the fields):
 ## DELETE /:id
 
 ```bash
-curl -X DELETE http://localhost:4000/api/v1/users/<id> \
+curl -X DELETE http://localhost:4100/api/v1/users/<id> \
   -H "Authorization: Bearer $TOKEN"
 ```

@@ -48,7 +48,6 @@ const loginUser = async (req, res) => {
 const createAdminController = async (req, res) => {
   const { secretKey } = req.body;
 
-  // Simple secret check to allow admin creation only if you have the key
   if (secretKey !== process.env.SECRET) {
     return res.status(403).json({ error: "Unauthorized" });
   }
@@ -59,8 +58,8 @@ const createAdminController = async (req, res) => {
       return res.status(400).json({ error: "Admin already exists" });
     }
 
-    const adminEmail = process.env.ADMIN_EMAIL || "admin@karibu.com";
-    const adminPassword = process.env.ADMIN_PASSWORD || "karibuAdmin123!";
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const adminPassword = process.env.ADMIN_PASSWORD;
     const adminCategory = "stationery";
 
     const user = await User.signup(

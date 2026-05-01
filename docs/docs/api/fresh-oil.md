@@ -5,38 +5,12 @@ Base path: `/api/v1/fresh-oil`
 All endpoints require `authenticate`. Category checks use `["fresh-oil", "admin"]`
 unless noted as admin-only.
 
-## Endpoints
-
-| Method | Path                  | Category    | Permission        | Description                         |
-|--------|-----------------------|-------------|-------------------|-------------------------------------|
-| GET    | `/products`           | fresh-oil, admin |             | List products (paginated).          |
-| GET    | `/products/search`    | fresh-oil, admin |             | Search products.                    |
-| GET    | `/products/:id`       | fresh-oil, admin |             | Get product by id.                  |
-| POST   | `/products`           | admin       | `createProduct`   | Create a product (multipart/form).  |
-| PUT    | `/products/:id`       | admin       | `updateProduct`   | Update a product.                   |
-| DELETE | `/products/:id`       | admin       | `deleteProduct`   | Delete a product.                   |
-| GET    | `/orders`             | fresh-oil, admin |             | List orders (paginated).            |
-| GET    | `/orders/search`      | fresh-oil, admin |             | Search orders.                      |
-| GET    | `/orders/:id`         | fresh-oil, admin |             | Get order by id.                    |
-| POST   | `/orders`             | fresh-oil, admin |             | Create an order.                    |
-| PUT    | `/orders/:id`         | admin       | `updateOrder`     | Update an order.                    |
-| DELETE | `/orders/:id`         | admin       | `deleteOrder`     | Delete an order.                    |
-| GET    | `/available-products` | fresh-oil, admin |             | Products with stock available.      |
-| GET    | `/revenue`            | admin       |                   | Revenue by `?period=day|week|month`.|
-| GET    | `/total-orders`       | admin       |                   | Total cost by `?filter=...`.        |
-| GET    | `/orders-count`       | admin       |                   | Total order count.                  |
-| GET    | `/products-count`     | admin       |                   | Aggregated product quantity across all modules. |
-| GET    | `/sales-total`        | admin       |                   | Aggregated sales total across all modules. |
-| GET    | `/reports`            | admin       |                   | PDF report by `?startDate&endDate`. |
-
-Pagination: `?page=1&limit=10` (defaults applied by middleware).
-
 ## POST /products
 
 Multipart form fields: `name`, `description`, `quantity`, `price`, plus `image` (file).
 
 ```bash
-curl -X POST http://localhost:4000/api/v1/fresh-oil/products \
+curl -X POST http://localhost:4100/api/v1/fresh-oil/products \
   -H "Authorization: Bearer $TOKEN" \
   -F name=mnyonyo \
   -F description="just description" \
@@ -66,7 +40,7 @@ Response (201):
 ## GET /products
 
 ```bash
-curl "http://localhost:4000/api/v1/fresh-oil/products?page=1&limit=10" \
+curl "http://localhost:4100/api/v1/fresh-oil/products?page=1&limit=10" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
@@ -74,7 +48,17 @@ curl "http://localhost:4000/api/v1/fresh-oil/products?page=1&limit=10" \
 
 Query params: `name`, `description`, `minPrice`, `maxPrice`.
 
+```bash
+curl "http://localhost:4100/api/v1/fresh-oil/products?name=viazi" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
 ## GET /products/:id
+
+```bash
+curl "http://localhost:4100/api/v1/fresh-oil/products/:id" \
+  -H "Authorization: Bearer $TOKEN"
+```
 
 ## PUT /products/:id
 
@@ -82,7 +66,18 @@ Query params: `name`, `description`, `minPrice`, `maxPrice`.
 { "name": "virgin oil v3", "quantity": 14, "price": 3400 }
 ```
 
+```sh
+curl -X PUT http://localhost:4100//api/v1/fresh-oil/products/<id> \
+  -H "Authorization: Bearer $TOKEN"
+  -d # request body
+```
+
 ## DELETE /products/:id
+
+```sh
+curl -X DELETE http://localhost:4100//api/v1/fresh-oil/products/<id> \
+  -H "Authorization: Bearer $TOKEN"
+```
 
 ## POST /orders
 
@@ -117,14 +112,14 @@ Query params: `orderId`, `status`, `userId`.
 ## GET /revenue
 
 ```bash
-curl "http://localhost:4000/api/v1/fresh-oil/revenue?period=day" \
+curl "http://localhost:4100/api/v1/fresh-oil/revenue?period=day" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
 ## GET /total-orders
 
 ```bash
-curl "http://localhost:4000/api/v1/fresh-oil/total-orders?filter=week" \
+curl "http://localhost:4100/api/v1/fresh-oil/total-orders?filter=week" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
@@ -154,7 +149,7 @@ Aggregates sales totals across all modules.
 ## GET /reports
 
 ```bash
-curl "http://localhost:4000/api/v1/fresh-oil/reports?startDate=2025-01-01&endDate=2026-10-31" \
+curl "http://localhost:4100/api/v1/fresh-oil/reports?startDate=2025-01-01&endDate=2026-10-31" \
   -H "Authorization: Bearer $TOKEN" \
   -o fresh-oil-report.pdf
 ```

@@ -64,3 +64,5 @@ products_bulk_upload.xlsx
 /secrets
 
 nginx.conf
+
+logs/

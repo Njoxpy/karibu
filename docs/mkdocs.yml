@@ -1,11 +1,11 @@
 site_name: Karibu API documentation
-site_url: https://mydomain.org/mysite/
+site_url: https://njoxpy.github.io/karibu/
 theme:
   name: readthedocs
 nav:
   - Home: index.md
   - API Reference:
-      - Overview: api/index.md
+      - Overview: index.md
       - Users: api/users.md
       - Animal Feeding: api/animal-feeding.md
       - Fresh Oil: api/fresh-oil.md
@@ -13,3 +13,4 @@ nav:
       - Hardware: api/hardware.md
       - Printing: api/printing.md
       - Stationery: api/stationery.md
+      - Messages: api/message.md

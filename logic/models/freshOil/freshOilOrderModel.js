@@ -40,7 +40,7 @@ const freshOilOrderSchema = new Schema(
       min: [1, "Total price must be at least 1"],
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // Calculate the total before saving
